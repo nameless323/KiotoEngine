@@ -5,12 +5,12 @@ Kioto engine codestyle.
 ###
 
 
-####Intendation
+#### Intendation
 Tabs are newer used, we use 4 spaces instead.
 
-####Namespaces
+#### Namespaces
 Ontendation is not used inside namespaces
-#####namespace Kioto
+##### namespace Kioto
 All Kioto engine code is written inside `namespace Kioto`.
 
 ```cpp
