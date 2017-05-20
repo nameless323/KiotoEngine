@@ -5,10 +5,10 @@ Kioto engine codestyle.
 ###
 
 ### Branches
-The main repository branch is master. You can create pull request to master, get at least one reviewer approve and your brunch will be merged to master soon.
+The main repository branch is master. You can create pull request to master, get at least one reviewer to approve and your branch will be merged into master soon.
 
 ### License
-License info should be at the beggining of each .cpp and .h files.
+License info should be at the beggining of each .cpp and .h file.
 ```cpp
 //
 // Copyright (C) Autor1, Autor2. year
@@ -16,11 +16,11 @@ License info should be at the beggining of each .cpp and .h files.
 //
 ```
 
-#### Intendation
-Tabs are newer used, we use 4 spaces instead.
+#### Indentation
+Tabs are never used, we use 4 spaces instead.
 
 #### Namespaces
-Ontendation is not used inside namespaces
+Indentation is not used inside namespaces
 ##### namespace Kioto
 All Kioto engine code is written inside `namespace Kioto`.
 
@@ -34,7 +34,7 @@ class Foo
 }
 ```
 
-Don't add ontendation if you add additional namespaces inside Kioto
+Don't add indentation if you add additional namespaces inside Kioto
 
 ```cpp
 namespace Kioto
@@ -48,7 +48,7 @@ Feel free to use namespace Kioto::MyNamespace syntax.
 
 
 #### Header guard
-Header files are guarder by `#pragma once`
+Header files are guarded by `#pragma once`
 
 #### Order of Includes
 Use standard order for readability and to avoid hidden dependencies: class .h file in .cpp, C library, C++ library, other libraries' `.h`, your project's `.h`.
@@ -66,7 +66,7 @@ Your project `.h` must be included with `#include "You\Project\Path.h"` while ex
 #include "Source\Debug\Logger.h"
 ```
 
-All of a project's header files should be listed as descendants of the project's source directory without use of UNIX directory shortcuts `.` (the current directory) or `..` (the parent directory). For example, Source/Base.h should be included as:
+All of the project's header files should be listed as descendants of the project's source directory without the use of UNIX directory shortcuts `.` (the current directory) or `..` (the parent directory). For example, Source/Base.h should be included as:
 
 ```cpp
 #include "Source\Base.h"
@@ -78,7 +78,7 @@ Within each section the includes should be ordered alphabetically. Note that old
 Remove commented code, we have git for history. 
 
 ## Naming
-Names are written in english, class members should start with m_ prefix.
+Names are written in English, class members should start with m_ prefix.
 ```cpp
 class MyClass
 {
@@ -88,7 +88,7 @@ private:
 ```
 
 #### Classes, functions, namespaces
-Camel notation begin with capital letter.
+Camel notation beginning with a capital letter.
 
 ```cpp
 class MyObject;
@@ -97,13 +97,13 @@ namespace MyNamespace{}
 ```
 
 #### Functions Variables
-Camel notation begin with lower-case.
+Camel notation beginning with a lower-case letter.
 ```cpp
 MyObject myObjectInstance;
 ```
 
 #### Public, protected variables
-Camel notation begin with upper-case.
+Camel notation beginning with an upper-case letter.
 
 ```cpp
 class MyClass
@@ -125,7 +125,7 @@ static const int MAX_WIDTH = 100;
 ```
 
 #### Enums.
-Camel notation with leading 'e'. Enum members - camel-case. Use enum class when it's possible
+Camel notation with leading 'e'. Enum members - camel-case. Use enum class when possible.
 ```cpp
 enum class eError
 {
@@ -136,8 +136,8 @@ enum class eError
 
 ## Classes
 #### Class members initialization
-Constructor member initialization lists is preferred over all other methods.
-Initialize member in order of declaration!
+Constructor member initialization lists are preferred over all other methods.
+Initialize members in order of declaration!
 
 ```cpp
 class MyClass
@@ -157,7 +157,7 @@ MyClass::MyClass()
 ```
 
 #### Virtual functions
-Either `virtual`, `override` or `final` keyword can be used in function declaration. **Do not** mix `virtual` with `override/final` keywords in one declaration.
+Either `virtual`, `override`, or `final` keyword can be used in function declaration. **Do not** mix `virtual` with `override/final` keywords in one declaration.
 
 ```cpp
 virtual void Foo(); //declared for the first time
@@ -179,10 +179,10 @@ inline void MyObject::Foo()
 ```
 
 #### Autos
-Use auto only with long template types, lambda function type, loops.
+Use auto only with long template types, lambda function types, loops.
 
 #### Comments
-Start with space and capital letter, ends with dot, space and autor name in square bracets.
+Start with a space and a capital letter, end with a dot, space, and the author's name in square brackets.
 
 ```cpp
 // This is comment. [Name]
@@ -193,13 +193,13 @@ Start with space and capital letter, ends with dot, space and autor name in squa
 ```
 
 ### Indentation.
-Use allman indentation style (see example).
+Use Allman indentation style (see example).
 
 #### Example
-The following example shows properly formatted code sample.
+The following example shows properly formatted code.
 ```cpp
 //
-// Copyright (C) Autor1, Autor2. year
+// Copyright (C) Author1, Author2. year
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -212,7 +212,7 @@ namespace Kioto
 
 class MyClass : public MyBase
 {
-public: // Public block goes first. [Autor]
+public: // Public block goes first. [Author]
     MyClass();
     virtual ~MyClass();
 
@@ -221,22 +221,22 @@ protected: // Then protected.
     void Bar() override;
 
 private: // Private goes last.
-    enum class eEnum // First enums. [Autor]
+    enum class eEnum // First enums. [Author]
     {
         One,
         Two
     };
 
-    struct InnerStruct // Then structs. [Autor]
+    struct InnerStruct // Then structs. [Author]
     {
         int SomeVar;
     };
 
-    void FooOne(); // Then methods. [Autor]
+    void FooOne(); // Then methods. [Author]
     template <typename T>
     T TemplateFun(T t);
 
-    int m_var0; // Then vars. [Autor]
+    int m_var0; // Then fields. [Author]
     int m_var1;
 };
 
@@ -255,7 +255,7 @@ T MyClass::TemplateFun(T t)
 
 // .cpp
 //
-// Copyright (C) Autor1, Autor2. year
+// Copyright (C) Author1, Author2. year
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -269,7 +269,7 @@ namespace Kioto
 {
 
 MyClass::MyClass()
-    : m_var0(8) // In order of appearance in .h file. [Autor]
+    : m_var0(8) // In order of appearance in .h file. [Author]
     , m_var1(2)
 {
     for (int i = 0; i < m_var0; ++i)
@@ -284,7 +284,7 @@ MyClass::~MyClass()
     m_var0 = 0;
 }
 
-void MyClass::Foo() // In order of appearance in .h file. [Autor]
+void MyClass::Foo() // In order of appearance in .h file. [Author]
 {
     std::vector<int> myVector { 3, 4, 5 };
     for (auto i : myVector)
