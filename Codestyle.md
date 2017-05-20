@@ -52,24 +52,24 @@ Header files are guarded by `#pragma once`
 
 #### Order of Includes
 Use standard order for readability and to avoid hidden dependencies: class .h file in .cpp, C library, C++ library, other libraries' `.h`, your project's `.h`.
-Your project `.h` must be included with `#include "You\Project\Path.h"` while external `.h` should be included with `#include <Library\Path.h>`
+Your project `.h` must be included with `#include "You/Project/Path.h"` while external `.h` should be included with `#include <Library/Path.h>`
 ```cpp
-#include "Source\MyClass.h"
+#include "Source/MyClass.h"
 
 #include <vector>
 
-#include <curl\curl.h>
-#include <zlib\zlib.h>
+#include <curl/curl.h>
+#include <zlib/zlib.h>
 
 // project includes
-#include "Source\Base.h"
-#include "Source\Debug\Logger.h"
+#include "Source/Base.h"
+#include "Source/Debug/Logger.h"
 ```
 
 All of the project's header files should be listed as descendants of the project's source directory without the use of UNIX directory shortcuts `.` (the current directory) or `..` (the parent directory). For example, Source/Base.h should be included as:
 
 ```cpp
-#include "Source\Base.h"
+#include "Source/Base.h"
 ```
 
 Within each section the includes should be ordered alphabetically. Note that older code might not conform to this rule and should be fixed when convenient.
