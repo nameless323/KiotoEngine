@@ -11,7 +11,7 @@ The main repository branch is master. You can create pull request to master, get
 License info should be at the beggining of each .cpp and .h file.
 ```cpp
 //
-// Copyright (C) Autor1, Autor2. year
+// Copyright (C) Author1, Author2. year
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 ```
