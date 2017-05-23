@@ -134,6 +134,16 @@ enum class eError
 };
 ```
 
+## Documentation
+Use 
+```cpp
+///
+/// ... descrption ...
+///
+```
+to describe any class, struct, method or function which will be seen outside KiotoEngine dll.
+If you use KIOTO_API macro, then you probably want to document your class or function.
+
 ## Classes
 #### Class members initialization
 Constructor member initialization lists are preferred over all other methods.
@@ -150,7 +160,7 @@ private:
 };
 
 MyClass::MyClass()
-    : m_width(0)
+    : m_width(0) // Order preserved.
     , m_heigth(0)
 {
 }
