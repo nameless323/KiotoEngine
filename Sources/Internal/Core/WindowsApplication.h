@@ -14,6 +14,8 @@ public:
     WindowsApplication& operator= (const WindowsApplication&) = delete;
 
     static bool Init(HINSTANCE hInstance, int nCmdShow);
+    static int Run();
+    static void Shutdown();
 
 private:
     static LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
