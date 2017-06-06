@@ -43,9 +43,29 @@ bool WindowsApplication::Init(HINSTANCE hInstance, int nCmdShow)
     return true;
 }
 
-LRESULT WindowsApplication::WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+int WindowsApplication::Run()
+{
+    MSG msg = {};
+    while (msg.message != WM_QUIT)
+    {
+        if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+        {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
+    }
+    Shutdown();
+
+    return static_cast<int>(msg.wParam);
+}
+
+void WindowsApplication::Shutdown()
 {
 
+}
+
+LRESULT WindowsApplication::WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
     switch (message)
     {
     case WM_CREATE:
