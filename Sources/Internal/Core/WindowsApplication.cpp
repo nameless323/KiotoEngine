@@ -1,10 +1,14 @@
+//
+// Copyright (C) Alexandr Vorontsov. 2017
+// Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
+//
+
 #include "stdafx.h"
 
 #include "Core/WindowsApplication.h"
 
 namespace Kioto
 {
-
 HWND WindowsApplication::m_hwnd = nullptr;
 std::wstring WindowsApplication::m_windowCapture = L"Kioto Project";
 
@@ -76,47 +80,18 @@ LRESULT WindowsApplication::WindowProc(HWND hwnd, UINT message, WPARAM wParam, L
     return 0;
 
     case WM_KEYDOWN:
-        //            if (pSample)
-        //            {
-        //                pSample->OnKeyDown(static_cast<UINT8>(wParam));
-        //            }
         return 0;
 
     case WM_KEYUP:
-        //            if (pSample)
-        //            {
-        //                pSample->OnKeyUp(static_cast<UINT8>(wParam));
-        //            }
         return 0;
 
     case WM_SYSKEYDOWN:
-        // Handle ALT+ENTER:
-        //            if ((wParam == VK_RETURN) && (lParam & (1 << 29)))
-        //            {
-        //                if (pSample && pSample->GetTearingSupport())
-        //                {
-        //                    ToggleFullscreen();
-        //                    return 0;
-        //                }
-        //            }
-        // Send all other WM_SYSKEYDOWN messages to the default WndProc.
         break;
 
     case WM_PAINT:
-        //            if (pSample)
-        //            {
-        //                pSample->OnUpdate();
-        //                pSample->OnRender();
-        //            }
         return 0;
 
     case WM_SIZE:
-        //            if (pSample)
-        //            {
-        //                RECT clientRect = {};
-        //                GetClientRect(hWnd, &clientRect);
-        //                pSample->OnSizeChanged(clientRect.right - clientRect.left, clientRect.bottom - clientRect.top, wParam == SIZE_MINIMIZED);
-        //            }
         return 0;
 
     case WM_DESTROY:
@@ -124,8 +99,6 @@ LRESULT WindowsApplication::WindowProc(HWND hwnd, UINT message, WPARAM wParam, L
         return 0;
     }
 
-    // Handle any messages the switch statement didn't.
     return DefWindowProc(hwnd, message, wParam, lParam);
 }
-
 }
