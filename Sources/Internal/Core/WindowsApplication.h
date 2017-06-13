@@ -1,11 +1,15 @@
+//
+// Copyright (C) Alexandr Vorontsov. 2017
+// Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
+//
+
 #pragma once
 
-#include <windows.h>
 #include <string>
+#include <windows.h>
 
 namespace Kioto
 {
-
 class WindowsApplication
 {
 public:
@@ -19,10 +23,10 @@ public:
 
 private:
     static LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+
     static HWND m_hwnd;
     static const UINT m_windowStyle = WS_OVERLAPPEDWINDOW;
     static RECT m_windowRect;
     static std::wstring m_windowCapture;
 };
-
 }
