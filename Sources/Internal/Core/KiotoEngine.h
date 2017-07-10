@@ -11,8 +11,10 @@
 
 namespace Kioto
 {
+
 ///
 /// Entry point of Kioto Engine. Call this function from your WinMain.
 ///
 KIOTO_API void KiotoMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int nCmdShow);
+
 }

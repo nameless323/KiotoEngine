@@ -12,6 +12,7 @@
 
 namespace Kioto
 {
+
 void KiotoMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int nCmdShow)
 {
     std::stringstream ss;
@@ -20,4 +21,5 @@ void KiotoMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int nC
     ss << "In main in dll " << hInstance << " || " << prevInstance << " || " << cmdLine << " || " << nCmdShow << std::endl;
     OutputDebugStringA(ss.str().c_str());
 }
+
 }
