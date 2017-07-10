@@ -5,7 +5,11 @@
 
 #include "stdafx.h"
 
-#include "Core/WindowsApplication.h"
+#include "Core\WindowsApplication.h"
+
+#include <functional>
+
+#include "Core\GameLoop.h"
 
 namespace Kioto
 {
@@ -44,18 +48,24 @@ bool WindowsApplication::Init(HINSTANCE hInstance, int nCmdShow)
         return false;
 
     ShowWindow(m_hwnd, nCmdShow);
+
+    GameLoop::Init();
     return true;
 }
 
 int WindowsApplication::Run()
 {
-    MSG msg = {};
+    MSG msg = { 0 };
     while (msg.message != WM_QUIT)
     {
         if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
         {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
+        }
+        else
+        {
+            GameLoop::Update();
         }
     }
     Shutdown();
@@ -65,7 +75,7 @@ int WindowsApplication::Run()
 
 void WindowsApplication::Shutdown()
 {
-
+    GameLoop::Shutdown();
 }
 
 LRESULT WindowsApplication::WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -86,7 +96,7 @@ LRESULT WindowsApplication::WindowProc(HWND hwnd, UINT message, WPARAM wParam, L
         return 0;
 
     case WM_SYSKEYDOWN:
-        break;
+        return 0;
 
     case WM_PAINT:
         return 0;
@@ -96,6 +106,9 @@ LRESULT WindowsApplication::WindowProc(HWND hwnd, UINT message, WPARAM wParam, L
 
     case WM_DESTROY:
         PostQuitMessage(0);
+        return 0;
+
+    default:
         return 0;
     }
 
