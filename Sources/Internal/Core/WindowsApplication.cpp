@@ -5,27 +5,28 @@
 
 #include "stdafx.h"
 
-#include "Core\WindowsApplication.h"
+#include "Core/WindowsApplication.h"
 
 #include <functional>
-
-#include "Core\GameLoop.h"
+#include <Strsafe.h>
 
 namespace Kioto
 {
 HWND WindowsApplication::m_hwnd = nullptr;
-std::wstring WindowsApplication::m_windowCapture = L"Kioto Project";
+std::wstring WindowsApplication::m_windowCaption;
 
-bool WindowsApplication::Init(HINSTANCE hInstance, int nCmdShow)
+bool WindowsApplication::Init(HINSTANCE hInstance, int nCmdShowm, std::wstring caption)
 {
     // TODO: create mutex to check if another instance exist.
+    m_windowCaption = caption;
+
     WNDCLASSEX windowClass = {};
     windowClass.cbSize = sizeof(WNDCLASSEX);
     windowClass.style = CS_HREDRAW | CS_VREDRAW;
     windowClass.lpfnWndProc = WindowProc;
     windowClass.hInstance = hInstance;
     windowClass.hCursor = LoadCursor(nullptr, IDC_ARROW);
-    windowClass.lpszClassName = L"KiotoEngine";
+    windowClass.lpszClassName = caption.c_str();
     RegisterClassEx(&windowClass);
 
     RECT windowRect = { 0, 0, 1024, 768 };
@@ -33,7 +34,7 @@ bool WindowsApplication::Init(HINSTANCE hInstance, int nCmdShow)
         return false;
 
     m_hwnd = CreateWindow(windowClass.lpszClassName,
-        m_windowCapture.c_str(),
+        m_windowCaption.c_str(),
         m_windowStyle,
         CW_USEDEFAULT,
         CW_USEDEFAULT,
@@ -45,17 +46,19 @@ bool WindowsApplication::Init(HINSTANCE hInstance, int nCmdShow)
         nullptr);
 
     if (m_hwnd == nullptr)
+    {
+        MessageError(TEXT("Create window"));
         return false;
+    }
 
-    ShowWindow(m_hwnd, nCmdShow);
+    ShowWindow(m_hwnd, nCmdShowm);
 
-    GameLoop::Init();
     return true;
 }
 
 int WindowsApplication::Run()
 {
-    MSG msg = { 0 };
+    MSG msg = {};
     while (msg.message != WM_QUIT)
     {
         if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
@@ -65,7 +68,7 @@ int WindowsApplication::Run()
         }
         else
         {
-            GameLoop::Update();
+            KiotoCore::Update();
         }
     }
     Shutdown();
@@ -75,7 +78,7 @@ int WindowsApplication::Run()
 
 void WindowsApplication::Shutdown()
 {
-    GameLoop::Shutdown();
+    KiotoCore::Shutdown();
 }
 
 LRESULT WindowsApplication::WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -107,11 +110,35 @@ LRESULT WindowsApplication::WindowProc(HWND hwnd, UINT message, WPARAM wParam, L
     case WM_DESTROY:
         PostQuitMessage(0);
         return 0;
-
-    default:
-        return 0;
     }
-
     return DefWindowProc(hwnd, message, wParam, lParam);
+}
+
+void WindowsApplication::MessageError(LPTSTR lpszFunction)
+{
+    LPVOID messageBuffer;
+    LPVOID displayBuffer;
+    DWORD dw = GetLastError();
+
+    FormatMessage(
+        FORMAT_MESSAGE_ALLOCATE_BUFFER |
+        FORMAT_MESSAGE_FROM_SYSTEM |
+        FORMAT_MESSAGE_IGNORE_INSERTS,
+        nullptr,
+        dw,
+        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+        (LPTSTR)&messageBuffer,
+        0, nullptr);
+
+    displayBuffer = (LPVOID)LocalAlloc(LMEM_ZEROINIT,
+        (lstrlen((LPCTSTR)messageBuffer) + lstrlen((LPCTSTR)lpszFunction) + 40) * sizeof(TCHAR));
+    StringCchPrintf((LPTSTR)displayBuffer,
+        LocalSize(displayBuffer) / sizeof(TCHAR),
+        TEXT("%s failed with error %d: %s"),
+        lpszFunction, dw, messageBuffer);
+    MessageBox(nullptr, (LPCTSTR)displayBuffer, TEXT("Error"), MB_OK);
+
+    LocalFree(messageBuffer);
+    LocalFree(displayBuffer);
 }
 }

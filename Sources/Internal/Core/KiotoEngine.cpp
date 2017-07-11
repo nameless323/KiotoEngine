@@ -13,13 +13,38 @@
 namespace Kioto
 {
 
-void KiotoMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int nCmdShow)
+KIOTO_API void KiotoMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int nCmdShow, std::wstring capture)
+{
+    KiotoCore::ApplicationInfo.HInstance = hInstance;
+    KiotoCore::ApplicationInfo.PrevInstance = prevInstance;
+    KiotoCore::ApplicationInfo.CmdLine = cmdLine;
+    KiotoCore::ApplicationInfo.NCmdShow = nCmdShow;
+    KiotoCore::ApplicationInfo.WindowCapture = capture;
+
+    KiotoCore::Init();
+}
+
+namespace KiotoCore
+{
+void Init()
 {
     std::stringstream ss;
-    WindowsApplication::Init(hInstance, nCmdShow);
+    WindowsApplication::Init(ApplicationInfo.HInstance, ApplicationInfo.NCmdShow, ApplicationInfo.WindowCapture);
     WindowsApplication::Run();
-    ss << "In main in dll " << hInstance << " || " << prevInstance << " || " << cmdLine << " || " << nCmdShow << std::endl;
     OutputDebugStringA(ss.str().c_str());
 }
 
+void Update()
+{
+    int i = 0;
+    i++;
+}
+
+void Shutdown()
+{
+    int j = 0;
+    j++;
+}
+
+}
 }
