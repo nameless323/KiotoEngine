@@ -154,6 +154,7 @@ class MyClass
 {
 public:
     MyClass();
+
 private:
     int32 m_width;
     int32 m_height;
