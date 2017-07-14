@@ -139,6 +139,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Sources\Internal\Core\Core.h" />
+    <ClInclude Include="Sources\Internal\Core\CoreTypes.h" />
     <ClInclude Include="Sources\Internal\Core\KiotoEngine.h" />
     <ClInclude Include="Sources\Internal\Core\WindowsApplication.h" />
     <ClInclude Include="stdafx.h" />

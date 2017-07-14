@@ -7,8 +7,8 @@
 
 #include <sstream>
 
-#include "Core\KiotoEngine.h"
-#include "Core\WindowsApplication.h"
+#include "Core/KiotoEngine.h"
+#include "Core/WindowsApplication.h"
 
 namespace Kioto
 {
