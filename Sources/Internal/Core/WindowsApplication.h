@@ -10,29 +10,15 @@
 
 namespace Kioto
 {
-class WindowsApplication
+namespace WindowsApplication
 {
-public:
-    WindowsApplication() = delete;
-    WindowsApplication(const WindowsApplication&) = delete;
-    WindowsApplication& operator= (const WindowsApplication&) = delete;
 
-    static bool Init(HINSTANCE hInstance, int nCmdShowm, std::wstring caption);
-    static int Run();
-    static void Shutdown();
-    static void ChangeFullscreenMode(bool fullScreen);
+    bool Init(HINSTANCE hInstance, int nCmdShowm, std::wstring caption);
+    int Run();
+    void Shutdown();
+    void ChangeFullscreenMode(bool fullScreen);
 
-    static HWND GetHWND();
+    HWND GetHWND();
 
-private:
-    static void MessageError(LPTSTR lpszFunction);
-    static LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
-
-    static HWND m_hwnd;
-};
-
-inline HWND WindowsApplication::GetHWND()
-{
-    return m_hwnd;
 }
 }

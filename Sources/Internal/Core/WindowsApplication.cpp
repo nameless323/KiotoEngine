@@ -21,17 +21,22 @@ void Shutdown();
 void ChangeFullscreenMode(bool fullScreen);
 }
 
+namespace WindowsApplication
+{
+
 namespace
 {
 const UINT m_windowStyle = WS_OVERLAPPEDWINDOW;
 RECT m_windowRect = {};
 std::wstring m_windowCaption;
 bool m_isFullscreen = false;
+HWND m_hwnd;
 }
-HWND WindowsApplication::m_hwnd = nullptr;
 
+void MessageError(LPTSTR lpszFunction);
+LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
-bool WindowsApplication::Init(HINSTANCE hInstance, int nCmdShowm, std::wstring caption)
+bool Init(HINSTANCE hInstance, int nCmdShowm, std::wstring caption)
 {
     // TODO: create mutex to check if another instance exist.
     m_isFullscreen = false;
@@ -73,7 +78,7 @@ bool WindowsApplication::Init(HINSTANCE hInstance, int nCmdShowm, std::wstring c
     return true;
 }
 
-int WindowsApplication::Run()
+int Run()
 {
     MSG msg = {};
     while (msg.message != WM_QUIT)
@@ -93,12 +98,12 @@ int WindowsApplication::Run()
     return static_cast<int>(msg.wParam);
 }
 
-void WindowsApplication::Shutdown()
+void Shutdown()
 {
     KiotoCore::Shutdown();
 }
 
-void WindowsApplication::ChangeFullscreenMode(bool fullScreen)
+void ChangeFullscreenMode(bool fullScreen)
 {
     if (fullScreen == m_isFullscreen)
         return;
@@ -141,7 +146,12 @@ void WindowsApplication::ChangeFullscreenMode(bool fullScreen)
     ShowWindow(m_hwnd, SW_MAXIMIZE);
 }
 
-LRESULT WindowsApplication::WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+HWND GetHWND()
+{
+    return m_hwnd;
+}
+
+LRESULT WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {
@@ -179,7 +189,7 @@ LRESULT WindowsApplication::WindowProc(HWND hwnd, UINT message, WPARAM wParam, L
     return DefWindowProc(hwnd, message, wParam, lParam);
 }
 
-void WindowsApplication::MessageError(LPTSTR lpszFunction)
+void MessageError(LPTSTR lpszFunction)
 {
     LPVOID messageBuffer;
     LPVOID displayBuffer;
@@ -205,5 +215,7 @@ void WindowsApplication::MessageError(LPTSTR lpszFunction)
 
     LocalFree(messageBuffer);
     LocalFree(displayBuffer);
+}
+
 }
 }
