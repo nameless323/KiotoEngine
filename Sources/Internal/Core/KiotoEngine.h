@@ -35,6 +35,7 @@ struct
 void Init();
 void Update();
 void Shutdown();
+void ChangeFullscreenMode(bool fullScreen);
 
 }
 

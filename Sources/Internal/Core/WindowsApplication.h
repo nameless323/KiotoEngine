@@ -10,13 +10,6 @@
 
 namespace Kioto
 {
-namespace KiotoCore
-{
-void Init();
-void Update();
-void Shutdown();
-}
-
 class WindowsApplication
 {
 public:
@@ -27,14 +20,19 @@ public:
     static bool Init(HINSTANCE hInstance, int nCmdShowm, std::wstring caption);
     static int Run();
     static void Shutdown();
-    static void MessageError(LPTSTR lpszFunction);
+    static void ChangeFullscreenMode(bool fullScreen);
+
+    static HWND GetHWND();
 
 private:
+    static void MessageError(LPTSTR lpszFunction);
     static LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
     static HWND m_hwnd;
-    static const UINT m_windowStyle = WS_OVERLAPPEDWINDOW;
-    static RECT m_windowRect;
-    static std::wstring m_windowCaption;
 };
+
+inline HWND WindowsApplication::GetHWND()
+{
+    return m_hwnd;
+}
 }
