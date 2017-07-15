@@ -12,12 +12,29 @@
 
 namespace Kioto
 {
+
+namespace KiotoCore
+{
+void Init();
+void Update();
+void Shutdown();
+void ChangeFullscreenMode(bool fullScreen);
+}
+
+namespace
+{
+const UINT m_windowStyle = WS_OVERLAPPEDWINDOW;
+RECT m_windowRect = {};
+std::wstring m_windowCaption;
+bool m_isFullscreen = false;
+}
 HWND WindowsApplication::m_hwnd = nullptr;
-std::wstring WindowsApplication::m_windowCaption;
+
 
 bool WindowsApplication::Init(HINSTANCE hInstance, int nCmdShowm, std::wstring caption)
 {
     // TODO: create mutex to check if another instance exist.
+    m_isFullscreen = false;
     m_windowCaption = caption;
 
     WNDCLASSEX windowClass = {};
@@ -81,6 +98,49 @@ void WindowsApplication::Shutdown()
     KiotoCore::Shutdown();
 }
 
+void WindowsApplication::ChangeFullscreenMode(bool fullScreen)
+{
+    if (fullScreen == m_isFullscreen)
+        return;
+
+    m_isFullscreen = fullScreen;
+    if (!m_isFullscreen)
+    {
+        SetWindowLong(m_hwnd, GWL_STYLE, m_windowStyle);
+
+        SetWindowPos(
+            m_hwnd,
+            HWND_NOTOPMOST,
+            m_windowRect.left,
+            m_windowRect.top,
+            m_windowRect.right - m_windowRect.left,
+            m_windowRect.bottom - m_windowRect.top,
+            SWP_FRAMECHANGED | SWP_NOACTIVATE);
+
+        ShowWindow(m_hwnd, SW_NORMAL);
+        return;
+    }
+    GetWindowRect(m_hwnd, &m_windowRect);
+
+    UINT fullScreenWindowStyle = m_windowStyle & ~(WS_CAPTION | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_SYSMENU | WS_THICKFRAME);
+    SetWindowLong(m_hwnd, GWL_STYLE, fullScreenWindowStyle);;
+
+    DEVMODE devMode = {};
+    devMode.dmSize = sizeof(DEVMODE);
+    EnumDisplaySettings(nullptr, ENUM_CURRENT_SETTINGS, &devMode);
+
+    SetWindowPos(
+        m_hwnd,
+        HWND_TOPMOST,
+        devMode.dmPosition.x,
+        devMode.dmPosition.y,
+        devMode.dmPosition.x + devMode.dmPelsWidth,
+        devMode.dmPosition.y + devMode.dmPelsHeight,
+        SWP_FRAMECHANGED | SWP_NOACTIVATE);
+
+    ShowWindow(m_hwnd, SW_MAXIMIZE);
+}
+
 LRESULT WindowsApplication::WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
@@ -99,7 +159,12 @@ LRESULT WindowsApplication::WindowProc(HWND hwnd, UINT message, WPARAM wParam, L
         return 0;
 
     case WM_SYSKEYDOWN:
-        return 0;
+        if ((wParam == VK_RETURN) && (lParam & (1 << 29))) // [a_vorontsov] Handle Alt+Enter.
+        {
+            KiotoCore::ChangeFullscreenMode(!m_isFullscreen);
+        }
+        break;
+
 
     case WM_PAINT:
         return 0;

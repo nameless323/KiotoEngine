@@ -46,5 +46,10 @@ void Shutdown()
     j++;
 }
 
+void ChangeFullscreenMode(bool fullScreen)
+{
+    WindowsApplication::ChangeFullscreenMode(fullScreen);
+}
+
 }
 }
