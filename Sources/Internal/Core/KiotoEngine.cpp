@@ -9,6 +9,7 @@
 
 #include "Core/KiotoEngine.h"
 #include "Core/WindowsApplication.h"
+#include "Render/Renderer.h"
 
 namespace Kioto
 {
@@ -30,25 +31,30 @@ void Init()
 {
     std::stringstream ss;
     WindowsApplication::Init(ApplicationInfo.HInstance, ApplicationInfo.NCmdShow, ApplicationInfo.WindowCapture);
+    Renderer::Init(Renderer::eRenderApi::DirectX12);
+
     WindowsApplication::Run();
     OutputDebugStringA(ss.str().c_str());
 }
 
 void Update()
 {
-    int i = 0;
-    i++;
 }
 
 void Shutdown()
 {
-    int j = 0;
-    j++;
+    Renderer::Shutdown();
 }
 
 void ChangeFullscreenMode(bool fullScreen)
 {
     WindowsApplication::ChangeFullscreenMode(fullScreen);
+    Renderer::ChangeFullscreenMode(fullScreen);
+}
+
+void Resize(uint16 width, uint16 height, bool minimized)
+{
+    Renderer::Resize(width, height, minimized);
 }
 
 }

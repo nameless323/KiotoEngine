@@ -5,15 +5,22 @@
 
 #pragma once
 
+#include "Core/CoreTypes.h"
+
 namespace Kioto
+{
+namespace Renderer
 {
 
 enum class eRenderApi
 {
     DirectX12
-} RenderApi;
+};
 
 void Init(eRenderApi api);
 void Shutdown();
+void Resize(uint16 width, uint16 height, bool minimized);
+void ChangeFullscreenMode(bool fullScreen);
 
+}
 }

@@ -11,6 +11,7 @@
 #include <windows.h>
 
 #include "Core/Core.h"
+#include "Core/CoreTypes.h"
 
 namespace Kioto
 {
@@ -36,6 +37,7 @@ void Init();
 void Update();
 void Shutdown();
 void ChangeFullscreenMode(bool fullScreen);
+void Resize(uint16 width, uint16 height, bool minimized);
 
 }
 

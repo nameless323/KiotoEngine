@@ -33,7 +33,10 @@
     <ClInclude Include="Sources\Internal\Core\CoreTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\Internal\Render\Render.h">
+    <ClInclude Include="Sources\Internal\Render\Renderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Internal\Render\DX12\RendererDX12.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -47,7 +50,10 @@
     <ClCompile Include="Sources\Internal\Core\WindowsApplication.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\Internal\Render\Render.cpp">
+    <ClCompile Include="Sources\Internal\Render\Renderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Internal\Render\DX12\RendererDX12.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -10,6 +10,8 @@
 #include <functional>
 #include <Strsafe.h>
 
+#include "Core/CoreTypes.h"
+
 namespace Kioto
 {
 
@@ -19,6 +21,7 @@ void Init();
 void Update();
 void Shutdown();
 void ChangeFullscreenMode(bool fullScreen);
+void Resize(uint16 width, uint16 height, bool minimized);
 }
 
 namespace WindowsApplication
@@ -128,7 +131,7 @@ void ChangeFullscreenMode(bool fullScreen)
     GetWindowRect(m_hwnd, &m_windowRect);
 
     UINT fullScreenWindowStyle = m_windowStyle & ~(WS_CAPTION | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_SYSMENU | WS_THICKFRAME);
-    SetWindowLong(m_hwnd, GWL_STYLE, fullScreenWindowStyle);;
+    SetWindowLong(m_hwnd, GWL_STYLE, fullScreenWindowStyle);
 
     DEVMODE devMode = {};
     devMode.dmSize = sizeof(DEVMODE);
@@ -179,7 +182,12 @@ LRESULT WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_PAINT:
         return 0;
 
-    case WM_SIZE:
+    case WM_EXITSIZEMOVE:
+    {
+        RECT clientRect = {};
+        GetClientRect(m_hwnd, &clientRect);
+        KiotoCore::Resize(static_cast<uint16>(clientRect.right - clientRect.left), static_cast<uint16>(clientRect.bottom - clientRect.top), wParam == SIZE_MINIMIZED);
+    }
         return 0;
 
     case WM_DESTROY:
