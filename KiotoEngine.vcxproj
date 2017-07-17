@@ -23,7 +23,7 @@
     <ProjectGuid>{8C10506B-14FC-496D-B373-9C2793C91A44}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>KiotoEngine</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -138,6 +138,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Sources\External\Dx12Helpers\d3dx12.h" />
     <ClInclude Include="Sources\Internal\Core\Core.h" />
     <ClInclude Include="Sources\Internal\Core\CoreTypes.h" />
     <ClInclude Include="Sources\Internal\Core\KiotoEngine.h" />
