@@ -39,7 +39,7 @@ HWND m_hwnd;
 void MessageError(LPTSTR lpszFunction);
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
-bool Init(HINSTANCE hInstance, int nCmdShowm, std::wstring caption)
+bool Init(HINSTANCE hInstance, int32 nCmdShow, std::wstring caption)
 {
     // TODO: create mutex to check if another instance exist.
     m_isFullscreen = false;
@@ -76,12 +76,12 @@ bool Init(HINSTANCE hInstance, int nCmdShowm, std::wstring caption)
         return false;
     }
 
-    ShowWindow(m_hwnd, nCmdShowm);
+    ShowWindow(m_hwnd, nCmdShow);
 
     return true;
 }
 
-int Run()
+int64 Run()
 {
     MSG msg = {};
     while (msg.message != WM_QUIT)
@@ -98,7 +98,7 @@ int Run()
     }
     Shutdown();
 
-    return static_cast<int>(msg.wParam);
+    return static_cast<int64>(msg.wParam);
 }
 
 void Shutdown()

@@ -8,13 +8,15 @@
 #include <string>
 #include <windows.h>
 
+#include "Core/CoreTypes.h"
+
 namespace Kioto
 {
 namespace WindowsApplication
 {
 
-    bool Init(HINSTANCE hInstance, int nCmdShowm, std::wstring caption);
-    int Run();
+    bool Init(HINSTANCE hInstance, int32 nCmdShow, std::wstring caption);
+    int64 Run();
     void Shutdown();
     void ChangeFullscreenMode(bool fullScreen);
 
