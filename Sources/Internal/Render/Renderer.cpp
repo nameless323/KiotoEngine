@@ -7,14 +7,17 @@
 
 #include "Render/Renderer.h"
 
-namespace Kioto
+#include "Render/DX12/RendererDX12.h"
+
+namespace Kioto::Renderer
 {
-namespace Renderer
-{
+
+RendererDX12 renderer; // [a_vorontsov] Not too cross-api for now.
 
 void Init(eRenderApi api)
 {
-
+    if (api == eRenderApi::DirectX12)
+        renderer.Init();
 }
 
 void Shutdown()
@@ -32,5 +35,4 @@ void ChangeFullscreenMode(bool fullScreen)
 
 }
 
-}
 }
