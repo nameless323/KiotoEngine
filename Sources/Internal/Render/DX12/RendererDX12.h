@@ -24,7 +24,9 @@ public:
     void Shutdown();
 
 private:
+    void GetHardwareAdapter(IDXGIFactory4* factory, IDXGIAdapter1** adapter);
 
+    bool m_isTearingSupported = false;
 };
 
 class ComException : public std::exception // [a_vorontsov] https://github.com/Microsoft/DirectXTK/wiki/ThrowIfFailed
@@ -42,7 +44,7 @@ public:
     }
 
 private:
-    HRESULT m_result;
+    HRESULT m_result = -1;
 };
 
 inline void ThrowIfFailed(HRESULT hr)
