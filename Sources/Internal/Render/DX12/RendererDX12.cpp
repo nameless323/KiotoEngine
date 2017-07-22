@@ -42,48 +42,41 @@ void RendererDX12::Shutdown()
 
 void RendererDX12::GetHardwareAdapter(IDXGIFactory4* factory, IDXGIAdapter1** adapter)
 {
-    std::vector<std::pair<DXGI_ADAPTER_DESC1, UINT>> adapters;
     *adapter = nullptr;
     ComPtr<IDXGIAdapter1> currAdapter;
-    for (UINT adapterIndex = 0; factory->EnumAdapters1(adapterIndex, &currAdapter) != DXGI_ERROR_NOT_FOUND; ++adapterIndex)
-    {
-        DXGI_ADAPTER_DESC1 desc;
-        currAdapter->GetDesc1(&desc);
+    UINT deviceIndex = -1;
+    UINT bestVendorIndex = -1;
 
-        if (desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)
-        {
-            continue;
-        }
-
-        if (SUCCEEDED(D3D12CreateDevice(currAdapter.Get(), D3D_FEATURE_LEVEL_11_0, _uuidof(ID3D12Device), nullptr)))
-        {
-            adapters.emplace_back(std::move(desc), adapterIndex);
-        }
-    }
     static const std::array<UINT, 3> preferredVendors = // [a_vorontsov] http://pcidatabase.com/vendors.php?sort=id
     {
         0x10DE, // NVidia
         0x1002, // AMD
         0x8086 // Intel
     };
-    UINT deviceIndex = -1;
-    UINT bestVendorIndex = -1;
-    for (auto& desc : adapters)
+
+    for (UINT index = 0; factory->EnumAdapters1(index, &currAdapter) != DXGI_ERROR_NOT_FOUND; ++index)
     {
-        for (UINT i = 0; i < preferredVendors.size(); ++i)
+        DXGI_ADAPTER_DESC1 desc;
+        currAdapter->GetDesc1(&desc);
+
+        if (desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)
+            continue;
+
+        if (SUCCEEDED(D3D12CreateDevice(currAdapter.Get(), D3D_FEATURE_LEVEL_11_0, _uuidof(ID3D12Device), nullptr)))
         {
-            if (desc.first.VendorId == preferredVendors[i] && i < bestVendorIndex)
+            for (UINT i = 0; i < preferredVendors.size(); ++i)
             {
-                bestVendorIndex = i;
-                deviceIndex = desc.second;
-                break;
+                if (desc.VendorId == preferredVendors[i] && i < bestVendorIndex)
+                {
+                    bestVendorIndex = i;
+                    deviceIndex = index;
+                    break;
+                }
             }
         }
     }
     if (deviceIndex != -1)
-    {
         factory->EnumAdapters1(deviceIndex, adapter);
-    }
 }
 
 }
