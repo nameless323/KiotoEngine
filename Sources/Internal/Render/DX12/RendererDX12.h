@@ -19,6 +19,7 @@ public:
     RendererDX12(RendererDX12&&) = delete;
     RendererDX12& operator= (const RendererDX12&) = delete;
     RendererDX12& operator= (const RendererDX12&&) = delete;
+    ~RendererDX12() = default;
 
     void Init();
     void Shutdown();
@@ -27,6 +28,8 @@ private:
     void GetHardwareAdapter(IDXGIFactory4* factory, IDXGIAdapter1** adapter);
 
     bool m_isTearingSupported = false;
+    Microsoft::WRL::ComPtr<ID3D12Device> m_device;
+    Microsoft::WRL::ComPtr<ID3D12CommandQueue> m_commandQueue;
 };
 
 class ComException : public std::exception // [a_vorontsov] https://github.com/Microsoft/DirectXTK/wiki/ThrowIfFailed
@@ -54,5 +57,18 @@ inline void ThrowIfFailed(HRESULT hr)
         throw ComException(hr);
     }
 }
+
+#if defined(_DEBUG)
+inline void SetName(ID3D12Object* object, LPCWSTR name)
+{
+    object->SetName(name);
+}
+#else
+inline void SetName(ID3D12Object*, LPCWSTR)
+{
+}
+#endif
+
+#define NAME_D3D12_OBJECT(x) SetName(x.Get(), L#x)
 
 }
