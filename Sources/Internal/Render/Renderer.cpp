@@ -14,10 +14,10 @@ namespace Kioto::Renderer
 
 RendererDX12 renderer; // [a_vorontsov] Not too cross-api for now.
 
-void Init(eRenderApi api)
+void Init(eRenderApi api, uint16 width, uint16 height)
 {
     if (api == eRenderApi::DirectX12)
-        renderer.Init();
+        renderer.Init(width, height);
 }
 
 void Shutdown()

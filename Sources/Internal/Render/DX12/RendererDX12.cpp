@@ -8,6 +8,8 @@
 #include <array>
 #include <vector>
 
+#include "Core/CoreTypes.h"
+#include "Core/WindowsApplication.h"
 #include "Render/DX12/RendererDX12.h"
 
 namespace Kioto::Renderer
@@ -15,7 +17,7 @@ namespace Kioto::Renderer
 
 using Microsoft::WRL::ComPtr;
 
-void RendererDX12::Init()
+void RendererDX12::Init(uint16 width, uint16 height)
 {
     UINT dxgiFactoryFlags = 0;
 #ifdef _DEBUG
@@ -29,7 +31,13 @@ void RendererDX12::Init()
     }
 #endif
     ComPtr<IDXGIFactory4> factory;
-    CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&factory));
+    ThrowIfFailed(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&factory)));
+
+    BOOL allowTearing = FALSE;
+    ComPtr<IDXGIFactory5> factory5;
+    ThrowIfFailed(factory.As(&factory5));
+    HRESULT hr = factory5->CheckFeatureSupport(DXGI_FEATURE_PRESENT_ALLOW_TEARING, &allowTearing, sizeof(allowTearing));
+    m_isTearingSupported = SUCCEEDED(hr) && allowTearing;
 
     ComPtr<IDXGIAdapter1> hardwareAdapter;
     GetHardwareAdapter(factory.Get(), &hardwareAdapter);
@@ -42,6 +50,20 @@ void RendererDX12::Init()
 
     ThrowIfFailed(m_device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&m_commandQueue)));
     NAME_D3D12_OBJECT(m_commandQueue);
+
+    DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
+    swapChainDesc.BufferCount = FrameCount;
+    swapChainDesc.Width = width;
+    swapChainDesc.Height = height;
+    swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+    swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+    swapChainDesc.SampleDesc.Count = 1;
+
+    swapChainDesc.Flags = m_isTearingSupported ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
+
+    ComPtr<IDXGISwapChain1> swapChain;
+    ThrowIfFailed(factory->CreateSwapChainForHwnd(m_commandQueue.Get(), WindowsApplication::GetHWND(), &swapChainDesc, nullptr, nullptr, &swapChain));
 }
 
 void RendererDX12::Shutdown()

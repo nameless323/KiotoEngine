@@ -17,7 +17,7 @@ enum class eRenderApi
     DirectX12
 };
 
-void Init(eRenderApi api);
+void Init(eRenderApi api, uint16 width, uint16 height);
 void Shutdown();
 void Resize(uint16 width, uint16 height, bool minimized);
 void ChangeFullscreenMode(bool fullScreen);

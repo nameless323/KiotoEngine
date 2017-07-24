@@ -21,11 +21,13 @@ public:
     RendererDX12& operator= (const RendererDX12&&) = delete;
     ~RendererDX12() = default;
 
-    void Init();
+    void Init(uint16 width, uint16 height);
     void Shutdown();
 
 private:
     void GetHardwareAdapter(IDXGIFactory4* factory, IDXGIAdapter1** adapter);
+
+    static constexpr UINT FrameCount = 3;
 
     bool m_isTearingSupported = false;
     Microsoft::WRL::ComPtr<ID3D12Device> m_device;
