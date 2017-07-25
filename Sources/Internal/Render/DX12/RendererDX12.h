@@ -30,8 +30,15 @@ private:
     static constexpr UINT FrameCount = 3;
 
     bool m_isTearingSupported = false;
+    UINT m_frameIndex = -1;
+    UINT m_cbvSrvUavDescriptorSize = -1;
+    UINT m_rtvDescriptorSize = -1;
+    UINT m_dsvDescriptorSize = -1;
+    UINT m_samplerDescriptorSize = -1;
     Microsoft::WRL::ComPtr<ID3D12Device> m_device;
     Microsoft::WRL::ComPtr<ID3D12CommandQueue> m_commandQueue;
+    Microsoft::WRL::ComPtr<IDXGISwapChain3> m_swapChain;
+    Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_rtvHeap;
 };
 
 class ComException : public std::exception // [a_vorontsov] https://github.com/Microsoft/DirectXTK/wiki/ThrowIfFailed

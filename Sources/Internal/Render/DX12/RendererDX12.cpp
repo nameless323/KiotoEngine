@@ -63,7 +63,25 @@ void RendererDX12::Init(uint16 width, uint16 height)
     swapChainDesc.Flags = m_isTearingSupported ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
 
     ComPtr<IDXGISwapChain1> swapChain;
-    ThrowIfFailed(factory->CreateSwapChainForHwnd(m_commandQueue.Get(), WindowsApplication::GetHWND(), &swapChainDesc, nullptr, nullptr, &swapChain));
+    ThrowIfFailed(factory->CreateSwapChainForHwnd(m_commandQueue.Get(), WindowsApplication::GetHWND(), &swapChainDesc, nullptr, nullptr, &swapChain)); // [a_vorontsov] Fullscreen desc?
+
+    if (m_isTearingSupported)
+        factory->MakeWindowAssociation(WindowsApplication::GetHWND(), DXGI_MWA_NO_ALT_ENTER);
+    ThrowIfFailed(swapChain.As(&m_swapChain));
+
+    m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
+
+    D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
+    rtvHeapDesc.NumDescriptors = FrameCount;
+    rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+    rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+
+    m_device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&m_rtvHeap));
+
+    m_cbvSrvUavDescriptorSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+    m_rtvDescriptorSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+    m_dsvDescriptorSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+    m_samplerDescriptorSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
 }
 
 void RendererDX12::Shutdown()
