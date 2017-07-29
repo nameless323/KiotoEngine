@@ -35,4 +35,9 @@ void ChangeFullscreenMode(bool fullScreen)
 
 }
 
+void Update(float32 dt) // [a_vorontsov] TODO: set frame command buffers here.
+{
+
+}
+
 }

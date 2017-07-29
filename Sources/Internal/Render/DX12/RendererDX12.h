@@ -26,6 +26,7 @@ public:
 
 private:
     void GetHardwareAdapter(IDXGIFactory4* factory, IDXGIAdapter1** adapter);
+    void WaitForGPU();
 
     static constexpr UINT FrameCount = 3;
 
@@ -39,6 +40,8 @@ private:
     Microsoft::WRL::ComPtr<ID3D12CommandQueue> m_commandQueue;
     Microsoft::WRL::ComPtr<IDXGISwapChain3> m_swapChain;
     Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_rtvHeap;
+    Microsoft::WRL::ComPtr<ID3D12Fence> m_fence;
+    UINT64 m_currFenceValue = 0;
 };
 
 class ComException : public std::exception // [a_vorontsov] https://github.com/Microsoft/DirectXTK/wiki/ThrowIfFailed

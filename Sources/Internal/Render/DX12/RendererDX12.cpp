@@ -127,4 +127,23 @@ void RendererDX12::GetHardwareAdapter(IDXGIFactory4* factory, IDXGIAdapter1** ad
         factory->EnumAdapters1(deviceIndex, adapter);
 }
 
+void RendererDX12::WaitForGPU()
+{
+    m_currFenceValue++;
+    ThrowIfFailed(m_commandQueue->Signal(m_fence.Get(), m_currFenceValue));
+
+    if (m_fence->GetCompletedValue() < m_currFenceValue)
+    {
+        HANDLE fenceEventHandle = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+        if (fenceEventHandle == nullptr)
+        {
+            ThrowIfFailed(HRESULT_FROM_WIN32(GetLastError()));
+        }
+        ThrowIfFailed(m_fence->SetEventOnCompletion(m_currFenceValue, fenceEventHandle));
+
+        WaitForSingleObjectEx(fenceEventHandle, INFINITE, false);
+        CloseHandle(fenceEventHandle);
+    }
+}
+
 }
