@@ -19,6 +19,7 @@
 #include <D3Dcompiler.h>
 #include "Sources/External/Dx12Helpers/d3dx12.h"
 #include <DirectXMath.h>
+#include <DirectXColors.h>
 
 
 // TODO: reference additional headers your program requires here

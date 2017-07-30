@@ -40,6 +40,7 @@ void Init()
 void Update()
 {
     Renderer::Update(0.016666666f);
+    Renderer::Present();
 }
 
 void Shutdown()
