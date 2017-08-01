@@ -262,8 +262,8 @@ void RendererDX12::Present()
 
     m_commandList->RSSetScissorRects(1, &m_scissor);
     m_commandList->RSSetViewports(1, &m_viewport);
-    m_commandList->ClearRenderTargetView(GetCurrentBackBufferView(), DirectX::Colors::Aqua, 1, nullptr);
-    m_commandList->ClearDepthStencilView(GetDepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 1, nullptr);
+    m_commandList->ClearRenderTargetView(GetCurrentBackBufferView(), DirectX::Colors::Aqua, 0, nullptr);
+    m_commandList->ClearDepthStencilView(GetDepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
     auto toPresent = CD3DX12_RESOURCE_BARRIER::Transition(GetCurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
     m_commandList->ResourceBarrier(1, &toPresent);
