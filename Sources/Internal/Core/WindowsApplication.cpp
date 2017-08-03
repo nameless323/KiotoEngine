@@ -93,7 +93,7 @@ int64 Run()
         }
         else
         {
-            KiotoCore::Update();
+            KiotoCore::Update(); // [a_vorontsov] TODO: If app minimized go to sleep.
         }
     }
     Shutdown();
@@ -176,10 +176,6 @@ LRESULT WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             KiotoCore::ChangeFullscreenMode(!m_isFullscreen);
         }
-        break;
-
-
-    case WM_PAINT:
         return 0;
 
     case WM_EXITSIZEMOVE:
@@ -193,6 +189,9 @@ LRESULT WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_DESTROY:
         PostQuitMessage(0);
         return 0;
+
+    default:
+        return DefWindowProc(hwnd, message, wParam, lParam);
     }
     return DefWindowProc(hwnd, message, wParam, lParam);
 }
