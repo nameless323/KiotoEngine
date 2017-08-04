@@ -20,6 +20,9 @@
 #include "Sources/External/Dx12Helpers/d3dx12.h"
 #include <DirectXMath.h>
 #include <DirectXColors.h>
+#ifdef _DEBUG
+#include <DXGIDebug.h>
+#endif
 
 
 // TODO: reference additional headers your program requires here
