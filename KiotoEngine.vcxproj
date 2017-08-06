@@ -141,6 +141,7 @@
   <ItemGroup>
     <ClInclude Include="Sources\External\Dx12Helpers\d3dx12.h" />
     <ClInclude Include="Sources\Internal\Core\Core.h" />
+    <ClInclude Include="Sources\Internal\Core\CoreHelpers.h" />
     <ClInclude Include="Sources\Internal\Core\CoreTypes.h" />
     <ClInclude Include="Sources\Internal\Core\KiotoEngine.h" />
     <ClInclude Include="Sources\Internal\Core\WindowsApplication.h" />

@@ -23,6 +23,8 @@
 #ifdef _DEBUG
 #include <DXGIDebug.h>
 #endif
+#include "Core/CoreTypes.h"
+#include "Core/CoreHelpers.h"
 
 
 // TODO: reference additional headers your program requires here

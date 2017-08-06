@@ -7,6 +7,7 @@
 
 #include "Render/Renderer.h"
 
+#include "Core/CoreHelpers.h"
 #include "Render/DX12/RendererDX12.h"
 
 namespace Kioto::Renderer
@@ -24,11 +25,7 @@ void Init(eRenderApi api, uint16 width, uint16 height)
 void Shutdown()
 {
     renderer->Shutdown();
-    if (renderer != nullptr)
-    {
-        delete renderer;
-        renderer = nullptr;
-    }
+    SafeDelete(&renderer);
 }
 
 void Resize(uint16 width, uint16 height, bool minimized)
