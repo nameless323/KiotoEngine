@@ -33,6 +33,9 @@ public:
 private:
     void GetHardwareAdapter(IDXGIFactory4* factory, IDXGIAdapter1** adapter);
     void WaitForGPU();
+    void LogAdapters();
+    void LogAdapterOutputs(IDXGIAdapter* adapter);
+    void LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format);
 
     static constexpr UINT FrameCount = 3;
 
@@ -46,6 +49,7 @@ private:
     DXGI_FORMAT m_backBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
     DXGI_FORMAT m_depthStencilFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
+    Microsoft::WRL::ComPtr<IDXGIFactory4> m_factory;
     Microsoft::WRL::ComPtr<ID3D12Device> m_device;
     Microsoft::WRL::ComPtr<ID3D12CommandQueue> m_commandQueue;
     Microsoft::WRL::ComPtr<IDXGISwapChain3> m_swapChain;
@@ -99,5 +103,9 @@ inline void SetName(ID3D12Object*, LPCWSTR)
 #endif
 
 #define NAME_D3D12_OBJECT(x) SetName(x.Get(), L#x)
+
+#ifndef ReleaseComPtr
+#define ReleaseComPtr(x) { if (x) { x->Release(); x = nullptr; }}
+#endif
 
 }

@@ -6,6 +6,7 @@
 #include "stdafx.h"
 
 #include <array>
+#include <string>
 #include <vector>
 
 #include "Core/CoreTypes.h"
@@ -30,17 +31,16 @@ void RendererDX12::Init(uint16 width, uint16 height)
         }
     }
 #endif
-    ComPtr<IDXGIFactory4> factory;
-    ThrowIfFailed(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&factory)));
+    ThrowIfFailed(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&m_factory)));
 
     BOOL allowTearing = FALSE;
     ComPtr<IDXGIFactory5> factory5;
-    ThrowIfFailed(factory.As(&factory5));
+    ThrowIfFailed(m_factory.As(&factory5));
     HRESULT hr = factory5->CheckFeatureSupport(DXGI_FEATURE_PRESENT_ALLOW_TEARING, &allowTearing, sizeof(allowTearing));
     m_isTearingSupported = SUCCEEDED(hr) && allowTearing;
 
     ComPtr<IDXGIAdapter1> hardwareAdapter;
-    GetHardwareAdapter(factory.Get(), &hardwareAdapter);
+    GetHardwareAdapter(m_factory.Get(), &hardwareAdapter);
 
     ThrowIfFailed(D3D12CreateDevice(hardwareAdapter.Get(), D3D_FEATURE_LEVEL_12_1, IID_PPV_ARGS(&m_device)));
 
@@ -63,10 +63,10 @@ void RendererDX12::Init(uint16 width, uint16 height)
     swapChainDesc.Flags = m_isTearingSupported ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
 
     ComPtr<IDXGISwapChain1> swapChain;
-    ThrowIfFailed(factory->CreateSwapChainForHwnd(m_commandQueue.Get(), WindowsApplication::GetHWND(), &swapChainDesc, nullptr, nullptr, &swapChain)); // [a_vorontsov] Fullscreen desc?
+    ThrowIfFailed(m_factory->CreateSwapChainForHwnd(m_commandQueue.Get(), WindowsApplication::GetHWND(), &swapChainDesc, nullptr, nullptr, &swapChain)); // [a_vorontsov] Fullscreen desc?
 
     if (m_isTearingSupported)
-        factory->MakeWindowAssociation(WindowsApplication::GetHWND(), DXGI_MWA_NO_ALT_ENTER);
+        m_factory->MakeWindowAssociation(WindowsApplication::GetHWND(), DXGI_MWA_NO_ALT_ENTER);
     ThrowIfFailed(swapChain.As(&m_swapChain));
 
     m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
@@ -100,6 +100,20 @@ void RendererDX12::Init(uint16 width, uint16 height)
     m_samplerDescriptorSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
 
     Resize(width, height);
+
+#ifdef _DEBUG
+    LogAdapters();
+
+
+    DXGI_ADAPTER_DESC adapterDesc;
+    hardwareAdapter->GetDesc(&adapterDesc);
+
+    std::wstring text = L"*****\n!!SELECTED ADAPTER: ";
+    text += adapterDesc.Description;
+    text += L"\n";
+    text += L"****\n";
+    OutputDebugString(text.c_str());
+#endif
 }
 
 void RendererDX12::Shutdown()
@@ -282,6 +296,71 @@ void RendererDX12::Present()
     ThrowIfFailed(m_swapChain->Present(0, 0));
 
     m_frameIndex = (m_frameIndex + 1) % FrameCount;
+}
+
+void RendererDX12::LogAdapters()
+{
+    UINT i = 0;
+    IDXGIAdapter* adapter = nullptr;
+    std::vector<IDXGIAdapter*> adapterList;
+    while (m_factory->EnumAdapters(i, &adapter) != DXGI_ERROR_NOT_FOUND)
+    {
+        DXGI_ADAPTER_DESC adapterDesc;
+        adapter->GetDesc(&adapterDesc);
+
+        std::wstring text = L"--ADAPTER: ";
+        text += adapterDesc.Description;
+        text += L"\n";
+        OutputDebugString(text.c_str());
+        adapterList.push_back(adapter);
+        ++i;
+    }
+    for (auto& adapter : adapterList)
+    {
+        LogAdapterOutputs(adapter);
+        ReleaseComPtr(adapter);
+    }
+}
+
+void RendererDX12::LogAdapterOutputs(IDXGIAdapter* adapter)
+{
+    UINT i = 0;
+    IDXGIOutput* output = nullptr;
+    while (adapter->EnumOutputs(i, &output) != DXGI_ERROR_NOT_FOUND)
+    {
+        DXGI_OUTPUT_DESC desc;
+        output->GetDesc(&desc);
+
+        std::wstring text = L"----OUTPUT: ";
+        text += desc.DeviceName;
+        text += L"\n";
+        OutputDebugString(text.c_str());
+        LogOutputDisplayModes(output, m_backBufferFormat);
+        ReleaseComPtr(output);
+        ++i;
+    }
+}
+
+void RendererDX12::LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format)
+{
+    UINT count = 0;
+    UINT flags = 0;
+
+    output->GetDisplayModeList(format, flags, &count, nullptr);
+    std::vector<DXGI_MODE_DESC> modeList(count);
+    output->GetDisplayModeList(format, flags, &count, &modeList[0]);
+    for (auto& x : modeList)
+    {
+        UINT n = x.RefreshRate.Numerator;
+        UINT d = x.RefreshRate.Denominator;
+        std::wstring text =
+            L"Width = " + std::to_wstring(x.Width) + L"  " +
+            L"Height = " + std::to_wstring(x.Height) + L"  " +
+            L"Refresh = " + std::to_wstring(n) + L"/" + std::to_wstring(d) +
+            L"\n";
+
+        OutputDebugString(text.c_str());
+    }
 }
 
 }
