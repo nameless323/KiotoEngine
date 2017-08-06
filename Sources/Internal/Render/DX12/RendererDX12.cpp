@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "Core/CoreTypes.h"
 #include "Core/WindowsApplication.h"
 #include "Render/DX12/RendererDX12.h"
 
