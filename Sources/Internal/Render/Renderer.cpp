@@ -12,8 +12,10 @@
 
 namespace Kioto::Renderer
 {
-
+namespace
+{
 RendererDX12* renderer = nullptr; // [a_vorontsov] Not too cross-api for now.
+}
 
 void Init(eRenderApi api, uint16 width, uint16 height)
 {
@@ -33,9 +35,9 @@ void Resize(uint16 width, uint16 height, bool minimized)
     renderer->Resize(width, height);
 }
 
-void ChangeFullscreenMode(bool fullScreen)
+void ChangeFullScreenMode(bool fullScreen)
 {
-
+    renderer->ChangeFullScreenMode(fullScreen);
 }
 
 void Update(float32 dt) // [a_vorontsov] TODO: set frame command buffers here.

@@ -51,7 +51,7 @@ void Shutdown()
 void ChangeFullscreenMode(bool fullScreen)
 {
     WindowsApplication::ChangeFullscreenMode(fullScreen);
-    Renderer::ChangeFullscreenMode(fullScreen);
+    Renderer::ChangeFullScreenMode(fullScreen);
 }
 
 void Resize(uint16 width, uint16 height, bool minimized)

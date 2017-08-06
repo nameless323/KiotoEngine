@@ -120,6 +120,10 @@ void RendererDX12::Shutdown()
     if (m_device != nullptr)
         WaitForGPU();
 
+    if (!m_isTearingSupported)
+    {
+        ThrowIfFailed(m_swapChain->SetFullscreenState(false, nullptr));
+    }
 #ifdef _DEBUG
     ComPtr<IDXGIDebug1> dxgiDebug;
     if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&dxgiDebug))))
@@ -187,6 +191,11 @@ void RendererDX12::WaitForGPU()
 
 void RendererDX12::Resize(uint16 width, uint16 heigth)
 {
+    if (m_width == width && m_height == heigth)
+        return;
+    m_width = width;
+    m_height = heigth;
+
     WaitForGPU();
 
     ThrowIfFailed(m_commandList->Reset(m_commandAllocator.Get(), nullptr));
@@ -198,6 +207,11 @@ void RendererDX12::Resize(uint16 width, uint16 heigth)
     if (m_isTearingSupported)
         flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
     ThrowIfFailed(m_swapChain->ResizeBuffers(FrameCount, width, heigth, m_backBufferFormat, flags));
+
+    BOOL fullscreenState;
+    ThrowIfFailed(m_swapChain->GetFullscreenState(&fullscreenState, nullptr));
+    m_isSwapChainChainInFullScreen = fullscreenState;
+
     m_frameIndex = 0;
 
     CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
@@ -292,7 +306,9 @@ void RendererDX12::Present()
     m_commandList->Close();
     ID3D12CommandList* cmdLists[] = { m_commandList.Get() };
     m_commandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
-    ThrowIfFailed(m_swapChain->Present(0, 0));
+
+    UINT presentFlags = (m_isTearingSupported && !m_isSwapChainChainInFullScreen) ? DXGI_PRESENT_ALLOW_TEARING : 0;
+    ThrowIfFailed(m_swapChain->Present(0, presentFlags));
 
     m_frameIndex = (m_frameIndex + 1) % FrameCount;
 }
@@ -360,6 +376,14 @@ void RendererDX12::LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format
 
         OutputDebugString(text.c_str());
     }
+}
+
+void RendererDX12::ChangeFullScreenMode(bool fullScreen)
+{
+    if (fullScreen == m_isFullScreen)
+        return;
+    m_isFullScreen = fullScreen;
+    Resize(m_width, m_height);
 }
 
 }
