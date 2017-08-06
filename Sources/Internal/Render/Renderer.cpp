@@ -12,10 +12,11 @@
 namespace Kioto::Renderer
 {
 
-RendererDX12* renderer = new RendererDX12(); // [a_vorontsov] Not too cross-api for now.
+RendererDX12* renderer = nullptr; // [a_vorontsov] Not too cross-api for now.
 
 void Init(eRenderApi api, uint16 width, uint16 height)
 {
+    renderer = new RendererDX12();
     if (api == eRenderApi::DirectX12)
         renderer->Init(width, height);
 }
@@ -23,6 +24,11 @@ void Init(eRenderApi api, uint16 width, uint16 height)
 void Shutdown()
 {
     renderer->Shutdown();
+    if (renderer != nullptr)
+    {
+        delete renderer;
+        renderer = nullptr;
+    }
 }
 
 void Resize(uint16 width, uint16 height, bool minimized)
