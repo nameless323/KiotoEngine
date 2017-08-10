@@ -8,13 +8,15 @@
 #include <chrono>
 #include <vector>
 
+#include "Core/CoreTypes.h"
+
 namespace Kioto
 {
 using SteadyClock = std::chrono::steady_clock;
 using TimePoint = std::chrono::time_point<SteadyClock>;
 
 template <typename T>
-using Duration = std::chrono::duration<double, T>;
+using Duration = std::chrono::duration<float64, T>;
 
 class PerformanceTimer
 {
@@ -39,12 +41,12 @@ public:
     ///
     /// Get milliseconds between timer start and stop (Timer should be stopped).
     ///
-    double GetDeltaMs();
+    float64 GetDeltaMs();
     ///
     /// Get all established lap delta times from timer start in order you set the laps.
     /// Conversion from duration to double will be performed for each element.
     ///
-    std::vector<double> GetLaps();
+    std::vector<float64> GetLaps();
     ///
     /// Reset timer data (delta milliseconds from last start/stop and reset all laps.
     ///
@@ -54,7 +56,7 @@ private:
     TimePoint m_start;
     TimePoint m_end;
     std::vector<TimePoint> m_timestamps;
-    double m_delta = 0;
+    float64 m_delta = 0;
 };
 
 inline PerformanceTimer::PerformanceTimer()
@@ -84,9 +86,9 @@ inline double PerformanceTimer::GetDeltaMs()
     return m_delta;
 }
 
-inline std::vector<double> PerformanceTimer::GetLaps()
+inline std::vector<float64> PerformanceTimer::GetLaps()
 {
-    std::vector<double> res;
+    std::vector<float64> res;
     for (const auto& e : m_timestamps)
         res.emplace_back(Duration<std::milli>(e - m_start).count());
     return res;
