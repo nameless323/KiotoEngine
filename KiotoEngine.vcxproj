@@ -144,6 +144,7 @@
     <ClInclude Include="Sources\Internal\Core\CoreHelpers.h" />
     <ClInclude Include="Sources\Internal\Core\CoreTypes.h" />
     <ClInclude Include="Sources\Internal\Core\KiotoEngine.h" />
+    <ClInclude Include="Sources\Internal\Core\Timer\PerformanceTimer.h" />
     <ClInclude Include="Sources\Internal\Core\WindowsApplication.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\DXHelpers.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\RendererDX12.h" />
