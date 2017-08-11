@@ -7,6 +7,7 @@
 
 #include <sstream>
 
+#include "Core/FPSCounter.h"
 #include "Core/KiotoEngine.h"
 #include "Core/Timer/GlobalTimer.h"
 #include "Core/WindowsApplication.h"
@@ -39,6 +40,7 @@ void Init()
 void Update()
 {
     GlobalTimer::Tick();
+    FPSCounter::Tick(GlobalTimer::GetDeltaTime());
     Renderer::Update(GlobalTimer::GetDeltaTime());
     Renderer::Present();
 }

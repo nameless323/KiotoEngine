@@ -144,6 +144,7 @@
     <ClInclude Include="Sources\Internal\Core\CoreHelpers.h" />
     <ClInclude Include="Sources\Internal\Core\CoreTypes.h" />
     <ClInclude Include="Sources\Internal\Core\DataStructures\RingArray.h" />
+    <ClInclude Include="Sources\Internal\Core\FPSCounter.h" />
     <ClInclude Include="Sources\Internal\Core\KiotoEngine.h" />
     <ClInclude Include="Sources\Internal\Core\Timer\GlobalTimer.h" />
     <ClInclude Include="Sources\Internal\Core\Timer\PerformanceTimer.h" />
@@ -155,6 +156,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Sources\Internal\Core\FPSCounter.cpp" />
     <ClCompile Include="Sources\Internal\Core\KiotoEngine.cpp" />
     <ClCompile Include="Sources\Internal\Core\Timer\GlobalTimer.cpp" />
     <ClCompile Include="Sources\Internal\Core\WindowsApplication.cpp" />
