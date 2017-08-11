@@ -27,7 +27,7 @@ void Init(eRenderApi api, uint16 width, uint16 height)
 void Shutdown()
 {
     renderer->Shutdown();
-    SafeDelete(&renderer);
+    SafeDelete(renderer);
 }
 
 void Resize(uint16 width, uint16 height, bool minimized)

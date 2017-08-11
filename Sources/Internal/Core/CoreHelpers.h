@@ -8,12 +8,12 @@
 namespace Kioto
 {
 template<typename T>
-inline void SafeDelete(T** ptr)
+inline void SafeDelete(T*& ptr)
 {
-    if (*ptr != nullptr)
+    if (ptr != nullptr)
     {
-        delete *ptr;
-        *ptr = nullptr;
+        delete ptr;
+        ptr = nullptr;
     }
 }
 }
