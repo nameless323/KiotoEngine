@@ -135,6 +135,14 @@ public:
 };
 ```
 
+### Variables in namespace only.
+Camel notation beginning with an upper-case letter.
+```cpp
+namespace
+{
+    float MyFloat;
+}```
+
 #### Static constants, defines.
 All capitals with underscores.
 
