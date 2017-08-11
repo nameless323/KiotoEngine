@@ -75,7 +75,26 @@ All of the project's header files should be listed as descendants of the project
 Within each section the includes should be ordered alphabetically. Note that older code might not conform to this rule and should be fixed when convenient.
 
 #### Commented code
-Remove commented code, we have git for history. 
+Remove commented code, we have git for history.
+
+#### If-else curly braces
+Omit the curly braces if both If and Else branches have only one statement. In other cases use braces.
+
+```cpp
+if (cond)
+    DoSmth();
+else
+    DoSmthElse();
+
+if (cond)
+{
+    DoSmth();
+    DoSmth2();
+}
+else
+{
+    DoSmthElse();
+}```
 
 ## Naming
 Names are written in English, class members should start with m_ prefix.
