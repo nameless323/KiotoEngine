@@ -7,6 +7,8 @@
 
 #include "Core/Timer/GlobalTimer.h"
 
+#include "Core/DataStructures/RingArray.h"
+
 namespace Kioto::GlobalTimer
 {
 using Clock = std::chrono::high_resolution_clock;
@@ -16,50 +18,54 @@ using Milliseconds = std::chrono::milliseconds;
 
 namespace
 {
-TimePoint prevTime;
-TimePoint currTime;
-float32 dt = 0;
-float32 unscaledDt = 0;
-float32 timeScale = 1.0f;
-float64 timeFromStart = 0;
-Clock m_time;
+TimePoint PrevTime;
+TimePoint CurrTime;
+float32 Dt = 0;
+float32 UnscaledDt = 0;
+float32 TimeScale = 1.0f;
+float64 TimeFromStart = 0;
+Clock Time;
+
+constexpr uint32 SmoothValuesCount = 30;
+RingArray<float32, SmoothValuesCount> DtValues;
 }
 
 void Init()
 {
-    prevTime = m_time.now();
-    currTime = m_time.now();
+    PrevTime = Time.now();
+    CurrTime = Time.now();
 }
 
 void Tick()
 {
-    currTime = m_time.now();
-    Duration delta = currTime - prevTime;
-    prevTime = currTime;
+    CurrTime = Time.now();
+    Duration delta = CurrTime - PrevTime;
+    PrevTime = CurrTime;
 
     Milliseconds dtMs = std::chrono::duration_cast<Milliseconds>(delta);
-    dt = dtMs.count() * 0.001f;
-    timeFromStart += dt;
+    Dt = dtMs.count() * 0.001f;
+    TimeFromStart += Dt;
+    DtValues.Add(Dt);
 }
 
 float32 GetDeltaTime()
 {
-    return dt * timeScale;
+    return Dt * TimeScale;
 }
 
 float64 GlobalTimer::GetTimeFromStart()
 {
-    return timeFromStart;
+    return TimeFromStart;
 }
 
 float32 GlobalTimer::GetUnscaledDt()
 {
-    return dt;
+    return Dt;
 }
 
 float32 GlobalTimer::GetTimeScale()
 {
-    return timeScale;
+    return TimeScale;
 }
 
 void GlobalTimer::SetTimeScale(float32 scale)
@@ -70,7 +76,7 @@ void GlobalTimer::SetTimeScale(float32 scale)
         // [a_vorontsov] Some logging or assert here.
     }
 #endif
-    timeScale = scale;
+    TimeScale = scale;
 }
 
 SystemTime GlobalTimer::GetSystemTime()
@@ -83,4 +89,10 @@ SystemTime GlobalTimer::GetSystemTime()
     return {}; // [a_vorontsov] TODO
 #endif
 }
+
+Kioto::float32 GetSmoothDt()
+{
+    return DtValues.GetAverage();
+}
+
 }

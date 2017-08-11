@@ -58,4 +58,8 @@ void SetTimeScale(float32 scale);
 /// Get system time.
 ///
 SystemTime GetSystemTime();
+///
+/// Get smooth dt averaged by 30 frames.
+///
+float32 GetSmoothDt();
 }

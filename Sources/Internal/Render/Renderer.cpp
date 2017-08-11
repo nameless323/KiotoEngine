@@ -14,30 +14,30 @@ namespace Kioto::Renderer
 {
 namespace
 {
-RendererDX12* renderer = nullptr; // [a_vorontsov] Not too cross-api for now.
+RendererDX12* GameRenderer = nullptr; // [a_vorontsov] Not too cross-api for now.
 }
 
 void Init(eRenderApi api, uint16 width, uint16 height)
 {
-    renderer = new RendererDX12();
+    GameRenderer = new RendererDX12();
     if (api == eRenderApi::DirectX12)
-        renderer->Init(width, height);
+        GameRenderer->Init(width, height);
 }
 
 void Shutdown()
 {
-    renderer->Shutdown();
-    SafeDelete(renderer);
+    GameRenderer->Shutdown();
+    SafeDelete(GameRenderer);
 }
 
 void Resize(uint16 width, uint16 height, bool minimized)
 {
-    renderer->Resize(width, height);
+    GameRenderer->Resize(width, height);
 }
 
 void ChangeFullScreenMode(bool fullScreen)
 {
-    renderer->ChangeFullScreenMode(fullScreen);
+    GameRenderer->ChangeFullScreenMode(fullScreen);
 }
 
 void Update(float32 dt) // [a_vorontsov] TODO: set frame command buffers here.
@@ -47,7 +47,7 @@ void Update(float32 dt) // [a_vorontsov] TODO: set frame command buffers here.
 
 void Present()
 {
-    renderer->Present();
+    GameRenderer->Present();
 }
 
 }

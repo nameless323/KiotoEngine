@@ -5,11 +5,15 @@
 
 #pragma once
 
+#include <algorithm>
 #include <array>
+#include <functional>
 #include <numeric>
 
 #include "Core/CoreTypes.h"
 
+#pragma warning(push)
+#pragma warning(disable : 4521)
 namespace Kioto
 {
 template <typename T, size_t ContainerSize>
@@ -55,6 +59,8 @@ public:
     template <typename U, typename = std::enable_if_t<std::is_convertible_v<T, std::remove_reference_t<U>>> >
     void Reset(U&& value)
     {
+        if (value == {})
+            m_valsAdded = 0;
         m_buffer.fill(std::forward<const U>(value));
         RecalculateSum();
     }
@@ -66,11 +72,15 @@ public:
         m_buffer[m_i] = value;
         m_sum += value;
         m_i = ++m_i % m_buffer.size();
+        ++m_valsAdded;
     }
 
     T GetAverage()
     {
-        return static_cast<T>(m_sum * (1.0f / static_cast<float>(m_buffer.size())));
+        if (m_buffer.empty() || m_valsAdded == 0)
+            return {};
+        float32 valsToCount = static_cast<float32>(min(m_buffer.size(), m_valsAdded));
+        return static_cast<T>(m_sum * (1.0f / valsToCount)); // [a_vorontsov] 1.0f / valsToCount for cases when for T type div operation with scalar is undefined, but mul is well defined.
     }
 
     T GetMax(std::function<bool(const T&, const T&)> comparer = std::less<T>())
@@ -87,6 +97,7 @@ public:
     {
         std::swap(rhs.m_sum, lhs.m_sum);
         std::swap(rhs.m_i, lhs.m_i);
+        std::swap(rhs.m_valsAdded, lhs.m_valsAdded);
         std::swap(rhs.m_buffer, lhs.m_buffer);
     }
 
@@ -94,7 +105,8 @@ private:
     inline void RecalculateSum();
 
     std::array<T, ContainerSize> m_buffer = {};
-    int32 m_i = 0;
+    uint32 m_i = 0;
+    uint32 m_valsAdded = 0;
     T m_sum = {};
 };
 
@@ -109,3 +121,4 @@ void RingArray<T, ContainerSize>::RecalculateSum()
     }
 }
 }
+#pragma warning(pop)

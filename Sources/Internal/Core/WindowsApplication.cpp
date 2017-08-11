@@ -29,11 +29,11 @@ namespace WindowsApplication
 
 namespace
 {
-const UINT m_windowStyle = WS_OVERLAPPEDWINDOW;
-RECT m_windowRect = {};
-std::wstring m_windowCaption;
-bool m_isFullscreen = false;
-HWND m_hwnd;
+const UINT WindowStyle = WS_OVERLAPPEDWINDOW;
+RECT WindowRect = {};
+std::wstring WindowCaption;
+bool IsFullscreen = false;
+HWND Hwnd;
 }
 
 void MessageError(LPTSTR lpszFunction);
@@ -42,8 +42,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
 bool Init(HINSTANCE hInstance, int32 nCmdShow, std::wstring caption)
 {
     // TODO: create mutex to check if another instance exist.
-    m_isFullscreen = false;
-    m_windowCaption = caption;
+    IsFullscreen = false;
+    WindowCaption = caption;
 
     WNDCLASSEX windowClass = {};
     windowClass.cbSize = sizeof(WNDCLASSEX);
@@ -58,9 +58,9 @@ bool Init(HINSTANCE hInstance, int32 nCmdShow, std::wstring caption)
     if (!AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE))
         return false;
 
-    m_hwnd = CreateWindow(windowClass.lpszClassName,
-        m_windowCaption.c_str(),
-        m_windowStyle,
+    Hwnd = CreateWindow(windowClass.lpszClassName,
+        WindowCaption.c_str(),
+        WindowStyle,
         CW_USEDEFAULT,
         CW_USEDEFAULT,
         windowRect.right - windowRect.left,
@@ -70,13 +70,13 @@ bool Init(HINSTANCE hInstance, int32 nCmdShow, std::wstring caption)
         hInstance,
         nullptr);
 
-    if (m_hwnd == nullptr)
+    if (Hwnd == nullptr)
     {
         MessageError(TEXT("Create window"));
         return false;
     }
 
-    ShowWindow(m_hwnd, nCmdShow);
+    ShowWindow(Hwnd, nCmdShow);
 
     return true;
 }
@@ -108,37 +108,37 @@ void Shutdown()
 
 void ChangeFullscreenMode(bool fullScreen)
 {
-    if (fullScreen == m_isFullscreen)
+    if (fullScreen == IsFullscreen)
         return;
 
-    m_isFullscreen = fullScreen;
-    if (!m_isFullscreen)
+    IsFullscreen = fullScreen;
+    if (!IsFullscreen)
     {
-        SetWindowLong(m_hwnd, GWL_STYLE, m_windowStyle);
+        SetWindowLong(Hwnd, GWL_STYLE, WindowStyle);
 
         SetWindowPos(
-            m_hwnd,
+            Hwnd,
             HWND_NOTOPMOST,
-            m_windowRect.left,
-            m_windowRect.top,
-            m_windowRect.right - m_windowRect.left,
-            m_windowRect.bottom - m_windowRect.top,
+            WindowRect.left,
+            WindowRect.top,
+            WindowRect.right - WindowRect.left,
+            WindowRect.bottom - WindowRect.top,
             SWP_FRAMECHANGED | SWP_NOACTIVATE);
 
-        ShowWindow(m_hwnd, SW_NORMAL);
+        ShowWindow(Hwnd, SW_NORMAL);
         return;
     }
-    GetWindowRect(m_hwnd, &m_windowRect);
+    GetWindowRect(Hwnd, &WindowRect);
 
-    UINT fullScreenWindowStyle = m_windowStyle & ~(WS_CAPTION | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_SYSMENU | WS_THICKFRAME);
-    SetWindowLong(m_hwnd, GWL_STYLE, fullScreenWindowStyle);
+    UINT fullScreenWindowStyle = WindowStyle & ~(WS_CAPTION | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_SYSMENU | WS_THICKFRAME);
+    SetWindowLong(Hwnd, GWL_STYLE, fullScreenWindowStyle);
 
     DEVMODE devMode = {};
     devMode.dmSize = sizeof(DEVMODE);
     EnumDisplaySettings(nullptr, ENUM_CURRENT_SETTINGS, &devMode);
 
     SetWindowPos(
-        m_hwnd,
+        Hwnd,
         HWND_TOPMOST,
         devMode.dmPosition.x,
         devMode.dmPosition.y,
@@ -146,12 +146,12 @@ void ChangeFullscreenMode(bool fullScreen)
         devMode.dmPosition.y + devMode.dmPelsHeight,
         SWP_FRAMECHANGED | SWP_NOACTIVATE);
 
-    ShowWindow(m_hwnd, SW_MAXIMIZE);
+    ShowWindow(Hwnd, SW_MAXIMIZE);
 }
 
 HWND GetHWND()
 {
-    return m_hwnd;
+    return Hwnd;
 }
 
 LRESULT WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -174,14 +174,14 @@ LRESULT WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_SYSKEYDOWN:
         if ((wParam == VK_RETURN) && (lParam & (1 << 29))) // [a_vorontsov] Handle Alt+Enter.
         {
-            KiotoCore::ChangeFullscreenMode(!m_isFullscreen);
+            KiotoCore::ChangeFullscreenMode(!IsFullscreen);
         }
         return 0;
 
     case WM_EXITSIZEMOVE:
     {
         RECT clientRect = {};
-        GetClientRect(m_hwnd, &clientRect);
+        GetClientRect(Hwnd, &clientRect);
         KiotoCore::Resize(static_cast<uint16>(clientRect.right - clientRect.left), static_cast<uint16>(clientRect.bottom - clientRect.top), wParam == SIZE_MINIMIZED);
     }
         return 0;
