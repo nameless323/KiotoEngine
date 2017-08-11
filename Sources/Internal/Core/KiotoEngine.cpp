@@ -32,7 +32,6 @@ void Init()
     std::stringstream ss;
     WindowsApplication::Init(ApplicationInfo.HInstance, ApplicationInfo.NCmdShow, ApplicationInfo.WindowCapture);
     Renderer::Init(Renderer::eRenderApi::DirectX12, 1024, 768);
-
     WindowsApplication::Run();
     OutputDebugStringA(ss.str().c_str());
 }
