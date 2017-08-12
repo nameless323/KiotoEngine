@@ -15,5 +15,17 @@ inline void SafeDelete(T*& ptr)
         delete ptr;
         ptr = nullptr;
     }
+    // [a_vorontsov] Anton Smetanin suggest to add some logs here in future.
+}
+
+template<typename T>
+inline void SafeDeleteArray(T*& ptr)
+{
+    if (ptr != nullptr)
+    {
+        delete[] ptr;
+        ptr = nullptr;
+    }
+    // [a_vorontsov] Anton Smetanin suggest to add some logs here in future
 }
 }
