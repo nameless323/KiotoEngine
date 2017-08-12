@@ -149,6 +149,7 @@
     <ClInclude Include="Sources\Internal\Core\Timer\GlobalTimer.h" />
     <ClInclude Include="Sources\Internal\Core\Timer\PerformanceTimer.h" />
     <ClInclude Include="Sources\Internal\Core\WindowsApplication.h" />
+    <ClInclude Include="Sources\Internal\Math\MathHelpers.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\DXHelpers.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\RendererDX12.h" />
     <ClInclude Include="Sources\Internal\Render\Renderer.h" />
