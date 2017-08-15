@@ -66,6 +66,12 @@ private:
     Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_commandAllocator; // [a_vorontsov] For each render thread?
     Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_commandList;
 
+    Microsoft::WRL::ComPtr<ID3D12RootSignature> m_rootSignature;
+
+    Microsoft::WRL::ComPtr<ID3D12PipelineState> m_fallbackPSO;
+    Microsoft::WRL::ComPtr<ID3DBlob> m_vsFallbackByteCode;
+    Microsoft::WRL::ComPtr<ID3DBlob> m_psFallbackByteCode;
+
     D3D12_VIEWPORT m_viewport = {};
     D3D12_RECT m_scissor = {};
 };
