@@ -143,7 +143,11 @@
     <ClInclude Include="Sources\Internal\Core\Core.h" />
     <ClInclude Include="Sources\Internal\Core\CoreHelpers.h" />
     <ClInclude Include="Sources\Internal\Core\CoreTypes.h" />
+    <ClInclude Include="Sources\Internal\Core\DataStructures\RingArray.h" />
+    <ClInclude Include="Sources\Internal\Core\FPSCounter.h" />
     <ClInclude Include="Sources\Internal\Core\KiotoEngine.h" />
+    <ClInclude Include="Sources\Internal\Core\Timer\GlobalTimer.h" />
+    <ClInclude Include="Sources\Internal\Core\Timer\PerformanceTimer.h" />
     <ClInclude Include="Sources\Internal\Core\WindowsApplication.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\DXHelpers.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\RendererDX12.h" />
@@ -152,7 +156,9 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Sources\Internal\Core\FPSCounter.cpp" />
     <ClCompile Include="Sources\Internal\Core\KiotoEngine.cpp" />
+    <ClCompile Include="Sources\Internal\Core\Timer\GlobalTimer.cpp" />
     <ClCompile Include="Sources\Internal\Core\WindowsApplication.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\RendererDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\Renderer.cpp" />

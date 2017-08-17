@@ -7,7 +7,9 @@
 
 #include <sstream>
 
+#include "Core/FPSCounter.h"
 #include "Core/KiotoEngine.h"
+#include "Core/Timer/GlobalTimer.h"
 #include "Core/WindowsApplication.h"
 #include "Render/Renderer.h"
 
@@ -29,16 +31,17 @@ namespace KiotoCore
 {
 void Init()
 {
-    std::stringstream ss;
+    GlobalTimer::Init();
     WindowsApplication::Init(ApplicationInfo.HInstance, ApplicationInfo.NCmdShow, ApplicationInfo.WindowCapture);
     Renderer::Init(Renderer::eRenderApi::DirectX12, 1024, 768);
     WindowsApplication::Run();
-    OutputDebugStringA(ss.str().c_str());
 }
 
 void Update()
 {
-    Renderer::Update(0.016666666f);
+    GlobalTimer::Tick();
+    FPSCounter::Tick(GlobalTimer::GetDeltaTime());
+    Renderer::Update(GlobalTimer::GetDeltaTime());
     Renderer::Present();
 }
 
