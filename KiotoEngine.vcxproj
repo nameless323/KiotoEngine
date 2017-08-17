@@ -107,6 +107,13 @@
       <SubSystem>Windows</SubSystem>
       <AdditionalDependencies>d3dcompiler.lib;D3D12.lib;dxgi.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>RD /S /Q $(TargetDir)Assets
+(robocopy $(ProjectDir)Assets $(TargetDir)Assets /S /E) ^&amp; IF %ERRORLEVEL% LEQ 1 exit 0</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>Copy assets...</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
