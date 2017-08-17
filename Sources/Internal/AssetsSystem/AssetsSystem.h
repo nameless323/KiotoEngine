@@ -7,7 +7,7 @@
 
 #include <string>
 
-namespace Kioto::AssetSystem
+namespace Kioto::AssetsSystem
 {
 std::wstring GetAssetFullPath(const std::wstring& assetName);
 }
