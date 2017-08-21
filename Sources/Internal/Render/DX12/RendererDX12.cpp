@@ -11,11 +11,38 @@
 
 #include "Core/WindowsApplication.h"
 #include "Render/DX12/RendererDX12.h"
+#include "AssetsSystem/AssetsSystem.h"
 
 namespace Kioto::Renderer
 {
 
 using Microsoft::WRL::ComPtr;
+using std::wstring;
+
+void RendererDX12::LoadPipeline()
+{
+#ifdef _DEBUG
+    uint64 shaderFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
+#else
+    uint64 shaderFlags = 0;
+#endif
+    wstring shaderPath = AssetsSystem::GetAssetFullPath(L"Shaders\\Fallback.hlsl");
+    ComPtr<ID3DBlob> shaderError;
+    HRESULT hr = D3DCompileFromFile(shaderPath.c_str(), nullptr, nullptr, "vs", "vs_5_1", shaderFlags, 0, &m_vsFallbackByteCode, &shaderError);
+    if (shaderError != nullptr)
+        OutputDebugStringA(reinterpret_cast<char*>(shaderError->GetBufferPointer()));
+    ThrowIfFailed(hr);
+
+    hr = D3DCompileFromFile(shaderPath.c_str(), nullptr, nullptr, "ps", "ps_5_1", shaderFlags, 0, &m_psFallbackByteCode, &shaderError);
+    if (shaderError != nullptr)
+        OutputDebugStringA(reinterpret_cast<char*>(shaderError->GetBufferPointer()));
+    ThrowIfFailed(hr);
+
+    D3D12_INPUT_ELEMENT_DESC inputElementDesc[] =
+    {
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+    };
+}
 
 void RendererDX12::Init(uint16 width, uint16 height)
 {
@@ -113,6 +140,8 @@ void RendererDX12::Init(uint16 width, uint16 height)
     text += L"****\n";
     OutputDebugString(text.c_str());
 #endif
+
+    LoadPipeline();
 }
 
 void RendererDX12::Shutdown()
