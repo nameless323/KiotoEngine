@@ -22,9 +22,9 @@ using std::wstring;
 void RendererDX12::LoadPipeline()
 {
 #ifdef _DEBUG
-    uint64 shaderFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
+    UINT shaderFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 #else
-    uint64 shaderFlags = 0;
+    UINT shaderFlags = 0;
 #endif
     wstring shaderPath = AssetsSystem::GetAssetFullPath(L"Shaders\\Fallback.hlsl");
     ComPtr<ID3DBlob> shaderError;
@@ -42,6 +42,46 @@ void RendererDX12::LoadPipeline()
     {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
     };
+
+    D3D12_FEATURE_DATA_ROOT_SIGNATURE signatureData = {};
+    signatureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
+
+    if (FAILED(m_device->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &signatureData, sizeof(signatureData))))
+    {
+        signatureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
+    }
+
+    CD3DX12_ROOT_PARAMETER1 rootParam[1];
+    rootParam[0].InitAsConstants(1, 0);
+    D3D12_ROOT_SIGNATURE_FLAGS flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+    CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
+    rootSignatureDesc.Init_1_1(_countof(rootParam), rootParam, 0, nullptr, flags);
+
+
+    ComPtr<ID3DBlob> signature;
+    ComPtr<ID3DBlob> error;
+    ThrowIfFailed(D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, signatureData.HighestVersion, &signature, &error));
+    ThrowIfFailed(m_device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature)));
+    NAME_D3D12_OBJECT(m_rootSignature);
+
+
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};
+
+    desc.InputLayout = { inputElementDesc, _countof(inputElementDesc) };
+    desc.pRootSignature = m_rootSignature.Get();
+    desc.VS = CD3DX12_SHADER_BYTECODE(m_vsFallbackByteCode.Get());
+    desc.PS = CD3DX12_SHADER_BYTECODE(m_psFallbackByteCode.Get());
+    desc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+    desc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+    desc.DepthStencilState.DepthEnable = FALSE;
+    desc.DepthStencilState.StencilEnable = FALSE;
+    desc.SampleMask = UINT_MAX;
+    desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+    desc.NumRenderTargets = 1;
+    desc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+    desc.SampleDesc.Count = 1;
+
+    ThrowIfFailed(m_device->CreateGraphicsPipelineState(&desc, IID_PPV_ARGS(&m_fallbackPSO)));
 }
 
 void RendererDX12::Init(uint16 width, uint16 height)

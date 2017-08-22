@@ -18,8 +18,8 @@ wstring AssetsPath;
 
 void GetAssetsPath()
 {
-    AssetsPath = L"\\Assets\\";
-#if 0 // [a_vorontsov] The code below works fine. Just for debugging reasons throw it from build and use relative path.
+    //AssetsPath = L"\\Assets\\";
+#if 1 // [a_vorontsov] The code below works fine. Just for debugging reasons throw it from build and use relative path.
     static constexpr uint32 pathSize = 512;
     WCHAR path[pathSize];
     DWORD size = GetModuleFileName(nullptr, path, pathSize);
