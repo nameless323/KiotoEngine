@@ -90,26 +90,47 @@ void RendererDX12::LoadPipeline()
         { 0.0f, 1.0f, 0.1f },
         { 1.0f, -1.0f, 0.1f }
     };
-    CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_UPLOAD);
+    ComPtr<ID3D12Resource> uploadBuffer;
+
+    CD3DX12_HEAP_PROPERTIES uploadHeapProps(D3D12_HEAP_TYPE_UPLOAD);
     CD3DX12_RESOURCE_DESC vertBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(sizeof(verts));
     ThrowIfFailed(m_device->CreateCommittedResource(
-        &heapProps,
+        &uploadHeapProps,
         D3D12_HEAP_FLAG_NONE,
         &vertBufferDesc,
         D3D12_RESOURCE_STATE_GENERIC_READ,
         nullptr,
-        IID_PPV_ARGS(&m_vertexBuffer)));
+        IID_PPV_ARGS(&uploadBuffer)));
 
     UINT8* mappedBuffer = nullptr;
     CD3DX12_RANGE range(0, 0);
-    m_vertexBuffer->Map(0, &range, reinterpret_cast<void**>(&mappedBuffer));
+    uploadBuffer->Map(0, &range, reinterpret_cast<void**>(&mappedBuffer));
     memcpy(mappedBuffer, verts, sizeof(verts));
-    m_vertexBuffer->Unmap(0, nullptr);
+    uploadBuffer->Unmap(0, nullptr);
+
+    CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_DEFAULT);
+    ThrowIfFailed(m_device->CreateCommittedResource(
+        &heapProps,
+        D3D12_HEAP_FLAG_NONE,
+        &vertBufferDesc,
+        D3D12_RESOURCE_STATE_COPY_DEST,
+        nullptr,
+        IID_PPV_ARGS(&m_vertexBuffer)));
+
+    m_commandList->Reset(m_commandAllocator.Get(), nullptr);
+    m_commandList->CopyResource(m_vertexBuffer.Get(), uploadBuffer.Get());
+    CD3DX12_RESOURCE_BARRIER toVertBuffer = CD3DX12_RESOURCE_BARRIER::Transition(m_vertexBuffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+    m_commandList->ResourceBarrier(1, &toVertBuffer);
+    m_commandList->Close();
 
     m_vertexBufferView.BufferLocation = m_vertexBuffer->GetGPUVirtualAddress();
     m_vertexBufferView.StrideInBytes = sizeof(DirectX::XMFLOAT3);
     m_vertexBufferView.SizeInBytes = sizeof(verts);
 
+    ID3D12CommandList* cmdLists[] = { m_commandList.Get() };
+    m_commandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
+
+    WaitForGPU();
 }
 
 void RendererDX12::Init(uint16 width, uint16 height)
@@ -193,6 +214,7 @@ void RendererDX12::Init(uint16 width, uint16 height)
     m_dsvDescriptorSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
     m_samplerDescriptorSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
 
+    LoadPipeline();
     Resize(width, height);
 
 #ifdef _DEBUG
@@ -208,8 +230,6 @@ void RendererDX12::Init(uint16 width, uint16 height)
     text += L"****\n";
     OutputDebugString(text.c_str());
 #endif
-
-    LoadPipeline();
 }
 
 void RendererDX12::Shutdown()
@@ -385,7 +405,7 @@ void RendererDX12::Present()
     WaitForGPU();
 
     m_commandAllocator->Reset();
-    m_commandList->Reset(m_commandAllocator.Get(), nullptr);
+    m_commandList->Reset(m_commandAllocator.Get(), m_fallbackPSO.Get());
 
     auto toRt = CD3DX12_RESOURCE_BARRIER::Transition(GetCurrentBackBuffer(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
     m_commandList->ResourceBarrier(1, &toRt);
@@ -399,7 +419,6 @@ void RendererDX12::Present()
     m_commandList->OMSetRenderTargets(1, &GetCurrentBackBufferView(), false, &GetDepthStencilView());
 
     m_commandList->SetGraphicsRootSignature(m_rootSignature.Get());
-    m_commandList->SetPipelineState(m_fallbackPSO.Get());
 
     m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     m_commandList->IASetVertexBuffers(0, 1, &m_vertexBufferView);
