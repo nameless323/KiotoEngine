@@ -11,11 +11,127 @@
 
 #include "Core/WindowsApplication.h"
 #include "Render/DX12/RendererDX12.h"
+#include "AssetsSystem/AssetsSystem.h"
 
 namespace Kioto::Renderer
 {
 
 using Microsoft::WRL::ComPtr;
+using std::wstring;
+using DirectX::XMFLOAT3;
+
+void RendererDX12::LoadPipeline()
+{
+#ifdef _DEBUG
+    UINT shaderFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
+#else
+    UINT shaderFlags = 0;
+#endif
+    wstring shaderPath = AssetsSystem::GetAssetFullPath(L"Shaders\\Fallback.hlsl");
+    ComPtr<ID3DBlob> shaderError;
+    HRESULT hr = D3DCompileFromFile(shaderPath.c_str(), nullptr, nullptr, "vs", "vs_5_1", shaderFlags, 0, &m_vsFallbackByteCode, &shaderError);
+    if (shaderError != nullptr)
+        OutputDebugStringA(reinterpret_cast<char*>(shaderError->GetBufferPointer()));
+    ThrowIfFailed(hr);
+
+    hr = D3DCompileFromFile(shaderPath.c_str(), nullptr, nullptr, "ps", "ps_5_1", shaderFlags, 0, &m_psFallbackByteCode, &shaderError);
+    if (shaderError != nullptr)
+        OutputDebugStringA(reinterpret_cast<char*>(shaderError->GetBufferPointer()));
+    ThrowIfFailed(hr);
+
+    D3D12_INPUT_ELEMENT_DESC inputElementDesc[] =
+    {
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+    };
+
+    D3D12_FEATURE_DATA_ROOT_SIGNATURE signatureData = {};
+    signatureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
+
+    if (FAILED(m_device->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &signatureData, sizeof(signatureData))))
+    {
+        signatureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
+    }
+
+    D3D12_ROOT_SIGNATURE_FLAGS flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+    CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
+    rootSignatureDesc.Init_1_1(0, nullptr, 0, nullptr, flags);
+
+    ComPtr<ID3DBlob> signature;
+    ComPtr<ID3DBlob> rootSignatureCreationError;
+    ThrowIfFailed(D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, signatureData.HighestVersion, &signature, &rootSignatureCreationError));
+    hr = m_device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature));
+    if (hr != S_OK)
+        OutputDebugStringA(reinterpret_cast<char*>(rootSignatureCreationError->GetBufferPointer()));
+    ThrowIfFailed(hr);
+
+    NAME_D3D12_OBJECT(m_rootSignature);
+
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};
+
+    desc.InputLayout = { inputElementDesc, _countof(inputElementDesc) };
+    desc.pRootSignature = m_rootSignature.Get();
+    desc.VS = CD3DX12_SHADER_BYTECODE(m_vsFallbackByteCode.Get());
+    desc.PS = CD3DX12_SHADER_BYTECODE(m_psFallbackByteCode.Get());
+    desc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+    desc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+    desc.DepthStencilState.DepthEnable = FALSE;
+    desc.DepthStencilState.StencilEnable = FALSE;
+    desc.SampleMask = UINT_MAX;
+    desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+    desc.NumRenderTargets = 1;
+    desc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+    desc.SampleDesc.Count = 1;
+
+    ThrowIfFailed(m_device->CreateGraphicsPipelineState(&desc, IID_PPV_ARGS(&m_fallbackPSO)));
+
+    DirectX::XMFLOAT3 verts[] =
+    {
+        { -1.0f, -1.0f, 0.1f },
+        { 0.0f, 1.0f, 0.1f },
+        { 1.0f, -1.0f, 0.1f }
+    };
+    ComPtr<ID3D12Resource> uploadBuffer;
+
+    CD3DX12_HEAP_PROPERTIES uploadHeapProps(D3D12_HEAP_TYPE_UPLOAD);
+    CD3DX12_RESOURCE_DESC vertBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(sizeof(verts));
+    ThrowIfFailed(m_device->CreateCommittedResource(
+        &uploadHeapProps,
+        D3D12_HEAP_FLAG_NONE,
+        &vertBufferDesc,
+        D3D12_RESOURCE_STATE_GENERIC_READ,
+        nullptr,
+        IID_PPV_ARGS(&uploadBuffer)));
+
+    UINT8* mappedBuffer = nullptr;
+    CD3DX12_RANGE range(0, 0);
+    uploadBuffer->Map(0, &range, reinterpret_cast<void**>(&mappedBuffer));
+    memcpy(mappedBuffer, verts, sizeof(verts));
+    uploadBuffer->Unmap(0, nullptr);
+
+    CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_DEFAULT);
+    ThrowIfFailed(m_device->CreateCommittedResource(
+        &heapProps,
+        D3D12_HEAP_FLAG_NONE,
+        &vertBufferDesc,
+        D3D12_RESOURCE_STATE_COPY_DEST,
+        nullptr,
+        IID_PPV_ARGS(&m_vertexBuffer)));
+
+    m_commandList->Reset(m_commandAllocator.Get(), nullptr);
+    m_commandList->CopyResource(m_vertexBuffer.Get(), uploadBuffer.Get());
+    CD3DX12_RESOURCE_BARRIER toVertBuffer = CD3DX12_RESOURCE_BARRIER::Transition(m_vertexBuffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+    m_commandList->ResourceBarrier(1, &toVertBuffer);
+    m_commandList->Close();
+
+    m_vertexBufferView.BufferLocation = m_vertexBuffer->GetGPUVirtualAddress();
+    m_vertexBufferView.StrideInBytes = sizeof(DirectX::XMFLOAT3);
+    m_vertexBufferView.SizeInBytes = sizeof(verts);
+
+    ID3D12CommandList* cmdLists[] = { m_commandList.Get() };
+    m_commandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
+
+    WaitForGPU();
+}
 
 void RendererDX12::Init(uint16 width, uint16 height)
 {
@@ -98,6 +214,7 @@ void RendererDX12::Init(uint16 width, uint16 height)
     m_dsvDescriptorSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
     m_samplerDescriptorSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
 
+    LoadPipeline();
     Resize(width, height);
 
 #ifdef _DEBUG
@@ -288,7 +405,7 @@ void RendererDX12::Present()
     WaitForGPU();
 
     m_commandAllocator->Reset();
-    m_commandList->Reset(m_commandAllocator.Get(), nullptr);
+    m_commandList->Reset(m_commandAllocator.Get(), m_fallbackPSO.Get());
 
     auto toRt = CD3DX12_RESOURCE_BARRIER::Transition(GetCurrentBackBuffer(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
     m_commandList->ResourceBarrier(1, &toRt);
@@ -298,11 +415,17 @@ void RendererDX12::Present()
     m_commandList->ClearRenderTargetView(GetCurrentBackBufferView(), DirectX::Colors::Aqua, 0, nullptr);
     m_commandList->ClearDepthStencilView(GetDepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
-    auto toPresent = CD3DX12_RESOURCE_BARRIER::Transition(GetCurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
-    m_commandList->ResourceBarrier(1, &toPresent);
 
     m_commandList->OMSetRenderTargets(1, &GetCurrentBackBufferView(), false, &GetDepthStencilView());
 
+    m_commandList->SetGraphicsRootSignature(m_rootSignature.Get());
+
+    m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    m_commandList->IASetVertexBuffers(0, 1, &m_vertexBufferView);
+    m_commandList->DrawInstanced(3, 1, 0, 0);
+
+    auto toPresent = CD3DX12_RESOURCE_BARRIER::Transition(GetCurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+    m_commandList->ResourceBarrier(1, &toPresent);
     m_commandList->Close();
     ID3D12CommandList* cmdLists[] = { m_commandList.Get() };
     m_commandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);

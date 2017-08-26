@@ -38,6 +38,8 @@ private:
     void LogAdapterOutputs(IDXGIAdapter* adapter);
     void LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format);
 
+    void LoadPipeline();
+
     static constexpr UINT FrameCount = 3;
 
     bool m_isTearingSupported = false; // [a_vorontsov] TODO: Properly handle when tearing is not supported.
@@ -65,6 +67,14 @@ private:
     Microsoft::WRL::ComPtr<ID3D12Resource> m_depthStencilBuffer;
     Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_commandAllocator; // [a_vorontsov] For each render thread?
     Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_commandList;
+    Microsoft::WRL::ComPtr<ID3D12Resource> m_vertexBuffer;
+    D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView{};
+
+    Microsoft::WRL::ComPtr<ID3D12RootSignature> m_rootSignature;
+
+    Microsoft::WRL::ComPtr<ID3D12PipelineState> m_fallbackPSO;
+    Microsoft::WRL::ComPtr<ID3DBlob> m_vsFallbackByteCode;
+    Microsoft::WRL::ComPtr<ID3DBlob> m_psFallbackByteCode;
 
     D3D12_VIEWPORT m_viewport = {};
     D3D12_RECT m_scissor = {};

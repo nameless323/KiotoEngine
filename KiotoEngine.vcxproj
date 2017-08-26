@@ -107,6 +107,13 @@
       <SubSystem>Windows</SubSystem>
       <AdditionalDependencies>d3dcompiler.lib;D3D12.lib;dxgi.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>RD /S /Q $(TargetDir)Assets
+(robocopy $(ProjectDir)Assets $(TargetDir)Assets /S /E) ^&amp; IF %ERRORLEVEL% LEQ 1 exit 0</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>Copy assets...</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -149,6 +156,8 @@
     <ClInclude Include="Sources\Internal\Core\Timer\GlobalTimer.h" />
     <ClInclude Include="Sources\Internal\Core\Timer\PerformanceTimer.h" />
     <ClInclude Include="Sources\Internal\Core\WindowsApplication.h" />
+    <ClInclude Include="Sources\Internal\AssetsSystem\AssetsSystem.h" />
+    <ClInclude Include="Sources\Internal\Math\MathHelpers.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\DXHelpers.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\RendererDX12.h" />
     <ClInclude Include="Sources\Internal\Render\Renderer.h" />
@@ -160,6 +169,7 @@
     <ClCompile Include="Sources\Internal\Core\KiotoEngine.cpp" />
     <ClCompile Include="Sources\Internal\Core\Timer\GlobalTimer.cpp" />
     <ClCompile Include="Sources\Internal\Core\WindowsApplication.cpp" />
+    <ClCompile Include="Sources\Internal\AssetsSystem\AssetsSystem.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\RendererDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\Renderer.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -168,6 +178,11 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Assets\Shaders\Fallback.hlsl">
+      <FileType>Document</FileType>
+    </Text>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
