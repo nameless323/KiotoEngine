@@ -9,9 +9,11 @@
 #include <string>
 #include <vector>
 
+#include "AssetsSystem/AssetsSystem.h"
+#include "Core/FPSCounter.h"
+#include "Core/Timer/GlobalTimer.h"
 #include "Core/WindowsApplication.h"
 #include "Render/DX12/RendererDX12.h"
-#include "AssetsSystem/AssetsSystem.h"
 
 namespace Kioto::Renderer
 {
@@ -54,7 +56,9 @@ void RendererDX12::LoadPipeline()
 
     D3D12_ROOT_SIGNATURE_FLAGS flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
     CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
-    rootSignatureDesc.Init_1_1(0, nullptr, 0, nullptr, flags);
+    CD3DX12_ROOT_PARAMETER1 rootParam;
+    rootParam.InitAsConstants(1, 0);
+    rootSignatureDesc.Init_1_1(1, &rootParam, 0, nullptr, flags);
 
     ComPtr<ID3DBlob> signature;
     ComPtr<ID3DBlob> rootSignatureCreationError;
@@ -419,6 +423,8 @@ void RendererDX12::Present()
     m_commandList->OMSetRenderTargets(1, &GetCurrentBackBufferView(), false, &GetDepthStencilView());
 
     m_commandList->SetGraphicsRootSignature(m_rootSignature.Get());
+    float32 time = static_cast<float32>(GlobalTimer::GetTimeFromStart());
+    m_commandList->SetGraphicsRoot32BitConstant(0, *reinterpret_cast<UINT*>(&time), 0);
 
     m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     m_commandList->IASetVertexBuffers(0, 1, &m_vertexBufferView);
