@@ -68,6 +68,7 @@ private:
     Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_commandAllocator; // [a_vorontsov] For each render thread?
     Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_commandList;
     Microsoft::WRL::ComPtr<ID3D12Resource> m_vertexBuffer;
+    D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView{};
 
     Microsoft::WRL::ComPtr<ID3D12RootSignature> m_rootSignature;
 

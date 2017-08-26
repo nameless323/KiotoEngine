@@ -86,13 +86,30 @@ void RendererDX12::LoadPipeline()
 
     DirectX::XMFLOAT3 verts[] =
     {
-        { 0.0f, 0.0f, 0.1f },
-        { 0.5f, 1.0f, 0.1f },
-        { 1.0f, 0.0f, 0.1f }
+        { -1.0f, -1.0f, 0.1f },
+        { 0.0f, 1.0f, 0.1f },
+        { 1.0f, -1.0f, 0.1f }
     };
     CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_UPLOAD);
     CD3DX12_RESOURCE_DESC vertBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(sizeof(verts));
-    ThrowIfFailed(m_device->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE, &vertBufferDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&m_vertexBuffer)));
+    ThrowIfFailed(m_device->CreateCommittedResource(
+        &heapProps,
+        D3D12_HEAP_FLAG_NONE,
+        &vertBufferDesc,
+        D3D12_RESOURCE_STATE_GENERIC_READ,
+        nullptr,
+        IID_PPV_ARGS(&m_vertexBuffer)));
+
+    UINT8* mappedBuffer = nullptr;
+    CD3DX12_RANGE range(0, 0);
+    m_vertexBuffer->Map(0, &range, reinterpret_cast<void**>(&mappedBuffer));
+    memcpy(mappedBuffer, verts, sizeof(verts));
+    m_vertexBuffer->Unmap(0, nullptr);
+
+    m_vertexBufferView.BufferLocation = m_vertexBuffer->GetGPUVirtualAddress();
+    m_vertexBufferView.StrideInBytes = sizeof(DirectX::XMFLOAT3);
+    m_vertexBufferView.SizeInBytes = sizeof(verts);
+
 }
 
 void RendererDX12::Init(uint16 width, uint16 height)
@@ -378,11 +395,18 @@ void RendererDX12::Present()
     m_commandList->ClearRenderTargetView(GetCurrentBackBufferView(), DirectX::Colors::Aqua, 0, nullptr);
     m_commandList->ClearDepthStencilView(GetDepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
-    auto toPresent = CD3DX12_RESOURCE_BARRIER::Transition(GetCurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
-    m_commandList->ResourceBarrier(1, &toPresent);
 
     m_commandList->OMSetRenderTargets(1, &GetCurrentBackBufferView(), false, &GetDepthStencilView());
 
+    m_commandList->SetGraphicsRootSignature(m_rootSignature.Get());
+    m_commandList->SetPipelineState(m_fallbackPSO.Get());
+
+    m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    m_commandList->IASetVertexBuffers(0, 1, &m_vertexBufferView);
+    m_commandList->DrawInstanced(3, 1, 0, 0);
+
+    auto toPresent = CD3DX12_RESOURCE_BARRIER::Transition(GetCurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+    m_commandList->ResourceBarrier(1, &toPresent);
     m_commandList->Close();
     ID3D12CommandList* cmdLists[] = { m_commandList.Get() };
     m_commandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
