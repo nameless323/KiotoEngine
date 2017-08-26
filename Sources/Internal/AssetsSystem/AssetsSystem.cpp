@@ -18,9 +18,7 @@ wstring AssetsPath;
 
 void GetAssetsPath()
 {
-    //AssetsPath = L"\\Assets\\";
-#if 1 // [a_vorontsov] The code below works fine. Just for debugging reasons throw it from build and use relative path.
-    static constexpr uint32 pathSize = 512;
+    static constexpr uint32 pathSize = 512; // [a_vorontsov] So max path to assets can be only 512 chars which is bad. Handle it later.
     WCHAR path[pathSize];
     DWORD size = GetModuleFileName(nullptr, path, pathSize);
     if (size == 0 || size == pathSize)
@@ -35,9 +33,6 @@ void GetAssetsPath()
     }
     AssetsPath = path;
     AssetsPath += L"Assets\\";
-
-    wstring ws = AssetsPath;
-#endif
 }
 
 wstring GetAssetFullPath(const wstring& relativePath)
