@@ -18,6 +18,7 @@ namespace Kioto::Renderer
 
 using Microsoft::WRL::ComPtr;
 using std::wstring;
+using DirectX::XMFLOAT3;
 
 void RendererDX12::LoadPipeline()
 {
@@ -51,19 +52,19 @@ void RendererDX12::LoadPipeline()
         signatureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
     }
 
-    CD3DX12_ROOT_PARAMETER1 rootParam[1];
-    rootParam[0].InitAsConstants(1, 0);
     D3D12_ROOT_SIGNATURE_FLAGS flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
     CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
-    rootSignatureDesc.Init_1_1(_countof(rootParam), rootParam, 0, nullptr, flags);
-
+    rootSignatureDesc.Init_1_1(0, nullptr, 0, nullptr, flags);
 
     ComPtr<ID3DBlob> signature;
-    ComPtr<ID3DBlob> error;
-    ThrowIfFailed(D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, signatureData.HighestVersion, &signature, &error));
-    ThrowIfFailed(m_device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature)));
-    NAME_D3D12_OBJECT(m_rootSignature);
+    ComPtr<ID3DBlob> rootSignatureCreationError;
+    ThrowIfFailed(D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, signatureData.HighestVersion, &signature, &rootSignatureCreationError));
+    hr = m_device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature));
+    if (hr != S_OK)
+        OutputDebugStringA(reinterpret_cast<char*>(rootSignatureCreationError->GetBufferPointer()));
+    ThrowIfFailed(hr);
 
+    NAME_D3D12_OBJECT(m_rootSignature);
 
     D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};
 
@@ -82,6 +83,16 @@ void RendererDX12::LoadPipeline()
     desc.SampleDesc.Count = 1;
 
     ThrowIfFailed(m_device->CreateGraphicsPipelineState(&desc, IID_PPV_ARGS(&m_fallbackPSO)));
+
+    DirectX::XMFLOAT3 verts[] =
+    {
+        { 0.0f, 0.0f, 0.1f },
+        { 0.5f, 1.0f, 0.1f },
+        { 1.0f, 0.0f, 0.1f }
+    };
+    CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_UPLOAD);
+    CD3DX12_RESOURCE_DESC vertBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(sizeof(verts));
+    ThrowIfFailed(m_device->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE, &vertBufferDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&m_vertexBuffer)));
 }
 
 void RendererDX12::Init(uint16 width, uint16 height)
