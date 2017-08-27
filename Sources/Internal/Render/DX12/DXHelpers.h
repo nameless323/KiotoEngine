@@ -55,4 +55,8 @@ inline void SetName(ID3D12Object*, LPCWSTR)
 #define ReleaseComPtr(x) { if (x) { x->Release(); x = nullptr; }}
 #endif
 
+inline UINT CalculateConstantBufferByteSize(UINT byteSize)
+{
+    return (byteSize + 255) & ~255;
+}
 }
