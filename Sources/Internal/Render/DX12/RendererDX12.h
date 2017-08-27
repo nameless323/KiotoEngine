@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <array>
 #include <cstdio>
 #include <exception>
 
@@ -26,6 +27,7 @@ public:
     void ChangeFullScreenMode(bool fullScreen);
     void Shutdown();
     void Present();
+    void Update(float32 dt);
 
     ID3D12Resource* GetCurrentBackBuffer() const;
     D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentBackBufferView() const;
@@ -48,7 +50,8 @@ private:
     UINT m_rtvDescriptorSize = -1;
     UINT m_dsvDescriptorSize = -1;
     UINT m_samplerDescriptorSize = -1;
-    UINT64 m_currFenceValue = 0;
+    std::array<UINT64, FrameCount> m_fenceValues;
+    UINT64 m_currentFence = 0;
     DXGI_FORMAT m_backBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
     DXGI_FORMAT m_depthStencilFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
     UINT m_width = -1;
@@ -65,7 +68,7 @@ private:
     Microsoft::WRL::ComPtr<ID3D12Fence> m_fence;
     Microsoft::WRL::ComPtr<ID3D12Resource> m_swapChainBuffers[FrameCount];
     Microsoft::WRL::ComPtr<ID3D12Resource> m_depthStencilBuffer;
-    Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_commandAllocator; // [a_vorontsov] For each render thread?
+    std::array<Microsoft::WRL::ComPtr<ID3D12CommandAllocator>, FrameCount> m_commandAllocators; // [a_vorontsov] For each render thread?
     Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_commandList;
     Microsoft::WRL::ComPtr<ID3D12Resource> m_vertexBuffer;
     D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView{};

@@ -55,7 +55,7 @@ inline void SetName(ID3D12Object*, LPCWSTR)
 #define ReleaseComPtr(x) { if (x) { x->Release(); x = nullptr; }}
 #endif
 
-inline UINT CalculateConstantBufferByteSize(UINT byteSize)
+inline UINT CalculateConstantBufferByteSize(UINT byteSize) // [a_vorontsov] Dx12 constant buffers must be 255 byte aligned.
 {
     return (byteSize + 255) & ~255;
 }

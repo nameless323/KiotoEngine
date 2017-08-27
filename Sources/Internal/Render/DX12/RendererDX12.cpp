@@ -75,9 +75,12 @@ void RendererDX12::Init(uint16 width, uint16 height)
 
     m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
 
-    ThrowIfFailed(m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_commandAllocator)));
-    NAME_D3D12_OBJECT(m_commandAllocator);
-    ThrowIfFailed(m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator.Get(), nullptr, IID_PPV_ARGS(&m_commandList))); // [a_vorontsov] Maybe not 0 as mask?
+    for (uint32 i = 0; i < FrameCount; ++i)
+    {
+        ThrowIfFailed(m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_commandAllocators[i])));
+        NAME_D3D12_OBJECT(m_commandAllocators[i]);
+    }
+    ThrowIfFailed(m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocators[0].Get(), nullptr, IID_PPV_ARGS(&m_commandList))); // [a_vorontsov] Maybe not 0 as mask?
     NAME_D3D12_OBJECT(m_commandList);
     m_commandList->Close();
 
@@ -109,7 +112,6 @@ void RendererDX12::Init(uint16 width, uint16 height)
 #ifdef _DEBUG
     LogAdapters();
 
-
     DXGI_ADAPTER_DESC adapterDesc;
     hardwareAdapter->GetDesc(&adapterDesc);
 
@@ -120,7 +122,6 @@ void RendererDX12::Init(uint16 width, uint16 height)
     OutputDebugString(text.c_str());
 #endif
 }
-
 
 void RendererDX12::LoadPipeline()
 {
@@ -221,7 +222,7 @@ void RendererDX12::LoadPipeline()
         nullptr,
         IID_PPV_ARGS(&m_vertexBuffer)));
 
-    m_commandList->Reset(m_commandAllocator.Get(), nullptr);
+    m_commandList->Reset(m_commandAllocators[0].Get(), nullptr);
     m_commandList->CopyResource(m_vertexBuffer.Get(), uploadBuffer.Get());
     CD3DX12_RESOURCE_BARRIER toVertBuffer = CD3DX12_RESOURCE_BARRIER::Transition(m_vertexBuffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
     m_commandList->ResourceBarrier(1, &toVertBuffer);
@@ -294,17 +295,16 @@ void RendererDX12::GetHardwareAdapter(IDXGIFactory4* factory, IDXGIAdapter1** ad
 
 void RendererDX12::WaitForGPU()
 {
-    m_currFenceValue++;
-    ThrowIfFailed(m_commandQueue->Signal(m_fence.Get(), m_currFenceValue));
+    ThrowIfFailed(m_commandQueue->Signal(m_fence.Get(), m_fenceValues[m_frameIndex]));
 
-    if (m_fence->GetCompletedValue() < m_currFenceValue)
+    if (m_fence->GetCompletedValue() < m_fenceValues[m_frameIndex])
     {
         HANDLE fenceEventHandle = CreateEvent(nullptr, FALSE, FALSE, nullptr);
         if (fenceEventHandle == nullptr)
         {
             ThrowIfFailed(HRESULT_FROM_WIN32(GetLastError()));
         }
-        ThrowIfFailed(m_fence->SetEventOnCompletion(m_currFenceValue, fenceEventHandle));
+        ThrowIfFailed(m_fence->SetEventOnCompletion(m_fenceValues[m_frameIndex], fenceEventHandle));
 
         WaitForSingleObjectEx(fenceEventHandle, INFINITE, false);
         CloseHandle(fenceEventHandle);
@@ -320,7 +320,11 @@ void RendererDX12::Resize(uint16 width, uint16 heigth)
 
     WaitForGPU();
 
-    ThrowIfFailed(m_commandList->Reset(m_commandAllocator.Get(), nullptr));
+    for (auto& fenceVal : m_fenceValues)
+        fenceVal = m_currentFence;
+
+    m_frameIndex = 0;
+    ThrowIfFailed(m_commandList->Reset(m_commandAllocators[m_frameIndex].Get(), nullptr));
     m_depthStencilBuffer.Reset();
     for (auto& swapChainBuffer : m_swapChainBuffers)
         swapChainBuffer.Reset();
@@ -333,8 +337,6 @@ void RendererDX12::Resize(uint16 width, uint16 heigth)
     BOOL fullscreenState;
     ThrowIfFailed(m_swapChain->GetFullscreenState(&fullscreenState, nullptr));
     m_isSwapChainChainInFullScreen = fullscreenState;
-
-    m_frameIndex = 0;
 
     CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
     for (UINT i = 0; i < FrameCount; ++i)
@@ -405,12 +407,15 @@ D3D12_CPU_DESCRIPTOR_HANDLE RendererDX12::GetCurrentBackBufferView() const
     return CD3DX12_CPU_DESCRIPTOR_HANDLE(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), m_frameIndex, m_rtvDescriptorSize);
 }
 
+
+void RendererDX12::Update(float32 dt)
+{
+}
+
 void RendererDX12::Present()
 {
-    WaitForGPU();
-
-    m_commandAllocator->Reset();
-    m_commandList->Reset(m_commandAllocator.Get(), m_fallbackPSO.Get());
+    m_commandAllocators[m_frameIndex]->Reset();
+    m_commandList->Reset(m_commandAllocators[m_frameIndex].Get(), m_fallbackPSO.Get());
 
     auto toRt = CD3DX12_RESOURCE_BARRIER::Transition(GetCurrentBackBuffer(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
     m_commandList->ResourceBarrier(1, &toRt);
@@ -419,7 +424,6 @@ void RendererDX12::Present()
     m_commandList->RSSetViewports(1, &m_viewport);
     m_commandList->ClearRenderTargetView(GetCurrentBackBufferView(), DirectX::Colors::Aqua, 0, nullptr);
     m_commandList->ClearDepthStencilView(GetDepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
-
 
     m_commandList->OMSetRenderTargets(1, &GetCurrentBackBufferView(), false, &GetDepthStencilView());
 
@@ -440,7 +444,23 @@ void RendererDX12::Present()
     UINT presentFlags = (m_isTearingSupported && !m_isSwapChainChainInFullScreen) ? DXGI_PRESENT_ALLOW_TEARING : 0;
     ThrowIfFailed(m_swapChain->Present(0, presentFlags));
 
+    m_fenceValues[m_frameIndex] = ++m_currentFence;
+    m_commandQueue->Signal(m_fence.Get(), m_currentFence);
+
+    // [a_vorontsov] Check if we can move to next frame.
     m_frameIndex = (m_frameIndex + 1) % FrameCount;
+    if (m_fenceValues[m_frameIndex] != 0 && m_fence->GetCompletedValue() < m_fenceValues[m_frameIndex])
+    {
+        HANDLE fenceEventHandle = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+        if (fenceEventHandle == nullptr)
+        {
+            ThrowIfFailed(HRESULT_FROM_WIN32(GetLastError()));
+        }
+        ThrowIfFailed(m_fence->SetEventOnCompletion(m_fenceValues[m_frameIndex], fenceEventHandle));
+
+        WaitForSingleObjectEx(fenceEventHandle, INFINITE, false);
+        CloseHandle(fenceEventHandle);
+    }
 }
 
 void RendererDX12::LogAdapters()
@@ -515,5 +535,4 @@ void RendererDX12::ChangeFullScreenMode(bool fullScreen)
     m_isFullScreen = fullScreen;
     Resize(m_width, m_height);
 }
-
 }
