@@ -99,17 +99,18 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;KIOTOENGINE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Repos\KiotoEngine;C:\Repos\KiotoEngine\Sources\Internal;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Sources\Internal;$(ProjectDir)Sources\External\yaml-cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>d3dcompiler.lib;D3D12.lib;dxgi.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3dcompiler.lib;D3D12.lib;dxgi.lib;dxguid.lib;$(ProjectDir)Sources\External\yaml-cpp\Debug\libyaml-cppmdd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>RD /S /Q $(TargetDir)Assets
-(robocopy $(ProjectDir)Assets $(TargetDir)Assets /S /E) ^&amp; IF %ERRORLEVEL% LEQ 1 exit 0</Command>
+(robocopy $(ProjectDir)Assets $(TargetDir)Assets /S /E)
+(robocopy $(ProjectDir) $(TargetDir)Assets AssetsConfig.yaml) ^&amp; IF %ERRORLEVEL% LEQ 1 exit 0</Command>
     </PreBuildEvent>
     <PreBuildEvent>
       <Message>Copy assets...</Message>
