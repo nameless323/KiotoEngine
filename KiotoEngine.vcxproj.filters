@@ -66,6 +66,9 @@
     <ClInclude Include="Sources\Internal\AssetsSystem\AssetsSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Sources\Internal\Render\DX12\Buffers\UploadBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
