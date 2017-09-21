@@ -7,6 +7,7 @@ You must add "Sources\Internal" and "KiotoEngine" to "c++\Additional Include Dir
 Use x64 configuration, Windows 10 or higher. Visual Studio 2017 - v141 toolset. Windows SKD version not lower than 10.0.14393.0.
 
 You must also create file AssetsConfig.yaml in project dir, near the .sln file (e.g. C:\KiotoEngine\AssetsConfig.yaml) and add to this file following line: enginePath: {path to engie}
+### Possible content of the AssetsConfig.yaml
 ```yaml
 enginePath: "C:\\KiotoEngine"
 ```
