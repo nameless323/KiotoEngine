@@ -9,5 +9,6 @@
 
 namespace Kioto::AssetsSystem
 {
+void Init();
 std::wstring GetAssetFullPath(const std::wstring& assetName);
 }

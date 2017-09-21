@@ -7,6 +7,7 @@
 
 #include <sstream>
 
+#include "AssetsSystem/AssetsSystem.h"
 #include "Core/FPSCounter.h"
 #include "Core/KiotoEngine.h"
 #include "Core/Timer/GlobalTimer.h"
@@ -31,6 +32,7 @@ namespace KiotoCore
 {
 void Init()
 {
+    AssetsSystem::Init();
     GlobalTimer::Init();
     WindowsApplication::Init(ApplicationInfo.HInstance, ApplicationInfo.NCmdShow, ApplicationInfo.WindowCapture);
     Renderer::Init(Renderer::eRenderApi::DirectX12, 1024, 768);
