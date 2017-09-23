@@ -54,7 +54,7 @@ public:
         m_data = nullptr;
     }
     
-    ID3D12Resource* GetResource()
+    ID3D12Resource* GetResource() const
     {
         return m_resource.Get();
     }
@@ -62,6 +62,16 @@ public:
     void UploadData(uint32 elementIndex, const T& data)
     {
         memcpy(m_data + elementIndex * m_elemSize, &data, sizeof(T));
+    }
+
+    const byte* const GetBuffStart() const
+    {
+        return m_data;
+    }
+
+    const byte* const GetBufferEnd() const
+    {
+        return m_data + m_bufferSize;
     }
 
 private:
