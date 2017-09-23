@@ -50,7 +50,7 @@ public:
     ~UploadBuffer()
     {
         if (m_resource != nullptr)
-            m_resource->Unmap();
+            m_resource->Unmap(0, nullptr);
         m_data = nullptr;
     }
     
