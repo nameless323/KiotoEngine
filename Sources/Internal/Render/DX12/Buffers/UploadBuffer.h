@@ -45,8 +45,8 @@ public:
     }
     UploadBuffer(const UploadBuffer&) = delete;
     UploadBuffer(UploadBuffer&&) = delete;
-    operator=(const UploadBuffer&) = delete;
-    operator=(UploadBuffer&&) = delete;
+    UploadBuffer& operator=(const UploadBuffer&) = delete;
+    UploadBuffer& operator=(UploadBuffer&&) = delete;
     ~UploadBuffer()
     {
         if (m_resource != nullptr)
