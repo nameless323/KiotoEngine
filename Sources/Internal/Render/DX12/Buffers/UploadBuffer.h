@@ -41,7 +41,7 @@ public:
             return;
 
         CD3DX12_RANGE readRange(0, 0);
-        m_resource->Map(0, readRange, reinterpret_cast<void**>(&data));
+        m_resource->Map(0, &readRange, reinterpret_cast<void**>(&m_data));
     }
     UploadBuffer(const UploadBuffer&) = delete;
     UploadBuffer(UploadBuffer&&) = delete;
