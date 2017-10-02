@@ -64,6 +64,11 @@ public:
         memcpy(m_data + elementIndex * m_elemSize, &data, sizeof(T));
     }
 
+    void UploadData(const T* data)
+    {
+        memcpy(m_data, data, m_bufferSize);
+    }
+
     const byte* const GetBuffStart() const
     {
         return m_data;
@@ -72,6 +77,26 @@ public:
     const byte* const GetBufferEnd() const
     {
         return m_data + m_bufferSize;
+    }
+
+    size_t GetElementSize() const
+    {
+        return m_elemSize;
+    }
+
+    size_t GetBufferSize() const
+    {
+        return m_bufferSize;
+    }
+
+    uint32 GetElementsCount() const
+    {
+        return m_elementsCount;
+    }
+
+    D3D12_GPU_VIRTUAL_ADDRESS GetElementGpuAddress(uint32 elem)
+    {
+        return m_resource->GetGPUVirtualAddress() + elem * m_elemSize;
     }
 
 private:
