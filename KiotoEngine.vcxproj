@@ -169,6 +169,7 @@
     <ClInclude Include="Sources\Internal\Core\WindowsApplication.h" />
     <ClInclude Include="Sources\Internal\AssetsSystem\AssetsSystem.h" />
     <ClInclude Include="Sources\Internal\Math\MathHelpers.h" />
+    <ClInclude Include="Sources\Internal\Render\DX12\Buffers\EngineBuffers.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\Buffers\UploadBuffer.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\DXHelpers.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\RendererDX12.h" />
