@@ -13,6 +13,7 @@
 #include "Core/FPSCounter.h"
 #include "Core/Timer/GlobalTimer.h"
 #include "Core/WindowsApplication.h"
+#include "Math/Vector4.h"
 #include "Render/DX12/RendererDX12.h"
 
 namespace Kioto::Renderer
@@ -549,12 +550,12 @@ void RendererDX12::ChangeFullScreenMode(bool fullScreen)
 void RendererDX12::UpdateTimeCB(TimeConstantBuffer& buffer)
 {
     float32 timeFromStart = static_cast<float32>(GlobalTimer::GetTimeFromStart());
-    buffer.Time = XMFLOAT4(timeFromStart / 20.0f, timeFromStart, timeFromStart * 2, timeFromStart * 3);
-    buffer.SinTime = XMFLOAT4(sin(timeFromStart / 4.0f), sin(timeFromStart / 2.0f), sin(timeFromStart), sin(timeFromStart * 2.0f));
-    buffer.CosTime = XMFLOAT4(cos(timeFromStart / 4.0f), cos(timeFromStart / 2.0f), cos(timeFromStart), cos(timeFromStart * 2.0f));
+    buffer.Time = Vector4(timeFromStart / 20.0f, timeFromStart, timeFromStart * 2, timeFromStart * 3);
+    buffer.SinTime = Vector4(sin(timeFromStart / 4.0f), sin(timeFromStart / 2.0f), sin(timeFromStart), sin(timeFromStart * 2.0f));
+    buffer.CosTime = Vector4(cos(timeFromStart / 4.0f), cos(timeFromStart / 2.0f), cos(timeFromStart), cos(timeFromStart * 2.0f));
     float32 dt = static_cast<float32>(GlobalTimer::GetDeltaTime());
     float32 smoothDt = static_cast<float32>(GlobalTimer::GetSmoothDt());
-    buffer.DeltaTime = XMFLOAT4(dt, 1.0f / dt, smoothDt, 1.0f / smoothDt);
+    buffer.DeltaTime = Vector4(dt, 1.0f / dt, smoothDt, 1.0f / smoothDt);
 }
 
 }
