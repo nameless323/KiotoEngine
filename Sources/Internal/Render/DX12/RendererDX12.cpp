@@ -13,6 +13,7 @@
 #include "Core/FPSCounter.h"
 #include "Core/Timer/GlobalTimer.h"
 #include "Core/WindowsApplication.h"
+#include "Math/Vector3.h"
 #include "Math/Vector4.h"
 #include "Render/DX12/RendererDX12.h"
 
@@ -21,8 +22,6 @@ namespace Kioto::Renderer
 
 using Microsoft::WRL::ComPtr;
 using std::wstring;
-using DirectX::XMFLOAT3;
-using DirectX::XMFLOAT4;
 
 void RendererDX12::Init(uint16 width, uint16 height)
 {
@@ -191,7 +190,7 @@ void RendererDX12::LoadPipeline()
 
     ThrowIfFailed(m_device->CreateGraphicsPipelineState(&desc, IID_PPV_ARGS(&m_fallbackPSO)));
 
-    DirectX::XMFLOAT3 verts[] =
+    Vector3 verts[] =
     {
         { -1.0f, -1.0f, 0.1f },
         { 0.0f, 1.0f, 0.1f },

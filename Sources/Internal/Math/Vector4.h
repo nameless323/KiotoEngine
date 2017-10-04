@@ -11,6 +11,8 @@
 #include <DirectXMath.h>
 #endif
 
+#include "Math/Vector3.h"
+
 namespace Kioto
 {
 template <typename T>
@@ -28,6 +30,7 @@ public:
 
     Vector4_();
     explicit Vector4_(T t);
+    explicit Vector4_(const Vector3_<T>& vec, T w_ = static_cast<T>(0));
     Vector4_(T x_, T y_, T z_, T w_);
     Vector4_(const Vector4_& other);
 
@@ -40,12 +43,18 @@ public:
 template <typename T>
 Vector4_<T>::Vector4_()
 {
-    memset(data, 0, sizeof(data)); // TODO: check if sizeof data is ok.
+    memset(data, 0, sizeof(data));
 }
 
 template <typename T>
 Vector4_<T>::Vector4_(T t)
     : x(t), y(t), z(t), w(t)
+{
+}
+
+template <typename T>
+Vector4_<T>::Vector4_(const Vector3_<T>& vec, T w_)
+    : x(vec.x), y(vec.y), z(vec.z), w(w_)
 {
 }
 
@@ -58,7 +67,8 @@ Vector4_<T>::Vector4_(T x_, T y_, T z_, T w_)
 template <typename T>
 Vector4_<T>::Vector4_(const Vector4_& other)
     : x(other.x), y(other.y), z(other.z), w(other.w)
-{}
+{
+}
 
 #if _WIN32 || _WIN64
 template <typename T>
