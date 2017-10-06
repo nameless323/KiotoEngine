@@ -9,6 +9,8 @@
 
 #include "Core/CoreTypes.h"
 
+#include <limits>
+
 namespace Kioto::Math
 {
 #define FLOAT_TEMPLATE template <typename T, typename = std::enable_if_t<std::is_same_v<T, double> || std::is_same_v<T, float>>>
@@ -24,6 +26,9 @@ constexpr float32 TwoPI = PI * 2.0f;
 constexpr float32 PIOverTwo = PI / 2.0f;
 constexpr float32 PIOverFour = PI / 4.0f;
 constexpr float32 PIOverSix = PI / 6.0f;
+
+constexpr float32 Epsilon = std::numeric_limits<float32>::epsilon();
+constexpr float64 Epsilon64 = std::numeric_limits<float64>::epsilon();
 
 template <typename T>
 struct DecomposedValue
@@ -101,5 +106,22 @@ inline constexpr auto DegToRad(T deg) -> decltype(deg * PI / 180.f)
     return deg * PI / 180.f;
 }
 
+///
+/// Check if floating number is zero.
+///
+FLOAT_TEMPLATE
+inline constexpr bool IsZero(T val)
+{
+    return abs(val) < std::numeric_limits<T>::epsilon();
+}
+
+///
+/// Check if two floating numbers are equal.
+///
+FLOAT_TEMPLATE
+inline constexpr bool IsFloatEqual(T f1, T f2)
+{
+    return abs(f1 - f2) < std::numeric_limits<T>::epsilon();
+}
 #undef FLOAT_TEMPLATE
 }
