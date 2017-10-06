@@ -45,10 +45,15 @@ public:
 
     Matrix4_<T>& operator= (const Matrix4_<T> other);
 
+    float32 Determinant() const;
+
     void Transpose();
     Matrix4_<T> Tranposed() const;
 
-    static Matrix4_<T>& Identity();
+    float32& operator()(int32 row, int32 col);
+    const float32& operator()(int32 row, int32 col) const;
+
+    static const Matrix4_<T>& Identity();
 };
 
 template <typename T>
@@ -96,6 +101,13 @@ Matrix4_<T>& Matrix4_<T>::operator=(const Matrix4_<T> other)
     return *this;
 }
 
+template <typename T>
+inline float32 Kioto::Matrix4_<T>::Determinant() const
+{
+    return (_00 * _11 - _01 * _10) * (_22 * _33 - _23 * _32) - (_00 * _12 - _02 * _10) * (_21 * _33 - _23 * _31)
+         + (_00 * _13 - _03 * _10) * (_21 * _32 - _22 * _31) + (_01 * _12 - _02 * _11) * (_20 * _33 - _23 * _30)
+         - (_01 * _13 - _03 * _11) * (_20 * _32 - _22 * _30) + (_02 * _13 - _03 * _12) * (_20 * _31 - _21 * _30);
+}
 
 template <typename T>
 void Matrix4_<T>::Transpose()
@@ -120,9 +132,21 @@ Matrix4_<T> Matrix4_<T>::Tranposed() const
 }
 
 template <typename T>
-Matrix4_<T>& Matrix4_<T>::Identity()
+float32& Matrix4_<T>::operator()(int32 row, int32 col)
 {
-    static Matrix4_<T> identity(
+    return m[row][col];
+}
+
+template <typename T>
+const float32& Matrix4_<T>::operator()(int32 row, int32 col) const
+{
+    return m[row][col];
+}
+
+template <typename T>
+inline const Matrix4_<T>& Matrix4_<T>::Identity()
+{
+    static const Matrix4_<T> identity(
                                     static_cast<T>(1), static_cast<T>(0), static_cast<T>(0), static_cast<T>(0),
                                     static_cast<T>(0), static_cast<T>(1), static_cast<T>(0), static_cast<T>(0),
                                     static_cast<T>(0), static_cast<T>(0), static_cast<T>(1), static_cast<T>(0),
