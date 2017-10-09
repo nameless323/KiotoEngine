@@ -55,9 +55,15 @@ public:
     T& operator()(int32 row, int32 col);
     const T& operator()(int32 row, int32 col) const;
 
+    Vector3_<T> GetTranslation() const;
+    void SetTranslation(const Vector3_<T> t);
+
     Matrix4_<T>& operator*= (const Matrix4_<T>& m);
 
     static const Matrix4_<T>& Identity();
+
+    static Matrix4_<T> BuildTranslation(const Vector3_<T> t);
+    static Matrix4_<T> BuildScale(const Vector3_<T> s);
 };
 
 template <typename T>
@@ -196,6 +202,20 @@ const T& Matrix4_<T>::operator()(int32 row, int32 col) const
 }
 
 template <typename T>
+Vector3_<T> Matrix4_<T>::GetTranslation() const
+{
+    return { _30, _31, _32 };
+}
+
+template <typename T>
+void Matrix4_<T>::SetTranslation(const Vector3_<T> t)
+{
+    _30 = t.x;
+    _31 = t.y;
+    _32 = t.z;
+}
+
+template <typename T>
 Matrix4_<T>& Matrix4_<T>::operator *=(const Matrix4_<T>& m)
 {
     Matrix4_<T> c = *this;
@@ -219,6 +239,30 @@ Matrix4_<T>& Matrix4_<T>::operator *=(const Matrix4_<T>& m)
     _32 = c._30 * m._02 + c._31 * m._12 + c._32 * m._22 + c._33 * m._32;
     _33 = c._30 * m._03 + c._31 * m._13 + c._32 * m._23 + c._33 * m._33;
     return *this;
+}
+
+template <typename T>
+inline Matrix4_<T> Matrix4_<T>::BuildTranslation(const Vector3_<T> t)
+{
+    return
+    {
+        1.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 1.0f, 0.0f,
+        t.x, t.y, t.z, 1.0f
+    };
+}
+
+template <typename T>
+inline Matrix4_<T> Matrix4_<T>::BuildScale(const Vector3_<T> s)
+{
+    return
+    {
+        s.x, 0.0f, 0.0f, 0.0f,
+        0.0f, s.y, 0.0f, 0.0f,
+        0.0f, 0.0f, s.z, 0.0f,
+        0.0f, 0.0f, 0.0f, 1.0f
+    };
 }
 
 template <typename T>
