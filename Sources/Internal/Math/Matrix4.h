@@ -58,6 +58,8 @@ public:
     Vector3_<T> GetTranslation() const;
     void SetTranslation(const Vector3_<T> t);
 
+    Vector3_<T> GetScale() const;
+
     Matrix4_<T>& operator*= (const Matrix4_<T>& m);
 
     static const Matrix4_<T>& Identity();
@@ -213,6 +215,15 @@ void Matrix4_<T>::SetTranslation(const Vector3_<T> t)
     _30 = t.x;
     _31 = t.y;
     _32 = t.z;
+}
+
+template <typename T>
+Vector3_<T> Matrix4_<T>::GetScale() const
+{
+    return Vector3(
+        Vector3_<T>{ _00, _01, _02 }.Length(), 
+        Vector3_<T>{ _10, _11, _12 }.Length(), 
+        Vector3_<T>{ _20, _21, _22 }.Length());
 }
 
 template <typename T>
