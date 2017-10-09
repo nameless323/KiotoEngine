@@ -68,6 +68,17 @@ inline Matrix4_<T> operator* (Matrix4_<T> m1, const Matrix4_<T>& m2)
 }
 
 template <typename T>
+inline Vector4_<T> operator* (const Vector4_<T>& v, const Matrix4_<T>& m) // [a_vorontsov] Yep, it will be more obvious if it method will be in Vector4.h, but I'm too lazy to handle cross headers.
+{
+    return {
+                v.x * m._00 + v.y * m._10 + v.z * m._20 + v.w * m._30,
+                v.x * m._01 + v.y * m._11 + v.z * m._21 + v.w * m._31,
+                v.x * m._02 + v.y * m._12 + v.z * m._22 + v.w * m._32,
+                v.x * m._03 + v.y * m._13 + v.z * m._23 + v.w * m._33
+            };
+}
+
+template <typename T>
 Matrix4_<T>::Matrix4_()
 {
     memset(data, 0, sizeof(data));
