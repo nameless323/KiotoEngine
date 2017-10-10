@@ -15,6 +15,9 @@
 
 namespace Kioto
 {
+///
+/// We use left handed coordinate system. Translation lies in the 4th row. Vector is a row matrix, so only left multiplication is allowed (vector * matrix).
+///
 template <typename T>
 class Matrix4_
 {
@@ -45,31 +48,71 @@ public:
 
     Matrix4_<T>& operator= (const Matrix4_<T>& other);
 
+    ///
+    /// Get matrix determinant.
+    ///
     float32 Determinant() const;
-
+    ///
+    /// Transpose matrix.
+    ///
     void Transpose();
+    ///
+    /// Transpose matrix.
+    ///
     Matrix4_<T> Tranposed() const;
-
+    ///
+    /// Inverse of the matrix. return false if inverse is impossible.
+    ///
     bool Inversed(Matrix4_<T>& out) const;
 
     T& operator()(int32 row, int32 col);
     const T& operator()(int32 row, int32 col) const;
 
+    ///
+    /// Get translation from the matrix.
+    ///
     Vector3_<T> GetTranslation() const;
+    ///
+    /// Set translation vector to the matrix.
+    ///
     void SetTranslation(const Vector3_<T>& t);
-
+    ///
+    /// Get scale from the matrix.
+    ///
     Vector3_<T> GetScale() const;
 
     Matrix4_<T>& operator*= (const Matrix4_<T>& m);
-
-    static const Matrix4_<T>& Identity();
 
     ///
     /// Build rotation matrix. axs - axis of rotation. angle - angle in radians.
     ///
     static Matrix4_<T> BuildRotation(const Vector3_<T>& axs, float32 angle);
+    ///
+    /// Build rotation matrix around x axis. angle - angle in radians.
+    ///
+    static Matrix4_<T> BuildRotationX(float32 angle);
+    ///
+    /// Build rotation matrix around y axis. angle - angle in radians.
+    ///
+    static Matrix4_<T> BuildRotationY(float32 angle);
+    ///
+    /// Build rotation matrix around z axis. angle - angle in radians.
+    ///
+    static Matrix4_<T> BuildRotationZ(float32 angle);
+    ///
+    /// Build translation matrix. t - translation.
+    ///
     static Matrix4_<T> BuildTranslation(const Vector3_<T>& t);
+    ///
+    /// Build scale matrix. s - scale.
+    ///
     static Matrix4_<T> BuildScale(const Vector3_<T>& s);
+    ///
+    /// Build look at matrix (Left handed coordinate system). position - position, target - look target, up - world up.
+    ///
+    static Matrix4_<T> BuildLookAt(const Vector3& position, const Vector3& target, const Vector3& up);
+
+    static const Matrix4_<T>& Identity();
 };
 
 template <typename T>
@@ -277,6 +320,48 @@ inline Matrix4_<T> Matrix4_<T>::BuildRotation(const Vector3_<T>& axs, float32 an
 }
 
 template <typename T>
+inline Matrix4_<T> Matrix4_<T>::BuildRotationX(float32 angle)
+{
+    float32 cosA = std::cos(angle);
+    float32 sinA = std::sin(angle);
+    return
+    {
+        static_cast<T>(1.0f), static_cast<T>(0.0f), static_cast<T>(0.0f), static_cast<T>(0.0f),
+        static_cast<T>(0.0f), static_cast<T>(cosA), static_cast<T>(-sinA), static_cast<T>(0.0f),
+        static_cast<T>(0.0f), static_cast<T>(sinA), static_cast<T>(cosA), static_cast<T>(0.0f),
+        static_cast<T>(0.0f), static_cast<T>(0.0f), static_cast<T>(0.0f), static_cast<T>(1.0f)
+    };
+}
+
+template <typename T>
+inline Matrix4_<T> Matrix4_<T>::BuildRotationY(float32 angle)
+{
+    float32 cosA = std::cos(angle);
+    float32 sinA = std::sin(angle);
+    return
+    {
+        static_cast<T>(cosA), static_cast<T>(0.0f), static_cast<T>(sinA), static_cast<T>(0.0f),
+        static_cast<T>(0.0f), static_cast<T>(1.0f), static_cast<T>(0.0f), static_cast<T>(0.0f),
+        static_cast<T>(-sinA), static_cast<T>(0.0f), static_cast<T>(cosA), static_cast<T>(0.0f),
+        static_cast<T>(0.0f), static_cast<T>(0.0f), static_cast<T>(0.0f), static_cast<T>(1.0f)
+    };
+}
+
+template <typename T>
+inline Matrix4_<T> Matrix4_<T>::BuildRotationZ(float32 angle)
+{
+    float32 cosA = std::cos(angle);
+    float32 sinA = std::sin(angle);
+    return
+    {
+        static_cast<T>(cosA), static_cast<T>(-sinA), static_cast<T>(0.0f), static_cast<T>(0.0f),
+        static_cast<T>(sinA), static_cast<T>(cosA), static_cast<T>(0.0f), static_cast<T>(0.0f),
+        static_cast<T>(0.0f), static_cast<T>(0.0f), static_cast<T>(1.0f), static_cast<T>(0.0f),
+        static_cast<T>(0.0f), static_cast<T>(0.0f), static_cast<T>(0.0f), static_cast<T>(1.0f)
+    };
+}
+
+template <typename T>
 inline Matrix4_<T> Matrix4_<T>::BuildTranslation(const Vector3_<T>& t)
 {
     return
@@ -301,13 +386,47 @@ inline Matrix4_<T> Matrix4_<T>::BuildScale(const Vector3_<T>& s)
 }
 
 template <typename T>
+Matrix4_<T> Matrix4_<T>::BuildLookAt(const Vector3& position, const Vector3& target, const Vector3& upWorld)
+{
+    Vector3_<T> right, fwd, up;
+
+    fwd = target - position;
+    fwd.Normalize();
+
+    right = Vector3_<T>::Cross(upWorld, fwd);
+    right.Normalize();
+
+    up = Vector3_<T>::Cross(fwd, right);
+    up.Normalize();
+
+    Matrix4_<T> m = Identity();
+
+    m._00 = right.x;
+    m._10 = right.y;
+    m._20 = right.z;
+    m._30 = -Vector3_<T>::Dot(position, right);
+
+    m._01 = up.x;
+    m._11 = up.y;
+    m._21 = up.z;
+    m._31 = -Vector3_<T>::Dot(position, up);
+
+    m._02 = fwd.x;
+    m._12 = fwd.y;
+    m._22 = fwd.z;
+    m._32 = -Vector3_<T>::Dot(position, fwd);
+
+    return m;
+}
+
+template <typename T>
 inline const Matrix4_<T>& Matrix4_<T>::Identity()
 {
     static const Matrix4_<T> identity(
-                                    static_cast<T>(1), static_cast<T>(0), static_cast<T>(0), static_cast<T>(0),
-                                    static_cast<T>(0), static_cast<T>(1), static_cast<T>(0), static_cast<T>(0),
-                                    static_cast<T>(0), static_cast<T>(0), static_cast<T>(1), static_cast<T>(0),
-                                    static_cast<T>(0), static_cast<T>(0), static_cast<T>(0), static_cast<T>(1)
+                                    static_cast<T>(1.0f), static_cast<T>(0.0f), static_cast<T>(0.0f), static_cast<T>(0.0f),
+                                    static_cast<T>(0.0f), static_cast<T>(1.0f), static_cast<T>(0.0f), static_cast<T>(0.0f),
+                                    static_cast<T>(0.0f), static_cast<T>(0.0f), static_cast<T>(1.0f), static_cast<T>(0.0f),
+                                    static_cast<T>(0.0f), static_cast<T>(0.0f), static_cast<T>(0.0f), static_cast<T>(1.0f)
                                 );
     return identity;
 }

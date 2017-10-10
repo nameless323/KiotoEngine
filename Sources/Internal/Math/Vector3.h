@@ -37,12 +37,30 @@ public:
     explicit Vector3_(const DirectX::XMFLOAT3& vec);
     operator DirectX::XMFLOAT3() const;
 #endif
+    ///
+    /// Get square length of the vector.
+    ///
     float32 SqrLength() const;
+    ///
+    /// Get length of the vector.
+    ///
     float32 Length() const;
+    ///
+    /// Normalize vector.
+    ///
     Vector3_<T>& Normalize();
 
+    ///
+    /// Dot product of the v1 and v2 vectors.
+    ///
     static T Dot(const Vector3_<T>& v1, const Vector3_<T>& v2);
+    ///
+    /// Cross product of the v1 and v2 vectors.
+    ///
     static Vector3_<T> Cross(const Vector3_<T>& v1, const Vector3_<T>& v2);
+    ///
+    /// Normalize vector.
+    ///
     static Vector3_<T> Normalized(Vector3_<T> v);
 };
 
