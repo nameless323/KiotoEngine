@@ -64,6 +64,10 @@ public:
 
     static const Matrix4_<T>& Identity();
 
+    ///
+    /// Build rotation matrix. axs - axis of rotation. angle - angle in radians.
+    ///
+    static Matrix4_<T> BuildRotation(const Vector3_<T>& axs, float32 angle);
     static Matrix4_<T> BuildTranslation(const Vector3_<T>& t);
     static Matrix4_<T> BuildScale(const Vector3_<T>& s);
 };
@@ -250,6 +254,26 @@ Matrix4_<T>& Matrix4_<T>::operator *=(const Matrix4_<T>& m)
     _32 = c._30 * m._02 + c._31 * m._12 + c._32 * m._22 + c._33 * m._32;
     _33 = c._30 * m._03 + c._31 * m._13 + c._32 * m._23 + c._33 * m._33;
     return *this;
+}
+
+template <typename T>
+inline Matrix4_<T> Matrix4_<T>::BuildRotation(const Vector3_<T>& axs, float32 angle)
+{
+    float32 cosA = std::cos(angle);
+    float32 sinA = std::sin(angle);
+    Matrix4_<T> m = Identity();
+    m._00 = cosA + (1.0f - cosA) * axs.x * axs.x;
+    m._01 = (1.0f - cosA) * axs.x * axs.y - axs.z * sinA;
+    m._02 = (1.0f - cosA) * axs.x * axs.z + axs.y * sinA;
+
+    m._10 = (1.0f - cosA) * axs.x * axs.y + axs.z * sinA;
+    m._11 = cosA + (1.0f - cosA) * axs.y * axs.y;
+    m._12 = (1.0f - cosA) * axs.y * axs.z - axs.x * sinA;
+
+    m._20 = (1.0f - cosA) * axs.x * axs.z - axs.y * sinA;
+    m._21 = (1.0f - cosA) * axs.y * axs.z + axs.x * sinA;
+    m._22 = cosA + (1.0f - cosA) * axs.z * axs.z;
+    return m;
 }
 
 template <typename T>
