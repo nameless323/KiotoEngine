@@ -29,7 +29,9 @@ public:
     Vector3_();
     explicit Vector3_(T t);
     Vector3_(T x_, T y_, T z_);
-    Vector3_(const Vector3_<T>& other);
+    Vector3_(const Vector3_<T>& v);
+
+    Vector3_<T>& operator=(const Vector3_<T>& v);
 
 #if _WIN32 || _WIN64
     explicit Vector3_(const DirectX::XMFLOAT3& vec);
@@ -40,6 +42,7 @@ public:
     Vector3_<T>& Normalize();
 
     static T Dot(const Vector3_<T>& v1, const Vector3_<T>& v2);
+    static Vector3_<T> Cross(const Vector3_<T>& v1, const Vector3_<T>& v2);
     static Vector3_<T> Normalized(Vector3_<T> v);
 };
 
@@ -62,14 +65,22 @@ Vector3_<T>::Vector3_(T x_, T y_, T z_)
 }
 
 template <typename T>
-Vector3_<T>::Vector3_(const Vector3_<T>& other)
-    : x(other.x), y(other.y), z(other.z)
+Vector3_<T>::Vector3_(const Vector3_<T>& v)
+    : x(v.x), y(v.y), z(v.z)
 {}
+
+template <typename T>
+Vector3_<T>& Vector3_<T>::operator=(const Vector3_<T>& v)
+{
+    x = v.x;
+    y = v.y;
+    z = v.z;
+}
 
 #if _WIN32 || _WIN64
 template <typename T>
-Vector3_<T>::Vector3_(const DirectX::XMFLOAT3& vec)
-    : x(vec.x), y(vec.y), z(vec.z)
+Vector3_<T>::Vector3_(const DirectX::XMFLOAT3& v)
+    : x(v.x), y(v.y), z(v.z)
 {
 }
 
@@ -112,6 +123,12 @@ template <typename T>
 inline T Vector3_<T>::Dot(const Vector3_<T>& v1, const Vector3_<T>& v2)
 {
     return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+}
+
+template <typename T>
+inline Vector3_<T> Vector3_<T>::Cross(const Vector3_<T>& v1, const Vector3_<T>& v2)
+{
+    return { v1.y * v2.z - v2.y * v1.z, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x };
 }
 
 using Vector3 = Vector3_<float32>;

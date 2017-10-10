@@ -43,7 +43,7 @@ public:
         T m_30, T m_31, T m_32, T m_33
         );
 
-    Matrix4_<T>& operator= (const Matrix4_<T> other);
+    Matrix4_<T>& operator= (const Matrix4_<T>& other);
 
     float32 Determinant() const;
 
@@ -56,7 +56,7 @@ public:
     const T& operator()(int32 row, int32 col) const;
 
     Vector3_<T> GetTranslation() const;
-    void SetTranslation(const Vector3_<T> t);
+    void SetTranslation(const Vector3_<T>& t);
 
     Vector3_<T> GetScale() const;
 
@@ -64,8 +64,8 @@ public:
 
     static const Matrix4_<T>& Identity();
 
-    static Matrix4_<T> BuildTranslation(const Vector3_<T> t);
-    static Matrix4_<T> BuildScale(const Vector3_<T> s);
+    static Matrix4_<T> BuildTranslation(const Vector3_<T>& t);
+    static Matrix4_<T> BuildScale(const Vector3_<T>& s);
 };
 
 template <typename T>
@@ -122,9 +122,9 @@ Matrix4_<T>::Matrix4_(
 }
 
 template <typename T>
-Matrix4_<T>& Matrix4_<T>::operator=(const Matrix4_<T> other)
+Matrix4_<T>& Matrix4_<T>::operator=(const Matrix4_<T>& other)
 {
-    _00 = other._00; _01 = other._01; _02 = other._02; _03 = other._03;
+    _00 = other._00; _01 = other._01; _02 = other._02; _03 = other._03; // [a_vorontsov] memcpy maybe?
     _10 = other._10; _11 = other._11; _12 = other._12; _13 = other._13;
     _20 = other._20; _21 = other._21; _22 = other._22; _23 = other._23;
     _30 = other._30; _31 = other._31; _32 = other._32; _33 = other._33;
@@ -210,7 +210,7 @@ Vector3_<T> Matrix4_<T>::GetTranslation() const
 }
 
 template <typename T>
-void Matrix4_<T>::SetTranslation(const Vector3_<T> t)
+void Matrix4_<T>::SetTranslation(const Vector3_<T>& t)
 {
     _30 = t.x;
     _31 = t.y;
@@ -253,7 +253,7 @@ Matrix4_<T>& Matrix4_<T>::operator *=(const Matrix4_<T>& m)
 }
 
 template <typename T>
-inline Matrix4_<T> Matrix4_<T>::BuildTranslation(const Vector3_<T> t)
+inline Matrix4_<T> Matrix4_<T>::BuildTranslation(const Vector3_<T>& t)
 {
     return
     {
@@ -265,7 +265,7 @@ inline Matrix4_<T> Matrix4_<T>::BuildTranslation(const Vector3_<T> t)
 }
 
 template <typename T>
-inline Matrix4_<T> Matrix4_<T>::BuildScale(const Vector3_<T> s)
+inline Matrix4_<T> Matrix4_<T>::BuildScale(const Vector3_<T>& s)
 {
     return
     {
