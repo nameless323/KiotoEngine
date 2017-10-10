@@ -116,6 +116,14 @@ public:
     /// Build look at matrix (Left handed coordinate system). position - position, target - look target, up - world up.
     ///
     static Matrix4_<T> BuildLookAt(const Vector3& position, const Vector3& target, const Vector3& up);
+    ///
+    /// Build perspective projection matrix (Left handed coordinate system). fovY - field of view.
+    ///
+    static Matrix4_<T> BuildProjectionFov(float32 fovY, float32 aspect, float32 zNear, float32 zFar);
+    ///
+    /// Build orthographic projection matrix (Left handed coordinate system). fovY - field of view.
+    ///
+    static Matrix4_<T> BuildOrtho(float32 left, float32 right, float32 bottom, float32 top, float32 zNear, float32 zFar);
 
     static const Matrix4_<T>& Identity();
 };
@@ -421,6 +429,40 @@ Matrix4_<T> Matrix4_<T>::BuildLookAt(const Vector3& position, const Vector3& tar
     m._22 = fwd.z;
     m._32 = -Vector3_<T>::Dot(position, fwd);
 
+    return m;
+}
+
+template <typename T>
+inline Matrix4_<T> Matrix4_<T>::BuildProjectionFov(float32 fovY, float32 aspect, float32 zNear, float32 zFar)
+{
+    Matrix4_<T> m = {};
+
+    float32 sinF2 = std::sin(fovY / 2.0f);
+    float32 cosF2 = std::cos(fovY / 2.0f);
+
+    float32 h = cosF2 / sinF2;
+    float32 w = h / aspect;
+
+    m._00 = w;
+    m._11 = h;
+    m._22 = zFar / (zFar - zNear);
+    m._32 = (-zNear * zFar) / (zFar - zNear);
+    m._23 = 1.0f;
+    return m;
+}
+
+template <typename T>
+inline Matrix4_<T> Matrix4_<T>::BuildOrtho(float32 left, float32 right, float32 bottom, float32 top, float32 zNear, float32 zFar)
+{
+    Matrix4_<T> m = {};
+
+    m._00 = 2.0f / (right - left);
+    m._11 = 2.0f / (top - bottom);
+    m._22 = 1.0f / (zFar - zNear);
+    m._32 = (zNear) / (zNear - zFar);
+    m._30 = (left + right) / (left - right);
+    m._31 = (bottom + top) / (bottom - top);
+    m._33 = 1.0f;
     return m;
 }
 
