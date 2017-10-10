@@ -17,6 +17,11 @@ namespace Kioto
 {
 ///
 /// We use left handed coordinate system. Translation lies in the 4th row. Vector is a row matrix, so only left multiplication is allowed (vector * matrix).
+/// Layout of ToWorldMatrix is
+/// |  right.x,        right.y,       right.z,     0.0 |
+/// |   up.x,            up.y,         up.z,       0.0 |
+/// |   fwd.x,          fwd.y,         fwd.z,      0.0 |
+/// | translation.x, translation.y, translation.z, 1.0 |
 ///
 template <typename T>
 class Matrix4_
