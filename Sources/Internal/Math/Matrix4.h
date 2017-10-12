@@ -17,7 +17,7 @@ namespace Kioto
 {
 ///
 /// We use left handed coordinate system. Translation lies in the 4th row. Vector is a row matrix, so only left multiplication is allowed (vector * matrix).
-/// Layout of ToWorldMatrix is
+/// Layout of matrix ToWorld is
 /// |  right.x,        right.y,       right.z,     0.0 |
 /// |   up.x,            up.y,         up.z,       0.0 |
 /// |   fwd.x,          fwd.y,         fwd.z,      0.0 |
@@ -72,6 +72,8 @@ public:
 
     T& operator()(int32 row, int32 col);
     const T& operator()(int32 row, int32 col) const;
+
+    // TODO:: operator== via memcmp data.
 
     ///
     /// Get translation from the matrix.
@@ -184,7 +186,7 @@ Matrix4_<T>::Matrix4_(
 template <typename T>
 Matrix4_<T>& Matrix4_<T>::operator=(const Matrix4_<T>& other)
 {
-    _00 = other._00; _01 = other._01; _02 = other._02; _03 = other._03; // [a_vorontsov] memcpy maybe?
+    _00 = other._00; _01 = other._01; _02 = other._02; _03 = other._03; // [a_vorontsov] TODO: memcpy maybe?
     _10 = other._10; _11 = other._11; _12 = other._12; _13 = other._13;
     _20 = other._20; _21 = other._21; _22 = other._22; _23 = other._23;
     _30 = other._30; _31 = other._31; _32 = other._32; _33 = other._33;
