@@ -13,6 +13,8 @@
 #include "Core/FPSCounter.h"
 #include "Core/Timer/GlobalTimer.h"
 #include "Core/WindowsApplication.h"
+#include "Math/Vector3.h"
+#include "Math/Vector4.h"
 #include "Render/DX12/RendererDX12.h"
 
 namespace Kioto::Renderer
@@ -20,7 +22,6 @@ namespace Kioto::Renderer
 
 using Microsoft::WRL::ComPtr;
 using std::wstring;
-using DirectX::XMFLOAT3;
 
 void RendererDX12::Init(uint16 width, uint16 height)
 {
@@ -158,7 +159,7 @@ void RendererDX12::LoadPipeline()
     D3D12_ROOT_SIGNATURE_FLAGS flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
     CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
     CD3DX12_ROOT_PARAMETER1 rootParam;
-    rootParam.InitAsConstants(1, 0);
+    rootParam.InitAsConstantBufferView(0);
     rootSignatureDesc.Init_1_1(1, &rootParam, 0, nullptr, flags);
 
     ComPtr<ID3DBlob> signature;
@@ -189,7 +190,7 @@ void RendererDX12::LoadPipeline()
 
     ThrowIfFailed(m_device->CreateGraphicsPipelineState(&desc, IID_PPV_ARGS(&m_fallbackPSO)));
 
-    DirectX::XMFLOAT3 verts[] =
+    Vector3 verts[] =
     {
         { -1.0f, -1.0f, 0.1f },
         { 0.0f, 1.0f, 0.1f },
@@ -234,6 +235,14 @@ void RendererDX12::LoadPipeline()
 
     ID3D12CommandList* cmdLists[] = { m_commandList.Get() };
     m_commandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
+
+    m_mainEngineBuffer = std::make_unique<UploadBuffer<TimeConstantBuffer>>(3, true, m_device.Get());
+    TimeConstantBuffer timeBuffer;
+    UpdateTimeCB(timeBuffer);
+
+    m_mainEngineBuffer->UploadData(0, timeBuffer);
+    m_mainEngineBuffer->UploadData(1, timeBuffer);
+    m_mainEngineBuffer->UploadData(2, timeBuffer);
 
     WaitForGPU();
 }
@@ -407,9 +416,11 @@ D3D12_CPU_DESCRIPTOR_HANDLE RendererDX12::GetCurrentBackBufferView() const
     return CD3DX12_CPU_DESCRIPTOR_HANDLE(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), m_frameIndex, m_rtvDescriptorSize);
 }
 
-
 void RendererDX12::Update(float32 dt)
 {
+    TimeConstantBuffer timeBuffer;
+    UpdateTimeCB(timeBuffer);
+    m_mainEngineBuffer->UploadData(m_frameIndex, timeBuffer);
 }
 
 void RendererDX12::Present()
@@ -428,8 +439,7 @@ void RendererDX12::Present()
     m_commandList->OMSetRenderTargets(1, &GetCurrentBackBufferView(), false, &GetDepthStencilView());
 
     m_commandList->SetGraphicsRootSignature(m_rootSignature.Get());
-    float32 time = static_cast<float32>(GlobalTimer::GetTimeFromStart());
-    m_commandList->SetGraphicsRoot32BitConstant(0, *reinterpret_cast<UINT*>(&time), 0);
+    m_commandList->SetGraphicsRootConstantBufferView(0, m_mainEngineBuffer->GetElementGpuAddress(m_frameIndex));
 
     m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     m_commandList->IASetVertexBuffers(0, 1, &m_vertexBufferView);
@@ -535,4 +545,16 @@ void RendererDX12::ChangeFullScreenMode(bool fullScreen)
     m_isFullScreen = fullScreen;
     Resize(m_width, m_height);
 }
+
+void RendererDX12::UpdateTimeCB(TimeConstantBuffer& buffer)
+{
+    float32 timeFromStart = static_cast<float32>(GlobalTimer::GetTimeFromStart());
+    buffer.Time = Vector4(timeFromStart / 20.0f, timeFromStart, timeFromStart * 2, timeFromStart * 3);
+    buffer.SinTime = Vector4(sin(timeFromStart / 4.0f), sin(timeFromStart / 2.0f), sin(timeFromStart), sin(timeFromStart * 2.0f));
+    buffer.CosTime = Vector4(cos(timeFromStart / 4.0f), cos(timeFromStart / 2.0f), cos(timeFromStart), cos(timeFromStart * 2.0f));
+    float32 dt = static_cast<float32>(GlobalTimer::GetDeltaTime());
+    float32 smoothDt = static_cast<float32>(GlobalTimer::GetSmoothDt());
+    buffer.DeltaTime = Vector4(dt, 1.0f / dt, smoothDt, 1.0f / smoothDt);
+}
+
 }

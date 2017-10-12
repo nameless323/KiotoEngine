@@ -8,6 +8,10 @@
 #include <array>
 #include <cstdio>
 #include <exception>
+#include <memory>
+
+#include "Render/DX12/Buffers/EngineBuffers.h"
+#include "Render/DX12/Buffers/UploadBuffer.h"
 
 namespace Kioto::Renderer
 {
@@ -41,6 +45,7 @@ private:
     void LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format);
 
     void LoadPipeline();
+    void UpdateTimeCB(TimeConstantBuffer& buffer);
 
     static constexpr UINT FrameCount = 3;
 
@@ -78,6 +83,8 @@ private:
     Microsoft::WRL::ComPtr<ID3D12PipelineState> m_fallbackPSO;
     Microsoft::WRL::ComPtr<ID3DBlob> m_vsFallbackByteCode;
     Microsoft::WRL::ComPtr<ID3DBlob> m_psFallbackByteCode;
+
+    std::unique_ptr<UploadBuffer<TimeConstantBuffer>> m_mainEngineBuffer;
 
     D3D12_VIEWPORT m_viewport = {};
     D3D12_RECT m_scissor = {};
