@@ -190,48 +190,16 @@ void RendererDX12::LoadPipeline()
 
     ThrowIfFailed(m_device->CreateGraphicsPipelineState(&desc, IID_PPV_ARGS(&m_fallbackPSO)));
 
+    m_commandList->Reset(m_commandAllocators[0].Get(), nullptr);
     Vector3 verts[] =
     {
         { -1.0f, -1.0f, 0.1f },
         { 0.0f, 1.0f, 0.1f },
         { 1.0f, -1.0f, 0.1f }
     };
-    ComPtr<ID3D12Resource> uploadBuffer;
 
-    CD3DX12_HEAP_PROPERTIES uploadHeapProps(D3D12_HEAP_TYPE_UPLOAD);
-    CD3DX12_RESOURCE_DESC vertBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(sizeof(verts));
-    ThrowIfFailed(m_device->CreateCommittedResource(
-        &uploadHeapProps,
-        D3D12_HEAP_FLAG_NONE,
-        &vertBufferDesc,
-        D3D12_RESOURCE_STATE_GENERIC_READ,
-        nullptr,
-        IID_PPV_ARGS(&uploadBuffer)));
-
-    UINT8* mappedBuffer = nullptr;
-    CD3DX12_RANGE range(0, 0);
-    uploadBuffer->Map(0, &range, reinterpret_cast<void**>(&mappedBuffer));
-    memcpy(mappedBuffer, verts, sizeof(verts));
-    uploadBuffer->Unmap(0, nullptr);
-
-    CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_DEFAULT);
-    ThrowIfFailed(m_device->CreateCommittedResource(
-        &heapProps,
-        D3D12_HEAP_FLAG_NONE,
-        &vertBufferDesc,
-        D3D12_RESOURCE_STATE_COPY_DEST,
-        nullptr,
-        IID_PPV_ARGS(&m_vertexBuffer)));
-
-    m_commandList->Reset(m_commandAllocators[0].Get(), nullptr);
-    m_commandList->CopyResource(m_vertexBuffer.Get(), uploadBuffer.Get());
-    CD3DX12_RESOURCE_BARRIER toVertBuffer = CD3DX12_RESOURCE_BARRIER::Transition(m_vertexBuffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
-    m_commandList->ResourceBarrier(1, &toVertBuffer);
+    m_vertexBuffer = std::make_unique<VertexBufferDX12<Vector3>>(verts, static_cast<uint32>(sizeof(verts)), static_cast<uint32>(sizeof(Vector3)), m_commandList.Get(), m_device.Get());
     m_commandList->Close();
-
-    m_vertexBufferView.BufferLocation = m_vertexBuffer->GetGPUVirtualAddress();
-    m_vertexBufferView.StrideInBytes = sizeof(DirectX::XMFLOAT3);
-    m_vertexBufferView.SizeInBytes = sizeof(verts);
 
     ID3D12CommandList* cmdLists[] = { m_commandList.Get() };
     m_commandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
@@ -442,7 +410,7 @@ void RendererDX12::Present()
     m_commandList->SetGraphicsRootConstantBufferView(0, m_mainEngineBuffer->GetElementGpuAddress(m_frameIndex));
 
     m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    m_commandList->IASetVertexBuffers(0, 1, &m_vertexBufferView);
+    m_commandList->IASetVertexBuffers(0, 1, &m_vertexBuffer->GetVertexBufferView());
     m_commandList->DrawInstanced(3, 1, 0, 0);
 
     auto toPresent = CD3DX12_RESOURCE_BARRIER::Transition(GetCurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);

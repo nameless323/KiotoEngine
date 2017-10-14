@@ -12,6 +12,7 @@
 
 #include "Render/DX12/Buffers/EngineBuffers.h"
 #include "Render/DX12/Buffers/UploadBuffer.h"
+#include "Render/DX12/Buffers/VertexBufferDX12.h"
 
 namespace Kioto::Renderer
 {
@@ -75,8 +76,6 @@ private:
     Microsoft::WRL::ComPtr<ID3D12Resource> m_depthStencilBuffer;
     std::array<Microsoft::WRL::ComPtr<ID3D12CommandAllocator>, FrameCount> m_commandAllocators; // [a_vorontsov] For each render thread?
     Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_commandList;
-    Microsoft::WRL::ComPtr<ID3D12Resource> m_vertexBuffer;
-    D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView{};
 
     Microsoft::WRL::ComPtr<ID3D12RootSignature> m_rootSignature;
 
@@ -85,6 +84,7 @@ private:
     Microsoft::WRL::ComPtr<ID3DBlob> m_psFallbackByteCode;
 
     std::unique_ptr<UploadBuffer<TimeConstantBuffer>> m_mainEngineBuffer;
+    std::unique_ptr<VertexBufferDX12<Vector3>> m_vertexBuffer;
 
     D3D12_VIEWPORT m_viewport = {};
     D3D12_RECT m_scissor = {};
