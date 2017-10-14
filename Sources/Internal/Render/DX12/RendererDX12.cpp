@@ -198,7 +198,7 @@ void RendererDX12::LoadPipeline()
         { 1.0f, -1.0f, 0.1f }
     };
 
-    m_vertexBuffer = std::make_unique<VertexBufferDX12<Vector3>>(verts, static_cast<uint32>(sizeof(verts)), static_cast<uint32>(sizeof(Vector3)), m_commandList.Get(), m_device.Get());
+    m_vertexBuffer = std::make_unique<VertexBufferDX12>(reinterpret_cast<byte*>(verts), static_cast<uint32>(sizeof(verts)), static_cast<uint32>(sizeof(Vector3)), m_commandList.Get(), m_device.Get());
     m_commandList->Close();
 
     ID3D12CommandList* cmdLists[] = { m_commandList.Get() };

@@ -84,7 +84,7 @@ private:
     Microsoft::WRL::ComPtr<ID3DBlob> m_psFallbackByteCode;
 
     std::unique_ptr<UploadBuffer<TimeConstantBuffer>> m_mainEngineBuffer;
-    std::unique_ptr<VertexBufferDX12<Vector3>> m_vertexBuffer;
+    std::unique_ptr<VertexBufferDX12> m_vertexBuffer;
 
     D3D12_VIEWPORT m_viewport = {};
     D3D12_RECT m_scissor = {};

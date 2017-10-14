@@ -18,7 +18,7 @@ namespace Kioto::GeometryGenerator
 {
 Mesh GeometryGenerator::GeneratePlane(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/)
 {
-    Mesh m;
+    Mesh m; // [a_vorontsov] TODO:: Via pointer to data.
     m.Position.reserve(4);
     m.UV0.reserve(4);
     m.Normal.reserve(4);
@@ -49,13 +49,15 @@ Mesh GeometryGenerator::GeneratePlane(float32 sizeX /*= 1.0f*/, float32 sizeY /*
     m.Triangles.push_back(1);
     m.Triangles.push_back(3);
 
+    m.PrepareForUpload();
+
     return m;
 }
 
 Mesh GenerateCube(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/, float32 sizeZ /*= 1.0f*/)
 {
     Mesh m;
-    m.Position.reserve(24);
+    m.Position.reserve(24); // [a_vorontsov] TODO:: Via pointer to data.
     m.UV0.reserve(24);
     m.Normal.reserve(24);
     m.Triangles.reserve(36);
@@ -179,6 +181,8 @@ Mesh GenerateCube(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/, float32 si
         20, 21, 23,
         23, 21, 22
     };
+
+    m.PrepareForUpload();
 
     return m;
 }

@@ -95,6 +95,8 @@ Vector3_<T>& Vector3_<T>::operator=(const Vector3_<T>& v)
     x = v.x;
     y = v.y;
     z = v.z;
+
+    return *this;
 }
 
 #if _WIN32 || _WIN64

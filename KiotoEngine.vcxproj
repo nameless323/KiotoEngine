@@ -190,6 +190,7 @@
     <ClCompile Include="Sources\Internal\Core\Timer\GlobalTimer.cpp" />
     <ClCompile Include="Sources\Internal\Core\WindowsApplication.cpp" />
     <ClCompile Include="Sources\Internal\AssetsSystem\AssetsSystem.cpp" />
+    <ClCompile Include="Sources\Internal\Render\DX12\Buffers\VertexBufferDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\RendererDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\Geometry\GeometryGenerator.cpp" />
     <ClCompile Include="Sources\Internal\Render\Geometry\Mesh.cpp" />

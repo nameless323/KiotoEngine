@@ -9,7 +9,7 @@
 
 namespace Kioto
 {
-struct Mesh;
+class Mesh;
 
 namespace GeometryGenerator
 {
