@@ -5,13 +5,13 @@
 
 #include "stdafx.h"
 
-#include "Render/DX12/Buffers/VertexBufferDX12.h"
+#include "Render/DX12/Buffers/IndexBufferDX12.h"
 
 #include "Sources/External/Dx12Helpers/d3dx12.h"
 
 namespace Kioto::Renderer
 {
-VertexBufferDX12::VertexBufferDX12(byte* vertexData, uint32 vertexDataSize, uint32 vertexStride, ID3D12GraphicsCommandList* commandList, ID3D12Device* device)
+IndexBufferDX12::IndexBufferDX12(byte* vertexData, uint32 vertexDataSize, uint32 vertexStride, ID3D12GraphicsCommandList* commandList, ID3D12Device* device)
 {
     CD3DX12_HEAP_PROPERTIES uploadHeapProps(D3D12_HEAP_TYPE_UPLOAD);
     CD3DX12_RESOURCE_DESC vertBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(vertexDataSize);
@@ -36,14 +36,14 @@ VertexBufferDX12::VertexBufferDX12(byte* vertexData, uint32 vertexDataSize, uint
         &vertBufferDesc,
         D3D12_RESOURCE_STATE_COPY_DEST,
         nullptr,
-        IID_PPV_ARGS(&m_vertexBuffer)));
+        IID_PPV_ARGS(&m_indexBuffer)));
 
-    commandList->CopyResource(m_vertexBuffer.Get(), m_uploadBuffer.Get());
-    CD3DX12_RESOURCE_BARRIER toVertBuffer = CD3DX12_RESOURCE_BARRIER::Transition(m_vertexBuffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+    commandList->CopyResource(m_indexBuffer.Get(), m_uploadBuffer.Get());
+    CD3DX12_RESOURCE_BARRIER toVertBuffer = CD3DX12_RESOURCE_BARRIER::Transition(m_indexBuffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_INDEX_BUFFER);
     commandList->ResourceBarrier(1, &toVertBuffer);
 
-    m_vertexBufferView.BufferLocation = m_vertexBuffer->GetGPUVirtualAddress();
-    m_vertexBufferView.StrideInBytes = vertexStride;
-    m_vertexBufferView.SizeInBytes = vertexDataSize;
+    m_indexBufferView.BufferLocation = m_indexBuffer->GetGPUVirtualAddress();
+    m_indexBufferView.Format = DXGI_FORMAT_R16_UINT;
+    m_indexBufferView.SizeInBytes = vertexDataSize;
 }
 }

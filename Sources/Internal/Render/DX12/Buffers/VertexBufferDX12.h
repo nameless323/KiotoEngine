@@ -9,7 +9,6 @@
 
 #include <d3d12.h>
 #include <wrl.h>
-#include "Sources/External/Dx12Helpers/d3dx12.h"
 
 namespace Kioto::Renderer
 {
