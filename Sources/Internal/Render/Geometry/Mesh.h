@@ -54,6 +54,12 @@ public:
     ///
     void PrepareForUpload();
 
+    const byte* GetVertexData() const;
+    uint32 GetVertexDataSize() const;
+    uint32 GetVertexDataStride() const;
+    const byte* GetIndexData() const;
+    uint32 GetIndexDataSize() const;
+
 private:
     byte* m_data = nullptr;
     uint32 m_dataSize = 0;
@@ -62,4 +68,29 @@ private:
     byte* m_indexData = nullptr;
     uint32 m_indexDataSize = 0;
 };
+
+inline const byte* Mesh::GetVertexData() const
+{
+    return m_data;
+}
+
+inline uint32 Mesh::GetVertexDataSize() const
+{
+    return m_dataSize;
+}
+
+inline uint32 Mesh::GetVertexDataStride() const
+{
+    return m_dataStride;
+}
+
+inline const byte* Mesh::GetIndexData() const
+{
+    return m_indexData;
+}
+
+inline uint32 Mesh::GetIndexDataSize() const
+{
+    return m_dataSize;
+}
 }

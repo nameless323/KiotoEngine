@@ -95,19 +95,19 @@ void Mesh::PrepareForUpload()
         {
             Vector3* nptr = reinterpret_cast<Vector3*>(currDataPtr);
             *nptr = Normal[i];
-            m_dataStride += sizeof(Vector3);
+            currDataPtr += sizeof(Vector3);
         }
         if (!Color.empty())
         {
             Vector4* cptr = reinterpret_cast<Vector4*>(currDataPtr);
             *cptr = Color[i];
-            m_dataStride += sizeof(Vector4);
+            currDataPtr += sizeof(Vector4);
         }
         if (!UV0.empty())
         {
             Vector2* uptr = reinterpret_cast<Vector2*>(currDataPtr);
             *uptr = UV0[i];
-            m_dataStride += sizeof(Vector2);
+            currDataPtr += sizeof(Vector2);
         }
     }
 
