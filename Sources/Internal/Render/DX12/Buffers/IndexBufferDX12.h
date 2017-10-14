@@ -15,7 +15,7 @@ namespace Kioto::Renderer
 class IndexBufferDX12
 {
 public:
-    IndexBufferDX12(byte* vertexData, uint32 vertexDataSize, uint32 vertexStride, ID3D12GraphicsCommandList* commandList, ID3D12Device* device);
+    IndexBufferDX12(const byte* vertexData, uint32 vertexDataSize, uint32 vertexStride, ID3D12GraphicsCommandList* commandList, ID3D12Device* device);
     IndexBufferDX12(const IndexBufferDX12&) = delete;
     IndexBufferDX12(IndexBufferDX12&&) = delete;
     IndexBufferDX12& operator=(const IndexBufferDX12&) = delete;

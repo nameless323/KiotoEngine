@@ -13,6 +13,7 @@
 #include "Render/DX12/Buffers/EngineBuffers.h"
 #include "Render/DX12/Buffers/UploadBuffer.h"
 #include "Render/DX12/Buffers/VertexBufferDX12.h"
+#include "Render/DX12/Buffers/IndexBufferDX12.h"
 
 namespace Kioto::Renderer
 {
@@ -85,6 +86,7 @@ private:
 
     std::unique_ptr<UploadBuffer<TimeConstantBuffer>> m_mainEngineBuffer;
     std::unique_ptr<VertexBufferDX12> m_vertexBuffer;
+    std::unique_ptr<IndexBufferDX12> m_indexBuffer;
 
     D3D12_VIEWPORT m_viewport = {};
     D3D12_RECT m_scissor = {};

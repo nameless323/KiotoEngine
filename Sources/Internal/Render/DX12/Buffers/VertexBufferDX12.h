@@ -15,7 +15,7 @@ namespace Kioto::Renderer
 class VertexBufferDX12
 {
 public:
-    VertexBufferDX12(byte* vertexData, uint32 vertexDataSize, uint32 vertexStride, ID3D12GraphicsCommandList* commandList, ID3D12Device* device);
+    VertexBufferDX12(const byte* vertexData, uint32 vertexDataSize, uint32 vertexStride, ID3D12GraphicsCommandList* commandList, ID3D12Device* device);
     VertexBufferDX12(const VertexBufferDX12&) = delete;
     VertexBufferDX12(VertexBufferDX12&&) = delete;
     VertexBufferDX12& operator=(const VertexBufferDX12&) = delete;

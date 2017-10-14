@@ -13,7 +13,7 @@ cbuffer cbEngineBuffer : register(b0)
 
 float4 vs(float3 position : POSITION) : SV_Position
 {
-    return float4(position, 1.0f);
+    return float4(position.xy * 0.5f, 0.1f, 1.0f);
 }
 
 float4 ps() : SV_Target

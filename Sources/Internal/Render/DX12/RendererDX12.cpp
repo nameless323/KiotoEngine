@@ -5,6 +5,8 @@
 
 #include "stdafx.h"
 
+#include "Render/DX12/RendererDX12.h"
+
 #include <array>
 #include <string>
 #include <vector>
@@ -15,7 +17,8 @@
 #include "Core/WindowsApplication.h"
 #include "Math/Vector3.h"
 #include "Math/Vector4.h"
-#include "Render/DX12/RendererDX12.h"
+#include "Render/Geometry/GeometryGenerator.h"
+#include "Render/Geometry/Mesh.h"
 
 namespace Kioto::Renderer
 {
@@ -197,8 +200,9 @@ void RendererDX12::LoadPipeline()
         { 0.0f, 1.0f, 0.1f },
         { 1.0f, -1.0f, 0.1f }
     };
-
-    m_vertexBuffer = std::make_unique<VertexBufferDX12>(reinterpret_cast<byte*>(verts), static_cast<uint32>(sizeof(verts)), static_cast<uint32>(sizeof(Vector3)), m_commandList.Get(), m_device.Get());
+    Mesh box = GeometryGenerator::GenerateCube();
+    m_vertexBuffer = std::make_unique<VertexBufferDX12>(box.GetVertexData(), box.GetVertexDataSize(), box.GetVertexDataStride(), m_commandList.Get(), m_device.Get());
+    m_indexBuffer = std::make_unique<IndexBufferDX12>(box.GetIndexData(), box.GetIndexDataSize(), 4, m_commandList.Get(), m_device.Get());
     m_commandList->Close();
 
     ID3D12CommandList* cmdLists[] = { m_commandList.Get() };
@@ -411,7 +415,8 @@ void RendererDX12::Present()
 
     m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     m_commandList->IASetVertexBuffers(0, 1, &m_vertexBuffer->GetVertexBufferView());
-    m_commandList->DrawInstanced(3, 1, 0, 0);
+    m_commandList->IASetIndexBuffer(&m_indexBuffer->GetIndexBufferView());
+    m_commandList->DrawInstanced(24, 1, 0, 0);
 
     auto toPresent = CD3DX12_RESOURCE_BARRIER::Transition(GetCurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
     m_commandList->ResourceBarrier(1, &toPresent);
