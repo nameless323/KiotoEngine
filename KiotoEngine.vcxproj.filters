@@ -122,6 +122,9 @@
     <ClCompile Include="Sources\Internal\Render\Geometry\GeometryGenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Sources\Internal\Render\Geometry\Mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Assets\Shaders\Fallback.hlsl" />

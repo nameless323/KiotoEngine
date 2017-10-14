@@ -29,7 +29,7 @@ public:
 
 private:
     Microsoft::WRL::ComPtr<ID3D12Resource> m_vertexBuffer;
-    Microsoft::WRL::ComPtr<ID3D12Resource> uploadBuffer; // [a_vorontsov] Check if command list was executed and release ptr.
+    Microsoft::WRL::ComPtr<ID3D12Resource> m_uploadBuffer; // [a_vorontsov] TODO:: Check if command list was executed and release ptr. But maybe its not nessesary.
     D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView{};
 };
 
@@ -44,13 +44,13 @@ VertexBufferDX12<T>::VertexBufferDX12(T* vertexData, uint32 vertexDataSize, uint
         &vertBufferDesc,
         D3D12_RESOURCE_STATE_GENERIC_READ,
         nullptr,
-        IID_PPV_ARGS(&uploadBuffer)));
+        IID_PPV_ARGS(&m_uploadBuffer)));
 
     UINT8* mappedBuffer = nullptr;
     CD3DX12_RANGE range(0, 0);
-    uploadBuffer->Map(0, &range, reinterpret_cast<void**>(&mappedBuffer));
+    m_uploadBuffer->Map(0, &range, reinterpret_cast<void**>(&mappedBuffer));
     memcpy(mappedBuffer, vertexData, vertexDataSize);
-    uploadBuffer->Unmap(0, nullptr);
+    m_uploadBuffer->Unmap(0, nullptr);
 
     CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_DEFAULT);
     ThrowIfFailed(device->CreateCommittedResource(
@@ -61,7 +61,7 @@ VertexBufferDX12<T>::VertexBufferDX12(T* vertexData, uint32 vertexDataSize, uint
         nullptr,
         IID_PPV_ARGS(&m_vertexBuffer)));
 
-    commandList->CopyResource(m_vertexBuffer.Get(), uploadBuffer.Get());
+    commandList->CopyResource(m_vertexBuffer.Get(), m_uploadBuffer.Get());
     CD3DX12_RESOURCE_BARRIER toVertBuffer = CD3DX12_RESOURCE_BARRIER::Transition(m_vertexBuffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
     commandList->ResourceBarrier(1, &toVertBuffer);
 
