@@ -43,7 +43,7 @@ IndexBufferDX12::IndexBufferDX12(const byte* vertexData, uint32 vertexDataSize, 
     commandList->ResourceBarrier(1, &toVertBuffer);
 
     m_indexBufferView.BufferLocation = m_indexBuffer->GetGPUVirtualAddress();
-    m_indexBufferView.Format = DXGI_FORMAT_R16_UINT;
+    m_indexBufferView.Format = DXGI_FORMAT_R32_UINT;
     m_indexBufferView.SizeInBytes = vertexDataSize;
 }
 }
