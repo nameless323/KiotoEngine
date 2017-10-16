@@ -65,121 +65,117 @@ Mesh GenerateCube(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/, float32 si
     float32 yHalf = sizeY * 0.5f;
     float32 zHalf = sizeZ * 0.5f;
 
-    // [a_vorontsov] Front.
-    m.Position.emplace_back(-xHalf, -yHalf, -zHalf);
-    m.Position.emplace_back(-xHalf, yHalf, -zHalf);
-    m.Position.emplace_back(xHalf, yHalf, -zHalf);
-    m.Position.emplace_back(xHalf, -yHalf, -zHalf);
+    Vector3 p0(-zHalf, -xHalf, yHalf);
+    Vector3 p1(zHalf, -xHalf, yHalf);
+    Vector3 p2(zHalf, -xHalf, -yHalf);
+    Vector3 p3(-zHalf, -xHalf, -yHalf);
 
-    m.UV0.emplace_back(0.0f, 0.0f);
-    m.UV0.emplace_back(0.0f, 1.0f);
-    m.UV0.emplace_back(1.0f, 1.0f);
-    m.UV0.emplace_back(1.0f, 0.0f);
+    Vector3 p4(-zHalf, xHalf, yHalf);
+    Vector3 p5(zHalf, xHalf, yHalf);
+    Vector3 p6(zHalf, xHalf, -yHalf);
+    Vector3 p7(-zHalf, xHalf, -yHalf);
 
-    m.Normal.emplace_back(0.0f, 0.0f, -1.0f);
-    m.Normal.emplace_back(0.0f, 0.0f, -1.0f);
-    m.Normal.emplace_back(0.0f, 0.0f, -1.0f);
-    m.Normal.emplace_back(0.0f, 0.0f, -1.0f);
-
-    // [a_vorontsov] Back.
-    m.Position.emplace_back(-xHalf, -yHalf, zHalf);
-    m.Position.emplace_back(-xHalf, yHalf, zHalf);
-    m.Position.emplace_back(xHalf, yHalf, zHalf);
-    m.Position.emplace_back(xHalf, -yHalf, zHalf);
-
-    m.UV0.emplace_back(1.0f, 1.0f);
-    m.UV0.emplace_back(1.0f, 0.0f);
-    m.UV0.emplace_back(0.0f, 0.0f);
-    m.UV0.emplace_back(0.0f, 1.0f);
-
-    m.Normal.emplace_back(0.0f, 0.0f, 1.0f);
-    m.Normal.emplace_back(0.0f, 0.0f, 1.0f);
-    m.Normal.emplace_back(0.0f, 0.0f, 1.0f);
-    m.Normal.emplace_back(0.0f, 0.0f, 1.0f);
-
-    // [a_vorontsov] Left.
-    m.Position.emplace_back(-xHalf, -yHalf, zHalf);
-    m.Position.emplace_back(-xHalf, yHalf, zHalf);
-    m.Position.emplace_back(-xHalf, yHalf, -zHalf);
-    m.Position.emplace_back(-xHalf, -yHalf, -zHalf);
-
-    m.UV0.emplace_back(0.0f, 0.0f);
-    m.UV0.emplace_back(0.0f, 1.0f);
-    m.UV0.emplace_back(1.0f, 1.0f);
-    m.UV0.emplace_back(1.0f, 0.0f);
-
-    m.Normal.emplace_back(-1.0f, 0.0f, 0.0f);
-    m.Normal.emplace_back(-1.0f, 0.0f, 0.0f);
-    m.Normal.emplace_back(-1.0f, 0.0f, 0.0f);
-    m.Normal.emplace_back(-1.0f, 0.0f, 0.0f);
-
-    // [a_vorontsov] Right.
-    m.Position.emplace_back(xHalf, -yHalf, zHalf);
-    m.Position.emplace_back(xHalf, yHalf, zHalf);
-    m.Position.emplace_back(xHalf, yHalf, -zHalf);
-    m.Position.emplace_back(xHalf, -yHalf, -zHalf);
-
-    m.UV0.emplace_back(1.0f, 1.0f);
-    m.UV0.emplace_back(1.0f, 0.0f);
-    m.UV0.emplace_back(0.0f, 0.0f);
-    m.UV0.emplace_back(0.0f, 1.0f);
-
-    m.Normal.emplace_back(1.0f, 0.0f, 0.0f);
-    m.Normal.emplace_back(1.0f, 0.0f, 0.0f);
-    m.Normal.emplace_back(1.0f, 0.0f, 0.0f);
-    m.Normal.emplace_back(1.0f, 0.0f, 0.0f);
-
-    // [a_vorontsov] Top.
-    m.Position.emplace_back(-xHalf, yHalf, -zHalf);
-    m.Position.emplace_back(-xHalf, yHalf, zHalf);
-    m.Position.emplace_back(xHalf, yHalf, zHalf);
-    m.Position.emplace_back(xHalf, yHalf, -zHalf);
-
-    m.UV0.emplace_back(0.0f, 0.0f);
-    m.UV0.emplace_back(0.0f, 1.0f);
-    m.UV0.emplace_back(1.0f, 1.0f);
-    m.UV0.emplace_back(1.0f, 0.0f);
-
-    m.Normal.emplace_back(0.0f, 1.0f, 0.0f);
-    m.Normal.emplace_back(0.0f, 1.0f, 0.0f);
-    m.Normal.emplace_back(0.0f, 1.0f, 0.0f);
-    m.Normal.emplace_back(0.0f, 1.0f, 0.0f);
-
-    // [a_vorontsov] Bottom.
-    m.Position.emplace_back(-xHalf, -yHalf, -zHalf);
-    m.Position.emplace_back(-xHalf, -yHalf, zHalf);
-    m.Position.emplace_back(xHalf, -yHalf, zHalf);
-    m.Position.emplace_back(xHalf, -yHalf, -zHalf);
-
-    m.UV0.emplace_back(1.0f, 1.0f);
-    m.UV0.emplace_back(1.0f, 0.0f);
-    m.UV0.emplace_back(0.0f, 0.0f);
-    m.UV0.emplace_back(0.0f, 1.0f);
-
-    m.Normal.emplace_back(0.0f, 1.0f, 0.0f);
-    m.Normal.emplace_back(0.0f, 1.0f, 0.0f);
-    m.Normal.emplace_back(0.0f, 1.0f, 0.0f);
-    m.Normal.emplace_back(0.0f, 1.0f, 0.0f);
-    
-    m.Triangles =
+    m.Position =
     {
-        0, 1, 3,
-        3, 1, 2,
+        // Bottom
+        p0, p1, p2, p3,
 
-        4, 5, 7,
-        7, 5, 6,
+        // Left
+        p7, p4, p0, p3,
 
-        8, 9, 11,
-        11, 9, 10,
+        // Front
+        p4, p5, p1, p0,
 
-        12, 13, 15,
-        15, 13, 14,
+        // Back
+        p6, p7, p3, p2,
 
-        16, 17, 19,
-        19, 17, 18,
+        // Right
+        p5, p6, p2, p1,
 
-        20, 21, 23,
-        23, 21, 22
+        // Top
+        p7, p6, p5, p4
+    };
+
+    Vector3 up(0.0f, 1.0f, 0.0f);
+    Vector3 down(0.0f, -1.0f, 0.0f);
+    Vector3 front(0.0f, 0.0f, 1.0f);
+    Vector3 back(0.0f, 0.0f, -1.0f);
+    Vector3 left(1.0f, 0.0f, 0.0f);
+    Vector3 right(-1.0f, 0.0f, 0.0f);
+
+    m.Normal =
+    {
+        // Bottom
+        down, down, down, down,
+
+        // Left
+        left, left, left, left,
+
+        // Front
+        front, front, front, front,
+
+        // Back
+        back, back, back, back,
+
+        // Right
+        right, right, right, right,
+
+        // Top
+        up, up, up, up
+    };
+
+    Vector2 _00(0.0f, 0.0f);
+    Vector2 _10(1.0f, 0.0f);
+    Vector2 _01(0.0f, 1.0f);
+    Vector2 _11(1.0f, 1.0f);
+
+    m.UV0 =
+    {
+        // Bottom
+        _11, _01, _00, _10,
+
+        // Left
+        _11, _01, _00, _10,
+
+        // Front
+        _11, _01, _00, _10,
+
+        // Back
+        _11, _01, _00, _10,
+
+        // Right
+        _11, _01, _00, _10,
+
+        // Top
+        _11, _01, _00, _10,
+    };
+
+        m.Triangles =
+    {
+        // Bottom
+        3, 1, 0,
+            3, 2, 1,
+
+            // Left
+            3 + 4 * 1, 1 + 4 * 1, 0 + 4 * 1,
+            3 + 4 * 1, 2 + 4 * 1, 1 + 4 * 1,
+
+            // Front
+            3 + 4 * 2, 1 + 4 * 2, 0 + 4 * 2,
+            3 + 4 * 2, 2 + 4 * 2, 1 + 4 * 2,
+
+            // Back
+            3 + 4 * 3, 1 + 4 * 3, 0 + 4 * 3,
+            3 + 4 * 3, 2 + 4 * 3, 1 + 4 * 3,
+
+            // Right
+            3 + 4 * 4, 1 + 4 * 4, 0 + 4 * 4,
+            3 + 4 * 4, 2 + 4 * 4, 1 + 4 * 4,
+
+            // Top
+            3 + 4 * 5, 1 + 4 * 5, 0 + 4 * 5,
+            3 + 4 * 5, 2 + 4 * 5, 1 + 4 * 5,
+
     };
 
     m.PrepareForUpload();

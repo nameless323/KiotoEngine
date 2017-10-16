@@ -48,6 +48,7 @@ private:
 
     void LoadPipeline();
     void UpdateTimeCB(TimeConstantBuffer& buffer);
+    void UpdateRenderObjectCB(RenderObjectBuffer& buffer);
 
     static constexpr UINT FrameCount = 3;
 
@@ -84,12 +85,19 @@ private:
     Microsoft::WRL::ComPtr<ID3DBlob> m_vsFallbackByteCode;
     Microsoft::WRL::ComPtr<ID3DBlob> m_psFallbackByteCode;
 
-    std::unique_ptr<UploadBuffer<TimeConstantBuffer>> m_mainEngineBuffer;
+    std::unique_ptr<UploadBuffer<TimeConstantBuffer>> m_timeBuffer;
+    std::unique_ptr<UploadBuffer<PassBuffer>> m_passBuffer;
+    std::unique_ptr<UploadBuffer<RenderObjectBuffer>> m_renderObjectBuffer;
     std::unique_ptr<VertexBufferDX12> m_vertexBuffer;
     std::unique_ptr<IndexBufferDX12> m_indexBuffer;
 
     D3D12_VIEWPORT m_viewport = {};
     D3D12_RECT m_scissor = {};
+
+
+    Matrix4 m_view;
+    Matrix4 m_proj;
+    Matrix4 m_viewProj;
 };
 
 }
