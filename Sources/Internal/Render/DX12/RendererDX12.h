@@ -91,6 +91,8 @@ private:
     std::unique_ptr<VertexBufferDX12> m_vertexBuffer;
     std::unique_ptr<IndexBufferDX12> m_indexBuffer;
 
+    Mesh m_box;
+
     D3D12_VIEWPORT m_viewport = {};
     D3D12_RECT m_scissor = {};
 

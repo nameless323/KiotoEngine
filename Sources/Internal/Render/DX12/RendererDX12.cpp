@@ -200,11 +200,10 @@ void RendererDX12::LoadPipeline()
 
     m_commandList->Reset(m_commandAllocators[0].Get(), nullptr);
 
-    Mesh box = GeometryGenerator::GenerateCube();
-    m_vertexBuffer = std::make_unique<VertexBufferDX12>(box.GetVertexData(), box.GetVertexDataSize(), box.GetVertexDataStride(), m_commandList.Get(), m_device.Get());
-    m_indexBuffer = std::make_unique<IndexBufferDX12>(box.GetIndexData(), box.GetIndexDataSize(), m_commandList.Get(), m_device.Get(), DXGI_FORMAT_R32_UINT);
+    m_box = GeometryGenerator::GenerateCube();
+    m_vertexBuffer = std::make_unique<VertexBufferDX12>(m_box.GetVertexData(), m_box.GetVertexDataSize(), m_box.GetVertexDataStride(), m_commandList.Get(), m_device.Get());
+    m_indexBuffer = std::make_unique<IndexBufferDX12>(m_box.GetIndexData(), m_box.GetIndexDataSize(), m_commandList.Get(), m_device.Get(), IndexFormatToDXGI(m_box.GetIndexFormat()));
     m_commandList->Close();
-
     ID3D12CommandList* cmdLists[] = { m_commandList.Get() };
     m_commandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
 
@@ -454,7 +453,7 @@ void RendererDX12::Present()
     m_commandList->IASetIndexBuffer(&m_indexBuffer->GetIndexBufferView());
     m_commandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-    m_commandList->DrawIndexedInstanced(36, 1, 0, 0, 0);
+    m_commandList->DrawIndexedInstanced(m_box.GetIndexCount(), 1, 0, 0, 0);
 
     auto toPresent = CD3DX12_RESOURCE_BARRIER::Transition(GetCurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
     m_commandList->ResourceBarrier(1, &toPresent);

@@ -10,13 +10,13 @@
 namespace Kioto
 {
 
-Mesh::Mesh(byte* data, uint32 dataSize, uint32 dataStride, byte* indexData, uint32 indexDataSize)
-    : m_data(data), m_dataSize(dataSize), m_dataStride(dataStride), m_indexData(indexData), m_indexDataSize(indexDataSize)
+Mesh::Mesh(byte* data, uint32 dataSize, uint32 dataStride, uint32 vertexCount, byte* indexData, uint32 indexDataSize, uint32 indexCount, eIndexFormat indexFormat)
+    : m_data(data), m_dataSize(dataSize), m_vertexCount(vertexCount),m_dataStride(dataStride), m_indexData(indexData), m_indexDataSize(indexDataSize), m_indexCount(indexCount), m_indexFormat(indexFormat)
 {
 }
 
 Mesh::Mesh(const Mesh& other)
-    : m_dataSize(other.m_dataSize), m_dataStride(other.m_dataStride), m_indexDataSize(other.m_indexDataSize)
+    : m_dataSize(other.m_dataSize), m_dataStride(other.m_dataStride), m_indexDataSize(other.m_indexDataSize), m_vertexCount(other.m_vertexCount), m_indexCount(other.m_indexCount), m_indexFormat(other.m_indexFormat)
 {
     m_data = new byte[m_dataSize];
     memcpy(m_data, other.m_data, m_dataSize);
@@ -32,7 +32,7 @@ Mesh::Mesh(const Mesh& other)
 }
 
 Mesh::Mesh(Mesh&& other)
-    : m_data(other.m_data), m_dataSize(other.m_dataSize), m_dataStride(other.m_dataStride), m_indexData(other.m_indexData), m_indexDataSize(other.m_indexDataSize)
+    : m_data(other.m_data), m_dataSize(other.m_dataSize), m_dataStride(other.m_dataStride), m_indexData(other.m_indexData), m_indexDataSize(other.m_indexDataSize), m_vertexCount(other.m_vertexCount), m_indexCount(other.m_indexCount), m_indexFormat(other.m_indexFormat)
 {
     other.m_data = nullptr;
     other.m_indexData = nullptr;
@@ -49,7 +49,7 @@ Mesh::~Mesh()
     SafeDelete(m_indexData);
 }
 
-void Mesh::SetData(byte* data, uint32 dataSize, uint32 dataStride, byte* indexData, uint32 indexDataSize)
+void Mesh::SetData(byte* data, uint32 dataSize, uint32 dataStride, uint32 vertexCount, byte* indexData, uint32 indexDataSize, uint32 indexCount, eIndexFormat indexFormat)
 {
     SafeDelete(m_data);
     SafeDelete(m_indexData);
@@ -57,9 +57,12 @@ void Mesh::SetData(byte* data, uint32 dataSize, uint32 dataStride, byte* indexDa
     m_data = data;
     m_dataSize = dataSize;
     m_dataStride = dataStride;
+    m_vertexCount = vertexCount;
 
     m_indexData = indexData;
     m_indexDataSize = indexDataSize;
+    m_indexCount = indexCount;
+    m_indexFormat = indexFormat;
 }
 
 void Mesh::PrepareForUpload()
@@ -73,6 +76,10 @@ void Mesh::PrepareForUpload()
     m_data = new byte[m_dataSize];
     SafeDelete(m_indexData);
     m_indexData = new byte[Triangles.size() * sizeof(uint32)];
+
+    m_indexFormat = eIndexFormat::Format32Bit;
+    m_indexCount = static_cast<uint32>(Triangles.size());
+    m_vertexCount = pSize;
 
     if (!Position.empty())
         m_dataStride += sizeof(Vector3);
@@ -127,6 +134,10 @@ Mesh& Mesh::operator=(Mesh&& other)
     m_dataStride = other.m_dataStride;
     m_indexDataSize = other.m_indexDataSize;
 
+    m_vertexCount = other.m_vertexCount;
+    m_indexCount = other.m_indexCount;
+    m_indexFormat = other.m_indexFormat;
+
     SafeDelete(m_data);
     m_data = other.m_data;
     other.m_data = nullptr;
@@ -160,6 +171,10 @@ Mesh& Mesh::operator=(const Mesh& other)
     m_indexData = new byte[m_indexDataSize];
     memcpy(m_indexData, other.m_indexData, m_indexDataSize);
 
+    m_vertexCount = other.m_vertexCount;
+    m_indexCount = other.m_indexCount;
+    m_indexFormat = other.m_indexFormat;
+
     Position = other.Position;
     Normal = other.Normal;
     Color = other.Color;
@@ -168,5 +183,4 @@ Mesh& Mesh::operator=(const Mesh& other)
 
     return *this;
 }
-
 }
