@@ -10,6 +10,8 @@
 #include <d3d12.h>
 #include <wrl.h>
 
+#include "Render/DX12/Buffers/DefaultHeapBuffer.h"
+
 namespace Kioto::Renderer
 {
 class VertexBufferDX12
@@ -20,14 +22,13 @@ public:
     VertexBufferDX12(VertexBufferDX12&&) = delete;
     VertexBufferDX12& operator=(const VertexBufferDX12&) = delete;
     VertexBufferDX12& operator=(VertexBufferDX12&&) = delete;
-    ~VertexBufferDX12() = default;
+    ~VertexBufferDX12();
 
     ID3D12Resource* GetVertexBuffer() const;
     const D3D12_VERTEX_BUFFER_VIEW& GetVertexBufferView() const;
 
 private:
-    Microsoft::WRL::ComPtr<ID3D12Resource> m_vertexBuffer;
-    Microsoft::WRL::ComPtr<ID3D12Resource> m_uploadBuffer; // [a_vorontsov] TODO:: Check if command list was executed and release ptr. But maybe its not nessesary.
+    DefaultHeapBuffer* m_buffer = nullptr;
     D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView{};
 };
 
@@ -38,6 +39,6 @@ inline const D3D12_VERTEX_BUFFER_VIEW& VertexBufferDX12::GetVertexBufferView() c
 
 inline ID3D12Resource* VertexBufferDX12::GetVertexBuffer() const
 {
-    return m_vertexBuffer.Get();
+    return m_buffer->GetBuffer();
 }
 }

@@ -10,24 +10,27 @@
 #include <d3d12.h>
 #include <wrl.h>
 
+#include "Render/DX12/Buffers/DefaultHeapBuffer.h"
+
 namespace Kioto::Renderer
 {
+class DefaultHeapBuffer;
+
 class IndexBufferDX12
 {
 public:
-    IndexBufferDX12(const byte* vertexData, uint32 vertexDataSize, uint32 vertexStride, ID3D12GraphicsCommandList* commandList, ID3D12Device* device);
+    IndexBufferDX12(const byte* indexData, uint32 indexDataSize, ID3D12GraphicsCommandList* commandList, ID3D12Device* device, DXGI_FORMAT indexBufferFormat);
     IndexBufferDX12(const IndexBufferDX12&) = delete;
     IndexBufferDX12(IndexBufferDX12&&) = delete;
     IndexBufferDX12& operator=(const IndexBufferDX12&) = delete;
     IndexBufferDX12& operator=(IndexBufferDX12&&) = delete;
-    ~IndexBufferDX12() = default;
+    ~IndexBufferDX12();
 
     ID3D12Resource* GetIndexBuffer() const;
     const D3D12_INDEX_BUFFER_VIEW& GetIndexBufferView() const;
 
 private:
-    Microsoft::WRL::ComPtr<ID3D12Resource> m_indexBuffer;
-    Microsoft::WRL::ComPtr<ID3D12Resource> m_uploadBuffer; // [a_vorontsov] TODO:: Check if command list was executed and release ptr. But maybe its not nessesary.
+    DefaultHeapBuffer* m_buffer = nullptr;
     D3D12_INDEX_BUFFER_VIEW m_indexBufferView{};
 };
 
@@ -38,6 +41,6 @@ inline const D3D12_INDEX_BUFFER_VIEW& IndexBufferDX12::GetIndexBufferView() cons
 
 inline ID3D12Resource* IndexBufferDX12::GetIndexBuffer() const
 {
-    return m_indexBuffer.Get();
+    return m_buffer->GetBuffer();
 }
 }

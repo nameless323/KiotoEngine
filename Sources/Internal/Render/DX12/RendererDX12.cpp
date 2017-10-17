@@ -202,7 +202,7 @@ void RendererDX12::LoadPipeline()
 
     Mesh box = GeometryGenerator::GenerateCube();
     m_vertexBuffer = std::make_unique<VertexBufferDX12>(box.GetVertexData(), box.GetVertexDataSize(), box.GetVertexDataStride(), m_commandList.Get(), m_device.Get());
-    m_indexBuffer = std::make_unique<IndexBufferDX12>(box.GetIndexData(), box.GetIndexDataSize(), 4, m_commandList.Get(), m_device.Get());
+    m_indexBuffer = std::make_unique<IndexBufferDX12>(box.GetIndexData(), box.GetIndexDataSize(), m_commandList.Get(), m_device.Get(), DXGI_FORMAT_R32_UINT);
     m_commandList->Close();
 
     ID3D12CommandList* cmdLists[] = { m_commandList.Get() };
