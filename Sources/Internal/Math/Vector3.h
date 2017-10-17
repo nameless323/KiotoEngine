@@ -31,7 +31,11 @@ public:
     Vector3_(T x_, T y_, T z_);
     Vector3_(const Vector3_<T>& v);
 
+    // TODO:: operator== via memcmp data.
     Vector3_<T>& operator=(const Vector3_<T>& v);
+
+    Vector3_<T>& operator+=(const Vector3_<T>& v);
+    Vector3_<T>& operator-=(const Vector3_<T>& v);
 
 #if _WIN32 || _WIN64
     explicit Vector3_(const DirectX::XMFLOAT3& vec);
@@ -64,6 +68,20 @@ public:
     static Vector3_<T> Normalized(Vector3_<T> v);
 };
 
+template<typename T>
+inline Vector3_<T> operator+ (Vector3_<T> v1, const Vector3_<T>& v2)
+{
+    v1 += v2;
+    return v1;
+}
+
+template<typename T>
+inline Vector3_<T> operator- (Vector3_<T> v1, const Vector3_<T>& v2)
+{
+    v1 -= v2;
+    return v1;
+}
+
 template <typename T>
 Vector3_<T>::Vector3_()
 {
@@ -88,22 +106,44 @@ Vector3_<T>::Vector3_(const Vector3_<T>& v)
 {}
 
 template <typename T>
-Vector3_<T>& Vector3_<T>::operator=(const Vector3_<T>& v)
+inline Vector3_<T>& Vector3_<T>::operator=(const Vector3_<T>& v)
 {
     x = v.x;
     y = v.y;
     z = v.z;
+
+    return *this;
+}
+
+template <typename T>
+inline Vector3_<T>& Vector3_<T>::operator+=(const Vector3_<T>& v)
+{
+    x += v.x;
+    y += v.y;
+    z += v.z;
+
+    return *this;
+}
+
+template <typename T>
+inline Vector3_<T>& Vector3_<T>::operator-=(const Vector3_<T>& v)
+{
+    x -= v.x;
+    y -= v.y;
+    z -= v.z;
+
+    return *this;
 }
 
 #if _WIN32 || _WIN64
 template <typename T>
-Vector3_<T>::Vector3_(const DirectX::XMFLOAT3& v)
+inline Vector3_<T>::Vector3_(const DirectX::XMFLOAT3& v)
     : x(v.x), y(v.y), z(v.z)
 {
 }
 
 template <typename T>
-Vector3_<T>::operator DirectX::XMFLOAT3() const
+inline Vector3_<T>::operator DirectX::XMFLOAT3() const
 {
     return XMFLOAT3(x, y, z);
 }

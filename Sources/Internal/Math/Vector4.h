@@ -33,6 +33,8 @@ public:
     Vector4_(T x_, T y_, T z_, T w_);
     Vector4_(const Vector4_& other);
 
+
+    // TODO:: operator== via memcmp data.
 #if _WIN32 || _WIN64
     explicit Vector4_(const DirectX::XMFLOAT4& vec);
     operator DirectX::XMFLOAT4() const;

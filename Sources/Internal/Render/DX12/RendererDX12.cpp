@@ -5,6 +5,8 @@
 
 #include "stdafx.h"
 
+#include "Render/DX12/RendererDX12.h"
+
 #include <array>
 #include <string>
 #include <vector>
@@ -15,7 +17,8 @@
 #include "Core/WindowsApplication.h"
 #include "Math/Vector3.h"
 #include "Math/Vector4.h"
-#include "Render/DX12/RendererDX12.h"
+#include "Render/Geometry/GeometryGenerator.h"
+#include "Render/Geometry/Mesh.h"
 
 namespace Kioto::Renderer
 {
@@ -145,7 +148,9 @@ void RendererDX12::LoadPipeline()
 
     D3D12_INPUT_ELEMENT_DESC inputElementDesc[] =
     {
-        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
     };
 
     D3D12_FEATURE_DATA_ROOT_SIGNATURE signatureData = {};
@@ -158,9 +163,11 @@ void RendererDX12::LoadPipeline()
 
     D3D12_ROOT_SIGNATURE_FLAGS flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
     CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
-    CD3DX12_ROOT_PARAMETER1 rootParam;
-    rootParam.InitAsConstantBufferView(0);
-    rootSignatureDesc.Init_1_1(1, &rootParam, 0, nullptr, flags);
+    CD3DX12_ROOT_PARAMETER1 rootParam[3];
+    rootParam[0].InitAsConstantBufferView(0);
+    rootParam[1].InitAsConstantBufferView(1);
+    rootParam[2].InitAsConstantBufferView(2);
+    rootSignatureDesc.Init_1_1(3, rootParam, 0, nullptr, flags);
 
     ComPtr<ID3DBlob> signature;
     ComPtr<ID3DBlob> rootSignatureCreationError;
@@ -179,9 +186,10 @@ void RendererDX12::LoadPipeline()
     desc.VS = CD3DX12_SHADER_BYTECODE(m_vsFallbackByteCode.Get());
     desc.PS = CD3DX12_SHADER_BYTECODE(m_psFallbackByteCode.Get());
     desc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+
     desc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
-    desc.DepthStencilState.DepthEnable = FALSE;
-    desc.DepthStencilState.StencilEnable = FALSE;
+    desc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+    desc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
     desc.SampleMask = UINT_MAX;
     desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
     desc.NumRenderTargets = 1;
@@ -190,59 +198,40 @@ void RendererDX12::LoadPipeline()
 
     ThrowIfFailed(m_device->CreateGraphicsPipelineState(&desc, IID_PPV_ARGS(&m_fallbackPSO)));
 
-    Vector3 verts[] =
-    {
-        { -1.0f, -1.0f, 0.1f },
-        { 0.0f, 1.0f, 0.1f },
-        { 1.0f, -1.0f, 0.1f }
-    };
-    ComPtr<ID3D12Resource> uploadBuffer;
-
-    CD3DX12_HEAP_PROPERTIES uploadHeapProps(D3D12_HEAP_TYPE_UPLOAD);
-    CD3DX12_RESOURCE_DESC vertBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(sizeof(verts));
-    ThrowIfFailed(m_device->CreateCommittedResource(
-        &uploadHeapProps,
-        D3D12_HEAP_FLAG_NONE,
-        &vertBufferDesc,
-        D3D12_RESOURCE_STATE_GENERIC_READ,
-        nullptr,
-        IID_PPV_ARGS(&uploadBuffer)));
-
-    UINT8* mappedBuffer = nullptr;
-    CD3DX12_RANGE range(0, 0);
-    uploadBuffer->Map(0, &range, reinterpret_cast<void**>(&mappedBuffer));
-    memcpy(mappedBuffer, verts, sizeof(verts));
-    uploadBuffer->Unmap(0, nullptr);
-
-    CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_DEFAULT);
-    ThrowIfFailed(m_device->CreateCommittedResource(
-        &heapProps,
-        D3D12_HEAP_FLAG_NONE,
-        &vertBufferDesc,
-        D3D12_RESOURCE_STATE_COPY_DEST,
-        nullptr,
-        IID_PPV_ARGS(&m_vertexBuffer)));
-
     m_commandList->Reset(m_commandAllocators[0].Get(), nullptr);
-    m_commandList->CopyResource(m_vertexBuffer.Get(), uploadBuffer.Get());
-    CD3DX12_RESOURCE_BARRIER toVertBuffer = CD3DX12_RESOURCE_BARRIER::Transition(m_vertexBuffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
-    m_commandList->ResourceBarrier(1, &toVertBuffer);
+
+    m_box = GeometryGenerator::GenerateCube();
+    m_vertexBuffer = std::make_unique<VertexBufferDX12>(m_box.GetVertexData(), m_box.GetVertexDataSize(), m_box.GetVertexDataStride(), m_commandList.Get(), m_device.Get());
+    m_indexBuffer = std::make_unique<IndexBufferDX12>(m_box.GetIndexData(), m_box.GetIndexDataSize(), m_commandList.Get(), m_device.Get(), IndexFormatToDXGI(m_box.GetIndexFormat()));
     m_commandList->Close();
-
-    m_vertexBufferView.BufferLocation = m_vertexBuffer->GetGPUVirtualAddress();
-    m_vertexBufferView.StrideInBytes = sizeof(DirectX::XMFLOAT3);
-    m_vertexBufferView.SizeInBytes = sizeof(verts);
-
     ID3D12CommandList* cmdLists[] = { m_commandList.Get() };
     m_commandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
 
-    m_mainEngineBuffer = std::make_unique<UploadBuffer<TimeConstantBuffer>>(3, true, m_device.Get());
+    m_timeBuffer = std::make_unique<UploadBuffer<TimeConstantBuffer>>(FrameCount, true, m_device.Get());
     TimeConstantBuffer timeBuffer;
     UpdateTimeCB(timeBuffer);
 
-    m_mainEngineBuffer->UploadData(0, timeBuffer);
-    m_mainEngineBuffer->UploadData(1, timeBuffer);
-    m_mainEngineBuffer->UploadData(2, timeBuffer);
+    m_timeBuffer->UploadData(0, timeBuffer);
+    m_timeBuffer->UploadData(1, timeBuffer);
+    m_timeBuffer->UploadData(2, timeBuffer);
+
+    m_passBuffer = std::make_unique<UploadBuffer<PassBuffer>>(FrameCount, true, m_device.Get());
+    PassBuffer passBuffer;
+    m_view = Matrix4::BuildLookAt({ 0.0f, 0.0f, -1.0f }, { 0.0f, 0.0f, 3.0f }, { 0.0f, 1.0f, 0.0f });
+    Matrix4 proj = Matrix4::BuildProjectionFov(Math::RadToDeg(35.0f), static_cast<float32>(m_width) / static_cast<float32>(m_height), 0.10f, 1000.0f);
+    m_viewProj = m_view * proj;
+    passBuffer.View = m_view.Tranposed();
+    passBuffer.ViewProjection = m_viewProj.Tranposed();
+    m_passBuffer->UploadData(0, passBuffer);
+    m_passBuffer->UploadData(1, passBuffer);
+    m_passBuffer->UploadData(2, passBuffer);
+
+    m_renderObjectBuffer = std::make_unique<UploadBuffer<RenderObjectBuffer>>(FrameCount, true, m_device.Get());
+    RenderObjectBuffer roBuff;
+    UpdateRenderObjectCB(roBuff);
+    m_renderObjectBuffer->UploadData(0, roBuff);
+    m_renderObjectBuffer->UploadData(1, roBuff);
+    m_renderObjectBuffer->UploadData(2, roBuff);
 
     WaitForGPU();
 }
@@ -261,6 +250,7 @@ void RendererDX12::Shutdown()
     if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&dxgiDebug))))
         dxgiDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_FLAGS(DXGI_DEBUG_RLO_SUMMARY | DXGI_DEBUG_RLO_IGNORE_INTERNAL));
 #endif
+    OutputDebugStringA("************************Shutdown\n");
 }
 
 void RendererDX12::GetHardwareAdapter(IDXGIFactory4* factory, IDXGIAdapter1** adapter)
@@ -389,6 +379,17 @@ void RendererDX12::Resize(uint16 width, uint16 heigth)
     ID3D12CommandList* cmdLists[] = { m_commandList.Get() };
     m_commandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
 
+    PassBuffer passBuffer;
+    m_view = Matrix4::BuildLookAt({ 0.0f, 0.0f, -1.0f }, { 0.0f, 0.0f, 3.0f }, { 0.0f, 1.0f, 0.0f });
+    Matrix4 proj = Matrix4::BuildProjectionFov(Math::RadToDeg(35.0f), static_cast<float32>(m_width) / static_cast<float32>(m_height), 0.10f, 1000.0f);
+    m_viewProj = m_view * proj;
+    passBuffer.View = m_view.Tranposed();
+    passBuffer.ViewProjection = m_viewProj.Tranposed();
+
+    m_passBuffer->UploadData(0, passBuffer);
+    m_passBuffer->UploadData(1, passBuffer);
+    m_passBuffer->UploadData(2, passBuffer);
+
     WaitForGPU();
 
     m_viewport.TopLeftX = 0;
@@ -418,9 +419,14 @@ D3D12_CPU_DESCRIPTOR_HANDLE RendererDX12::GetCurrentBackBufferView() const
 
 void RendererDX12::Update(float32 dt)
 {
+    OutputDebugStringA("update\n");
     TimeConstantBuffer timeBuffer;
     UpdateTimeCB(timeBuffer);
-    m_mainEngineBuffer->UploadData(m_frameIndex, timeBuffer);
+    m_timeBuffer->UploadData(m_frameIndex, timeBuffer);
+
+    RenderObjectBuffer roBuffer;
+    UpdateRenderObjectCB(roBuffer);
+    m_renderObjectBuffer->UploadData(m_frameIndex, roBuffer);
 }
 
 void RendererDX12::Present()
@@ -439,11 +445,15 @@ void RendererDX12::Present()
     m_commandList->OMSetRenderTargets(1, &GetCurrentBackBufferView(), false, &GetDepthStencilView());
 
     m_commandList->SetGraphicsRootSignature(m_rootSignature.Get());
-    m_commandList->SetGraphicsRootConstantBufferView(0, m_mainEngineBuffer->GetElementGpuAddress(m_frameIndex));
+    m_commandList->SetGraphicsRootConstantBufferView(0, m_timeBuffer->GetElementGpuAddress(m_frameIndex));
+    m_commandList->SetGraphicsRootConstantBufferView(1, m_passBuffer->GetElementGpuAddress(m_frameIndex));
+    m_commandList->SetGraphicsRootConstantBufferView(2, m_renderObjectBuffer->GetElementGpuAddress(m_frameIndex));
 
-    m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    m_commandList->IASetVertexBuffers(0, 1, &m_vertexBufferView);
-    m_commandList->DrawInstanced(3, 1, 0, 0);
+    m_commandList->IASetVertexBuffers(0, 1, &m_vertexBuffer->GetVertexBufferView());
+    m_commandList->IASetIndexBuffer(&m_indexBuffer->GetIndexBufferView());
+    m_commandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+    m_commandList->DrawIndexedInstanced(m_box.GetIndexCount(), 1, 0, 0, 0);
 
     auto toPresent = CD3DX12_RESOURCE_BARRIER::Transition(GetCurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
     m_commandList->ResourceBarrier(1, &toPresent);
@@ -555,6 +565,21 @@ void RendererDX12::UpdateTimeCB(TimeConstantBuffer& buffer)
     float32 dt = static_cast<float32>(GlobalTimer::GetDeltaTime());
     float32 smoothDt = static_cast<float32>(GlobalTimer::GetSmoothDt());
     buffer.DeltaTime = Vector4(dt, 1.0f / dt, smoothDt, 1.0f / smoothDt);
+}
+
+void RendererDX12::UpdateRenderObjectCB(RenderObjectBuffer& buffer)
+{
+    static float32 angle = 0.0f;
+    angle += GlobalTimer::GetDeltaTime();
+    Matrix4 toWorld = Matrix4::BuildRotation(Vector3(1.0f, 1.0f, 0.0f).Normalize(), angle);
+    //toWorld = Matrix4::Identity();
+    toWorld.SetTranslation({ 0.0f, 0.0f, 3.0f });
+    
+    Matrix4 toModel;
+    toWorld.Inversed(toModel);
+
+    buffer.ToModel = toModel.Tranposed();
+    buffer.ToWorld = toWorld.Tranposed();
 }
 
 }

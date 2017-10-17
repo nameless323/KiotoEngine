@@ -10,6 +10,8 @@
 #include <string>
 #include <windows.h>
 
+#include "Sources/Internal/Render/Geometry/Mesh.h"
+
 namespace Kioto::Renderer
 {
 class ComException : public std::exception // [a_vorontsov] https://github.com/Microsoft/DirectXTK/wiki/ThrowIfFailed
@@ -58,5 +60,14 @@ inline void SetName(ID3D12Object*, LPCWSTR)
 inline UINT CalculateConstantBufferByteSize(UINT byteSize) // [a_vorontsov] Dx12 constant buffers must be 255 byte aligned.
 {
     return (byteSize + 255) & ~255;
+}
+
+inline constexpr DXGI_FORMAT IndexFormatToDXGI(eIndexFormat format)
+{
+    if (format == eIndexFormat::Format16Bit)
+        return DXGI_FORMAT_R16_UINT;
+    if (format == eIndexFormat::Format32Bit)
+        return DXGI_FORMAT_R32_UINT;
+    return DXGI_FORMAT_R8_UINT;
 }
 }

@@ -12,6 +12,8 @@
 
 #include "Render/DX12/Buffers/EngineBuffers.h"
 #include "Render/DX12/Buffers/UploadBuffer.h"
+#include "Render/DX12/Buffers/VertexBufferDX12.h"
+#include "Render/DX12/Buffers/IndexBufferDX12.h"
 
 namespace Kioto::Renderer
 {
@@ -46,6 +48,7 @@ private:
 
     void LoadPipeline();
     void UpdateTimeCB(TimeConstantBuffer& buffer);
+    void UpdateRenderObjectCB(RenderObjectBuffer& buffer);
 
     static constexpr UINT FrameCount = 3;
 
@@ -75,8 +78,6 @@ private:
     Microsoft::WRL::ComPtr<ID3D12Resource> m_depthStencilBuffer;
     std::array<Microsoft::WRL::ComPtr<ID3D12CommandAllocator>, FrameCount> m_commandAllocators; // [a_vorontsov] For each render thread?
     Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_commandList;
-    Microsoft::WRL::ComPtr<ID3D12Resource> m_vertexBuffer;
-    D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView{};
 
     Microsoft::WRL::ComPtr<ID3D12RootSignature> m_rootSignature;
 
@@ -84,10 +85,21 @@ private:
     Microsoft::WRL::ComPtr<ID3DBlob> m_vsFallbackByteCode;
     Microsoft::WRL::ComPtr<ID3DBlob> m_psFallbackByteCode;
 
-    std::unique_ptr<UploadBuffer<TimeConstantBuffer>> m_mainEngineBuffer;
+    std::unique_ptr<UploadBuffer<TimeConstantBuffer>> m_timeBuffer;
+    std::unique_ptr<UploadBuffer<PassBuffer>> m_passBuffer;
+    std::unique_ptr<UploadBuffer<RenderObjectBuffer>> m_renderObjectBuffer;
+    std::unique_ptr<VertexBufferDX12> m_vertexBuffer;
+    std::unique_ptr<IndexBufferDX12> m_indexBuffer;
+
+    Mesh m_box;
 
     D3D12_VIEWPORT m_viewport = {};
     D3D12_RECT m_scissor = {};
+
+
+    Matrix4 m_view;
+    Matrix4 m_proj;
+    Matrix4 m_viewProj;
 };
 
 }
