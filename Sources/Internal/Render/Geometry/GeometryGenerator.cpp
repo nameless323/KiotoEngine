@@ -2,6 +2,7 @@
 // Copyright (C) Alexandr Vorontsov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
+// Adapted from http://wiki.unity3d.com/index.php/ProceduralPrimitives
 
 #include "stdafx.h"
 
@@ -19,35 +20,55 @@ namespace Kioto::GeometryGenerator
 Mesh GeometryGenerator::GeneratePlane(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/)
 {
     Mesh m; // [a_vorontsov] TODO:: Via pointer to data.
-    m.Position.reserve(4);
-    m.UV0.reserve(4);
-    m.Normal.reserve(4);
-    m.Triangles.reserve(6);
-    float32 xHalf = sizeX * 0.5f;
-    float32 yHalf = sizeY * 0.5f;
+    float length = 1.0f;
+    float width = 1.0f;
+    int resX = 2; // 2 minimum
+    int resZ = 2;
+    std::string s;
+    s.length();
 
-    m.Position.emplace_back(-xHalf, -yHalf, 0.0f);
-    m.Position.emplace_back(-xHalf, yHalf, 0.0f);
-    m.Position.emplace_back(xHalf, yHalf, 0.0f);
-    m.Position.emplace_back(xHalf, -yHalf, 0.0f);
+    m.Position.reserve(resX * resZ);
+    for (int z = 0; z < resZ; z++)
+    {
+        // [ -length / 2, length / 2 ]
+        float zPos = ((float)z / (resZ - 1) - .5f) * length;
+        for (int x = 0; x < resX; x++)
+        {
+            // [ -width / 2, width / 2 ]
+            float xPos = ((float)x / (resX - 1) - .5f) * width;
+            m.Position.emplace_back(xPos, 0.0f, zPos);
+        }
+    }
 
-    m.UV0.emplace_back(0.0f, 0.0f);
-    m.UV0.emplace_back(0.0f, 1.0f);
-    m.UV0.emplace_back(1.0f, 1.0f);
-    m.UV0.emplace_back(1.0f, 0.0f);
+    m.Normal.reserve(m.Position.size());
+    for (int n = 0; n < m.Position.size(); n++)
+        m.Normal.emplace_back(0.0f, 1.0f, 0.0f);
 
-    m.Normal.emplace_back(0.0f, 0.0f, -1.0f);
-    m.Normal.emplace_back(0.0f, 0.0f, -1.0f);
-    m.Normal.emplace_back(0.0f, 0.0f, -1.0f);
-    m.Normal.emplace_back(0.0f, 0.0f, -1.0f);
+    m.UV0.reserve(m.Position.size());
+    for (int v = 0; v < resZ; v++)
+    {
+        for (int u = 0; u < resX; u++)
+        {
+            m.UV0.emplace_back((float)u / (resX - 1), (float)v / (resZ - 1));
+        }
+    }
 
-    m.Triangles.push_back(0);
-    m.Triangles.push_back(1);
-    m.Triangles.push_back(4);
+    int nbFaces = (resX - 1) * (resZ - 1);
+    m.Triangles.reserve(nbFaces * 6);
+    int t = 0;
+    for (int face = 0; face < nbFaces; face++)
+    {
+        // Retrieve lower left corner from face ind
+        int i = face % (resX - 1) + (face / (resZ - 1) * resX);
 
-    m.Triangles.push_back(4);
-    m.Triangles.push_back(1);
-    m.Triangles.push_back(3);
+        m.Triangles.push_back(i + resX);
+        m.Triangles.push_back(i + 1);
+        m.Triangles.push_back(i);
+
+        m.Triangles.push_back(i + resX);
+        m.Triangles.push_back(i + resX + 1);
+        m.Triangles.push_back(i + 1);
+    }
 
     m.PrepareForUpload();
 
@@ -240,4 +261,178 @@ Mesh GenerateCube(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/, float32 si
 
     return { vertexData, stride * 24, stride, 24, reinterpret_cast<byte*>(indices), 36 * sizeof(uint32), 36, eIndexFormat::Format32Bit };
 }
+
+Mesh GenerateCone()
+{
+    Mesh m;
+    float height = 1.0f;
+    float bottomRadius = .25f;
+    float topRadius = .05f;
+    int nbSides = 18;
+    int nbHeightSeg = 1; // Not implemented yet
+
+    int nbVerticesCap = nbSides + 1;
+
+    m.Position.reserve(nbVerticesCap + nbVerticesCap + nbSides * nbHeightSeg * 2 + 2);
+    int vertNumber = nbVerticesCap + nbVerticesCap + nbSides * nbHeightSeg * 2 + 2;
+    int vert = 0;
+
+    // Bottom cap
+    m.Position.emplace_back(0.0f, 0.0f, 0.0f);
+    vert++;
+    while (vert <= nbSides)
+    {
+        float rad = (float)vert / nbSides * Math::TwoPI;
+        m.Position.emplace_back(std::cos(rad) * bottomRadius, 0.0f, std::sin(rad) * bottomRadius);
+        vert++;
+    }
+
+    // Top cap
+    m.Position.emplace_back(0.0f, height, 0.0f);
+    vert++;
+    while (vert <= nbSides * 2 + 1)
+    {
+        float rad = (float)(vert - nbSides - 1) / nbSides * Math::TwoPI;
+        m.Position.emplace_back(std::cos(rad) * topRadius, height, std::sin(rad) * topRadius);
+        vert++;
+    }
+
+    // Sides
+    int v = 0;
+    while (vert <= vertNumber - 4)
+    {
+        float rad = (float)v / nbSides * Math::TwoPI;
+        m.Position.emplace_back(std::cos(rad) * topRadius, height, std::sin(rad) * topRadius);
+        m.Position.emplace_back(std::cos(rad) * bottomRadius, 0.0f, std::sin(rad) * bottomRadius);
+        vert += 2;
+        v++;
+    }
+    m.Position.push_back(m.Position[nbSides * 2 + 2]);
+    m.Position.push_back(m.Position[nbSides * 2 + 3]);
+
+    m.Normal.reserve(m.Position.size());
+    vert = 0;
+
+    // Bottom cap
+    while (vert <= nbSides)
+    {
+        m.Normal.emplace_back(0.0f, -1.0f, 0.0f);
+        vert++;
+    }
+
+    // Top cap
+    while (vert <= nbSides * 2 + 1)
+    {
+        m.Normal.emplace_back(0.0f, 1.0f, 0.0f);
+        vert++;
+    }
+
+    // Sides
+    v = 0;
+    while (vert <= vertNumber - 4)
+    {
+        float rad = (float)v / nbSides * Math::TwoPI;
+        float cos = std::cos(rad);
+        float sin = std::sin(rad);
+
+        m.Normal.emplace_back(cos, 0.0f, sin);
+        m.Normal.emplace_back(cos, 0.0f, sin);
+
+        vert += 2;
+        v++;
+    }
+    m.Normal.push_back(m.Normal[nbSides * 2 + 2]);
+    m.Normal.push_back(m.Normal[nbSides * 2 + 3]);
+
+    // Bottom cap
+    int u = 0;
+    m.UV0.emplace_back(0.5f, 0.5f);
+    u++;
+    while (u <= nbSides)
+    {
+        float rad = (float)u / nbSides * Math::TwoPI;
+        m.UV0.emplace_back(std::cos(rad) * .5f + .5f, std::sin(rad) * .5f + .5f);
+        u++;
+    }
+
+    // Top cap
+    m.UV0.emplace_back(0.5f, 0.5f);
+    u++;
+    while (u <= nbSides * 2 + 1)
+    {
+        float rad = (float)u / nbSides * Math::TwoPI;
+        m.UV0.emplace_back(std::cos(rad) * .5f + .5f, std::sin(rad) * .5f + .5f);
+        u++;
+    }
+
+    // Sides
+    int u_sides = 0;
+    while (u <= vertNumber - 4)
+    {
+        float t = (float)u_sides / nbSides;
+        m.UV0.emplace_back(t, 1.0f);
+        m.UV0.emplace_back(t, 0.0f);
+        u += 2;
+        u_sides++;
+    }
+    m.UV0.emplace_back(1.0f, 1.0f);
+    m.UV0.emplace_back(1.0f, 0.0f);
+
+    int nbTriangles = nbSides + nbSides + nbSides * 2;
+    m.Triangles.reserve(nbTriangles);
+
+    // Bottom cap
+    int tri = 0;
+    int i = 0;
+    while (tri < nbSides - 1)
+    {
+        m.Triangles.push_back(0);
+        m.Triangles.push_back(tri + 1);
+        m.Triangles.push_back(tri + 2);
+        tri++;
+        i += 3;
+    }
+    m.Triangles.push_back(0);
+    m.Triangles.push_back(tri + 1);
+    m.Triangles.push_back(1);
+    tri++;
+    i += 3;
+
+    // Top cap
+    //tri++;
+    while (tri < nbSides * 2)
+    {
+        m.Triangles.push_back(tri + 2);
+        m.Triangles.push_back(tri + 1);
+        m.Triangles.push_back(nbVerticesCap);
+        tri++;
+        i += 3;
+    }
+
+    m.Triangles.push_back(nbVerticesCap + 1);
+    m.Triangles.push_back(tri + 1);
+    m.Triangles.push_back(nbVerticesCap);
+    tri++;
+    i += 3;
+    tri++;
+
+    // Sides
+    while (tri <= nbTriangles)
+    {
+        m.Triangles.push_back(tri + 2);
+        m.Triangles.push_back(tri + 1);
+        m.Triangles.push_back(tri + 0);
+        tri++;
+        i += 3;
+
+        m.Triangles.push_back(tri + 1);
+        m.Triangles.push_back(tri + 2);
+        m.Triangles.push_back(tri + 0);
+        tri++;
+        i += 3;
+    }
+    m.PrepareForUpload();
+    return m;
+}
+
 }
