@@ -54,6 +54,10 @@ public:
     /// Normalize vector.
     ///
     Vector3_<T>& Normalize();
+    ///
+    /// Get normalized copy of vector.
+    ///
+    Vector3_<T> Normalized() const;
 
     ///
     /// Dot product of the v1 and v2 vectors.
@@ -187,6 +191,12 @@ inline Vector3_<T>& Vector3_<T>::Normalize()
     y *= invLen;
     z *= invLen;
     return *this;
+}
+
+template <typename T>
+inline Vector3_<T> Vector3_<T>::Normalized() const
+{
+    return Vector3_<T>::Normalized(*this);
 }
 
 template <typename T>
