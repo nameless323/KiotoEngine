@@ -519,4 +519,240 @@ Mesh GenerateSphere()
     return m;
 }
 
+Mesh GenerateTube()
+{
+    float height = 1.0f;
+    int nbSides = 24;
+
+    // Outter shell is at radius1 + radius2 / 2, inner shell at radius1 - radius2 / 2
+    float bottomRadius1 = .5f;
+    float bottomRadius2 = .15f;
+    float topRadius1 = .5f;
+    float topRadius2 = .15f;
+
+    int nbVerticesCap = nbSides * 2 + 2;
+    int nbVerticesSides = nbSides * 2 + 2;
+    int vertSize = nbVerticesCap * 2 + nbVerticesSides * 2;
+
+    Mesh m;
+    int vert = 0;
+
+    // Bottom cap
+    int sideCounter = 0;
+    while (vert < nbVerticesCap)
+    {
+        sideCounter = sideCounter == nbSides ? 0 : sideCounter;
+
+        float r1 = (float)(sideCounter++) / nbSides * Math::TwoPI;
+        float cos = std::cos(r1);
+        float sin = std::sin(r1);
+        m.Position.emplace_back(cos * (bottomRadius1 - bottomRadius2 * .5f), 0.0f, sin * (bottomRadius1 - bottomRadius2 * 0.5f));
+        m.Position.emplace_back(cos * (bottomRadius1 + bottomRadius2 * .5f), 0.0f, sin * (bottomRadius1 + bottomRadius2 * 0.5f));
+        vert += 2;
+    }
+
+    // Top cap
+    sideCounter = 0;
+    while (vert < nbVerticesCap * 2)
+    {
+        sideCounter = sideCounter == nbSides ? 0 : sideCounter;
+
+        float r1 = (float)(sideCounter++) / nbSides * Math::TwoPI;
+        float cos = std::cos(r1);
+        float sin = std::sin(r1);
+        m.Position.emplace_back(cos * (topRadius1 - topRadius2 * 0.5f), height, sin * (topRadius1 - topRadius2 * 0.5f));
+        m.Position.emplace_back(cos * (topRadius1 + topRadius2 * 0.5f), height, sin * (topRadius1 + topRadius2 * 0.5f));
+        vert += 2;
+    }
+
+    // Sides (out)
+    sideCounter = 0;
+    while (vert < nbVerticesCap * 2 + nbVerticesSides)
+    {
+        sideCounter = sideCounter == nbSides ? 0 : sideCounter;
+
+        float r1 = (float)(sideCounter++) / nbSides * Math::TwoPI;
+        float cos = std::cos(r1);
+        float sin = std::sin(r1);
+
+        m.Position.emplace_back(cos * (topRadius1 + topRadius2 * .5f), height, sin * (topRadius1 + topRadius2 * .5f));
+        m.Position.emplace_back(cos * (bottomRadius1 + bottomRadius2 * .5f), 0.0f, sin * (bottomRadius1 + bottomRadius2 * .5f));
+        vert += 2;
+    }
+
+    // Sides (in)
+    sideCounter = 0;
+    while (vert < vertSize)
+    {
+        sideCounter = sideCounter == nbSides ? 0 : sideCounter;
+
+        float r1 = (float)(sideCounter++) / nbSides * Math::TwoPI;
+        float cos = std::cos(r1);
+        float sin = std::sin(r1);
+
+        m.Position.emplace_back(cos * (topRadius1 - topRadius2 * .5f), height, sin * (topRadius1 - topRadius2 * .5f));
+        m.Position.emplace_back(cos * (bottomRadius1 - bottomRadius2 * .5f), 0.0f, sin * (bottomRadius1 - bottomRadius2 * .5f));
+        vert += 2;
+    }
+
+    vert = 0;
+    // Bottom cap
+    while (vert < nbVerticesCap)
+    {
+        m.Normal.emplace_back(0.0f, -1.0f, 1.0f);
+        vert++;
+    }
+
+    // Top cap
+    while (vert < nbVerticesCap * 2)
+    {
+        m.Normal.emplace_back(0.0f, 1.0f, 1.0f);
+        vert++;
+    }
+
+    // Sides (out)
+    sideCounter = 0;
+    while (vert < nbVerticesCap * 2 + nbVerticesSides)
+    {
+        sideCounter = sideCounter == nbSides ? 0 : sideCounter;
+
+        float r1 = (float)(sideCounter++) / nbSides * Math::TwoPI;
+
+        m.Normal.emplace_back(std::cos(r1), 0.0f, std::sin(r1));
+        m.Normal.push_back(m.Normal[vert]);
+        vert += 2;
+    }
+
+    // Sides (in)
+    sideCounter = 0;
+    while (vert < vertSize)
+    {
+        sideCounter = sideCounter == nbSides ? 0 : sideCounter;
+
+        float r1 = (float)(sideCounter++) / nbSides * Math::TwoPI;
+
+        m.Normal.push_back(Vector3(-std::cos(r1), 0.0f, -std::sin(r1)));
+        m.Normal.push_back(m.Normal[vert]);
+        vert += 2;
+    }
+
+    vert = 0;
+    // Bottom cap
+    sideCounter = 0;
+    while (vert < nbVerticesCap)
+    {
+        float t = (float)(sideCounter++) / nbSides;
+        m.UV0.emplace_back(0.0f, t);
+        m.UV0.emplace_back(1.0f, t);
+        vert += 2;
+    }
+
+    // Top cap
+    sideCounter = 0;
+    while (vert < nbVerticesCap * 2)
+    {
+        float t = (float)(sideCounter++) / nbSides;
+        m.UV0.emplace_back(0.0f, t);
+        m.UV0.emplace_back(1.0f, t);
+        vert += 2;
+    }
+
+    // Sides (out)
+    sideCounter = 0;
+    while (vert < nbVerticesCap * 2 + nbVerticesSides)
+    {
+        float t = (float)(sideCounter++) / nbSides;
+        m.UV0.emplace_back(0.0f, t);
+        m.UV0.emplace_back(1.0f, t);
+        vert += 2;
+    }
+
+    // Sides (in)
+    sideCounter = 0;
+    while (vert < vertSize)
+    {
+        float t = (float)(sideCounter++) / nbSides;
+        m.UV0.emplace_back(0.0f, t);
+        m.UV0.emplace_back(1.0f, t);
+        vert += 2;
+    }
+
+        int nbFace = nbSides * 4;
+    int nbTriangles = nbFace * 2;
+    int nbIndexes = nbTriangles * 3;
+
+    // Bottom cap
+    int i = 0;
+    sideCounter = 0;
+    while (sideCounter < nbSides)
+    {
+        int current = sideCounter * 2;
+        int next = sideCounter * 2 + 2;
+
+        m.Triangles.push_back(next + 1);
+        m.Triangles.push_back(next);
+        m.Triangles.push_back(current);
+
+        m.Triangles.push_back(current + 1);
+        m.Triangles.push_back(next + 1);
+        m.Triangles.push_back(current);
+
+        sideCounter++;
+    }
+
+    // Top cap
+    while (sideCounter < nbSides * 2)
+    {
+        int current = sideCounter * 2 + 2;
+        int next = sideCounter * 2 + 4;
+
+        m.Triangles.push_back(current);
+        m.Triangles.push_back(next);
+        m.Triangles.push_back(next + 1);
+
+        m.Triangles.push_back(current);
+        m.Triangles.push_back(next + 1);
+        m.Triangles.push_back(current + 1);
+
+        sideCounter++;
+    }
+
+    // Sides (out)
+    while (sideCounter < nbSides * 3)
+    {
+        int current = sideCounter * 2 + 4;
+        int next = sideCounter * 2 + 6;
+
+        m.Triangles.push_back(current);
+        m.Triangles.push_back(next);
+        m.Triangles.push_back(next + 1);
+
+        m.Triangles.push_back(current);
+        m.Triangles.push_back(next + 1);
+        m.Triangles.push_back(current + 1);
+
+        sideCounter++;
+    }
+
+
+    // Sides (in)
+    while (sideCounter < nbSides * 4)
+    {
+        int current = sideCounter * 2 + 6;
+        int next = sideCounter * 2 + 8;
+
+        m.Triangles.push_back(next + 1);
+        m.Triangles.push_back(next);
+        m.Triangles.push_back(current);
+
+        m.Triangles.push_back(current + 1);
+        m.Triangles.push_back(next + 1);
+        m.Triangles.push_back(current);
+
+        sideCounter++;
+    }
+    m.PrepareForUpload();
+    return m;
+}
+
 }

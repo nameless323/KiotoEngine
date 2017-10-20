@@ -26,8 +26,12 @@ Mesh GenerateCube(float32 sizeX = 1.0f, float32 sizeY = 1.0f, float32 sizeZ = 1.
 ///
 Mesh GenerateCone();
 ///
-/// Sphere.
+/// Generate sphere.
 ///
 Mesh GenerateSphere();
+///
+/// Generate tube.
+///
+Mesh GenerateTube();
 }
 }
