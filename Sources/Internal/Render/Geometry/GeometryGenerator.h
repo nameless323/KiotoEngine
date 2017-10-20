@@ -33,5 +33,9 @@ Mesh GenerateSphere();
 /// Generate tube.
 ///
 Mesh GenerateTube();
+///
+/// Generate icosphere.
+///
+Mesh GenerateIcosphere();
 }
 }
