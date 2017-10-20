@@ -36,6 +36,6 @@ Mesh GenerateTube();
 ///
 /// Generate icosphere.
 ///
-Mesh GenerateIcosphere();
+Mesh GenerateIcosphere(int32 recursionLevel = 3, float32 radius = 1.0f);
 }
 }

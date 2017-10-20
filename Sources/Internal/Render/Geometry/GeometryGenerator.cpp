@@ -20,24 +20,26 @@ namespace Kioto::GeometryGenerator
 {
 namespace
 {
+template <typename T, typename = std::enable_if_t<std::is_same_v<T, byte> || std::is_same_v<T, uint16> || std::is_same_v<T, uint32> || std::is_same_v<T, uint64>>>
 struct TriangleIndices
 {
-    int v1 = 0;
-    int v2 = 0;
-    int v3 = 0;
+    T i1 = 0;
+    T i2 = 0;
+    T i3 = 0;
 
-    TriangleIndices(int v1_, int v2_, int v3_)
+    TriangleIndices(T i1_, T i2_, T i3_)
     {
-        v1 = v1_;
-        v2 = v2_;
-        v3 = v3_;
+        i1 = i1_;
+        i2 = i2_;
+        i3 = i3_;
     }
 };
 
-// return index of point in the middle of p1 and p2
-int GetMiddlePoint(int p1, int p2, std::vector<Vector3>& vertices, std::map<uint64, int>& cache, float radius)
+// [a_vorontsov] Return index of point in the middle of p1 and p2 (for the icosphere).
+template <typename T, typename = std::enable_if_t<std::is_same_v<T, byte> || std::is_same_v<T, uint16> || std::is_same_v<T, uint32> || std::is_same_v<T, uint64>>>
+T GetMiddlePoint(T p1, T p2, std::vector<Vector3>& vertices, std::map<uint64, T>& cache, float radius)
 {
-    // first check if we have it already
+    // [a_vorontsov] First check if we have it already.
     bool firstIsSmaller = p1 < p2;
     uint64 smallerIndex = firstIsSmaller ? p1 : p2;
     uint64 greaterIndex = firstIsSmaller ? p2 : p1;
@@ -49,7 +51,7 @@ int GetMiddlePoint(int p1, int p2, std::vector<Vector3>& vertices, std::map<uint
         return it->second;
     }
 
-    // not in cache, calculate it
+    // [a_vorontsov] Not in cache, calculate it.
     Vector3 point1 = vertices[p1];
     Vector3 point2 = vertices[p2];
     Vector3 middle
@@ -59,11 +61,11 @@ int GetMiddlePoint(int p1, int p2, std::vector<Vector3>& vertices, std::map<uint
         (point1.z + point2.z) / 2.0f
     );
 
-    // add vertex makes sure point is on unit sphere
-    int i = static_cast<int>(vertices.size());
+    // [a_vorontsov] Add vertex makes sure point is on unit sphere.
+    T i = static_cast<T>(vertices.size());
     vertices.push_back(middle.Normalized() * radius);
 
-    // store it, return index
+    // [a_vorontsov] Store it, return index.
     cache[key] = i;
     return i;
 }
@@ -807,60 +809,54 @@ Mesh GenerateTube()
     return m;
 }
 
-Mesh GenerateIcosphere()
+Mesh GenerateIcosphere(int32 recursionLevel /*= 3*/, float32 radius /*= 1.0f*/)
 {
-    std::vector<Vector3> vertList;
-    std::map<uint64, int> middlePointIndexCache;
-    int index = 0;
+    std::vector<Vector3> positions;
+    std::map<uint64, uint16> middlePointIndexCache;
 
-    int recursionLevel = 3;
-    float radius = 1.0f;
-    Mesh m;
-
-    // create 12 vertices of a icosahedron
+    // [a_vorontsov] Create 12 vertices of a icosahedron.
     float t = (1.0f + std::sqrt(5.0f)) / 2.0f;
 
-    vertList.push_back(Vector3(-1.0f, t, 0.0f).Normalized() * radius);
-    vertList.push_back(Vector3(1.0f, t, 0.0f).Normalized() * radius);
-    vertList.push_back(Vector3(-1.0f, -t, 0.0f).Normalized() * radius);
-    vertList.push_back(Vector3(1.0f, -t, 0.0f).Normalized() * radius);
+    positions.push_back(Vector3(-1.0f, t, 0.0f).Normalized() * radius);
+    positions.push_back(Vector3(1.0f, t, 0.0f).Normalized() * radius);
+    positions.push_back(Vector3(-1.0f, -t, 0.0f).Normalized() * radius);
+    positions.push_back(Vector3(1.0f, -t, 0.0f).Normalized() * radius);
 
-    vertList.push_back(Vector3(0.0f, -1.0f, t).Normalized() * radius);
-    vertList.push_back(Vector3(0.0f, 1.0f, t).Normalized() * radius);
-    vertList.push_back(Vector3(0.0f, -1.0f, -t).Normalized() * radius);
-    vertList.push_back(Vector3(0.0f, 1.0f, -t).Normalized() * radius);
+    positions.push_back(Vector3(0.0f, -1.0f, t).Normalized() * radius);
+    positions.push_back(Vector3(0.0f, 1.0f, t).Normalized() * radius);
+    positions.push_back(Vector3(0.0f, -1.0f, -t).Normalized() * radius);
+    positions.push_back(Vector3(0.0f, 1.0f, -t).Normalized() * radius);
 
-    vertList.push_back(Vector3(t, 0.0f, -1.0f).Normalized() * radius);
-    vertList.push_back(Vector3(t, 0.0f, 1.0f).Normalized() * radius);
-    vertList.push_back(Vector3(-t, 0.0f, -1.0f).Normalized() * radius);
-    vertList.push_back(Vector3(-t, 0.0f, 1.0f).Normalized() * radius);
+    positions.push_back(Vector3(t, 0.0f, -1.0f).Normalized() * radius);
+    positions.push_back(Vector3(t, 0.0f, 1.0f).Normalized() * radius);
+    positions.push_back(Vector3(-t, 0.0f, -1.0f).Normalized() * radius);
+    positions.push_back(Vector3(-t, 0.0f, 1.0f).Normalized() * radius);
 
+    // [a_vorontsov] Create 20 triangles of the icosahedron.
+    std::vector<TriangleIndices<uint16>> faces;
 
-    // create 20 triangles of the icosahedron
-    std::vector<TriangleIndices> faces;
-
-    // 5 faces around point 0
+    // [a_vorontsov] 5 faces around point 0.
     faces.emplace_back(0, 11, 5);
     faces.emplace_back(0, 5, 1);
     faces.emplace_back(0, 1, 7);
     faces.emplace_back(0, 7, 10);
     faces.emplace_back(0, 10, 11);
 
-    // 5 adjacent faces 
+    // [a_vorontsov] 5 adjacent faces.
     faces.emplace_back(1, 5, 9);
     faces.emplace_back(5, 11, 4);
     faces.emplace_back(11, 10, 2);
     faces.emplace_back(10, 7, 6);
     faces.emplace_back(7, 1, 8);
 
-    // 5 faces around point 3
+    // [a_vorontsov] 5 faces around point 3.
     faces.emplace_back(3, 9, 4);
     faces.emplace_back(3, 4, 2);
     faces.emplace_back(3, 2, 6);
     faces.emplace_back(3, 6, 8);
     faces.emplace_back(3, 8, 9);
 
-    // 5 adjacent faces 
+    // [a_vorontsov] 5 adjacent faces.
     faces.emplace_back(4, 9, 5);
     faces.emplace_back(2, 4, 11);
     faces.emplace_back(6, 2, 10);
@@ -868,39 +864,47 @@ Mesh GenerateIcosphere()
     faces.emplace_back(9, 8, 1);
 
 
-    // refine triangles
+    // [a_vorontsov] Refine triangles.
+    std::vector<TriangleIndices<uint16>> faces2;
+    faces2.reserve(20);
     for (int i = 0; i < recursionLevel; i++)
     {
-        std::vector<TriangleIndices> faces2;
+        faces2.clear();
         for(auto& tri : faces)
         {
-            // replace triangle by 4 triangles
-            int a = GetMiddlePoint(tri.v1, tri.v2, vertList, middlePointIndexCache, radius);
-            int b = GetMiddlePoint(tri.v2, tri.v3, vertList, middlePointIndexCache, radius);
-            int c = GetMiddlePoint(tri.v3, tri.v1, vertList, middlePointIndexCache, radius);
+            uint16 a = GetMiddlePoint(tri.i1, tri.i2, positions, middlePointIndexCache, radius);
+            uint16 b = GetMiddlePoint(tri.i2, tri.i3, positions, middlePointIndexCache, radius);
+            uint16 c = GetMiddlePoint(tri.i3, tri.i1, positions, middlePointIndexCache, radius);
 
-            faces2.emplace_back(tri.v1, a, c);
-            faces2.emplace_back(tri.v2, b, a);
-            faces2.emplace_back(tri.v3, c, b);
+            faces2.emplace_back(tri.i1, a, c);
+            faces2.emplace_back(tri.i2, b, a);
+            faces2.emplace_back(tri.i3, c, b);
             faces2.emplace_back(a, b, c);
         }
         faces = faces2;
     }
-
-    m.Position = std::move(vertList);
-
-    for (int i = 0; i < faces.size(); i++)
+    uint32 stride = sizeof(Vector3) + sizeof(Vector3);
+    byte* vertData = new byte[stride * positions.size()];
+    byte* vertDataBegin = vertData;
+    for (const auto& pos : positions)
     {
-        m.Triangles.push_back(faces[i].v1);
-        m.Triangles.push_back(faces[i].v2);
-        m.Triangles.push_back(faces[i].v3);
+        *reinterpret_cast<Vector3*>(vertData) = pos; // [a_vorontsov] Position.
+        vertData += sizeof(Vector3);
+        *reinterpret_cast<Vector3*>(vertData) = pos; // [a_vorontsov] Normal.
+        vertData += sizeof(Vector3);
     }
 
-    for (int i = 0; i < m.Position.size(); i++)
-        m.Normal.push_back(m.Position[i].Normalized());
-
-    m.PrepareForUpload();
-    return m;
+    uint32 trigCount = static_cast<uint32>(faces.size()) * 3;
+    uint16* indices = new uint16[trigCount];
+    byte* indicesBegin = reinterpret_cast<byte*>(indices);
+    for (const auto& face : faces)
+    {
+        *indices++ = face.i1;
+        *indices++ = face.i2;
+        *indices++ = face.i3;
+    }
+    uint32 vCount = static_cast<uint32>(positions.size());
+    return { vertDataBegin, stride * vCount, stride, vCount, indicesBegin, trigCount * sizeof(uint32), trigCount, eIndexFormat::Format16Bit };
 }
 
 }
