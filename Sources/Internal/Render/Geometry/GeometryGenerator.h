@@ -28,7 +28,7 @@ Mesh GenerateCone();
 ///
 /// Generate sphere.
 ///
-Mesh GenerateSphere();
+Mesh GenerateSphere(float32 radius = 1.0f);
 ///
 /// Generate tube.
 ///

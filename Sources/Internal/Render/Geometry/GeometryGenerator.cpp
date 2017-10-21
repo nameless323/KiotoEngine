@@ -495,88 +495,102 @@ Mesh GenerateCone()
     return m;
 }
 
-Mesh GenerateSphere()
+Mesh GenerateSphere(float32 radius /*=1.0f*/)
 {
-    Mesh m;
-    float radius = 1.0f;
-    // Longitude |||
-    int nbLong = 24;
-    // Latitude ---
-    int nbLat = 16;
+    int32 nbLong = 24;
+    int32 nbLat = 16;
 
-    int vertSize = (nbLong + 1) * nbLat + 2;
+    uint32 vCount = (nbLong + 1) * nbLat + 2;
+    uint32 stride = sizeof(Vector3) + sizeof(Vector3) + sizeof(Vector2);
+    byte* vData = new byte[vCount * stride];
+    byte* vDataBegin = vData;
 
-    m.Position.reserve(vertSize);
-    m.Position.push_back(Vector3(0.0f, 1.0f, 0.0) * radius);
-    for (int lat = 0; lat < nbLat; lat++)
+    *reinterpret_cast<Vector3*>(vData) = Vector3(0.0f, 1.0f, 0.0) * radius;
+    vData += stride;
+
+    for (int32 lat = 0; lat < nbLat; lat++)
     {
-        float a1 = Math::PI * (float)(lat + 1) / (nbLat + 1);
-        float sin1 = std::sin(a1);
-        float cos1 = std::cos(a1);
+        float32 a1 = Math::PI * static_cast<float32>(lat + 1) / (nbLat + 1);
+        float32 sin1 = std::sin(a1);
+        float32 cos1 = std::cos(a1);
 
-        for (int lon = 0; lon <= nbLong; lon++)
+        for (int32 lon = 0; lon <= nbLong; lon++)
         {
-            float a2 = Math::TwoPI * (float)(lon == nbLong ? 0 : lon) / nbLong;
-            float sin2 = std::sin(a2);
-            float cos2 = std::cos(a2);
+            float32 a2 = Math::TwoPI * static_cast<float32>(lon == nbLong ? 0 : lon) / nbLong;
+            float32 sin2 = std::sin(a2);
+            float32 cos2 = std::cos(a2);
 
-            m.Position.push_back(Vector3(sin1 * cos2, cos1, sin1 * sin2) * radius);
+            *reinterpret_cast<Vector3*>(vData) = Vector3(sin1 * cos2, cos1, sin1 * sin2) * radius;
+            vData += stride;
         }
     }
-    m.Position.push_back(Vector3(0.0f, 1.0f, 0.0f) * -radius);
+    *reinterpret_cast<Vector3*>(vData) = Vector3(0.0f, -1.0f, 0.0f) * radius;
+    vData = vDataBegin;
+    vData += sizeof(Vector3);
 
-    m.Normal.reserve(vertSize);
-    for (int n = 0; n < vertSize; n++)
-        m.Normal.push_back(Vector3::Normalized(m.Position[n]));
-
-    m.UV0.reserve(vertSize);
-    m.UV0.emplace_back(0.0f, 1.0f);
-    for (int lat = 0; lat < nbLat; lat++)
-        for (int lon = 0; lon <= nbLong; lon++)
-            m.UV0.emplace_back((float)lon / nbLong, 1.0f - (float)(lat + 1) / (nbLat + 1));
-    m.UV0.emplace_back(0.0f, 0.0f);
-
-    int nbFaces = vertSize;
-    int nbTriangles = nbFaces * 2;
-    int nbIndexes = nbTriangles * 3;
-    m.Triangles.reserve(nbIndexes);
-
-    //Top Cap
-    int i = 0;
-    for (int lon = 0; lon < nbLong; lon++)
+    for (uint32 n = 0; n < vCount; n++)
     {
-        m.Triangles.push_back(lon + 2);
-        m.Triangles.push_back(lon + 1);
-        m.Triangles.push_back(0);
+        *reinterpret_cast<Vector3*>(vData) = *reinterpret_cast<Vector3*>(vDataBegin + stride * n);
+        vData += stride;
     }
 
-    //Middle
-    for (int lat = 0; lat < nbLat - 1; lat++)
+    vData = vDataBegin;
+    vData += sizeof(Vector3) + sizeof(Vector3);
+
+    *reinterpret_cast<Vector2*>(vData) = Vector2(0.0f, 1.0f);
+    vData += stride;
+
+    for (int lat = 0; lat < nbLat; lat++)
     {
-        for (int lon = 0; lon < nbLong; lon++)
+        for (int lon = 0; lon <= nbLong; lon++)
         {
-            int current = lon + lat * (nbLong + 1) + 1;
-            int next = current + nbLong + 1;
+            *reinterpret_cast<Vector2*>(vData) = Vector2(static_cast<float32>(lon) / nbLong, 1.0f - static_cast<float32>(lat + 1) / (nbLat + 1));
+            vData += stride;
+        }
+    }
+    *reinterpret_cast<Vector2*>(vData) = Vector2(0.0f, 0.0f);
 
-            m.Triangles.push_back(current);
-            m.Triangles.push_back(current + 1);
-            m.Triangles.push_back(next + 1);
+    uint32 nbFaces = vCount;
+    uint32 nbTriangles = nbFaces * 2;
+    uint32 iCount = nbTriangles * 3;
+    uint32* iData = new uint32[iCount];
+    byte* iDataBegin = reinterpret_cast<byte*>(iData);
 
-            m.Triangles.push_back(current);
-            m.Triangles.push_back(next + 1);
-            m.Triangles.push_back(next);
+    // [a_vorontsov] Top cap.
+    int32 i = 0;
+    for (int32 lon = 0; lon < nbLong; lon++)
+    {
+        *iData++ = lon + 2;
+        *iData++ = lon + 1;
+        *iData++ = 0;
+    }
+
+    // [a_vorontsov] Middle.
+    for (int32 lat = 0; lat < nbLat - 1; lat++)
+    {
+        for (int32 lon = 0; lon < nbLong; lon++)
+        {
+            int32 current = lon + lat * (nbLong + 1) + 1;
+            int32 next = current + nbLong + 1;
+
+            *iData++ = current;
+            *iData++ = current + 1;
+            *iData++ = next + 1;
+
+            *iData++ = current;
+            *iData++ = next + 1;
+            *iData++ = next;
         }
     }
 
-    //Bottom Cap
-    for (int lon = 0; lon < nbLong; lon++)
+    // [a_vorontsov] Bottom cap.
+    for (int32 lon = 0; lon < nbLong; lon++)
     {
-        m.Triangles.push_back(vertSize - 1);
-        m.Triangles.push_back(vertSize - (lon + 2) - 1);
-        m.Triangles.push_back(vertSize - (lon + 1) - 1);
+        *iData++ = vCount - 1;
+        *iData++ = vCount - (lon + 2) - 1;
+        *iData++ = vCount - (lon + 1) - 1;
     }
-    m.PrepareForUpload();
-    return m;
+    return { vDataBegin, stride * vCount, stride, vCount, iDataBegin, iCount * sizeof(uint32), iCount, eIndexFormat::Format32Bit };
 }
 
 Mesh GenerateTube()
