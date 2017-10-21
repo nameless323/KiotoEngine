@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <array>
 #include <d3d12.h>
 #include <exception>
 #include <string>
@@ -69,5 +70,19 @@ inline constexpr DXGI_FORMAT IndexFormatToDXGI(eIndexFormat format)
     if (format == eIndexFormat::Format32Bit)
         return DXGI_FORMAT_R32_UINT;
     return DXGI_FORMAT_R8_UINT;
+}
+
+///
+/// Get predefined static samplers.
+///
+inline std::array<const CD3DX12_STATIC_SAMPLER_DESC, 1> GetStaticSamplers()
+{
+    const CD3DX12_STATIC_SAMPLER_DESC linearClamp(
+        0,
+        D3D12_FILTER_MIN_MAG_MIP_LINEAR,
+        D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
+        D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
+        D3D12_TEXTURE_ADDRESS_MODE_CLAMP);
+    return { linearClamp };
 }
 }
