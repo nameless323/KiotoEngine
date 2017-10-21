@@ -10,10 +10,12 @@
 #include <exception>
 #include <memory>
 
+// [a_vorontsov] To fwd decl.
 #include "Render/DX12/Buffers/EngineBuffers.h"
 #include "Render/DX12/Buffers/UploadBuffer.h"
 #include "Render/DX12/Buffers/VertexBufferDX12.h"
 #include "Render/DX12/Buffers/IndexBufferDX12.h"
+#include "Render/Texture/Texture.h"
 
 namespace Kioto::Renderer
 {
@@ -92,6 +94,8 @@ private:
     std::unique_ptr<IndexBufferDX12> m_indexBuffer;
 
     Mesh m_box;
+    std::unique_ptr<Texture> m_texture;
+    Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_textureHeap;
 
     D3D12_VIEWPORT m_viewport = {};
     D3D12_RECT m_scissor = {};
