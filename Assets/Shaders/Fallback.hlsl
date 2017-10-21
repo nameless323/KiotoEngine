@@ -22,6 +22,9 @@ cbuffer cbPassBuffer : register(b1)
     float Pad1;
 };
 
+SamplerState LinearClampSampl : register(s0);
+Texture2D Diffuse : register(t0);
+
 cbuffer cbRenderObjectBuffer : register(b2)
 {
     float4x4 ToWorld;
@@ -39,6 +42,7 @@ struct vOut
 {
     float4 position : SV_Position;
     float3 normal : NORMAL;
+    float2 uv : TEXCOORD;
     float4 dbg : COLOR;
 };
 
@@ -61,10 +65,11 @@ vOut vs(vIn i)
     o.dbg = float4(0.0f, 0.0f, pos.z > 1.0f, 1.0f);
     o.dbg = float4(0.0f, 0.0f, i.position.x, 1.0f);
     o.normal = i.normal * 0.5f + 0.5f;
+    o.uv = i.uv;
     return o;
 }
 
 float4 ps(vOut i) : SV_Target
 {
-    return float4(i.normal, 1.0f);// * (CosTime.w * 0.5 + 0.5);
+    return Diffuse.Sample(LinearClampSampl, i.uv);
 }
