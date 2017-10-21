@@ -71,62 +71,68 @@ T GetMiddlePoint(T p1, T p2, std::vector<Vector3>& vertices, std::map<uint64, T>
 }
 }
 
-Mesh GeometryGenerator::GeneratePlane(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/)
+Mesh GeometryGenerator::GeneratePlane(float32 sizeX /*= 1.0f*/, float32 sizeZ /*= 1.0f*/)
 {
-    Mesh m; // [a_vorontsov] TODO:: Via pointer to data.
-    float length = 1.0f;
-    float width = 1.0f;
-    int resX = 2; // 2 minimum
-    int resZ = 2;
-    std::string s;
-    s.length();
+    uint32 resX = 2; // [a_vorontsov] 2 minimum.
+    uint32 resZ = 2;
+    uint32 vCount = resX * resZ;
+    uint32 stride = sizeof(Vector3) + sizeof(Vector3) + sizeof(Vector2);
+    byte* vData = new byte[vCount * stride];
+    byte* vDataBegin = vData;
 
-    m.Position.reserve(resX * resZ);
-    for (int z = 0; z < resZ; z++)
+    for (uint32 z = 0; z < resZ; z++)
     {
-        // [ -length / 2, length / 2 ]
-        float zPos = ((float)z / (resZ - 1) - .5f) * length;
-        for (int x = 0; x < resX; x++)
+        // [a_vorontsov] [ -length / 2, length / 2 ]
+        float32 zPos = (static_cast<float32>(z) / (resZ - 1) - .5f) * sizeX;
+        for (uint32 x = 0; x < resX; x++)
         {
-            // [ -width / 2, width / 2 ]
-            float xPos = ((float)x / (resX - 1) - .5f) * width;
-            m.Position.emplace_back(xPos, 0.0f, zPos);
+            // [a_vorontsov] [ -width / 2, width / 2 ]
+            float32 xPos = (static_cast<float32>(x) / (resX - 1) - .5f) * sizeZ;
+            *reinterpret_cast<Vector3*>(vData) = Vector3(xPos, 0.0f, zPos);
+            vData += stride;
         }
     }
+    vData = vDataBegin;
+    vData += sizeof(Vector3);
 
-    m.Normal.reserve(m.Position.size());
-    for (int n = 0; n < m.Position.size(); n++)
-        m.Normal.emplace_back(0.0f, 1.0f, 0.0f);
-
-    m.UV0.reserve(m.Position.size());
-    for (int v = 0; v < resZ; v++)
+    for (uint32 n = 0; n < vCount; n++)
     {
-        for (int u = 0; u < resX; u++)
+        *reinterpret_cast<Vector3*>(vData) = Vector3(0.0f, 1.0f, 0.0f);
+        vData += stride;
+    }
+
+    vData = vDataBegin;
+    vData += sizeof(Vector3) + sizeof(Vector3);
+    for (uint32 v = 0; v < resZ; v++)
+    {
+        for (uint32 u = 0; u < resX; u++)
         {
-            m.UV0.emplace_back((float)u / (resX - 1), (float)v / (resZ - 1));
+            *reinterpret_cast<Vector2*>(vData) = Vector2(static_cast<float32>(u) / (resX - 1), static_cast<float32>(v) / (resZ - 1));
+            vData += stride;
         }
     }
+    vData = vDataBegin;
 
-    int nbFaces = (resX - 1) * (resZ - 1);
-    m.Triangles.reserve(nbFaces * 6);
-    int t = 0;
-    for (int face = 0; face < nbFaces; face++)
+    uint32 nbFaces = (resX - 1) * (resZ - 1);
+    uint16 iCount = nbFaces * 6;
+    uint16* iData = new uint16[iCount];
+    byte* iDataBegin = reinterpret_cast<byte*>(iData);
+    uint32 t = 0;
+    for (uint16 face = 0; face < nbFaces; face++)
     {
-        // Retrieve lower left corner from face ind
-        int i = face % (resX - 1) + (face / (resZ - 1) * resX);
+        // [a_vorontsov] Retrieve lower left corner from face ind.
+        uint32 i = face % (resX - 1) + (face / (resZ - 1) * resX);
 
-        m.Triangles.push_back(i + resX);
-        m.Triangles.push_back(i + 1);
-        m.Triangles.push_back(i);
+        *iData++ = i + resX;
+        *iData++ = i + 1;
+        *iData++ = i;
 
-        m.Triangles.push_back(i + resX);
-        m.Triangles.push_back(i + resX + 1);
-        m.Triangles.push_back(i + 1);
+        *iData++ = i + resX;
+        *iData++ = i + resX + 1;
+        *iData++ = i + 1;
     }
 
-    m.PrepareForUpload();
-
-    return m;
+    return { vDataBegin, stride * vCount, stride, vCount, iDataBegin, iCount * sizeof(uint16), iCount, eIndexFormat::Format16Bit };
 }
 
 Mesh GenerateCube(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/, float32 sizeZ /*= 1.0f*/)
@@ -146,39 +152,39 @@ Mesh GenerateCube(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/, float32 si
     Vector3 p7(-zHalf, xHalf, -yHalf);
 
     uint32 stride = sizeof(Vector3) + sizeof(Vector2) + sizeof(Vector3);
-    byte* vertexData = new byte[stride * 24];
-    byte* begin = vertexData;
+    byte* vData = new byte[stride * 24];
+    byte* vertBegin = vData;
     // [a_vorontsov] Bottom.
-    *reinterpret_cast<Vector3*>(vertexData) = p0; vertexData += stride;
-    *reinterpret_cast<Vector3*>(vertexData) = p1; vertexData += stride;
-    *reinterpret_cast<Vector3*>(vertexData) = p2; vertexData += stride;
-    *reinterpret_cast<Vector3*>(vertexData) = p3; vertexData += stride;
+    *reinterpret_cast<Vector3*>(vData) = p0; vData += stride;
+    *reinterpret_cast<Vector3*>(vData) = p1; vData += stride;
+    *reinterpret_cast<Vector3*>(vData) = p2; vData += stride;
+    *reinterpret_cast<Vector3*>(vData) = p3; vData += stride;
     // [a_vorontsov] Left.
-    *reinterpret_cast<Vector3*>(vertexData) = p7; vertexData += stride;
-    *reinterpret_cast<Vector3*>(vertexData) = p4; vertexData += stride;
-    *reinterpret_cast<Vector3*>(vertexData) = p0; vertexData += stride;
-    *reinterpret_cast<Vector3*>(vertexData) = p3; vertexData += stride;
+    *reinterpret_cast<Vector3*>(vData) = p7; vData += stride;
+    *reinterpret_cast<Vector3*>(vData) = p4; vData += stride;
+    *reinterpret_cast<Vector3*>(vData) = p0; vData += stride;
+    *reinterpret_cast<Vector3*>(vData) = p3; vData += stride;
     // [a_vorontsov] Front.
-    *reinterpret_cast<Vector3*>(vertexData) = p4; vertexData += stride;
-    *reinterpret_cast<Vector3*>(vertexData) = p5; vertexData += stride;
-    *reinterpret_cast<Vector3*>(vertexData) = p1; vertexData += stride;
-    *reinterpret_cast<Vector3*>(vertexData) = p0; vertexData += stride;
+    *reinterpret_cast<Vector3*>(vData) = p4; vData += stride;
+    *reinterpret_cast<Vector3*>(vData) = p5; vData += stride;
+    *reinterpret_cast<Vector3*>(vData) = p1; vData += stride;
+    *reinterpret_cast<Vector3*>(vData) = p0; vData += stride;
     // [a_vorontsov] Back.
-    *reinterpret_cast<Vector3*>(vertexData) = p6; vertexData += stride;
-    *reinterpret_cast<Vector3*>(vertexData) = p7; vertexData += stride;
-    *reinterpret_cast<Vector3*>(vertexData) = p3; vertexData += stride;
-    *reinterpret_cast<Vector3*>(vertexData) = p2; vertexData += stride;
+    *reinterpret_cast<Vector3*>(vData) = p6; vData += stride;
+    *reinterpret_cast<Vector3*>(vData) = p7; vData += stride;
+    *reinterpret_cast<Vector3*>(vData) = p3; vData += stride;
+    *reinterpret_cast<Vector3*>(vData) = p2; vData += stride;
     // [a_vorontsov] Right.
-    *reinterpret_cast<Vector3*>(vertexData) = p5; vertexData += stride;
-    *reinterpret_cast<Vector3*>(vertexData) = p6; vertexData += stride;
-    *reinterpret_cast<Vector3*>(vertexData) = p2; vertexData += stride;
-    *reinterpret_cast<Vector3*>(vertexData) = p1; vertexData += stride;
+    *reinterpret_cast<Vector3*>(vData) = p5; vData += stride;
+    *reinterpret_cast<Vector3*>(vData) = p6; vData += stride;
+    *reinterpret_cast<Vector3*>(vData) = p2; vData += stride;
+    *reinterpret_cast<Vector3*>(vData) = p1; vData += stride;
     // [a_vorontsov] Top.
-    *reinterpret_cast<Vector3*>(vertexData) = p7; vertexData += stride;
-    *reinterpret_cast<Vector3*>(vertexData) = p6; vertexData += stride;
-    *reinterpret_cast<Vector3*>(vertexData) = p5; vertexData += stride;
-    *reinterpret_cast<Vector3*>(vertexData) = p4; vertexData = begin;
-    vertexData += sizeof(Vector3);
+    *reinterpret_cast<Vector3*>(vData) = p7; vData += stride;
+    *reinterpret_cast<Vector3*>(vData) = p6; vData += stride;
+    *reinterpret_cast<Vector3*>(vData) = p5; vData += stride;
+    *reinterpret_cast<Vector3*>(vData) = p4; vData = vertBegin;
+    vData += sizeof(Vector3);
 
     Vector3 up(0.0f, 1.0f, 0.0f);
     Vector3 down(0.0f, -1.0f, 0.0f);
@@ -188,36 +194,36 @@ Mesh GenerateCube(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/, float32 si
     Vector3 right(-1.0f, 0.0f, 0.0f);
 
     // [a_vorontsov] Normals. Bottom.
-    *reinterpret_cast<Vector3*>(vertexData) = down; vertexData += stride;
-    *reinterpret_cast<Vector3*>(vertexData) = down; vertexData += stride;
-    *reinterpret_cast<Vector3*>(vertexData) = down; vertexData += stride;
-    *reinterpret_cast<Vector3*>(vertexData) = down; vertexData += stride;
+    *reinterpret_cast<Vector3*>(vData) = down; vData += stride;
+    *reinterpret_cast<Vector3*>(vData) = down; vData += stride;
+    *reinterpret_cast<Vector3*>(vData) = down; vData += stride;
+    *reinterpret_cast<Vector3*>(vData) = down; vData += stride;
     // [a_vorontsov] Left.
-    *reinterpret_cast<Vector3*>(vertexData) = left; vertexData += stride;
-    *reinterpret_cast<Vector3*>(vertexData) = left; vertexData += stride;
-    *reinterpret_cast<Vector3*>(vertexData) = left; vertexData += stride;
-    *reinterpret_cast<Vector3*>(vertexData) = left; vertexData += stride;
+    *reinterpret_cast<Vector3*>(vData) = left; vData += stride;
+    *reinterpret_cast<Vector3*>(vData) = left; vData += stride;
+    *reinterpret_cast<Vector3*>(vData) = left; vData += stride;
+    *reinterpret_cast<Vector3*>(vData) = left; vData += stride;
     // [a_vorontsov] Front.
-    *reinterpret_cast<Vector3*>(vertexData) = front; vertexData += stride;
-    *reinterpret_cast<Vector3*>(vertexData) = front; vertexData += stride;
-    *reinterpret_cast<Vector3*>(vertexData) = front; vertexData += stride;
-    *reinterpret_cast<Vector3*>(vertexData) = front; vertexData += stride;
+    *reinterpret_cast<Vector3*>(vData) = front; vData += stride;
+    *reinterpret_cast<Vector3*>(vData) = front; vData += stride;
+    *reinterpret_cast<Vector3*>(vData) = front; vData += stride;
+    *reinterpret_cast<Vector3*>(vData) = front; vData += stride;
     // [a_vorontsov] Back.
-    *reinterpret_cast<Vector3*>(vertexData) = back; vertexData += stride;
-    *reinterpret_cast<Vector3*>(vertexData) = back; vertexData += stride;
-    *reinterpret_cast<Vector3*>(vertexData) = back; vertexData += stride;
-    *reinterpret_cast<Vector3*>(vertexData) = back; vertexData += stride;
+    *reinterpret_cast<Vector3*>(vData) = back; vData += stride;
+    *reinterpret_cast<Vector3*>(vData) = back; vData += stride;
+    *reinterpret_cast<Vector3*>(vData) = back; vData += stride;
+    *reinterpret_cast<Vector3*>(vData) = back; vData += stride;
     // [a_vorontsov] Right.
-    *reinterpret_cast<Vector3*>(vertexData) = right; vertexData += stride;
-    *reinterpret_cast<Vector3*>(vertexData) = right; vertexData += stride;
-    *reinterpret_cast<Vector3*>(vertexData) = right; vertexData += stride;
-    *reinterpret_cast<Vector3*>(vertexData) = right; vertexData += stride;
+    *reinterpret_cast<Vector3*>(vData) = right; vData += stride;
+    *reinterpret_cast<Vector3*>(vData) = right; vData += stride;
+    *reinterpret_cast<Vector3*>(vData) = right; vData += stride;
+    *reinterpret_cast<Vector3*>(vData) = right; vData += stride;
     // [a_vorontsov] Top.
-    *reinterpret_cast<Vector3*>(vertexData) = up; vertexData += stride;
-    *reinterpret_cast<Vector3*>(vertexData) = up; vertexData += stride;
-    *reinterpret_cast<Vector3*>(vertexData) = up; vertexData += stride;
-    *reinterpret_cast<Vector3*>(vertexData) = up; vertexData = begin;
-    vertexData += sizeof(Vector3) + sizeof(Vector3);
+    *reinterpret_cast<Vector3*>(vData) = up; vData += stride;
+    *reinterpret_cast<Vector3*>(vData) = up; vData += stride;
+    *reinterpret_cast<Vector3*>(vData) = up; vData += stride;
+    *reinterpret_cast<Vector3*>(vData) = up; vData = vertBegin;
+    vData += sizeof(Vector3) + sizeof(Vector3);
 
     Vector2 _00(0.0f, 0.0f);
     Vector2 _10(1.0f, 0.0f);
@@ -225,95 +231,95 @@ Mesh GenerateCube(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/, float32 si
     Vector2 _11(1.0f, 1.0f);
 
     // [a_vorontsov] UV. Bottom.
-    *reinterpret_cast<Vector2*>(vertexData) = _11; vertexData += stride;
-    *reinterpret_cast<Vector2*>(vertexData) = _01; vertexData += stride;
-    *reinterpret_cast<Vector2*>(vertexData) = _00; vertexData += stride;
-    *reinterpret_cast<Vector2*>(vertexData) = _10; vertexData += stride;
+    *reinterpret_cast<Vector2*>(vData) = _11; vData += stride;
+    *reinterpret_cast<Vector2*>(vData) = _01; vData += stride;
+    *reinterpret_cast<Vector2*>(vData) = _00; vData += stride;
+    *reinterpret_cast<Vector2*>(vData) = _10; vData += stride;
     // [a_vorontsov] Left.
-    *reinterpret_cast<Vector2*>(vertexData) = _11; vertexData += stride;
-    *reinterpret_cast<Vector2*>(vertexData) = _01; vertexData += stride;
-    *reinterpret_cast<Vector2*>(vertexData) = _00; vertexData += stride;
-    *reinterpret_cast<Vector2*>(vertexData) = _10; vertexData += stride;
+    *reinterpret_cast<Vector2*>(vData) = _11; vData += stride;
+    *reinterpret_cast<Vector2*>(vData) = _01; vData += stride;
+    *reinterpret_cast<Vector2*>(vData) = _00; vData += stride;
+    *reinterpret_cast<Vector2*>(vData) = _10; vData += stride;
     // [a_vorontsov] Front.
-    *reinterpret_cast<Vector2*>(vertexData) = _11; vertexData += stride;
-    *reinterpret_cast<Vector2*>(vertexData) = _01; vertexData += stride;
-    *reinterpret_cast<Vector2*>(vertexData) = _00; vertexData += stride;
-    *reinterpret_cast<Vector2*>(vertexData) = _10; vertexData += stride;
+    *reinterpret_cast<Vector2*>(vData) = _11; vData += stride;
+    *reinterpret_cast<Vector2*>(vData) = _01; vData += stride;
+    *reinterpret_cast<Vector2*>(vData) = _00; vData += stride;
+    *reinterpret_cast<Vector2*>(vData) = _10; vData += stride;
     // [a_vorontsov] Back.
-    *reinterpret_cast<Vector2*>(vertexData) = _11; vertexData += stride;
-    *reinterpret_cast<Vector2*>(vertexData) = _01; vertexData += stride;
-    *reinterpret_cast<Vector2*>(vertexData) = _00; vertexData += stride;
-    *reinterpret_cast<Vector2*>(vertexData) = _10; vertexData += stride;
+    *reinterpret_cast<Vector2*>(vData) = _11; vData += stride;
+    *reinterpret_cast<Vector2*>(vData) = _01; vData += stride;
+    *reinterpret_cast<Vector2*>(vData) = _00; vData += stride;
+    *reinterpret_cast<Vector2*>(vData) = _10; vData += stride;
     // [a_vorontsov] Right.
-    *reinterpret_cast<Vector2*>(vertexData) = _11; vertexData += stride;
-    *reinterpret_cast<Vector2*>(vertexData) = _01; vertexData += stride;
-    *reinterpret_cast<Vector2*>(vertexData) = _00; vertexData += stride;
-    *reinterpret_cast<Vector2*>(vertexData) = _10; vertexData += stride;
+    *reinterpret_cast<Vector2*>(vData) = _11; vData += stride;
+    *reinterpret_cast<Vector2*>(vData) = _01; vData += stride;
+    *reinterpret_cast<Vector2*>(vData) = _00; vData += stride;
+    *reinterpret_cast<Vector2*>(vData) = _10; vData += stride;
     // [a_vorontsov] Top.
-    *reinterpret_cast<Vector2*>(vertexData) = _11; vertexData += stride;
-    *reinterpret_cast<Vector2*>(vertexData) = _01; vertexData += stride;
-    *reinterpret_cast<Vector2*>(vertexData) = _00; vertexData += stride;
-    *reinterpret_cast<Vector2*>(vertexData) = _10; vertexData = begin;
+    *reinterpret_cast<Vector2*>(vData) = _11; vData += stride;
+    *reinterpret_cast<Vector2*>(vData) = _01; vData += stride;
+    *reinterpret_cast<Vector2*>(vData) = _00; vData += stride;
+    *reinterpret_cast<Vector2*>(vData) = _10; vData = vertBegin;
 
-    uint32* indices = new uint32[36];
-    uint32* iBegin = indices;
+    uint32* iData = new uint32[36];
+    uint32* iDataBegin = iData;
     // [a_vorontsov] Bottom.
-    *indices++ = 3;
-    *indices++ = 1;
-    *indices++ = 0;
+    *iData++ = 3;
+    *iData++ = 1;
+    *iData++ = 0;
 
-    *indices++ = 3;
-    *indices++ = 2;
-    *indices++ = 1;
+    *iData++ = 3;
+    *iData++ = 2;
+    *iData++ = 1;
 
     // [a_vorontsov] Left.
-    *indices++ = 7;
-    *indices++ = 5;
-    *indices++ = 4;
+    *iData++ = 7;
+    *iData++ = 5;
+    *iData++ = 4;
 
-    *indices++ = 7;
-    *indices++ = 6;
-    *indices++ = 5;
+    *iData++ = 7;
+    *iData++ = 6;
+    *iData++ = 5;
 
     // [a_vorontsov] Front.
-    *indices++ = 11;
-    *indices++ = 9;
-    *indices++ = 8;
+    *iData++ = 11;
+    *iData++ = 9;
+    *iData++ = 8;
 
-    *indices++ = 11;
-    *indices++ = 10;
-    *indices++ = 9;
+    *iData++ = 11;
+    *iData++ = 10;
+    *iData++ = 9;
 
     // [a_vorontsov] Back.
-    *indices++ = 15;
-    *indices++ = 13;
-    *indices++ = 12;
+    *iData++ = 15;
+    *iData++ = 13;
+    *iData++ = 12;
 
-    *indices++ = 15;
-    *indices++ = 14;
-    *indices++ = 13;
+    *iData++ = 15;
+    *iData++ = 14;
+    *iData++ = 13;
 
     // [a_vorontsov] Right.
-    *indices++ = 19;
-    *indices++ = 17;
-    *indices++ = 16;
+    *iData++ = 19;
+    *iData++ = 17;
+    *iData++ = 16;
 
-    *indices++ = 19;
-    *indices++ = 18;
-    *indices++ = 17;
+    *iData++ = 19;
+    *iData++ = 18;
+    *iData++ = 17;
 
     // [a_vorontsov] Top.
-    *indices++ = 23;
-    *indices++ = 21;
-    *indices++ = 20;
+    *iData++ = 23;
+    *iData++ = 21;
+    *iData++ = 20;
 
-    *indices++ = 23;
-    *indices++ = 22;
-    *indices++ = 21;
+    *iData++ = 23;
+    *iData++ = 22;
+    *iData++ = 21;
 
-    indices = iBegin;
+    iData = iDataBegin;
 
-    return { vertexData, stride * 24, stride, 24, reinterpret_cast<byte*>(indices), 36 * sizeof(uint32), 36, eIndexFormat::Format32Bit };
+    return { vData, stride * 24, stride, 24, reinterpret_cast<byte*>(iData), 36 * sizeof(uint32), 36, eIndexFormat::Format32Bit };
 }
 
 Mesh GenerateCone()
@@ -884,19 +890,19 @@ Mesh GenerateIcosphere(int32 recursionLevel /*= 3*/, float32 radius /*= 1.0f*/)
         faces = faces2;
     }
     uint32 stride = sizeof(Vector3) + sizeof(Vector3);
-    byte* vertData = new byte[stride * positions.size()];
-    byte* vertDataBegin = vertData;
+    byte* vData = new byte[stride * positions.size()];
+    byte* vDataBegin = vData;
     for (const auto& pos : positions)
     {
-        *reinterpret_cast<Vector3*>(vertData) = pos; // [a_vorontsov] Position.
-        vertData += sizeof(Vector3);
-        *reinterpret_cast<Vector3*>(vertData) = pos; // [a_vorontsov] Normal.
-        vertData += sizeof(Vector3);
+        *reinterpret_cast<Vector3*>(vData) = pos; // [a_vorontsov] Position.
+        vData += sizeof(Vector3);
+        *reinterpret_cast<Vector3*>(vData) = pos; // [a_vorontsov] Normal.
+        vData += sizeof(Vector3);
     }
 
-    uint32 trigCount = static_cast<uint32>(faces.size()) * 3;
-    uint16* indices = new uint16[trigCount];
-    byte* indicesBegin = reinterpret_cast<byte*>(indices);
+    uint32 iCount = static_cast<uint32>(faces.size()) * 3;
+    uint16* indices = new uint16[iCount];
+    byte* iDataBegin = reinterpret_cast<byte*>(indices);
     for (const auto& face : faces)
     {
         *indices++ = face.i1;
@@ -904,7 +910,7 @@ Mesh GenerateIcosphere(int32 recursionLevel /*= 3*/, float32 radius /*= 1.0f*/)
         *indices++ = face.i3;
     }
     uint32 vCount = static_cast<uint32>(positions.size());
-    return { vertDataBegin, stride * vCount, stride, vCount, indicesBegin, trigCount * sizeof(uint32), trigCount, eIndexFormat::Format16Bit };
+    return { vDataBegin, stride * vCount, stride, vCount, iDataBegin, iCount * sizeof(uint32), iCount, eIndexFormat::Format16Bit };
 }
 
 }

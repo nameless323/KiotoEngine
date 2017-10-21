@@ -14,7 +14,7 @@ class Mesh;
 namespace GeometryGenerator
 {
 ///
-/// Generate XY aligned plane.
+/// Generate XZ aligned plane.
 ///
 Mesh GeneratePlane(float32 sizeX = 1.0f, float32 sizeY = 1.0f);
 ///
