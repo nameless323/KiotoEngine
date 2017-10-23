@@ -324,174 +324,195 @@ Mesh GenerateCube(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/, float32 si
 
 Mesh GenerateCone()
 {
-    Mesh m;
-    float height = 1.0f;
-    float bottomRadius = .25f;
-    float topRadius = .05f;
-    int nbSides = 18;
-    int nbHeightSeg = 1; // Not implemented yet
+    float32 height = 1.0f;
+    float32 bottomRadius = 0.25f;
+    float32 topRadius = 0.05f;
+    int32 nbSides = 18;
+    int32 nbHeightSeg = 1; // [a_vorontsov] Not implemented yet.
 
-    int nbVerticesCap = nbSides + 1;
+    int32 nbVerticesCap = nbSides + 1;
 
-    m.Position.reserve(nbVerticesCap + nbVerticesCap + nbSides * nbHeightSeg * 2 + 2);
-    int vertNumber = nbVerticesCap + nbVerticesCap + nbSides * nbHeightSeg * 2 + 2;
-    int vert = 0;
+    int32 vCount = nbVerticesCap + nbVerticesCap + nbSides * nbHeightSeg * 2 + 2;
 
-    // Bottom cap
-    m.Position.emplace_back(0.0f, 0.0f, 0.0f);
+    uint32 stride = sizeof(Vector3) + sizeof(Vector3) + sizeof(Vector2);
+    byte* vData = new byte[stride * vCount];
+    byte* vDataBegin = vData;
+
+    int32 vert = 0;
+
+    // [a_vorontsov] Bottom cap.
+    *reinterpret_cast<Vector3*>(vData) = Vector3(0.0f, 0.0f, 0.0f);
+    vData += stride;
+
     vert++;
     while (vert <= nbSides)
     {
-        float rad = (float)vert / nbSides * Math::TwoPI;
-        m.Position.emplace_back(std::cos(rad) * bottomRadius, 0.0f, std::sin(rad) * bottomRadius);
+        float32 rad = static_cast<float32>(vert) / nbSides * Math::TwoPI;
+        *reinterpret_cast<Vector3*>(vData) = Vector3(std::cos(rad) * bottomRadius, 0.0f, std::sin(rad) * bottomRadius);
+        vData += stride;
         vert++;
     }
 
-    // Top cap
-    m.Position.emplace_back(0.0f, height, 0.0f);
+    // [a_vorontsov] Top cap.
+    *reinterpret_cast<Vector3*>(vData) = Vector3(0.0f, height, 0.0f);
+    vData += stride;
     vert++;
     while (vert <= nbSides * 2 + 1)
     {
-        float rad = (float)(vert - nbSides - 1) / nbSides * Math::TwoPI;
-        m.Position.emplace_back(std::cos(rad) * topRadius, height, std::sin(rad) * topRadius);
+        float32 rad = static_cast<float32>(vert - nbSides - 1) / nbSides * Math::TwoPI;
+        *reinterpret_cast<Vector3*>(vData) = Vector3(std::cos(rad) * topRadius, height, std::sin(rad) * topRadius);
+        vData += stride;
         vert++;
     }
 
-    // Sides
-    int v = 0;
-    while (vert <= vertNumber - 4)
+    // [a_vorontsov] Sides.
+    int32 v = 0;
+    while (vert <= vCount - 4)
     {
-        float rad = (float)v / nbSides * Math::TwoPI;
-        m.Position.emplace_back(std::cos(rad) * topRadius, height, std::sin(rad) * topRadius);
-        m.Position.emplace_back(std::cos(rad) * bottomRadius, 0.0f, std::sin(rad) * bottomRadius);
+        float32 rad = static_cast<float32>(v) / nbSides * Math::TwoPI;
+        *reinterpret_cast<Vector3*>(vData) = Vector3(std::cos(rad) * topRadius, height, std::sin(rad) * topRadius);
+        vData += stride;
+        *reinterpret_cast<Vector3*>(vData) = Vector3(std::cos(rad) * bottomRadius, 0.0f, std::sin(rad) * bottomRadius);
+        vData += stride;
         vert += 2;
         v++;
     }
-    m.Position.push_back(m.Position[nbSides * 2 + 2]);
-    m.Position.push_back(m.Position[nbSides * 2 + 3]);
+    *reinterpret_cast<Vector3*>(vData) = *reinterpret_cast<Vector3*>(vDataBegin + stride * (nbSides * 2 + 2));
+    vData += stride;
+    *reinterpret_cast<Vector3*>(vData) = *reinterpret_cast<Vector3*>(vDataBegin + stride * (nbSides * 2 + 3));
+    vData = vDataBegin;
+    vData += sizeof(Vector3);
 
-    m.Normal.reserve(m.Position.size());
     vert = 0;
 
-    // Bottom cap
+    // [a_vorontsov] Bottom cap.
     while (vert <= nbSides)
     {
-        m.Normal.emplace_back(0.0f, -1.0f, 0.0f);
+        *reinterpret_cast<Vector3*>(vData) = Vector3(0.0f, -1.0f, 0.0f);
+        vData += stride;
         vert++;
     }
 
-    // Top cap
+    // [a_vorontsov] Top cap.
     while (vert <= nbSides * 2 + 1)
     {
-        m.Normal.emplace_back(0.0f, 1.0f, 0.0f);
+        *reinterpret_cast<Vector3*>(vData) = Vector3(0.0f, 1.0f, 0.0f);
+        vData += stride;
         vert++;
     }
 
-    // Sides
+    // [a_vorontsov] Sides.
     v = 0;
-    while (vert <= vertNumber - 4)
+    while (vert <= vCount - 4)
     {
-        float rad = (float)v / nbSides * Math::TwoPI;
-        float cos = std::cos(rad);
-        float sin = std::sin(rad);
+        float32 rad = static_cast<float32>(v) / nbSides * Math::TwoPI;
+        float32 cos = std::cos(rad);
+        float32 sin = std::sin(rad);
 
-        m.Normal.emplace_back(cos, 0.0f, sin);
-        m.Normal.emplace_back(cos, 0.0f, sin);
+        *reinterpret_cast<Vector3*>(vData) = Vector3(cos, 0.0f, sin);
+        vData += stride;
+        *reinterpret_cast<Vector3*>(vData) = Vector3(cos, 0.0f, sin);
+        vData += stride;
 
         vert += 2;
         v++;
     }
-    m.Normal.push_back(m.Normal[nbSides * 2 + 2]);
-    m.Normal.push_back(m.Normal[nbSides * 2 + 3]);
 
-    // Bottom cap
-    int u = 0;
-    m.UV0.emplace_back(0.5f, 0.5f);
+    *reinterpret_cast<Vector3*>(vData) = *reinterpret_cast<Vector3*>(vDataBegin + stride * (nbSides * 2 + 2) + sizeof(Vector3));
+    vData += stride;
+    *reinterpret_cast<Vector3*>(vData) = *reinterpret_cast<Vector3*>(vDataBegin + stride * (nbSides * 2 + 2) + sizeof(Vector3));
+    vData = vDataBegin;
+    vData += sizeof(Vector3) + sizeof(Vector3);
+
+    // [a_vorontsov] Bottom cap.
+    int32 u = 0;
+    *reinterpret_cast<Vector2*>(vData) = Vector2(0.5f, 0.5f);
+    vData += stride;
     u++;
     while (u <= nbSides)
     {
-        float rad = (float)u / nbSides * Math::TwoPI;
-        m.UV0.emplace_back(std::cos(rad) * .5f + .5f, std::sin(rad) * .5f + .5f);
+        float32 rad = static_cast<float32>(u) / nbSides * Math::TwoPI;
+        *reinterpret_cast<Vector2*>(vData) = Vector2(std::cos(rad) * 0.5f + 0.5f, std::sin(rad) * 0.5f + 0.5f);
+        vData += stride;
         u++;
     }
 
-    // Top cap
-    m.UV0.emplace_back(0.5f, 0.5f);
+    // [a_vorontsov] Top cap.
+    *reinterpret_cast<Vector2*>(vData) = Vector2(0.5f, 0.5f);
+    vData += stride;
     u++;
     while (u <= nbSides * 2 + 1)
     {
-        float rad = (float)u / nbSides * Math::TwoPI;
-        m.UV0.emplace_back(std::cos(rad) * .5f + .5f, std::sin(rad) * .5f + .5f);
+        float32 rad = static_cast<float32>(u) / nbSides * Math::TwoPI;
+        *reinterpret_cast<Vector2*>(vData) = Vector2(std::cos(rad) * 0.5f + 0.5f, std::sin(rad) * 0.5f + 0.5f);
+        vData += stride;
         u++;
     }
 
-    // Sides
-    int u_sides = 0;
-    while (u <= vertNumber - 4)
+    // [a_vorontsov] Sides.
+    int32 u_sides = 0;
+    while (u <= vCount - 4)
     {
-        float t = (float)u_sides / nbSides;
-        m.UV0.emplace_back(t, 1.0f);
-        m.UV0.emplace_back(t, 0.0f);
+        float32 t = static_cast<float32>(u_sides) / nbSides;
+        *reinterpret_cast<Vector2*>(vData) = Vector2(t, 1.0f);
+        vData += stride;
+        *reinterpret_cast<Vector2*>(vData) = Vector2(t, 0.0f);
+        vData += stride;
         u += 2;
         u_sides++;
     }
-    m.UV0.emplace_back(1.0f, 1.0f);
-    m.UV0.emplace_back(1.0f, 0.0f);
+    *reinterpret_cast<Vector2*>(vData) = Vector2(1.0f, 1.0f);
+    vData += stride;
+    *reinterpret_cast<Vector2*>(vData) = Vector2(1.0f, 0.0f);
+    vData += stride;
 
-    int nbTriangles = nbSides + nbSides + nbSides * 2;
-    m.Triangles.reserve(nbTriangles);
+    int32 nbTriangles = nbSides + nbSides + nbSides * 2;
+    uint32 iCount = nbTriangles * 3 + 3;
+    uint16* iData = new uint16[iCount];
+    byte* iDataBegin = reinterpret_cast<byte*>(iData);
 
-    // Bottom cap
-    int tri = 0;
-    int i = 0;
+    // [a_vorontsov] Bottom cap.
+    int32 tri = 0;
     while (tri < nbSides - 1)
     {
-        m.Triangles.push_back(0);
-        m.Triangles.push_back(tri + 1);
-        m.Triangles.push_back(tri + 2);
+        *iData++ = 0;
+        *iData++ = tri + 1;
+        *iData++ = tri + 2;
         tri++;
-        i += 3;
     }
-    m.Triangles.push_back(0);
-    m.Triangles.push_back(tri + 1);
-    m.Triangles.push_back(1);
+    *iData++ = 0;
+    *iData++ = tri + 1;
+    *iData++ = 1;
     tri++;
-    i += 3;
 
-    // Top cap
-    //tri++;
+    // [a_vorontsov] Top cap.
     while (tri < nbSides * 2)
     {
-        m.Triangles.push_back(tri + 2);
-        m.Triangles.push_back(tri + 1);
-        m.Triangles.push_back(nbVerticesCap);
+        *iData++ = tri + 2;
+        *iData++ = tri + 1;
+        *iData++ = nbVerticesCap;
         tri++;
-        i += 3;
     }
 
-    m.Triangles.push_back(nbVerticesCap + 1);
-    m.Triangles.push_back(tri + 1);
-    m.Triangles.push_back(nbVerticesCap);
-    tri++;
-    i += 3;
-    tri++;
+    *iData++ = nbVerticesCap + 1;
+    *iData++ = tri + 1;
+    *iData++ = nbVerticesCap;
+    tri += 2;
 
-    // Sides
+    // [a_vorontsov] Sides.
     while (tri <= nbTriangles)
     {
-        m.Triangles.push_back(tri + 2);
-        m.Triangles.push_back(tri + 1);
-        m.Triangles.push_back(tri + 0);
+        *iData++ = tri + 2;
+        *iData++ = tri + 1;
+        *iData++ = tri + 0;
         tri++;
-        i += 3;
 
-        m.Triangles.push_back(tri + 1);
-        m.Triangles.push_back(tri + 2);
-        m.Triangles.push_back(tri + 0);
+        *iData++ = tri + 1;
+        *iData++ = tri + 2;
+        *iData++ = tri + 0;
         tri++;
-        i += 3;
     }
-    m.PrepareForUpload();
+    Mesh m(vDataBegin, vCount * stride, stride, vCount, iDataBegin, iCount * sizeof(uint16), iCount, eIndexFormat::Format16Bit);
     return m;
 }
 
