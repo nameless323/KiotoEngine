@@ -322,11 +322,8 @@ Mesh GenerateCube(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/, float32 si
     return { vData, stride * 24, stride, 24, reinterpret_cast<byte*>(iData), 36 * sizeof(uint32), 36, eIndexFormat::Format32Bit };
 }
 
-Mesh GenerateCone()
+Mesh GenerateCone(float32 height /*= 1.0f*/, float32 bottomRadius /*= 0.25f*/, float32 topRadius /*= 0.05f*/)
 {
-    float32 height = 1.0f;
-    float32 bottomRadius = 0.25f;
-    float32 topRadius = 0.05f;
     uint32 nbSides = 18;
     uint32 nbHeightSeg = 1; // [a_vorontsov] Not implemented yet.
 
@@ -613,17 +610,11 @@ Mesh GenerateSphere(float32 radius /*=1.0f*/)
     return { vDataBegin, stride * vCount, stride, vCount, iDataBegin, iCount * sizeof(uint32), iCount, eIndexFormat::Format32Bit };
 }
 
-Mesh GenerateTube()
+Mesh GenerateTube(float32 height /*= 1.0f*/, float32 bottomRadius1 /*= 0.5f*/, float32 bottomRadius2 /*= 0.15f*/, float32 topRadius1 /*= 0.5f*/, float32 topRadius2 /*= 0.15f*/)
 {
-    float32 height = 1.0f;
     int32 nbSides = 24;
 
     // [a_vorontsov] Outter shell is at radius1 + radius2 / 2, inner shell at radius1 - radius2 / 2.
-    float32 bottomRadius1 = 0.5f;
-    float32 bottomRadius2 = 0.15f;
-    float32 topRadius1 = 0.5f;
-    float32 topRadius2 = 0.15f;
-
     uint32 nbVerticesCap = nbSides * 2 + 2;
     uint32 nbVerticesSides = nbSides * 2 + 2;
     uint32 vCount = nbVerticesCap * 2 + nbVerticesSides * 2;
@@ -889,7 +880,7 @@ Mesh GenerateIcosphere(int32 recursionLevel /*= 3*/, float32 radius /*= 1.0f*/)
     std::map<uint64, uint16> middlePointIndexCache;
 
     // [a_vorontsov] Create 12 vertices of a icosahedron.
-    float t = (1.0f + std::sqrt(5.0f)) / 2.0f;
+    float32 t = (1.0f + std::sqrt(5.0f)) / 2.0f;
 
     positions.push_back(Vector3(-1.0f, t, 0.0f).Normalized() * radius);
     positions.push_back(Vector3(1.0f, t, 0.0f).Normalized() * radius);
@@ -940,7 +931,7 @@ Mesh GenerateIcosphere(int32 recursionLevel /*= 3*/, float32 radius /*= 1.0f*/)
     // [a_vorontsov] Refine triangles.
     std::vector<TriangleIndices<uint16>> faces2;
     faces2.reserve(20);
-    for (int i = 0; i < recursionLevel; i++)
+    for (int32 i = 0; i < recursionLevel; i++)
     {
         faces2.clear();
         for(auto& tri : faces)
