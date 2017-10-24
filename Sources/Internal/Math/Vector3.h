@@ -36,6 +36,7 @@ public:
 
     Vector3_<T>& operator+=(const Vector3_<T>& v);
     Vector3_<T>& operator-=(const Vector3_<T>& v);
+    Vector3_<T>& operator*=(float32 t);
 
 #if _WIN32 || _WIN64
     explicit Vector3_(const DirectX::XMFLOAT3& vec);
@@ -53,6 +54,10 @@ public:
     /// Normalize vector.
     ///
     Vector3_<T>& Normalize();
+    ///
+    /// Get normalized copy of vector.
+    ///
+    Vector3_<T> Normalized() const;
 
     ///
     /// Dot product of the v1 and v2 vectors.
@@ -80,6 +85,13 @@ inline Vector3_<T> operator- (Vector3_<T> v1, const Vector3_<T>& v2)
 {
     v1 -= v2;
     return v1;
+}
+
+template<typename T>
+inline Vector3_<T> operator* (Vector3_<T> v, float32 t)
+{
+    v *= t;
+    return v;
 }
 
 template <typename T>
@@ -135,6 +147,16 @@ inline Vector3_<T>& Vector3_<T>::operator-=(const Vector3_<T>& v)
     return *this;
 }
 
+template <typename T>
+inline Vector3_<T>& Vector3_<T>::operator*=(float32 t)
+{
+    x *= t;
+    y *= t;
+    z *= t;
+
+    return *this;
+}
+
 #if _WIN32 || _WIN64
 template <typename T>
 inline Vector3_<T>::Vector3_(const DirectX::XMFLOAT3& v)
@@ -169,6 +191,12 @@ inline Vector3_<T>& Vector3_<T>::Normalize()
     y *= invLen;
     z *= invLen;
     return *this;
+}
+
+template <typename T>
+inline Vector3_<T> Vector3_<T>::Normalized() const
+{
+    return Vector3_<T>::Normalized(*this);
 }
 
 template <typename T>
