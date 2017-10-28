@@ -6,6 +6,7 @@
 #pragma once
 
 #include <typeinfo>
+#include <string>
 
 namespace Kioto
 {

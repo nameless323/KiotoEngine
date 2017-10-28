@@ -163,6 +163,8 @@
     <ClInclude Include="Sources\Internal\Core\CoreHelpers.h" />
     <ClInclude Include="Sources\Internal\Core\CoreTypes.h" />
     <ClInclude Include="Sources\Internal\Core\DataStructures\RingArray.h" />
+    <ClInclude Include="Sources\Internal\Core\ECS\Component.h" />
+    <ClInclude Include="Sources\Internal\Core\ECS\Entity.h" />
     <ClInclude Include="Sources\Internal\Core\FPSCounter.h" />
     <ClInclude Include="Sources\Internal\Core\KiotoEngine.h" />
     <ClInclude Include="Sources\Internal\Core\Timer\GlobalTimer.h" />
@@ -190,6 +192,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Sources\External\Dx12Helpers\DDSTextureLoader.cpp" />
+    <ClCompile Include="Sources\Internal\Core\ECS\Entity.cpp" />
     <ClCompile Include="Sources\Internal\Core\FPSCounter.cpp" />
     <ClCompile Include="Sources\Internal\Core\KiotoEngine.cpp" />
     <ClCompile Include="Sources\Internal\Core\Timer\GlobalTimer.cpp" />
