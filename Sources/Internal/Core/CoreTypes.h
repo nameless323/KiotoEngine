@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <typeinfo>
+
 namespace Kioto
 {
 
@@ -20,5 +22,43 @@ using uint64 = unsigned long long;
 using float32 = float;
 using float64 = double;
 #endif
+
+// [a_vorontsov] Maybe in another header? Include <typeinfo> in every file is not so good idea.
+///
+/// Get parameter id. (RTTI internally).
+///
+template <typename T>
+uint32_t GetTypeId(const T& t)
+{
+    const std::type_info& info = typeid(t);
+    return info.hash_code();
+}
+///
+/// Get template argument type id. (RTTI internally).
+///
+template <typename T>
+uint32_t GetTypeId()
+{
+    const std::type_info& info = typeid(T);
+    return info.hash_code();
+}
+///
+/// Get parameter name. (RTTI internally).
+///
+template <typename T>
+std::string GetTypeName(const T& t)
+{
+    const std::type_info& info = typeid(t);
+    return info.name();
+}
+///
+/// Get template argument type name. (RTTI internally).
+///
+template <typename T>
+std::string GetTypeName()
+{
+    const std::type_info& info = typeid(T);
+    return info.name();
+}
 
 }
