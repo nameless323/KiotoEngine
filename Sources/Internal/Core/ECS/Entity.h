@@ -15,7 +15,10 @@ class Entity
 {
 public:
     Entity() = default;
-    Entity(const Entity& entity);
+    Entity(const Entity& other);
+    Entity(Entity&& other);
+    Entity& operator=(const Entity& other);
+    Entity& operator=(Entity&& other);
     virtual ~Entity();
 
     template <typename T, typename = std::enable_if_t<std::is_base_of_v<Component, T>>>
