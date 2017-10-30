@@ -20,29 +20,14 @@ Entity::Entity(const Entity& other)
 
 Entity::Entity(Entity&& other)
 {
-    m_components = std::move(other.m_components);
-    other.m_components.clear();
+    using std::swap;
+    swap(*this, other);
 }
 
-Entity& Entity::operator=(const Entity& other) // [a_vorontsov] TODO: copy swap.
+Entity& Entity::operator=(Entity other)
 {
-    if (this == &other)
-        return *this;
-    for (auto component : m_components)
-        SafeDelete(component);
-    m_components.clear();
-    for (auto component : other.m_components)
-        AddComponent(component->Clone());
-    return *this;
-}
-
-Entity& Entity::operator=(Entity&& other)
-{
-    for (auto component : m_components)
-        SafeDelete(component);
-    m_components.clear();
-    m_components = std::move(other.m_components);
-    other.m_components.clear();
+    using std::swap;
+    swap(*this, other);
     return *this;
 }
 

@@ -17,11 +17,10 @@ public:
     Entity() = default;
     Entity(const Entity& other);
     Entity(Entity&& other);
-    Entity& operator=(const Entity& other);
-    Entity& operator=(Entity&& other);
+    Entity& operator=(Entity other);
     virtual ~Entity();
 
-    template <typename T, typename = std::enable_if_t<std::is_base_of_v<Component, T>>>
+    template <typename T, typename = std::enable_if_t<std::is_convertible_v<T*, Component*>>>
     void RemoveComponent();
     void RemoveComponent(Component* component);
     void AddComponent(Component* component);
@@ -30,12 +29,18 @@ public:
 
 private:
     std::vector<Component*> m_components; // [a_vorontsov] Bad, bad thing...
+
+    friend void swap(Entity& e1, Entity& e2);
 };
 
 template <typename T, typename>
 void Entity::RemoveComponent()
 {
-    auto it = std::find_if(m_components.begin(), m_components.end(), [](Component* c) { return dynamic_cast<T*>(c) != nullptr });
+    auto it = std::find_if(m_components.begin(), m_components.end(), 
+        [](Component* c) 
+        {
+            return dynamic_cast<T*>(c) != nullptr; 
+        });
     if (it != m_components.end())
     {
         delete &(*it);
@@ -46,5 +51,11 @@ void Entity::RemoveComponent()
 inline const std::vector<Component*>& Entity::GetComponents() const
 {
     return m_components;
+}
+
+inline void swap(Entity& e1, Entity& e2)
+{
+    using std::swap;
+    swap(e1.m_components, e2.m_components);
 }
 }
