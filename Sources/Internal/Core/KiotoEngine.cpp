@@ -69,6 +69,7 @@ void Update()
 void Shutdown()
 {
     Renderer::Shutdown();
+    SafeDelete(m_scene);
 }
 
 void ChangeFullscreenMode(bool fullScreen)

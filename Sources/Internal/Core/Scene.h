@@ -20,7 +20,7 @@ public:
     KIOTO_API Scene();
     Scene(const Scene& scene) = delete;
     Scene& operator=(Scene scene) = delete;
-    virtual ~Scene();
+    KIOTO_API virtual ~Scene();
 
     ///
     /// Init scene.
