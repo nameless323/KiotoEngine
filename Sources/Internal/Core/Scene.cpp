@@ -33,7 +33,7 @@ void Scene::Init()
 
 void Scene::Update(float32 dt)
 {
-    OutputDebugStringA("Update scene");
+    OutputDebugStringA("Update scene\n");
     for (auto system : m_systems)
         system->Update(GlobalTimer::GetDeltaTime());
 }

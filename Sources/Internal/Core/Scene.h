@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include "Core/Core.h"
 #include "Core/CoreTypes.h"
 
 #include <vector>
@@ -16,7 +17,7 @@ class SceneSystem;
 class Scene
 {
 public:
-    Scene();
+    KIOTO_API Scene();
     Scene(const Scene& scene) = delete;
     Scene& operator=(Scene scene) = delete;
     virtual ~Scene();
@@ -24,19 +25,19 @@ public:
     ///
     /// Init scene.
     ///
-    virtual void Init();
+    KIOTO_API virtual void Init();
     ///
     /// Update scene.
     ///
-    virtual void Update(float32 dt);
+    KIOTO_API virtual void Update(float32 dt);
     ///
     /// Shutdown scene.
     ///
-    virtual void Shutdown();
+    KIOTO_API virtual void Shutdown();
     ///
     /// Add system to the end of systems list.
     ///
-    void AddSystem(SceneSystem* system);
+    KIOTO_API void AddSystem(SceneSystem* system);
     ///
     /// Insert system before the system of type T in systems list. Returns success status.
     ///
@@ -56,7 +57,7 @@ public:
     ///
     /// Remove system from systems list.
     ///
-    void RemoveSystem(SceneSystem* system);
+    KIOTO_API void RemoveSystem(SceneSystem* system);
 
     ///
     /// Finds system of type T in systems list. Returns success status.
@@ -129,4 +130,5 @@ inline const std::vector<SceneSystem*>& Scene::GetSystems() const
 {
     return m_systems;
 }
+
 }

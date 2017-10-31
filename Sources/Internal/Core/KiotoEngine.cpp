@@ -19,7 +19,7 @@ namespace Kioto
 {
 Scene* m_scene = nullptr;
 
-KIOTO_API void KiotoMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int nCmdShow, std::wstring capture, std::function<void()> initEngineCallback)
+void KiotoMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int nCmdShow, std::wstring capture, std::function<void()> initEngineCallback)
 {
     KiotoCore::ApplicationInfo.HInstance = hInstance;
     KiotoCore::ApplicationInfo.PrevInstance = prevInstance;
@@ -30,7 +30,7 @@ KIOTO_API void KiotoMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLi
     KiotoCore::Init(initEngineCallback);
 }
 
-KIOTO_API void SetScene(Scene* scene)
+void SetScene(Scene* scene)
 {
     if (m_scene != nullptr)
     {
