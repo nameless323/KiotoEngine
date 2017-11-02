@@ -14,16 +14,16 @@ namespace Kioto
 class Entity
 {
 public:
-    Entity() = default;
-    Entity(const Entity& other);
-    Entity(Entity&& other);
-    Entity& operator=(Entity other);
-    virtual ~Entity();
+    KIOTO_API Entity() = default;
+    KIOTO_API Entity(const Entity& other);
+    KIOTO_API Entity(Entity&& other);
+    KIOTO_API Entity& operator=(Entity other);
+    KIOTO_API virtual ~Entity();
 
     template <typename T, typename = std::enable_if_t<std::is_convertible_v<T*, Component*>>>
     void RemoveComponent();
-    void RemoveComponent(Component* component);
-    void AddComponent(Component* component);
+    KIOTO_API void RemoveComponent(Component* component);
+    KIOTO_API void AddComponent(Component* component);
 
     const std::vector<Component*>& GetComponents() const;
 

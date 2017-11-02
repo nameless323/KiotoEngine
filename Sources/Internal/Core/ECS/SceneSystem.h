@@ -12,7 +12,7 @@ namespace Kioto
 class SceneSystem
 {
 public:
-    virtual void Update(float32 dt) abstract;
-    virtual ~SceneSystem() = default;
+    KIOTO_API virtual void Update(float32 dt) abstract;
+    KIOTO_API virtual ~SceneSystem() = default;
 };
 }

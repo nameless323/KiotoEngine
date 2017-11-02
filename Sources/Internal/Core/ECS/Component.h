@@ -6,6 +6,7 @@
 #pragma once
 
 #include "Core/CoreTypes.h"
+#include "Core/Core.h"
 
 namespace Kioto
 {
@@ -14,13 +15,13 @@ class Entity;
 class Component
 {
 public:
-    virtual ~Component() = default;
+    KIOTO_API virtual ~Component() = default;
 
-    Entity* GetEntity() const;
-    virtual Component* Clone() const abstract;
+    KIOTO_API Entity* GetEntity() const;
+    KIOTO_API virtual Component* Clone() const abstract;
 
 private:
-    inline void SetEntity(Entity* entity);
+    KIOTO_API inline void SetEntity(Entity* entity);
 
     Entity* m_entity = nullptr;
 
