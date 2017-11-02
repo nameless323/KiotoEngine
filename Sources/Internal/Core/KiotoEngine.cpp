@@ -18,8 +18,10 @@
 namespace Kioto
 {
 Scene* m_scene = nullptr;
+std::function<void()> InitEngineCallback = nullptr;
+std::function<void()> ShutdownEngineCallback = nullptr;
 
-void KiotoMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int nCmdShow, std::wstring capture, std::function<void()> initEngineCallback)
+void KiotoMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int nCmdShow, std::wstring capture, std::function<void()> initEngineCallback, std::function<void()> shutdownEngineCallback)
 {
     KiotoCore::ApplicationInfo.HInstance = hInstance;
     KiotoCore::ApplicationInfo.PrevInstance = prevInstance;
@@ -27,7 +29,10 @@ void KiotoMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int nC
     KiotoCore::ApplicationInfo.NCmdShow = nCmdShow;
     KiotoCore::ApplicationInfo.WindowCapture = capture;
 
-    KiotoCore::Init(initEngineCallback);
+    InitEngineCallback = initEngineCallback;
+    ShutdownEngineCallback = shutdownEngineCallback;
+
+    KiotoCore::Init();
 }
 
 void SetScene(Scene* scene)
@@ -43,15 +48,15 @@ void SetScene(Scene* scene)
 
 namespace KiotoCore
 {
-void Init(std::function<void()> initEngineCallback)
+void Init()
 {
     AssetsSystem::Init();
     GlobalTimer::Init();
     WindowsApplication::Init(ApplicationInfo.HInstance, ApplicationInfo.NCmdShow, ApplicationInfo.WindowCapture);
     Renderer::Init(Renderer::eRenderApi::DirectX12, 1024, 768);
 
-    if (initEngineCallback != nullptr)
-        initEngineCallback();
+    if (InitEngineCallback != nullptr)
+        InitEngineCallback();
 
     WindowsApplication::Run();
 }
@@ -68,6 +73,9 @@ void Update()
 
 void Shutdown()
 {
+    if (ShutdownEngineCallback != nullptr)
+        ShutdownEngineCallback();
+
     Renderer::Shutdown();
     SafeDelete(m_scene);
 }
