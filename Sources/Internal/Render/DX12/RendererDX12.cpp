@@ -454,7 +454,6 @@ D3D12_CPU_DESCRIPTOR_HANDLE RendererDX12::GetCurrentBackBufferView() const
 
 void RendererDX12::Update(float32 dt)
 {
-    OutputDebugStringA("update\n");
     TimeConstantBuffer timeBuffer;
     UpdateTimeCB(timeBuffer);
     m_timeBuffer->UploadData(m_frameIndex, timeBuffer);

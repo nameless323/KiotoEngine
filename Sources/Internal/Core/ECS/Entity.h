@@ -1,0 +1,61 @@
+//
+// Copyright (C) Alexandr Vorontsov. 2017
+// Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
+//
+
+#pragma once
+
+#include <vector>
+
+#include "Core/ECS/Component.h"
+
+namespace Kioto
+{
+class Entity
+{
+public:
+    KIOTO_API Entity() = default;
+    KIOTO_API Entity(const Entity& other);
+    KIOTO_API Entity(Entity&& other);
+    KIOTO_API Entity& operator=(Entity other);
+    KIOTO_API virtual ~Entity();
+
+    template <typename T, typename = std::enable_if_t<std::is_convertible_v<T*, Component*>>>
+    void RemoveComponent();
+    KIOTO_API void RemoveComponent(Component* component);
+    KIOTO_API void AddComponent(Component* component);
+
+    const std::vector<Component*>& GetComponents() const;
+
+private:
+    std::vector<Component*> m_components; // [a_vorontsov] Bad, bad thing...
+
+    friend void swap(Entity& e1, Entity& e2);
+};
+
+template <typename T, typename>
+void Entity::RemoveComponent()
+{
+    auto it = std::find_if(m_components.begin(), m_components.end(), 
+        [](Component* c) 
+        {
+            return dynamic_cast<T*>(c) != nullptr; 
+        });
+    if (it != m_components.end())
+    {
+        delete &(*it);
+        m_components.erase(it);
+    }
+}
+
+inline const std::vector<Component*>& Entity::GetComponents() const
+{
+    return m_components;
+}
+
+inline void swap(Entity& e1, Entity& e2)
+{
+    using std::swap;
+    swap(e1.m_components, e2.m_components);
+}
+}
