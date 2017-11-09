@@ -23,7 +23,7 @@ static uint64 GetEventTypeS() \
     return res; \
 }
 
-class Event
+struct Event
 {
 public:
     Event() = default;

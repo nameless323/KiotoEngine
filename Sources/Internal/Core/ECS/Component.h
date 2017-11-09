@@ -12,6 +12,7 @@ namespace Kioto
 {
 class Entity;
 
+// [a_vorontsov] TODO: hash component type by name via macro as in events.
 class Component
 {
 public:
