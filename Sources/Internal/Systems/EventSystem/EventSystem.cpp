@@ -19,37 +19,36 @@ void EventSystem::RaiseEvent(std::shared_ptr<Event> e)
     if (it != m_events.end())
     {
         for (auto fun : it->second)
-            fun(std::forward(e));
+            fun(std::move(e));
     }
 }
 
 void EventSystem::Subscribe(EventType eType, EventFunction callback)
 {
-    auto it = m_events.find(e->GetEventType());
+    auto it = m_events.find(eType);
     if (it != m_events.end())
     {
-        for (auto fun : it->second)
+        auto funIt = std::find_if(it->second.begin(), it->second.end(), [&callback](const EventFunction& fun)
         {
-            if (GetFunctionAddress(fun) == GetFunctionAddress(callback))
-                return;
-        }
+            return GetFunctionAddress(fun) == GetFunctionAddress(callback);
+        });
+        if (funIt != it->second.end())
+            return;
     }
     m_events[eType].emplace_back(std::move(callback));
 }
 
 void EventSystem::Unsubscribe(EventType eType, EventFunction callback)
 {
-    auto it = m_events.find(e->GetEventType());
+    auto it = m_events.find(eType);
     if (it != m_events.end())
     {
-        for (auto fun : it->second)
+        auto funIt = std::find_if(it->second.begin(), it->second.end(), [&callback](const EventFunction& fun)
         {
-            if (GetFunctionAddress(fun) == GetFunctionAddress(callback))
-            {
-                m_events[eType].erase(fun);
-                return;
-            }
-        }
+            return GetFunctionAddress(fun) == GetFunctionAddress(callback);
+        });
+        if (funIt != it->second.end())
+            m_events[eType].erase(funIt);
     }
 }
 
