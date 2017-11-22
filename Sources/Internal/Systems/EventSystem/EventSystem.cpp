@@ -13,39 +13,80 @@
 namespace Kioto
 {
 
-void EventSystem::RaiseEvent(std::shared_ptr<Event> e)
+uint32 EventCallback::m_currentIndex = 0;
+
+EventCallback::EventCallback(std::function<void(EventPtr)> callback)
+{
+    m_index = m_currentIndex++;
+    m_callback = callback;
+}
+
+EventCallback::EventCallback(EventCallback&& other)
+{
+    swap(*this, other);
+}
+
+EventCallback::EventCallback(const EventCallback& other)
+{
+    m_callback = other.m_callback;
+    m_index = other.m_index;
+}
+
+bool EventCallback::operator!=(const EventCallback& other) const
+{
+    return !(*this == other);
+}
+
+bool EventCallback::operator==(const EventCallback& other) const
+{
+    return m_index == other.m_index;
+}
+
+EventCallback& EventCallback::operator=(EventCallback other)
+{
+    swap(*this, other);
+    return *this;
+}
+
+void EventCallback::operator()(EventPtr e)
+{
+    if (m_callback != nullptr)
+        m_callback(e);
+}
+
+void EventSystem::RaiseEvent(EventPtr e)
 {
     auto it = m_events.find(e->GetEventType());
     if (it != m_events.end())
     {
         for (auto fun : it->second)
-            fun(std::move(e));
+            fun(e);
     }
 }
 
-void EventSystem::Subscribe(EventType eType, EventFunction callback)
+void EventSystem::Subscribe(EventType eType, EventCallback callback)
 {
     auto it = m_events.find(eType);
     if (it != m_events.end())
     {
-        auto funIt = std::find_if(it->second.begin(), it->second.end(), [&callback](const EventFunction& fun)
+        auto funIt = std::find_if(it->second.begin(), it->second.end(), [&callback](const EventCallback& fun)
         {
-            return GetFunctionAddress(fun) == GetFunctionAddress(callback);
+            return fun == callback;
         });
         if (funIt != it->second.end())
             return;
     }
-    m_events[eType].emplace_back(std::move(callback));
+    m_events[eType].push_back(callback);
 }
 
-void EventSystem::Unsubscribe(EventType eType, EventFunction callback)
+void EventSystem::Unsubscribe(EventType eType, EventCallback callback)
 {
     auto it = m_events.find(eType);
     if (it != m_events.end())
     {
-        auto funIt = std::find_if(it->second.begin(), it->second.end(), [&callback](const EventFunction& fun)
+        auto funIt = std::find_if(it->second.begin(), it->second.end(), [&callback](const EventCallback& fun)
         {
-            return GetFunctionAddress(fun) == GetFunctionAddress(callback);
+            return fun == callback;
         });
         if (funIt != it->second.end())
             m_events[eType].erase(funIt);
