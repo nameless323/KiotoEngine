@@ -64,19 +64,19 @@ void EventSystem::RaiseEvent(EventPtr e)
     }
 }
 
-void EventSystem::Subscribe(EventType eType, EventCallback callback)
+void EventSystem::Subscribe(EventType eType, EventCallback callback, void* context /*= nullptr*/)
 {
     auto it = m_events.find(eType);
     if (it != m_events.end())
     {
-        auto funIt = std::find_if(it->second.begin(), it->second.end(), [&callback](const EventCallback& fun)
+        auto funIt = std::find_if(it->second.begin(), it->second.end(), [&callback](const CallbackWrapper& callbackWrapper)
         {
-            return fun == callback;
+            return callbackWrapper.GetCallback() == callback;
         });
         if (funIt != it->second.end())
             return;
     }
-    m_events[eType].push_back(callback);
+    m_events[eType].emplace_back(callback, context);
 }
 
 void EventSystem::Unsubscribe(EventType eType, EventCallback callback)
@@ -84,13 +84,30 @@ void EventSystem::Unsubscribe(EventType eType, EventCallback callback)
     auto it = m_events.find(eType);
     if (it != m_events.end())
     {
-        auto funIt = std::find_if(it->second.begin(), it->second.end(), [&callback](const EventCallback& fun)
+        auto funIt = std::find_if(it->second.begin(), it->second.end(), [&callback](const CallbackWrapper& callbackWrapper)
         {
-            return fun == callback;
+            return callbackWrapper .GetCallback()== callback;
         });
         if (funIt != it->second.end())
             m_events[eType].erase(funIt);
     }
+}
+
+void EventSystem::Unsubscribe(void* context)
+{
+    if (context == nullptr)
+        return;
+
+    for (auto& et : m_events)
+    {
+        auto& vec = et.second;
+        vec.erase(std::remove_if(vec.begin(), vec.end(), [context](const CallbackWrapper& cw) { return cw.GetContext() == context; }), vec.end());
+    }
+}
+
+void EventSystem::Clear()
+{
+    m_events.clear();
 }
 
 }
