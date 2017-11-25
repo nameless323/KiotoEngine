@@ -60,7 +60,7 @@ void EventSystem::RaiseEvent(EventPtr e)
     auto it = m_events.find(e->GetEventType());
     if (it != m_events.end())
     {
-        for (auto fun : it->second)
+        for (auto& fun : it->second)
             fun(e);
     }
 }
