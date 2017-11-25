@@ -165,6 +165,7 @@
     <ClInclude Include="Sources\Internal\Core\DataStructures\RingArray.h" />
     <ClInclude Include="Sources\Internal\Core\ECS\Component.h" />
     <ClInclude Include="Sources\Internal\Core\ECS\Entity.h" />
+    <ClInclude Include="Sources\Internal\Core\ECS\SceneSystem.h" />
     <ClInclude Include="Sources\Internal\Core\ECS\System.h" />
     <ClInclude Include="Sources\Internal\Core\FPSCounter.h" />
     <ClInclude Include="Sources\Internal\Core\KiotoEngine.h" />

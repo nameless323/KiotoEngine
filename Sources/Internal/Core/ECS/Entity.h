@@ -39,7 +39,7 @@ void Entity::RemoveComponent()
     auto it = std::find_if(m_components.begin(), m_components.end(), 
         [](Component* c) 
         {
-            return dynamic_cast<T*>(c) != nullptr; 
+            return typename T::GetTypeS() == c->GetType();
         });
     if (it != m_components.end())
     {
