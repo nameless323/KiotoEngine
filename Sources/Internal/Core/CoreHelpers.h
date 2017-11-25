@@ -5,9 +5,17 @@
 
 #pragma once
 
+#include <string>
+#include <functional>
+
 namespace Kioto
 {
-template<typename T>
+namespace
+{
+std::hash<std::string> StringHasher;
+}
+
+template <typename T>
 inline void SafeDelete(T*& ptr)
 {
     if (ptr != nullptr)
@@ -18,7 +26,7 @@ inline void SafeDelete(T*& ptr)
     // [a_vorontsov] Anton Smetanin suggest to add some logs here in future.
 }
 
-template<typename T>
+template <typename T>
 inline void SafeDeleteArray(T*& ptr)
 {
     if (ptr != nullptr)
@@ -27,5 +35,25 @@ inline void SafeDeleteArray(T*& ptr)
         ptr = nullptr;
     }
     // [a_vorontsov] Anton Smetanin suggest to add some logs here in future
+}
+
+template <typename T>
+inline uint64 PtrToUint(T* ptr)
+{
+    return static_cast<uint64>(reinterpret_cast<uintptr_t>(ptr));
+}
+
+inline uint64 StringToHash(const std::string& str)
+{
+    return StringHasher(str);
+}
+
+// [a_vorontsov] See https://stackoverflow.com/questions/18039723/c-trying-to-get-function-address-from-a-stdfunction for details.
+template<typename T, typename... U>
+uint64 GetFunctionAddress(std::function<T(U...)> f) 
+{
+    typedef T(fnType)(U...);
+    fnType ** fnPointer = f.template target<fnType*>();
+    return PtrToUint(*fnPointer);
 }
 }
