@@ -47,7 +47,8 @@ using EventType = uint64;
 /// Describes calback for events. Simple wrapper consists of std::funciton for callback and index for equality operator.
 /// You can use static method MakeCallback to create callback from member function, or you can use lambda or free functions or static functions
 /// with ctor with std::function. Note: you must ether remember your callback and unsubscribe with this callback, or you can add context in eventSystem.Subscribe
-/// (this ptr), and Unsubscribe via eventSystem.Unsubscribe(this).
+/// (this ptr), and Unsubscribe via eventSystem.Unsubscribe(this). Only callbacks creates via  EventCallback(std::function<void(EventPtr)> callback); or
+/// created via MakeCallback (which essentialy the same) are considered unique.
 struct EventCallback
 {
 public:
