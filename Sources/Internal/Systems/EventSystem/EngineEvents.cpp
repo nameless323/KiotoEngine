@@ -15,4 +15,9 @@ void* OnComponentAddEvent::GetEventData()
     return nullptr;
 }
 
+void* OnEntityAddEvent::GetEventData()
+{
+    return nullptr;
+}
+
 }

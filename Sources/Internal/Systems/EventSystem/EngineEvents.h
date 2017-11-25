@@ -20,4 +20,15 @@ public:
 
     void* GetEventData() override;
 };
+
+struct OnEntityAddEvent : public Event
+{
+    DECLARE_EVENT(OnEntityAddEvent);
+
+public:
+    OnEntityAddEvent() = default;
+    ~OnEntityAddEvent() override = default;
+
+    void* GetEventData() override;
+};
 }

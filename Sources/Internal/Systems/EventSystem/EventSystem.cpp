@@ -14,6 +14,7 @@ namespace Kioto
 {
 
 uint32 EventCallback::m_currentIndex = 0;
+constexpr uint32 EventsInitialCapacity = 128;
 
 EventCallback::EventCallback(std::function<void(EventPtr)> callback)
 {
@@ -75,6 +76,10 @@ void EventSystem::Subscribe(EventType eType, EventCallback callback, void* conte
         });
         if (funIt != it->second.end())
             return;
+    }
+    else
+    {
+        m_events[eType].reserve(EventsInitialCapacity);
     }
     m_events[eType].emplace_back(callback, context);
 }
