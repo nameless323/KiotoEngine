@@ -24,7 +24,7 @@ KIOTO_API uint64 GetType() const override \
 KIOTO_API static uint64 GetTypeS() \
 { \
     static std::hash<std::string> stringHasher; \
-    static uint64 hash = StringHasher(#type); \
+    static uint64 hash = stringHasher(#type); \
     return hash; \
 }
 
