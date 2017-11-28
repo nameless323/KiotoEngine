@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "Core/ECS/Component.h"
+#include "Component/TransformComponent.h"
 
 namespace Kioto
 {
@@ -25,10 +26,17 @@ public:
     KIOTO_API void RemoveComponent(Component* component);
     KIOTO_API void AddComponent(Component* component);
 
+    Component* GetComponent(uint64 componentTypeIndex) const;
+    template <typename T, typename = std::enable_if_t<std::is_convertible_v<T*, Component*>>>
+    T* GetComponent() const;
+
+    TransformComponent* GetTransform() const;
+
     const std::vector<Component*>& GetComponents() const;
 
 private:
     std::vector<Component*> m_components; // [a_vorontsov] Bad, bad thing...
+    TransformComponent* m_transform = nullptr;
 
     friend void swap(Entity& e1, Entity& e2);
 };
@@ -39,13 +47,22 @@ void Entity::RemoveComponent()
     auto it = std::find_if(m_components.begin(), m_components.end(), 
         [](Component* c) 
         {
-            return dynamic_cast<T*>(c) != nullptr; 
+            return typename T::GetTypeS() == c->GetType();
         });
     if (it != m_components.end())
     {
         delete &(*it);
         m_components.erase(it);
     }
+}
+
+template <typename T, typename>
+T* Entity::GetComponent() const
+{
+    Component* c = GetComponent(T::GetTypeS());
+    if (c != nullptr)
+        return static_cast<T*>(c);
+    return nullptr;
 }
 
 inline const std::vector<Component*>& Entity::GetComponents() const
@@ -57,5 +74,10 @@ inline void swap(Entity& e1, Entity& e2)
 {
     using std::swap;
     swap(e1.m_components, e2.m_components);
+}
+
+inline TransformComponent* Entity::GetTransform() const
+{
+    return m_transform;
 }
 }

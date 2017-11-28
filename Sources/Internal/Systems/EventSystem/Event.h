@@ -12,7 +12,7 @@ namespace Kioto
 {
 #define DECLARE_EVENT(type) \
 public:\
-uint64 GetEventType() override \
+uint64 GetEventType() const override \
 { \
     return type::GetEventTypeS(); \
 } \
@@ -29,7 +29,7 @@ public:
     Event() = default;
     virtual ~Event() = default;
 
-    virtual uint64 GetEventType() abstract;
+    virtual uint64 GetEventType() const abstract;
     virtual void* GetEventData() abstract;
     void* Sender = nullptr;
     float64 Time = -1.0f;

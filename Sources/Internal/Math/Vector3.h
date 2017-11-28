@@ -71,6 +71,13 @@ public:
     /// Normalize vector.
     ///
     static Vector3_<T> Normalized(Vector3_<T> v);
+
+    static const Vector3_<T> Up;
+    static const Vector3_<T> Down;
+    static const Vector3_<T> Left;
+    static const Vector3_<T> Right;
+    static const Vector3_<T> Forward;
+    static const Vector3_<T> Backward;
 };
 
 template<typename T>
@@ -216,6 +223,24 @@ inline Vector3_<T> Vector3_<T>::Cross(const Vector3_<T>& v1, const Vector3_<T>& 
 {
     return { v1.y * v2.z - v2.y * v1.z, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x };
 }
+
+template <typename T>
+const Vector3_<T> Vector3_<T>::Up(0.0f, 1.0f, 0.0f);
+
+template <typename T>
+const Vector3_<T> Vector3_<T>::Down(0.0f, -1.0f, 0.0f);
+
+template <typename T>
+const Vector3_<T> Vector3_<T>::Left(-1.0f, 0.0f, 0.0f);
+
+template <typename T>
+const Vector3_<T> Vector3_<T>::Right(1.0f, 0.0f, 0.0f);
+
+template <typename T>
+const Vector3_<T> Vector3_<T>::Forward(0.0f, 0.0f, 1.0f);
+
+template <typename T>
+const Vector3_<T> Vector3_<T>::Backward(0.0f, 0.0f, -1.0f);
 
 using Vector3 = Vector3_<float32>;
 using Vector3i = Vector3_<int32>;

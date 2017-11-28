@@ -127,7 +127,7 @@ public:
     ///
     static Matrix4_<T> BuildOrtho(float32 left, float32 right, float32 bottom, float32 top, float32 zNear, float32 zFar);
 
-    static const Matrix4_<T>& Identity();
+    static const Matrix4_<T> Identity;
 };
 
 template <typename T>
@@ -319,7 +319,7 @@ inline Matrix4_<T> Matrix4_<T>::BuildRotation(const Vector3_<T>& axs, float32 an
 {
     float32 cosA = std::cos(angle);
     float32 sinA = std::sin(angle);
-    Matrix4_<T> m = Identity();
+    Matrix4_<T> m = Identity;
     m._00 = cosA + (1.0f - cosA) * axs.x * axs.x;
     m._01 = (1.0f - cosA) * axs.x * axs.y - axs.z * sinA;
     m._02 = (1.0f - cosA) * axs.x * axs.z + axs.y * sinA;
@@ -414,7 +414,7 @@ Matrix4_<T> Matrix4_<T>::BuildLookAt(const Vector3& position, const Vector3& tar
     up = Vector3_<T>::Cross(fwd, right);
     up.Normalize();
 
-    Matrix4_<T> m = Identity();
+    Matrix4_<T> m = Identity;
 
     m._00 = right.x;
     m._10 = right.y;
@@ -469,16 +469,12 @@ inline Matrix4_<T> Matrix4_<T>::BuildOrtho(float32 left, float32 right, float32 
 }
 
 template <typename T>
-inline const Matrix4_<T>& Matrix4_<T>::Identity()
-{
-    static const Matrix4_<T> identity(
-                                    static_cast<T>(1.0f), static_cast<T>(0.0f), static_cast<T>(0.0f), static_cast<T>(0.0f),
-                                    static_cast<T>(0.0f), static_cast<T>(1.0f), static_cast<T>(0.0f), static_cast<T>(0.0f),
-                                    static_cast<T>(0.0f), static_cast<T>(0.0f), static_cast<T>(1.0f), static_cast<T>(0.0f),
-                                    static_cast<T>(0.0f), static_cast<T>(0.0f), static_cast<T>(0.0f), static_cast<T>(1.0f)
-                                );
-    return identity;
-}
+const Matrix4_<T> Matrix4_<T>::Identity(
+    static_cast<T>(1.0f), static_cast<T>(0.0f), static_cast<T>(0.0f), static_cast<T>(0.0f),
+    static_cast<T>(0.0f), static_cast<T>(1.0f), static_cast<T>(0.0f), static_cast<T>(0.0f),
+    static_cast<T>(0.0f), static_cast<T>(0.0f), static_cast<T>(1.0f), static_cast<T>(0.0f),
+    static_cast<T>(0.0f), static_cast<T>(0.0f), static_cast<T>(0.0f), static_cast<T>(1.0f)
+);
 
 using Matrix4 = Matrix4_<float32>;
 }

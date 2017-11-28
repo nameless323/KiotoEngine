@@ -39,6 +39,13 @@ public:
     explicit Vector4_(const DirectX::XMFLOAT4& vec);
     operator DirectX::XMFLOAT4() const;
 #endif
+
+    static const Vector4_<T> Up;
+    static const Vector4_<T> Down;
+    static const Vector4_<T> Left;
+    static const Vector4_<T> Right;
+    static const Vector4_<T> Forward;
+    static const Vector4_<T> Backward;
 };
 
 template <typename T>
@@ -84,6 +91,24 @@ Vector4_<T>::operator DirectX::XMFLOAT4() const
     return XMFLOAT4(x, y, z, w);
 }
 #endif
+
+template <typename T>
+const Vector4_<T> Vector4_<T>::Up(0.0f, 1.0f, 0.0f, 0.0f);
+
+template <typename T>
+const Vector4_<T> Vector4_<T>::Down(0.0f, -1.0f, 0.0f, 0.0f);
+
+template <typename T>
+const Vector4_<T> Vector4_<T>::Left(-1.0f, 0.0f, 0.0f, 0.0f);
+
+template <typename T>
+const Vector4_<T> Vector4_<T>::Right(1.0f, 0.0f, 0.0f, 0.0f);
+
+template <typename T>
+const Vector4_<T> Vector4_<T>::Forward(0.0f, 0.0f, 1.0f, 0.0f);
+
+template <typename T>
+const Vector4_<T> Vector4_<T>::Backward(0.0f, 0.0f, -1.0f, 0.0f);
 
 using Vector4 = Vector4_<float32>;
 using Vector4i = Vector4_<int32>;

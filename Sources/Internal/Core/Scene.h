@@ -13,6 +13,8 @@
 namespace Kioto
 {
 class SceneSystem;
+class Entity;
+class TransformSystem;
 
 class Scene
 {
@@ -74,8 +76,12 @@ public:
     ///
     const std::vector<SceneSystem*>& GetSystems() const;
 
+    void AddEntity(Entity* entity);
+    void RemoveEntity(Entity* entity);
+
 private:
     std::vector<SceneSystem*> m_systems; // [a_vorontsov] TODO: linked list in custom arena?
+    std::vector<Entity*> m_entities; // [a_vorontsov] Same as above.
 };
 
 template <typename T, typename>
