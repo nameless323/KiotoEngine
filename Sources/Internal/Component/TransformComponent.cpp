@@ -3,6 +3,8 @@
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
+#include "stdafx.h"
+
 #include "Component/TransformComponent.h"
 
 namespace Kioto
@@ -18,5 +20,7 @@ Component* TransformComponent::Clone() const
     t->m_parent = m_parent;
     t->m_worldPosition = m_worldPosition;
     t->m_worldRotation = m_worldRotation;
+
+    return t;
 }
 }

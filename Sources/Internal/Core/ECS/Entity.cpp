@@ -54,6 +54,16 @@ void Entity::AddComponent(Component* component)
         return; // [a_vorontsov] Do smth scary here.
     component->SetEntity(this);
     m_components.push_back(component);
+    if (component->GetType() == TransformComponent::GetTypeS())
+        m_transform = static_cast<TransformComponent*>(component);
+}
+
+Component* Entity::GetComponent(uint64 componentTypeIndex) const
+{
+    auto it = std::find_if(m_components.begin(), m_components.end(), [componentTypeIndex](Component* c) { return c->GetType() == componentTypeIndex; });
+    if (it != m_components.end())
+        return *it;
+    return nullptr;
 }
 
 }

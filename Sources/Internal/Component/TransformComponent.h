@@ -138,7 +138,7 @@ inline void TransformComponent::RemoveDirty()
     m_isDirty = false;
 }
 
-void TransformComponent::SetChildrenDirty()
+inline void TransformComponent::SetChildrenDirty()
 {
     for (auto c : m_children)
         c->SetDirty();

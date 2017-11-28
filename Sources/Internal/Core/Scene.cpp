@@ -9,6 +9,7 @@
 
 #include "Core/Timer/GlobalTimer.h"
 #include "Core/ECS/SceneSystem.h"
+#include "Core/ECS/Entity.h"
 
 namespace Kioto
 {
