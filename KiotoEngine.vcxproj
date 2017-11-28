@@ -159,6 +159,7 @@
   <ItemGroup>
     <ClInclude Include="Sources\External\Dx12Helpers\d3dx12.h" />
     <ClInclude Include="Sources\External\Dx12Helpers\DDSTextureLoader.h" />
+    <ClInclude Include="Sources\Internal\Component\TransformComponent.h" />
     <ClInclude Include="Sources\Internal\Core\Core.h" />
     <ClInclude Include="Sources\Internal\Core\CoreHelpers.h" />
     <ClInclude Include="Sources\Internal\Core\CoreTypes.h" />
@@ -199,6 +200,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Sources\External\Dx12Helpers\DDSTextureLoader.cpp" />
+    <ClCompile Include="Sources\Internal\Component\TransformComponent.cpp" />
     <ClCompile Include="Sources\Internal\Core\ECS\Entity.cpp" />
     <ClCompile Include="Sources\Internal\Core\FPSCounter.cpp" />
     <ClCompile Include="Sources\Internal\Core\KiotoEngine.cpp" />

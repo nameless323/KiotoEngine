@@ -17,6 +17,7 @@ Scene::Scene()
 {
     // [a_vorontsov] 64 systems are enough for anyone.
     m_systems.reserve(64);
+    m_entities.reserve(512);
 }
 
 Scene::~Scene()
@@ -24,6 +25,10 @@ Scene::~Scene()
     for (auto system : m_systems)
         SafeDelete(system);
     m_systems.clear();
+
+    for (auto entity : m_entities)
+        SafeDelete(entity);
+    m_entities.clear();
 }
 
 void Scene::Init()
@@ -54,6 +59,24 @@ void Scene::RemoveSystem(SceneSystem* system)
     {
         delete &(*it);
         m_systems.erase(it);
+    }
+}
+
+void Scene::AddEntity(Entity* entity)
+{
+    m_entities.push_back(entity);
+    for (auto system : m_systems)
+        system->OnEntityAdd(entity);
+}
+
+void Scene::RemoveEntity(Entity* entity)
+{
+    auto it = std::find(m_entities.begin(), m_entities.end(), entity);
+    if (it != m_entities.end())
+    {
+        m_entities.erase(it);
+        for (auto system : m_systems)
+            system->OnEntityAdd(entity);
     }
 }
 
