@@ -12,19 +12,49 @@
 namespace Kioto
 {
 
+TransformSystem::TransformSystem()
+{
+    m_components.reserve(512);
+}
+
+TransformSystem::~TransformSystem()
+{
+    m_components.clear();
+}
+
 void TransformSystem::OnEntityAdd(Entity* entity)
 {
     TransformComponent* t = entity->GetTransform();
+    if (t == nullptr) // [a_vorontsov] o.O
+        return;
+    m_components.push_back(t);
 }
 
 void TransformSystem::OnEntityRemove(Entity* entity)
 {
-
+    TransformComponent* t = entity->GetTransform();
+    if (t == nullptr) // [a_vorontsov] o.O
+        return;
+    auto it = std::find(m_components.begin(), m_components.end(), t);
+    if (it != m_components.end())
+        m_components.erase(it);
 }
 
 void TransformSystem::Update(float32 dt)
 {
+    for (TransformComponent* currTransform : m_components)
+    {
+        if (currTransform->GetDirty())
+            ComposeMatricies(currTransform);
+    }
+}
 
+void TransformSystem::ComposeMatricies(TransformComponent* t)
+{
+    const Vector3& pos = t->GetWorldPosition();
+    Matrix4 m = t->GetWorldRotation();
+    m.SetTranslation(pos);
+    t->SetToWorld(m);
 }
 
 }

@@ -22,7 +22,7 @@ public:
     TransformComponent() = default;
     ~TransformComponent() = default;
 
-    bool GetTransformDirty() const;
+    bool GetDirty() const;
     const Matrix4& GetToWorld() const;
     const Matrix4& GetToParent() const;
     const Matrix4& GetToModel() const;
@@ -54,7 +54,7 @@ private:
     std::vector<TransformComponent*> m_children;
 };
 
-inline bool TransformComponent::GetTransformDirty() const
+inline bool TransformComponent::GetDirty() const
 {
     return m_isDirty;
 }

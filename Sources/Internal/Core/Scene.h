@@ -14,6 +14,7 @@ namespace Kioto
 {
 class SceneSystem;
 class Entity;
+class TransformSystem;
 
 class Scene
 {

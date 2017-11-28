@@ -10,6 +10,7 @@
 #include "Core/Timer/GlobalTimer.h"
 #include "Core/ECS/SceneSystem.h"
 #include "Core/ECS/Entity.h"
+#include "Systems/TransformSystem.h"
 
 namespace Kioto
 {
@@ -34,7 +35,8 @@ Scene::~Scene()
 
 void Scene::Init()
 {
-    OutputDebugStringA("Init scene");
+    TransformSystem* transformSystem = new TransformSystem();
+
 }
 
 void Scene::Update(float32 dt)
