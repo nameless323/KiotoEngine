@@ -45,7 +45,10 @@ void TransformSystem::Update(float32 dt)
     for (TransformComponent* currTransform : m_components)
     {
         if (currTransform->GetDirty())
+        {
             ComposeMatricies(currTransform);
+            currTransform->RemoveDirty();
+        }
     }
 }
 

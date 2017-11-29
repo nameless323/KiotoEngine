@@ -52,6 +52,8 @@ private:
 
     TransformComponent* m_parent = nullptr;
     std::vector<TransformComponent*> m_children;
+
+    friend class TransformSystem;
 };
 
 inline bool TransformComponent::GetDirty() const
