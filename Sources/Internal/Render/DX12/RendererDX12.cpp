@@ -253,7 +253,7 @@ void RendererDX12::LoadPipeline()
     m_passBuffer = std::make_unique<UploadBuffer<PassBuffer>>(FrameCount, true, m_device.Get());
     PassBuffer passBuffer;
     m_view = Matrix4::BuildLookAt({ 0.0f, 0.0f, -1.0f }, { 0.0f, 0.0f, 3.0f }, { 0.0f, 1.0f, 0.0f });
-    Matrix4 proj = Matrix4::BuildProjectionFov(Math::RadToDeg(35.0f), static_cast<float32>(m_width) / static_cast<float32>(m_height), 0.10f, 1000.0f);
+    Matrix4 proj = Matrix4::BuildProjectionFov(Math::DegToRad(60.0f), static_cast<float32>(m_width) / static_cast<float32>(m_height), 0.10f, 1000.0f);
     m_viewProj = m_view * proj;
     passBuffer.View = m_view.Tranposed();
     passBuffer.ViewProjection = m_viewProj.Tranposed();
@@ -416,7 +416,7 @@ void RendererDX12::Resize(uint16 width, uint16 heigth)
 
     PassBuffer passBuffer;
     m_view = Matrix4::BuildLookAt({ 0.0f, 0.0f, -1.0f }, { 0.0f, 0.0f, 3.0f }, { 0.0f, 1.0f, 0.0f });
-    Matrix4 proj = Matrix4::BuildProjectionFov(Math::RadToDeg(35.0f), static_cast<float32>(m_width) / static_cast<float32>(m_height), 0.10f, 1000.0f);
+    Matrix4 proj = Matrix4::BuildProjectionFov(Math::DegToRad(60.0f), static_cast<float32>(m_width) / static_cast<float32>(m_height), 0.10f, 1000.0f);
     m_viewProj = m_view * proj;
     passBuffer.View = m_view.Tranposed();
     passBuffer.ViewProjection = m_viewProj.Tranposed();

@@ -159,6 +159,7 @@
   <ItemGroup>
     <ClInclude Include="Sources\External\Dx12Helpers\d3dx12.h" />
     <ClInclude Include="Sources\External\Dx12Helpers\DDSTextureLoader.h" />
+    <ClInclude Include="Sources\Internal\Component\CameraComponent.h" />
     <ClInclude Include="Sources\Internal\Component\TransformComponent.h" />
     <ClInclude Include="Sources\Internal\Core\Core.h" />
     <ClInclude Include="Sources\Internal\Core\CoreHelpers.h" />
@@ -192,6 +193,7 @@
     <ClInclude Include="Sources\Internal\Render\Geometry\Mesh.h" />
     <ClInclude Include="Sources\Internal\Render\Renderer.h" />
     <ClInclude Include="Sources\Internal\Render\Texture\Texture.h" />
+    <ClInclude Include="Sources\Internal\Systems\CameraSystem.h" />
     <ClInclude Include="Sources\Internal\Systems\EventSystem\EngineEvents.h" />
     <ClInclude Include="Sources\Internal\Systems\EventSystem\Event.h" />
     <ClInclude Include="Sources\Internal\Systems\EventSystem\EventSystem.h" />
@@ -201,6 +203,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Sources\External\Dx12Helpers\DDSTextureLoader.cpp" />
+    <ClCompile Include="Sources\Internal\Component\CameraComponent.cpp" />
     <ClCompile Include="Sources\Internal\Component\TransformComponent.cpp" />
     <ClCompile Include="Sources\Internal\Core\ECS\Entity.cpp" />
     <ClCompile Include="Sources\Internal\Core\FPSCounter.cpp" />
@@ -216,6 +219,7 @@
     <ClCompile Include="Sources\Internal\Render\Geometry\GeometryGenerator.cpp" />
     <ClCompile Include="Sources\Internal\Render\Geometry\Mesh.cpp" />
     <ClCompile Include="Sources\Internal\Render\Renderer.cpp" />
+    <ClCompile Include="Sources\Internal\Systems\CameraSystem.cpp" />
     <ClCompile Include="Sources\Internal\Systems\EventSystem\EngineEvents.cpp" />
     <ClCompile Include="Sources\Internal\Systems\EventSystem\EventSystem.cpp" />
     <ClCompile Include="Sources\Internal\Systems\TransformSystem.cpp" />
