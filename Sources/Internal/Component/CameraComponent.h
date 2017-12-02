@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include "Core/Core.h"
 #include "Core/CoreTypes.h"
 #include "Core/ECS/Component.h"
 #include "Math/Matrix4.h"
@@ -18,9 +19,9 @@ class CameraComponent : public Component
     DECLARE_COMPONENT(CameraComponent);
 
 public:
-    CameraComponent();
-    CameraComponent(float32 fovY, float32 aspect, float32 nearPlane, float32 farPlane);
-    ~CameraComponent() = default;
+    KIOTO_API CameraComponent();
+    KIOTO_API CameraComponent(float32 fovY, float32 aspect, float32 nearPlane, float32 farPlane);
+    KIOTO_API ~CameraComponent() = default;
 
     Component* Clone() const override;
 
@@ -103,7 +104,7 @@ inline void CameraComponent::SetOrthographic(bool ortho)
 
 inline void CameraComponent::SetIsMain(bool isMain)
 {
-    return m_isMainRT;
+    m_isMainRT = isMain;
 }
 
 inline float32 CameraComponent::GetFovY() const

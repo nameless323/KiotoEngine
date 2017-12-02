@@ -266,9 +266,12 @@ Matrix4_<T> Matrix4_<T>::InversedOrthonorm() const
         _20, _21, _22, 0.0f,
         0.0f, 0.0f, 0.0f, 1.0f
     };
-    Vector4_<T> pos = GetTranslation();
+    Vector4_<T> pos(GetTranslation());
     pos = -pos * res;
-    res.SetTranslation(pos);
+    res._30 = pos.x;
+    res._31 = pos.y;
+    res._32 = pos.z;
+
     return res;
 }
 

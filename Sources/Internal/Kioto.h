@@ -11,6 +11,9 @@
 #include <Core/Scene.h>
 #include <Core/ECS/SceneSystem.h>
 
+#include <Component/CameraComponent.h>
+#include <Component/TransformComponent.h>
+
 using Kioto::byte;
 using Kioto::int16;
 using Kioto::uint16;
