@@ -76,10 +76,10 @@ public:
     ///
     const std::vector<SceneSystem*>& GetSystems() const;
 
-    void AddEntity(Entity* entity);
-    void RemoveEntity(Entity* entity);
+    KIOTO_API void AddEntity(Entity* entity);
+    KIOTO_API void RemoveEntity(Entity* entity);
 
-    const CameraSystem* GetCameraSystem() const;
+    KIOTO_API const CameraSystem* GetCameraSystem() const;
 
 private:
     std::vector<SceneSystem*> m_systems; // [a_vorontsov] TODO: linked list in custom arena? Also, maybe updatable system or smth like that, to not call useless update.

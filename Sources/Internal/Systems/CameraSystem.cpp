@@ -8,8 +8,8 @@
 #include "Systems/CameraSystem.h"
 
 #include "Component/CameraComponent.h"
-
 #include "Core/ECS/Entity.h"
+#include "Math/MathHelpers.h"
 
 namespace Kioto
 {

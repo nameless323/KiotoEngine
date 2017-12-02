@@ -205,6 +205,7 @@
     <ClCompile Include="Sources\External\Dx12Helpers\DDSTextureLoader.cpp" />
     <ClCompile Include="Sources\Internal\Component\CameraComponent.cpp" />
     <ClCompile Include="Sources\Internal\Component\TransformComponent.cpp" />
+    <ClCompile Include="Sources\Internal\Core\ECS\Component.cpp" />
     <ClCompile Include="Sources\Internal\Core\ECS\Entity.cpp" />
     <ClCompile Include="Sources\Internal\Core\FPSCounter.cpp" />
     <ClCompile Include="Sources\Internal\Core\KiotoEngine.cpp" />

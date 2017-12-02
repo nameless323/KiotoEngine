@@ -12,15 +12,8 @@
 namespace Kioto
 {
 
-CameraComponent::CameraComponent()
-{
-    m_transform = GetEntity()->GetTransform();
-}
-
 CameraComponent::CameraComponent(float32 fovY, float32 aspect, float32 nearPlane, float32 farPlane)
 {
-    m_transform = GetEntity()->GetTransform();
-
     m_fovY = fovY;
     m_aspect = aspect;
     m_nearPlane = nearPlane;
@@ -37,6 +30,12 @@ Component* CameraComponent::Clone() const
     newComponent->m_hdr = m_hdr;
     newComponent->m_isOrtho = m_isOrtho;
     return newComponent;
+}
+
+void CameraComponent::SetEntity(Entity* entity)
+{
+    Component::SetEntity(entity);
+    m_transform = GetEntity()->GetTransform();
 }
 
 }

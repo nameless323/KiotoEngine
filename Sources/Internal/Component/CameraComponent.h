@@ -9,6 +9,7 @@
 #include "Core/CoreTypes.h"
 #include "Core/ECS/Component.h"
 #include "Math/Matrix4.h"
+#include "Math/MathHelpers.h"
 
 namespace Kioto
 {
@@ -19,7 +20,14 @@ class CameraComponent : public Component
     DECLARE_COMPONENT(CameraComponent);
 
 public:
-    KIOTO_API CameraComponent();
+    KIOTO_API CameraComponent() = default;
+    ///
+    /// Create camera component.
+    /// fovY - field of view Y in radians.
+    /// aspect - camera aspect ratio (width / height).
+    /// nearPlane - distance to near plane.
+    /// farPlane - distance to far plane.
+    ///
     KIOTO_API CameraComponent(float32 fovY, float32 aspect, float32 nearPlane, float32 farPlane);
     KIOTO_API ~CameraComponent() = default;
 
@@ -27,6 +35,7 @@ public:
 
     const TransformComponent* GetTransform() const;
     void SetFovY(float32 fovY);
+    void SetFovYDeg(float32 fovY);
     void SetNearPlane(float32 nearPlane);
     void SetFarPlane(float32 farPlane);
     void SetAspect(float32 aspect);
@@ -47,13 +56,16 @@ public:
     Matrix4 GetProjection() const;
     Matrix4 GetVP() const;
 
+protected:
+    void SetEntity(Entity* entity) override;
+
 private:
     TransformComponent* m_transform = nullptr;
     Matrix4 m_view = Matrix4::Identity;
     Matrix4 m_projection = Matrix4::Identity;
     Matrix4 m_VP = Matrix4::Identity;
     bool m_isViewDirty = true;
-    float32 m_fovY = 60.0f;
+    float32 m_fovY = Math::DegToRad(60.0f);
     float32 m_foxX = -1.0f;
     float32 m_nearPlane = 0.01f;
     float32 m_farPlane = 100.0f;
@@ -75,6 +87,12 @@ inline const TransformComponent* CameraComponent::GetTransform() const
 inline void CameraComponent::SetFovY(float32 fovY)
 {
     m_fovY = fovY;
+    m_isViewDirty = true;
+}
+
+inline void CameraComponent::SetFovYDeg(float32 fovY)
+{
+    m_fovY = Math::DegToRad(fovY);
     m_isViewDirty = true;
 }
 
