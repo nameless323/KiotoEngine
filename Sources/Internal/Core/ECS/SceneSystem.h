@@ -18,5 +18,15 @@ public:
     virtual void OnEntityRemove(Entity* entity) abstract;
     KIOTO_API virtual void Update(float32 dt) abstract;
     KIOTO_API virtual ~SceneSystem() = default;
+
+    bool GetNeedUpdate() const;
+
+private:
+    bool m_needUpdate = true;
 };
+
+inline bool SceneSystem::GetNeedUpdate() const
+{
+    return m_needUpdate;
+}
 }

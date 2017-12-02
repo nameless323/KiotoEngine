@@ -14,7 +14,7 @@ namespace Kioto
 {
 class SceneSystem;
 class Entity;
-class TransformSystem;
+class CameraSystem;
 
 class Scene
 {
@@ -79,9 +79,12 @@ public:
     void AddEntity(Entity* entity);
     void RemoveEntity(Entity* entity);
 
+    const CameraSystem* GetCameraSystem() const;
+
 private:
-    std::vector<SceneSystem*> m_systems; // [a_vorontsov] TODO: linked list in custom arena?
+    std::vector<SceneSystem*> m_systems; // [a_vorontsov] TODO: linked list in custom arena? Also, maybe updatable system or smth like that, to not call useless update.
     std::vector<Entity*> m_entities; // [a_vorontsov] Same as above.
+    CameraSystem* m_cameraSystem = nullptr;
 };
 
 template <typename T, typename>
@@ -137,4 +140,8 @@ inline const std::vector<SceneSystem*>& Scene::GetSystems() const
     return m_systems;
 }
 
+inline const CameraSystem* Scene::GetCameraSystem() const
+{
+    return m_cameraSystem;
+}
 }

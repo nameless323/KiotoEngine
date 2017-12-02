@@ -11,6 +11,7 @@
 #include "Core/ECS/SceneSystem.h"
 #include "Core/ECS/Entity.h"
 #include "Systems/TransformSystem.h"
+#include "Systems/CameraSystem.h"
 
 namespace Kioto
 {
@@ -36,7 +37,9 @@ Scene::~Scene()
 void Scene::Init()
 {
     TransformSystem* transformSystem = new TransformSystem();
-
+    AddSystem(transformSystem);
+    m_cameraSystem = new CameraSystem();
+    AddSystem(m_cameraSystem);
 }
 
 void Scene::Update(float32 dt)

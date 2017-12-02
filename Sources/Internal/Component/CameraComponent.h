@@ -30,19 +30,27 @@ public:
     void SetFarPlane(float32 farPlane);
     void SetAspect(float32 aspect);
     void SetOrthographic(bool ortho);
+    void SetIsMain(bool isMain);
 
     float32 GetFovY() const;
     float32 GetNearPlane() const;
     float32 GetFarPlane() const;
     float32 GetAspect() const;
     bool GetOrthographic() const;
+    bool GetIsMain() const;
 
     float32 GetNearPlaneHeight() const;
     float32 GetFarPlaneHeight() const;
 
+    Matrix4 GetView() const;
+    Matrix4 GetProjection() const;
+    Matrix4 GetVP() const;
+
 private:
     TransformComponent* m_transform = nullptr;
     Matrix4 m_view = Matrix4::Identity;
+    Matrix4 m_projection = Matrix4::Identity;
+    Matrix4 m_VP = Matrix4::Identity;
     bool m_isViewDirty = true;
     float32 m_fovY = 60.0f;
     float32 m_foxX = -1.0f;
@@ -53,6 +61,7 @@ private:
     float32 m_aspect = 1.0f;
     bool m_hdr = true;
     bool m_isOrtho = false;
+    bool m_isMainRT = false;
 
     friend class CameraSystem;
 };
@@ -92,6 +101,11 @@ inline void CameraComponent::SetOrthographic(bool ortho)
     m_isViewDirty = true;
 }
 
+inline void CameraComponent::SetIsMain(bool isMain)
+{
+    return m_isMainRT;
+}
+
 inline float32 CameraComponent::GetFovY() const
 {
     return m_fovY;
@@ -117,6 +131,11 @@ inline bool CameraComponent::GetOrthographic() const
     return m_isOrtho;
 }
 
+inline bool CameraComponent::GetIsMain() const
+{
+    return m_isMainRT;
+}
+
 inline float32 CameraComponent::GetNearPlaneHeight() const
 {
     return m_nearPlane;
@@ -124,6 +143,21 @@ inline float32 CameraComponent::GetNearPlaneHeight() const
 inline float32 CameraComponent::GetFarPlaneHeight() const
 {
     return m_farPlane;
+}
+
+inline Matrix4 CameraComponent::GetView() const
+{
+    return m_view;
+}
+
+inline Matrix4 CameraComponent::GetProjection() const
+{
+    return m_projection;
+}
+
+inline Matrix4 CameraComponent::GetVP() const
+{
+    return m_VP;
 }
 
 }
