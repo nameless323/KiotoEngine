@@ -12,6 +12,7 @@
 #include "Core/ECS/Entity.h"
 #include "Systems/TransformSystem.h"
 #include "Systems/CameraSystem.h"
+#include "Systems/EventSystem/EventSystem.h"
 
 namespace Kioto
 {
@@ -21,17 +22,24 @@ Scene::Scene()
     // [a_vorontsov] 64 systems are enough for anyone.
     m_systems.reserve(64);
     m_entities.reserve(512);
+
+    m_eventSystem = new EventSystem();
 }
 
 Scene::~Scene()
 {
     for (auto system : m_systems)
+    {
+        system->Shutdown();
         SafeDelete(system);
+    }
     m_systems.clear();
 
     for (auto entity : m_entities)
         SafeDelete(entity);
     m_entities.clear();
+
+    delete m_eventSystem;
 }
 
 void Scene::Init()
@@ -40,6 +48,9 @@ void Scene::Init()
     AddSystem(transformSystem);
     m_cameraSystem = new CameraSystem();
     AddSystem(m_cameraSystem);
+
+    for (auto system : m_systems)
+        system->Init();
 }
 
 void Scene::Update(float32 dt)
@@ -56,6 +67,8 @@ void Scene::Shutdown()
 void Scene::AddSystem(SceneSystem* system)
 {
     m_systems.push_back(system);
+
+    system->Init();
 }
 
 void Scene::RemoveSystem(SceneSystem* system)
@@ -63,6 +76,7 @@ void Scene::RemoveSystem(SceneSystem* system)
     auto it = std::find(m_systems.begin(), m_systems.end(), system);
     if (it != m_systems.end())
     {
+        (*it)->Shutdown();
         delete &(*it);
         m_systems.erase(it);
     }

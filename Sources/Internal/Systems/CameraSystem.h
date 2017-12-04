@@ -15,6 +15,7 @@
 namespace Kioto
 {
 class CameraComponent;
+class EventSystem;
 
 class CameraSystem : public SceneSystem
 {
@@ -22,9 +23,11 @@ public:
     CameraSystem();
     ~CameraSystem() override;
 
+    void Init() override;
     void OnEntityAdd(Entity* entity) override;
     void OnEntityRemove(Entity* entity) override;
     KIOTO_API void Update(float32 dt) override;
+    void Shutdown() override;
 
     CameraComponent* GetMainCamera() const;
 
@@ -34,6 +37,8 @@ private:
 
     CameraComponent* m_mainCamera = nullptr;
     std::vector<CameraComponent*> m_components;
+
+    EventSystem* m_eventSystem = nullptr;
 };
 
 inline CameraComponent* CameraSystem::GetMainCamera() const

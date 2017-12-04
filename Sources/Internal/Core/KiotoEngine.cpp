@@ -21,6 +21,11 @@ Scene* m_scene = nullptr;
 std::function<void()> InitEngineCallback = nullptr;
 std::function<void()> ShutdownEngineCallback = nullptr;
 
+namespace KiotoCore
+{
+ApplicationInfoData ApplicationInfo;
+}
+
 void KiotoMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int nCmdShow, std::wstring capture, std::function<void()> initEngineCallback, std::function<void()> shutdownEngineCallback)
 {
     KiotoCore::ApplicationInfo.HInstance = hInstance;
@@ -44,6 +49,11 @@ void SetScene(Scene* scene)
     }
     m_scene = scene;
     m_scene->Init();
+}
+
+Scene* GetScene()
+{
+    return m_scene;
 }
 
 namespace KiotoCore

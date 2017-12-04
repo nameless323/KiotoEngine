@@ -51,6 +51,7 @@ private:
     void LoadPipeline();
     void UpdateTimeCB(TimeConstantBuffer& buffer);
     void UpdateRenderObjectCB(RenderObjectBuffer& buffer);
+    void UpdatePassCB(PassBuffer& buffer);
 
     static constexpr UINT FrameCount = 3;
 
@@ -99,11 +100,6 @@ private:
 
     D3D12_VIEWPORT m_viewport = {};
     D3D12_RECT m_scissor = {};
-
-
-    Matrix4 m_view;
-    Matrix4 m_proj;
-    Matrix4 m_viewProj;
 };
 
 }

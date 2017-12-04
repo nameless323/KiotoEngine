@@ -30,7 +30,7 @@ public:
     virtual ~Event() = default;
 
     virtual uint64 GetEventType() const abstract;
-    virtual void* GetEventData() abstract;
+    virtual void* GetEventData() abstract; // [a_vorontsov] TODO:: T* GetEventData() { return reinterpret_cast<data> };
     void* Sender = nullptr;
     float64 Time = -1.0f;
 };

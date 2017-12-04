@@ -89,7 +89,6 @@ inline void TransformComponent::SetToWorld(const Matrix4& m)
     m_toWorld = m;
     if (!m_isDirty)
         SetChildrenDirty();
-    m_isDirty = true;
 }
 
 inline void TransformComponent::SetToParent(const Matrix4& m)

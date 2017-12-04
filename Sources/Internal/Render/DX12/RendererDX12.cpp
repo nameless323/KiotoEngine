@@ -22,6 +22,11 @@
 #include "Render/Geometry/GeometryGenerator.h"
 #include "Render/Geometry/Mesh.h"
 
+#include "Component/CameraComponent.h"
+#include "Systems/CameraSystem.h"
+#include "Core/Scene.h"
+#include "Core/KiotoEngine.h" // [a_vorontsov] For now. TODO: render pass with render target and so on. This class shouldn't know 'bout camera and so on.
+
 namespace Kioto::Renderer
 {
 
@@ -252,11 +257,9 @@ void RendererDX12::LoadPipeline()
 
     m_passBuffer = std::make_unique<UploadBuffer<PassBuffer>>(FrameCount, true, m_device.Get());
     PassBuffer passBuffer;
-    m_view = Matrix4::BuildLookAt({ 0.0f, 0.0f, -1.0f }, { 0.0f, 0.0f, 3.0f }, { 0.0f, 1.0f, 0.0f });
-    Matrix4 proj = Matrix4::BuildProjectionFov(Math::DegToRad(60.0f), static_cast<float32>(m_width) / static_cast<float32>(m_height), 0.10f, 1000.0f);
-    m_viewProj = m_view * proj;
-    passBuffer.View = m_view.Tranposed();
-    passBuffer.ViewProjection = m_viewProj.Tranposed();
+
+    passBuffer.View = Matrix4::Identity;
+    passBuffer.ViewProjection = Matrix4::Identity;
     m_passBuffer->UploadData(0, passBuffer);
     m_passBuffer->UploadData(1, passBuffer);
     m_passBuffer->UploadData(2, passBuffer);
@@ -414,17 +417,6 @@ void RendererDX12::Resize(uint16 width, uint16 heigth)
     ID3D12CommandList* cmdLists[] = { m_commandList.Get() };
     m_commandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
 
-    PassBuffer passBuffer;
-    m_view = Matrix4::BuildLookAt({ 0.0f, 0.0f, -1.0f }, { 0.0f, 0.0f, 3.0f }, { 0.0f, 1.0f, 0.0f });
-    Matrix4 proj = Matrix4::BuildProjectionFov(Math::DegToRad(60.0f), static_cast<float32>(m_width) / static_cast<float32>(m_height), 0.10f, 1000.0f);
-    m_viewProj = m_view * proj;
-    passBuffer.View = m_view.Tranposed();
-    passBuffer.ViewProjection = m_viewProj.Tranposed();
-
-    m_passBuffer->UploadData(0, passBuffer);
-    m_passBuffer->UploadData(1, passBuffer);
-    m_passBuffer->UploadData(2, passBuffer);
-
     WaitForGPU();
 
     m_viewport.TopLeftX = 0;
@@ -461,6 +453,10 @@ void RendererDX12::Update(float32 dt)
     RenderObjectBuffer roBuffer;
     UpdateRenderObjectCB(roBuffer);
     m_renderObjectBuffer->UploadData(m_frameIndex, roBuffer);
+
+    PassBuffer pBuffer;
+    UpdatePassCB(pBuffer);
+    m_passBuffer->UploadData(m_frameIndex, pBuffer);
 }
 
 void RendererDX12::Present()
@@ -619,6 +615,13 @@ void RendererDX12::UpdateRenderObjectCB(RenderObjectBuffer& buffer)
 
     buffer.ToModel = toModel.Tranposed();
     buffer.ToWorld = toWorld.Tranposed();
+}
+
+void RendererDX12::UpdatePassCB(PassBuffer& buffer)
+{
+    CameraComponent* cc = Kioto::GetScene()->GetCameraSystem()->GetMainCamera();
+    buffer.View = cc->GetView().Tranposed();
+    buffer.ViewProjection = cc->GetVP().Tranposed();
 }
 
 }

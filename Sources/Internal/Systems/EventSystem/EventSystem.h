@@ -78,7 +78,7 @@ private:
 class EventSystem
 {
 public:
-    EventSystem() = default;
+    EventSystem() = default; // [a_vorontsov] Singleton maybe or smth simple.
     ~EventSystem() = default;
 
     /// Raise event. Pass std::shared_ptr<Event>, event system will call all subscribed callbacks and pass shared ptr to callbacks.

@@ -11,6 +11,12 @@
 #include "Core/ECS/Entity.h"
 #include "Math/MathHelpers.h"
 
+#include "Systems/EventSystem/EventSystem.h"
+#include "Systems/EventSystem/EngineEvents.h"
+
+#include "Core/KiotoEngine.h"
+#include "Core/Scene.h"
+
 namespace Kioto
 {
 
@@ -22,6 +28,21 @@ CameraSystem::CameraSystem()
 CameraSystem::~CameraSystem()
 {
     m_components.clear();
+}
+
+void CameraSystem::Init()
+{
+    m_eventSystem = Kioto::GetScene()->GetEventSystem();
+
+    m_eventSystem->Subscribe<OnMainWindowResized>(EventCallback(
+        [this](std::shared_ptr<Event> e)
+    {
+        if (m_mainCamera == nullptr)
+            return;
+        OnMainWindowResized::Data* resizeData = reinterpret_cast<OnMainWindowResized::Data*>(e->GetEventData());
+        m_mainCamera->SetAspect(resizeData->aspect);
+    }
+    ), this);
 }
 
 void CameraSystem::OnEntityAdd(Entity* entity)
@@ -52,7 +73,14 @@ void CameraSystem::Update(float32 dt)
         UpdateView(cam);
         if (cam->m_isViewDirty)
             UpdateProjection(cam);
+
+        cam->m_VP = cam->m_view * cam->m_projection;
     }
+}
+
+void CameraSystem::Shutdown()
+{
+    m_eventSystem->Unsubscribe(this);
 }
 
 void CameraSystem::UpdateView(CameraComponent* cam)
@@ -65,8 +93,6 @@ void CameraSystem::UpdateProjection(CameraComponent* cam)
 {
     cam->m_projection = Matrix4::BuildProjectionFov(cam->GetFovY(), cam->GetAspect(), cam->GetNearPlane(), cam->GetFarPlane());
     // [a_vorontsov] TODO: If cam - ortho, than other, but later.
-
-    cam->m_VP = cam->m_view * cam->m_projection;
 
     cam->m_nearPlaneHeight = 2.0f * cam->m_nearPlane * std::tan(0.5f * cam->m_fovY);
     cam->m_farPlaneHeight = 2.0f * cam->m_farPlane * std::tan(0.5f * cam->m_fovY);

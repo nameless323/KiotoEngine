@@ -23,6 +23,8 @@
 #include <Math/Vector4.h>
 #include <Math/Matrix4.h>
 
+#include <Render/Renderer.h>
+
 using Kioto::byte;
 using Kioto::int16;
 using Kioto::uint16;
