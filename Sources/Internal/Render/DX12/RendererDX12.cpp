@@ -605,11 +605,12 @@ void RendererDX12::UpdateTimeCB(TimeConstantBuffer& buffer)
 void RendererDX12::UpdateRenderObjectCB(RenderObjectBuffer& buffer)
 {
     static float32 angle = 0.0f;
-    angle += GlobalTimer::GetDeltaTime();
+    //angle += GlobalTimer::GetDeltaTime();
+    angle += 0.001f;
     Matrix4 toWorld = Matrix4::BuildRotation(Vector3(1.0f, 1.0f, 0.0f).Normalize(), angle);
     //toWorld = Matrix4::Identity();
     toWorld.SetTranslation({ 0.0f, 0.0f, 3.0f });
-    
+
     Matrix4 toModel;
     toWorld.Inversed(toModel);
 
