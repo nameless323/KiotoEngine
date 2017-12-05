@@ -9,12 +9,8 @@
 
 #include "Core/CoreHelpers.h"
 #include "Render/DX12/RendererDX12.h"
-
 #include "Systems/EventSystem/EngineEvents.h"
 #include "Systems/EventSystem/EventSystem.h"
-
-#include "Core/KiotoEngine.h"
-#include "Core/Scene.h"
 
 namespace Kioto::Renderer
 {
@@ -50,18 +46,13 @@ void Resize(uint16 width, uint16 height, bool minimized)
     m_height = height;
     m_aspect = static_cast<float32>(m_width) / static_cast<float32>(m_height);
 
-    Scene* scene = nullptr;
-    if (GetScene() != nullptr)
-    {
-        std::shared_ptr<OnMainWindowResized> e = std::make_shared<OnMainWindowResized>();
-        OnMainWindowResized::Data* data = reinterpret_cast<OnMainWindowResized::Data*>(e->GetEventData());
-        data->width = m_width;
-        data->height = m_height;
-        data->aspect = m_aspect;
+    std::shared_ptr<OnMainWindowResized> e = std::make_shared<OnMainWindowResized>();
+    OnMainWindowResized::Data* data = reinterpret_cast<OnMainWindowResized::Data*>(e->GetEventData());
+    data->width = m_width;
+    data->height = m_height;
+    data->aspect = m_aspect;
 
-        GetScene()->GetEventSystem()->RaiseEvent(e);
-    }
-
+    EventSystem::GlobalEventSystem.RaiseEvent(e);
 
     GameRenderer->Resize(width, height);
 }

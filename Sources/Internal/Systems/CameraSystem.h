@@ -37,8 +37,6 @@ private:
 
     CameraComponent* m_mainCamera = nullptr;
     std::vector<CameraComponent*> m_components;
-
-    EventSystem* m_eventSystem = nullptr;
 };
 
 inline CameraComponent* CameraSystem::GetMainCamera() const

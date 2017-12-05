@@ -14,7 +14,6 @@ namespace Kioto
 {
 class Entity;
 
-// [a_vorontsov] TODO: hash component type by name via macro as in events.
 #define DECLARE_COMPONENT(type) \
 public:\
 KIOTO_API uint64 GetType() const override \

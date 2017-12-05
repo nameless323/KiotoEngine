@@ -7,12 +7,12 @@
 
 #include "Core/Scene.h"
 
-#include "Core/Timer/GlobalTimer.h"
 #include "Core/ECS/SceneSystem.h"
 #include "Core/ECS/Entity.h"
-#include "Systems/TransformSystem.h"
+#include "Core/Timer/GlobalTimer.h"
 #include "Systems/CameraSystem.h"
 #include "Systems/EventSystem/EventSystem.h"
+#include "Systems/TransformSystem.h"
 
 namespace Kioto
 {
@@ -22,8 +22,6 @@ Scene::Scene()
     // [a_vorontsov] 64 systems are enough for anyone.
     m_systems.reserve(64);
     m_entities.reserve(512);
-
-    m_eventSystem = new EventSystem();
 }
 
 Scene::~Scene()
@@ -38,16 +36,16 @@ Scene::~Scene()
     for (auto entity : m_entities)
         SafeDelete(entity);
     m_entities.clear();
-
-    delete m_eventSystem;
 }
 
 void Scene::Init()
 {
+    EventSystem::GlobalEventSystem.Clear();
+
     TransformSystem* transformSystem = new TransformSystem();
-    AddSystem(transformSystem);
+    AddSystemInternal(transformSystem);
     m_cameraSystem = new CameraSystem();
-    AddSystem(m_cameraSystem);
+    AddSystemInternal(m_cameraSystem);
 
     for (auto system : m_systems)
         system->Init();
@@ -66,8 +64,7 @@ void Scene::Shutdown()
 
 void Scene::AddSystem(SceneSystem* system)
 {
-    m_systems.push_back(system);
-
+    AddSystemInternal(system);
     system->Init();
 }
 
@@ -98,6 +95,11 @@ void Scene::RemoveEntity(Entity* entity)
         for (auto system : m_systems)
             system->OnEntityAdd(entity);
     }
+}
+
+void Scene::AddSystemInternal(SceneSystem* system)
+{
+    m_systems.push_back(system);
 }
 
 }

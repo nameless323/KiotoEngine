@@ -5,9 +5,8 @@
 
 #pragma once
 
-#include "Core/CoreTypes.h"
-
 #include "Core/Core.h"
+#include "Core/CoreTypes.h"
 
 namespace Kioto
 {

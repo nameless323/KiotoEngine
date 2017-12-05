@@ -81,13 +81,13 @@ public:
     KIOTO_API void RemoveEntity(Entity* entity);
 
     KIOTO_API const CameraSystem* GetCameraSystem() const;
-    KIOTO_API EventSystem* GetEventSystem() const;
 
 private:
+    void AddSystemInternal(SceneSystem* system);
+
     std::vector<SceneSystem*> m_systems; // [a_vorontsov] TODO: linked list in custom arena? Also, maybe updatable system or smth like that, to not call useless update.
     std::vector<Entity*> m_entities; // [a_vorontsov] Same as above.
     CameraSystem* m_cameraSystem = nullptr;
-    EventSystem* m_eventSystem = nullptr;
 };
 
 template <typename T, typename>
@@ -148,8 +148,4 @@ inline const CameraSystem* Scene::GetCameraSystem() const
     return m_cameraSystem;
 }
 
-inline EventSystem* Scene::GetEventSystem() const
-{
-    return m_eventSystem;
-}
 }
