@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <string>
 #include <vector>
 
 #include "Core/ECS/Component.h"
@@ -29,13 +30,14 @@ public:
     Component* GetComponent(uint64 componentTypeIndex) const;
     template <typename T, typename = std::enable_if_t<std::is_convertible_v<T*, Component*>>>
     T* GetComponent() const;
-
     TransformComponent* GetTransform() const;
-
     const std::vector<Component*>& GetComponents() const;
+    const std::string& GetName() const;
+    void SetName(std::string name);
 
 private:
     std::vector<Component*> m_components; // [a_vorontsov] Bad, bad thing...
+    std::string m_name = "Entity";
     TransformComponent* m_transform = nullptr;
 
     friend void swap(Entity& e1, Entity& e2);
@@ -79,5 +81,15 @@ inline void swap(Entity& e1, Entity& e2)
 inline TransformComponent* Entity::GetTransform() const
 {
     return m_transform;
+}
+
+inline const std::string& Entity::GetName() const
+{
+    return m_name;
+}
+
+inline void Entity::SetName(std::string name)
+{
+    std::swap(m_name, name);
 }
 }

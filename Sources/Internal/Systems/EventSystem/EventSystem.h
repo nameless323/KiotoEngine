@@ -99,6 +99,8 @@ public:
     /// Clear all events.
     void Clear();
 
+    static EventSystem GlobalEventSystem;
+
 private:
     struct CallbackWrapper
     {

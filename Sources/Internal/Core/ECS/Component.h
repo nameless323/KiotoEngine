@@ -14,7 +14,6 @@ namespace Kioto
 {
 class Entity;
 
-// [a_vorontsov] TODO: hash component type by name via macro as in events.
 #define DECLARE_COMPONENT(type) \
 public:\
 KIOTO_API uint64 GetType() const override \
@@ -37,9 +36,10 @@ public:
     KIOTO_API virtual Component* Clone() const abstract;
     KIOTO_API virtual uint64 GetType() const;
 
-private:
-    KIOTO_API inline void SetEntity(Entity* entity);
+protected:
+    virtual void SetEntity(Entity* entity);
 
+private:
     Entity* m_entity = nullptr;
 
     friend class Entity;
@@ -48,11 +48,6 @@ private:
 inline Entity* Component::GetEntity() const
 {
     return m_entity;
-}
-
-inline void Component::SetEntity(Entity* entity)
-{
-    m_entity = entity;
 }
 
 inline uint64 Component::GetType() const 

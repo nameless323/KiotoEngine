@@ -19,8 +19,8 @@ class TransformComponent : public Component
     DECLARE_COMPONENT(TransformComponent);
 
 public:
-    TransformComponent() = default;
-    ~TransformComponent() = default;
+    KIOTO_API TransformComponent() = default;
+    KIOTO_API ~TransformComponent() = default;
 
     bool GetDirty() const;
     const Matrix4& GetToWorld() const;
@@ -91,7 +91,6 @@ inline void TransformComponent::SetToWorld(const Matrix4& m)
     m_toWorld = m;
     if (!m_isDirty)
         SetChildrenDirty();
-    m_isDirty = true;
 }
 
 inline void TransformComponent::SetToParent(const Matrix4& m)

@@ -69,7 +69,10 @@ public:
     /// Inverse of the matrix. return false if inverse is impossible.
     ///
     bool Inversed(Matrix4_<T>& out) const;
-
+    ///
+    /// Inverse of orthonormalized matrix.
+    Matrix4_<T> InversedOrthonorm() const;
+    
     T& operator()(int32 row, int32 col);
     const T& operator()(int32 row, int32 col) const;
 
@@ -251,6 +254,25 @@ bool Matrix4_<T>::Inversed(Matrix4_<T>& res) const
     res._23 = d * (_03 * (_20 * _11 - _10 * _21) + _13 * (_00 * _21 - _20 * _01) + _23 * (_10 * _01 - _00 * _11));
     res._33 = d * (_00 * (_11 * _22 - _21 * _12) + _10 * (_21 * _02 - _01 * _22) + _20 * (_01 * _12 - _11 * _02));
     return true;
+}
+
+template <typename T>
+Matrix4_<T> Matrix4_<T>::InversedOrthonorm() const
+{
+    Matrix4_<T> res
+    {
+        _00, _01, _02, 0.0f,
+        _10, _11, _12, 0.0f,
+        _20, _21, _22, 0.0f,
+        0.0f, 0.0f, 0.0f, 1.0f
+    };
+    Vector4_<T> pos(GetTranslation());
+    pos = -pos * res;
+    res._30 = pos.x;
+    res._31 = pos.y;
+    res._32 = pos.z;
+
+    return res;
 }
 
 template <typename T>

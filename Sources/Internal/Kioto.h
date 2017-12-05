@@ -11,6 +11,20 @@
 #include <Core/Scene.h>
 #include <Core/ECS/SceneSystem.h>
 
+#include <Core/ECS/Entity.h>
+
+#include <Core/ECS/Component.h>
+#include <Component/CameraComponent.h>
+#include <Component/TransformComponent.h>
+
+#include <Math/MathHelpers.h>
+#include <Math/Vector2.h>
+#include <Math/Vector3.h>
+#include <Math/Vector4.h>
+#include <Math/Matrix4.h>
+
+#include <Render/Renderer.h>
+
 using Kioto::byte;
 using Kioto::int16;
 using Kioto::uint16;

@@ -16,6 +16,8 @@ namespace Kioto
 uint32 EventCallback::m_currentIndex = 0;
 constexpr uint32 EventsInitialCapacity = 128;
 
+EventSystem EventSystem::GlobalEventSystem;
+
 EventCallback::EventCallback(std::function<void(EventPtr)> callback)
 {
     m_index = m_currentIndex++;
