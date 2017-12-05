@@ -26,18 +26,21 @@ KIOTO_API void KiotoMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLi
 /// Set scene to engine.
 ///
 KIOTO_API void SetScene(Scene* scene);
+///
+/// Get active scene.
+///
+KIOTO_API Scene* GetScene();
 
 namespace KiotoCore
 {
-
-struct
+struct ApplicationInfoData
 {
     HINSTANCE HInstance = {};
     HINSTANCE PrevInstance = {};
     PSTR CmdLine = {};
     int NCmdShow = {};
     std::wstring WindowCapture;
-} ApplicationInfo;
+};
 
 void Init();
 void Update();

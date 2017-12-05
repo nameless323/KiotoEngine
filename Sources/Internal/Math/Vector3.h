@@ -37,6 +37,7 @@ public:
     Vector3_<T>& operator+=(const Vector3_<T>& v);
     Vector3_<T>& operator-=(const Vector3_<T>& v);
     Vector3_<T>& operator*=(float32 t);
+    Vector3_<T> operator-() const;
 
 #if _WIN32 || _WIN64
     explicit Vector3_(const DirectX::XMFLOAT3& vec);
@@ -162,6 +163,12 @@ inline Vector3_<T>& Vector3_<T>::operator*=(float32 t)
     z *= t;
 
     return *this;
+}
+
+template <typename T>
+inline Vector3_<T> Vector3_<T>::operator-() const
+{
+    return { -x, -y, -z};
 }
 
 #if _WIN32 || _WIN64

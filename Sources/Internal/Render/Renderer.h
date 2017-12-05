@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include "Core/Core.h"
 #include "Core/CoreTypes.h"
 
 namespace Kioto
@@ -23,6 +24,9 @@ void Resize(uint16 width, uint16 height, bool minimized);
 void Update(float32 dt);
 void Present();
 void ChangeFullScreenMode(bool fullScreen);
+KIOTO_API uint16 GetWidth();
+KIOTO_API uint16 GetHeight();
+KIOTO_API float32 GetAspect();
 
 }
 }

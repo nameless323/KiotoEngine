@@ -31,4 +31,25 @@ public:
 
     void* GetEventData() override;
 };
+
+struct OnMainWindowResized : public Event
+{
+    DECLARE_EVENT(OnMainWindowResized);
+
+public:
+    struct Data
+    {
+        uint32 width;
+        uint32 height;
+        float32 aspect;
+    };
+
+    OnMainWindowResized() = default;
+    ~OnMainWindowResized() override = default;
+
+    void* GetEventData() override;
+
+private:
+    Data m_data;
+};
 }

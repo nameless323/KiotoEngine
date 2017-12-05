@@ -33,6 +33,7 @@ public:
     Vector4_(T x_, T y_, T z_, T w_);
     Vector4_(const Vector4_& other);
 
+    Vector4_<T> operator-() const;
 
     // TODO:: operator== via memcmp data.
 #if _WIN32 || _WIN64
@@ -76,6 +77,12 @@ template <typename T>
 Vector4_<T>::Vector4_(const Vector4_& other)
     : x(other.x), y(other.y), z(other.z), w(other.w)
 {
+}
+
+template <typename T>
+Vector4_<T> Vector4_<T>::operator-() const
+{
+    return { -x, -y, -z, -w };
 }
 
 #if _WIN32 || _WIN64

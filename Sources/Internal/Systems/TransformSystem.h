@@ -10,6 +10,8 @@
 
 #include "Core/ECS/SceneSystem.h"
 
+#include <vector>
+
 namespace Kioto
 {
 class TransformComponent;

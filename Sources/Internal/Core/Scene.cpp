@@ -7,9 +7,11 @@
 
 #include "Core/Scene.h"
 
-#include "Core/Timer/GlobalTimer.h"
 #include "Core/ECS/SceneSystem.h"
 #include "Core/ECS/Entity.h"
+#include "Core/Timer/GlobalTimer.h"
+#include "Systems/CameraSystem.h"
+#include "Systems/EventSystem/EventSystem.h"
 #include "Systems/TransformSystem.h"
 
 namespace Kioto
@@ -25,7 +27,10 @@ Scene::Scene()
 Scene::~Scene()
 {
     for (auto system : m_systems)
+    {
+        system->Shutdown();
         SafeDelete(system);
+    }
     m_systems.clear();
 
     for (auto entity : m_entities)
@@ -35,8 +40,15 @@ Scene::~Scene()
 
 void Scene::Init()
 {
-    TransformSystem* transformSystem = new TransformSystem();
+    EventSystem::GlobalEventSystem.Clear();
 
+    TransformSystem* transformSystem = new TransformSystem();
+    AddSystemInternal(transformSystem);
+    m_cameraSystem = new CameraSystem();
+    AddSystemInternal(m_cameraSystem);
+
+    for (auto system : m_systems)
+        system->Init();
 }
 
 void Scene::Update(float32 dt)
@@ -52,7 +64,8 @@ void Scene::Shutdown()
 
 void Scene::AddSystem(SceneSystem* system)
 {
-    m_systems.push_back(system);
+    AddSystemInternal(system);
+    system->Init();
 }
 
 void Scene::RemoveSystem(SceneSystem* system)
@@ -60,6 +73,7 @@ void Scene::RemoveSystem(SceneSystem* system)
     auto it = std::find(m_systems.begin(), m_systems.end(), system);
     if (it != m_systems.end())
     {
+        (*it)->Shutdown();
         delete &(*it);
         m_systems.erase(it);
     }
@@ -81,6 +95,11 @@ void Scene::RemoveEntity(Entity* entity)
         for (auto system : m_systems)
             system->OnEntityAdd(entity);
     }
+}
+
+void Scene::AddSystemInternal(SceneSystem* system)
+{
+    m_systems.push_back(system);
 }
 
 }
