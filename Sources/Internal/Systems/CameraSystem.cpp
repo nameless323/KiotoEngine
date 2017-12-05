@@ -71,7 +71,7 @@ void CameraSystem::Update(float32 dt)
             m_mainCamera = cam;
 
         UpdateView(cam);
-        if (cam->m_isViewDirty)
+        if (cam->m_isProjDirty)
             UpdateProjection(cam);
 
         cam->m_VP = cam->m_view * cam->m_projection;
@@ -100,7 +100,7 @@ void CameraSystem::UpdateProjection(CameraComponent* cam)
     float32 halfWidth = 0.5f * cam->m_aspect * cam->m_nearPlaneHeight;
     cam->m_foxX = 2.0f * atan(halfWidth / cam->m_nearPlane);
 
-    cam->m_isViewDirty = false;
+    cam->m_isProjDirty = false;
 }
 
 }

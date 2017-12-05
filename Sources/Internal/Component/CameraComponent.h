@@ -64,7 +64,7 @@ private:
     Matrix4 m_view = Matrix4::Identity;
     Matrix4 m_projection = Matrix4::Identity;
     Matrix4 m_VP = Matrix4::Identity;
-    bool m_isViewDirty = true;
+    bool m_isProjDirty = true;
     float32 m_fovY = Math::DegToRad(60.0f);
     float32 m_foxX = -1.0f;
     float32 m_nearPlane = 0.01f;
@@ -87,37 +87,37 @@ inline const TransformComponent* CameraComponent::GetTransform() const
 inline void CameraComponent::SetFovY(float32 fovY)
 {
     m_fovY = fovY;
-    m_isViewDirty = true;
+    m_isProjDirty = true;
 }
 
 inline void CameraComponent::SetFovYDeg(float32 fovY)
 {
     m_fovY = Math::DegToRad(fovY);
-    m_isViewDirty = true;
+    m_isProjDirty = true;
 }
 
 inline void CameraComponent::SetNearPlane(float32 nearPlane)
 {
     m_nearPlane = nearPlane;
-    m_isViewDirty = true;
+    m_isProjDirty = true;
 }
 
 inline void CameraComponent::SetFarPlane(float32 farPlane)
 {
     m_farPlane = farPlane;
-    m_isViewDirty = true;
+    m_isProjDirty = true;
 }
 
 inline void CameraComponent::SetAspect(float32 aspect)
 {
     m_aspect = aspect;
-    m_isViewDirty = true;
+    m_isProjDirty = true;
 }
 
 inline void CameraComponent::SetOrthographic(bool ortho)
 {
     m_isOrtho = ortho;
-    m_isViewDirty = true;
+    m_isProjDirty = true;
 }
 
 inline void CameraComponent::SetIsMain(bool isMain)
