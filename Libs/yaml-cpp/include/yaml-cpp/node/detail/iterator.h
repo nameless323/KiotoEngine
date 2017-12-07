@@ -13,6 +13,7 @@
 #include <cstddef>
 #include <iterator>
 
+#pragma warning(push, 0)
 namespace YAML {
 namespace detail {
 struct iterator_value;
@@ -87,5 +88,5 @@ class iterator_base : public std::iterator<std::forward_iterator_tag, V,
 };
 }
 }
-
+#pragma warning(pop)
 #endif  // VALUE_DETAIL_ITERATOR_H_62B23520_7C8E_11DE_8A39_0800200C9A66
