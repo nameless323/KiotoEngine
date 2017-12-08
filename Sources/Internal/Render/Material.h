@@ -5,15 +5,13 @@
 
 #pragma once
 
+#include <string>
+
 namespace Kioto
 {
-
-enum class eRenderApi
+class Material
 {
-    DirectX12
-} RenderApi;
+public:
 
-void Init(eRenderApi api);
-void Shutdown();
-
+};
 }
