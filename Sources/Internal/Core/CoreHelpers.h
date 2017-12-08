@@ -56,4 +56,14 @@ uint64 GetFunctionAddress(std::function<T(U...)> f)
     fnType ** fnPointer = f.template target<fnType*>();
     return PtrToUint(*fnPointer);
 }
+
+std::string WstrToStr(std::wstring s)
+{
+    return { s.begin(), s.end() };
+}
+
+std::wstring StrToWstr(std::string s)
+{
+    return { s.begin(), s.end() };
+}
 }
