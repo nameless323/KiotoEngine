@@ -21,7 +21,7 @@ public:
     ~Material() = default;
 
 private:
-    std::wstring m_shaderPath;
+    std::string m_shaderPath;
     RenderLayerType m_layerType = RenderLayerType::Opaque;
     FillMode m_fill = FillMode::Solid;
     CullMode m_cull = CullMode::Back;
@@ -33,5 +33,9 @@ private:
     StencilDesc m_backFaceStencilDesc;
     uint8 m_stencilWriteMask = 0xFF;
     uint8 m_stencilReadMask = 0xFF;
+    BlendModes m_srcBlend = BlendModes::Zero;
+    BlendModes m_dstBlend = BlendModes::One;
+    BlendOps m_blendOp = BlendOps::Add;
+    ColorMask m_colorMask = ColorMask::All;
 };
 }

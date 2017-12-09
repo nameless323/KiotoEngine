@@ -146,6 +146,16 @@ inline FillMode FromString<FillMode>(const std::string& s)
 }
 
 template <>
+inline ColorMask FromString<ColorMask>(const std::string& s)
+{
+    auto it = colorMask.find(s);
+    if (it != colorMask.end())
+        return it->second;
+    throw "Wrong color mask";
+    return ColorMask::COUNT;
+}
+
+template <>
 inline CullMode FromString<CullMode>(const std::string& s)
 {
     auto it = cullMode.find(s);

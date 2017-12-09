@@ -3,13 +3,13 @@ shader: "Shaders\\Fallback"
 renderLayer: Opaque
 fill: Solid
 cull: Back
-winding: CCW
+windingCCW: true
 depthStencil:
     enableStencil: false
     ZTest: LEqual
-    ZWrite: On
+    ZWrite: true
 blending:
     blendOp: Add
     srcBlend: SrcAlpha
     dstBlend: OneMinusSrcAlpha
-colorMask: all
+colorMask: All
