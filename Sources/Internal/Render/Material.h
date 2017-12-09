@@ -25,17 +25,17 @@ private:
     RenderLayerType m_layerType = RenderLayerType::Opaque;
     FillMode m_fill = FillMode::Solid;
     CullMode m_cull = CullMode::Back;
-    bool m_windingCCW = true;
-    bool m_enableStencill = false;
     ZTest m_ztest = ZTest::LEqual;
-    bool m_zwrite = true;
     StencilDesc m_frontFaceStencilDesc;
     StencilDesc m_backFaceStencilDesc;
-    uint8 m_stencilWriteMask = 0xFF;
-    uint8 m_stencilReadMask = 0xFF;
+    uint8 m_stencilWriteMask = 0xF;
+    uint8 m_stencilReadMask = 0xF;
     BlendModes m_srcBlend = BlendModes::Zero;
     BlendModes m_dstBlend = BlendModes::One;
     BlendOps m_blendOp = BlendOps::Add;
     ColorMask m_colorMask = ColorMask::All;
+    bool m_zwrite = true;
+    bool m_enableStencill = false;
+    bool m_windingCCW = true;
 };
 }

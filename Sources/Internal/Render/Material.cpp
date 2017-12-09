@@ -46,6 +46,35 @@ Material::Material(const std::wstring& path)
             m_ztest = FromString<ZTest>(dsNode["ZTest"].as<std::string>());
         if (dsNode["ZWrite"] != nullptr)
             m_zwrite = dsNode["ZWrite"].as<bool>();
+        if (dsNode["writeMask"] != nullptr)
+            m_stencilWriteMask = static_cast<uint8>(std::stoul(dsNode["writeMask"].as<std::string>(), 0, 0));
+        if (dsNode["readMask"] != nullptr)
+            m_stencilWriteMask = static_cast<uint8>(std::stoul(dsNode["readMask"].as<std::string>(), 0, 0));
+
+        if (dsNode["stencilFront"] != nullptr)
+        {
+            YAML::Node frontNode = dsNode["stencilFront"];
+            if (frontNode["fail"] != nullptr)
+                m_frontFaceStencilDesc.StencilDepthFailOp = FromString<StencilOp>(frontNode["fail"].as<std::string>());
+            if (frontNode["ZFfail"] != nullptr)
+                m_frontFaceStencilDesc.StencilDepthFailOp = FromString<StencilOp>(frontNode["ZFfail"].as<std::string>());
+            if (frontNode["pass"] != nullptr)
+                m_frontFaceStencilDesc.StencilPassOp = FromString<StencilOp>(frontNode["pass"].as<std::string>());
+            if (frontNode["func"] != nullptr)
+                m_frontFaceStencilDesc.StencilFunc = FromString<StencilTest>(frontNode["func"].as<std::string>());
+        }
+        if (dsNode["stencilBack"] != nullptr)
+        {
+            YAML::Node backNode = dsNode["stencilBack"];
+            if (backNode["fail"] != nullptr)
+                m_backFaceStencilDesc.StencilDepthFailOp = FromString<StencilOp>(backNode["fail"].as<std::string>());
+            if (backNode["ZFfail"] != nullptr)
+                m_backFaceStencilDesc.StencilDepthFailOp = FromString<StencilOp>(backNode["ZFfail"].as<std::string>());
+            if (backNode["pass"] != nullptr)
+                m_backFaceStencilDesc.StencilPassOp = FromString<StencilOp>(backNode["pass"].as<std::string>());
+            if (backNode["func"] != nullptr)
+                m_backFaceStencilDesc.StencilFunc = FromString<StencilTest>(backNode["func"].as<std::string>());
+        }
     }
     if (config["blending"] != nullptr)
     {

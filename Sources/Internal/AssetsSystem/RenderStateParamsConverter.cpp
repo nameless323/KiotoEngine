@@ -12,7 +12,7 @@
 
 namespace Kioto::RenderParamsConverter
 {
-const std::map<const std::string, BlendModes> blendModes =
+const std::map<const std::string, BlendModes> blendModes = // [a_vorontsov] To lower maybe.
 {
     { "Zero", BlendModes::Zero },
     { "One", BlendModes::One },
