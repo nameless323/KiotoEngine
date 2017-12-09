@@ -208,6 +208,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Sources\External\Dx12Helpers\DDSTextureLoader.cpp" />
+    <ClCompile Include="Sources\Internal\AssetsSystem\RenderStateParamsConverter.cpp" />
     <ClCompile Include="Sources\Internal\Component\CameraComponent.cpp" />
     <ClCompile Include="Sources\Internal\Component\TransformComponent.cpp" />
     <ClCompile Include="Sources\Internal\Core\ECS\Component.cpp" />

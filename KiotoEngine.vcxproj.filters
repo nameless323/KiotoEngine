@@ -233,6 +233,9 @@
     <ClCompile Include="Sources\Internal\Render\Material.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Sources\Internal\AssetsSystem\RenderStateParamsConverter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Assets\Shaders\Fallback.hlsl" />
