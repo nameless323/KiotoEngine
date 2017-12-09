@@ -1,3 +1,4 @@
+version: 0.01
 shader: "Shaders\\Fallback"
 renderLayer: Opaque
 fill: Solid

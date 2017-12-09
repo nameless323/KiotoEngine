@@ -57,12 +57,12 @@ uint64 GetFunctionAddress(std::function<T(U...)> f)
     return PtrToUint(*fnPointer);
 }
 
-std::string WstrToStr(std::wstring s)
+inline std::string WstrToStr(std::wstring s)
 {
     return { s.begin(), s.end() };
 }
 
-std::wstring StrToWstr(std::string s)
+inline std::wstring StrToWstr(std::string s)
 {
     return { s.begin(), s.end() };
 }

@@ -11,4 +11,6 @@ namespace Kioto::AssetsSystem
 {
 void Init();
 std::wstring GetAssetFullPath(const std::wstring& assetName);
+bool CheckIfFileExist(const std::wstring& path);
+bool CheckIfFileExist(const std::string& path);
 }

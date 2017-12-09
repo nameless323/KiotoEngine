@@ -15,6 +15,8 @@
 #include "Core/WindowsApplication.h"
 #include "Render/Renderer.h"
 
+#include "Render/Material.h"
+
 namespace Kioto
 {
 Scene* m_scene = nullptr;
@@ -67,6 +69,10 @@ void Init()
 
     if (InitEngineCallback != nullptr)
         InitEngineCallback();
+
+
+    std::wstring shaderPath = AssetsSystem::GetAssetFullPath(L"Materials\\Test.mt");
+    Material m(shaderPath);
 
     WindowsApplication::Run();
 }

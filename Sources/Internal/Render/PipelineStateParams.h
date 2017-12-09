@@ -19,7 +19,8 @@ enum class BlendModes
     OneMinusDstAlpha,
     DstColor,
     OneMinusDstColor,
-    SrcAlphaSat
+    SrcAlphaSat,
+    COUNT
 };
 
 enum class BlendOps
@@ -28,13 +29,15 @@ enum class BlendOps
     Substract,
     ReverseSubstract,
     Min,
-    Max
+    Max,
+    COUNT
 };
 
 enum class FillMode
 {
     Solid,
-    Wireframe
+    Wireframe,
+    COUNT
 };
 
 enum class ColorMask
@@ -43,14 +46,16 @@ enum class ColorMask
     Green = 1 << 1,
     Blue = 1 << 2,
     Alpha = 1 << 3,
-    All = 1 << 4
+    All = 1 << 4,
+    COUNT = 0xFF
 };
 
 enum class CullMode
 {
     None,
     Front,
-    Back
+    Back,
+    COUNT
 };
 
 enum class ZTest
@@ -62,7 +67,8 @@ enum class ZTest
     Greater,
     NotEqual,
     GEqual,
-    Always
+    Always,
+    COUNT
 };
 
 enum class StencilOp
@@ -74,7 +80,8 @@ enum class StencilOp
     DectSat,
     Invert,
     Incr,
-    Decr
+    Decr,
+    COUNT
 };
 
 enum class StencilTest
@@ -86,7 +93,8 @@ enum class StencilTest
     Greater,
     NotEqual,
     GEqual,
-    Always
+    Always,
+    COUNT
 };
 
 struct StencilDesc

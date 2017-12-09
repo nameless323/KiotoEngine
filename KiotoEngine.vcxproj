@@ -159,6 +159,7 @@
   <ItemGroup>
     <ClInclude Include="Sources\External\Dx12Helpers\d3dx12.h" />
     <ClInclude Include="Sources\External\Dx12Helpers\DDSTextureLoader.h" />
+    <ClInclude Include="Sources\Internal\AssetsSystem\RenderStateParamsConverter.h" />
     <ClInclude Include="Sources\Internal\Component\CameraComponent.h" />
     <ClInclude Include="Sources\Internal\Component\TransformComponent.h" />
     <ClInclude Include="Sources\Internal\Core\Core.h" />
@@ -223,6 +224,7 @@
     <ClCompile Include="Sources\Internal\Render\DX12\RendererDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\Geometry\GeometryGenerator.cpp" />
     <ClCompile Include="Sources\Internal\Render\Geometry\Mesh.cpp" />
+    <ClCompile Include="Sources\Internal\Render\Material.cpp" />
     <ClCompile Include="Sources\Internal\Render\Renderer.cpp" />
     <ClCompile Include="Sources\Internal\Systems\CameraSystem.cpp" />
     <ClCompile Include="Sources\Internal\Systems\EventSystem\EngineEvents.cpp" />

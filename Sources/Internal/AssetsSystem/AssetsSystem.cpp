@@ -6,12 +6,14 @@
 #include "stdafx.h"
 
 #include "AssetsSystem/AssetsSystem.h"
+#include "Core/CoreHelpers.h"
 
 #include "yaml-cpp/yaml.h"
 
 namespace Kioto::AssetsSystem
 {
 using std::wstring;
+using std::string;
 
 namespace
 {
@@ -47,9 +49,11 @@ wstring GetAssetFullPath(const wstring& relativePath)
 void Init()
 {
 #if _DEBUG
-    wstring configPath = GetAssetFullPath(L"AssetsConfig.yaml");
+    string configPath = WstrToStr(GetAssetFullPath(L"AssetsConfig.yaml"));
+    if (!CheckIfFileExist(configPath))
+        throw "Assets Config not found. Please read the Readme file.";
 
-    YAML::Node config = YAML::LoadFile(std::string(configPath.begin(), configPath.end()));
+    YAML::Node config = YAML::LoadFile(configPath);
     if (config["enginePath"] != nullptr)
     {
         std::string path = config["enginePath"].as<std::string>();
@@ -66,4 +70,25 @@ void Init()
 #endif
 }
 
+bool CheckIfFileExist(const std::wstring& path)
+{
+    FILE* file = nullptr;
+    if (fopen_s(&file, WstrToStr(path).c_str(), "r") == 0)
+    {
+        fclose(file);
+        return true;
+    }
+    return false;
+}
+
+bool CheckIfFileExist(const std::string& path)
+{
+    FILE* file = nullptr;
+    if (fopen_s(&file, path.c_str(), "r") == 0)
+    {
+        fclose(file);
+        return true;
+    }
+    return false;
+}
 }

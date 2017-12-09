@@ -10,7 +10,8 @@ namespace Kioto
 enum class RenderLayerType
 {
     Opaque,
-    Transparent
+    Transparent,
+    COUNT
 };
 
 class RenderLayer

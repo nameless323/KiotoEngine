@@ -7,16 +7,18 @@
 
 #include <string>
 
-#include "Core\CoreTypes.h"
-#include "Render\PipelineStateParams.h"
-#include "Render\RenderLayer.h"
+#include "Core/CoreTypes.h"
+#include "Render/PipelineStateParams.h"
+#include "Render/RenderLayer.h"
 
 namespace Kioto
 {
 class Material
 {
 public:
-    Material()
+    Material() = default;
+    Material(const std::wstring& path);
+    ~Material() = default;
 
 private:
     std::wstring m_shaderPath;
