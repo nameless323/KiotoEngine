@@ -7,7 +7,7 @@
 
 namespace Kioto
 {
-enum class BlendModes // [a_vorontsov] TODO: To eBlendModes and so on.
+enum class eBlendModes // [a_vorontsov] TODO: To eBlendModes and so on.
 {
     Zero,
     One,
@@ -23,7 +23,7 @@ enum class BlendModes // [a_vorontsov] TODO: To eBlendModes and so on.
     COUNT
 };
 
-enum class BlendOps
+enum class eBlendOps
 {
     Add,
     Substract,
@@ -33,14 +33,14 @@ enum class BlendOps
     COUNT
 };
 
-enum class FillMode
+enum class eFillMode
 {
     Solid,
     Wireframe,
     COUNT
 };
 
-enum class ColorMask
+enum class eColorMask
 {
     Red = 1 << 0,
     Green = 1 << 1,
@@ -50,7 +50,7 @@ enum class ColorMask
     COUNT = 0xFF
 };
 
-enum class CullMode
+enum class eCullMode
 {
     None,
     Front,
@@ -58,7 +58,7 @@ enum class CullMode
     COUNT
 };
 
-enum class ZTest
+enum class eZTest
 {
     Never,
     Less,
@@ -71,7 +71,7 @@ enum class ZTest
     COUNT
 };
 
-enum class StencilOp
+enum class eStencilOp
 {
     Keep,
     Zero,
@@ -84,7 +84,7 @@ enum class StencilOp
     COUNT
 };
 
-enum class StencilTest
+enum class eStencilTest
 {
     Never,
     Less,
@@ -99,9 +99,9 @@ enum class StencilTest
 
 struct StencilDesc
 {
-    StencilOp StencilFailOp = StencilOp::Zero;
-    StencilOp StencilDepthFailOp = StencilOp::Zero;
-    StencilOp StencilPassOp = StencilOp::Zero;
-    StencilTest StencilFunc = StencilTest::Never;
+    eStencilOp StencilFailOp = eStencilOp::Zero;
+    eStencilOp StencilDepthFailOp = eStencilOp::Zero;
+    eStencilOp StencilPassOp = eStencilOp::Zero;
+    eStencilTest StencilFunc = eStencilTest::Never;
 };
 }

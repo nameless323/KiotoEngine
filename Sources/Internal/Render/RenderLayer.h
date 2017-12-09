@@ -7,7 +7,7 @@
 
 namespace Kioto
 {
-enum class RenderLayerType
+enum class eRenderLayerType
 {
     Opaque,
     Transparent,

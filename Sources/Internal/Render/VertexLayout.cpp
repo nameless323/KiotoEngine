@@ -16,7 +16,7 @@ static const std::map<const eVertexDataFormat, uint16> formats
     { eVertexDataFormat::R32_G32_B32_A32, 16},
     { eVertexDataFormat::R32_G32_B32, 12 },
     { eVertexDataFormat::R32_G32, 8 },
-    { eVertexDataFormat::R32, 4}
+    { eVertexDataFormat::R32, 4 }
 };
 
 void VertexLayout::AddElement(eVertexSemantic semantic, uint8 semanticIndex, eVertexDataFormat format)

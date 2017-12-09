@@ -22,18 +22,18 @@ public:
 
 private:
     std::string m_shaderPath;
-    RenderLayerType m_layerType = RenderLayerType::Opaque;
-    FillMode m_fill = FillMode::Solid;
-    CullMode m_cull = CullMode::Back;
-    ZTest m_ztest = ZTest::LEqual;
+    eRenderLayerType m_layerType = eRenderLayerType::Opaque;
+    eFillMode m_fill = eFillMode::Solid;
+    eCullMode m_cull = eCullMode::Back;
+    eZTest m_ztest = eZTest::LEqual;
     StencilDesc m_frontFaceStencilDesc;
     StencilDesc m_backFaceStencilDesc;
     uint8 m_stencilWriteMask = 0xF;
     uint8 m_stencilReadMask = 0xF;
-    BlendModes m_srcBlend = BlendModes::Zero;
-    BlendModes m_dstBlend = BlendModes::One;
-    BlendOps m_blendOp = BlendOps::Add;
-    ColorMask m_colorMask = ColorMask::All;
+    eBlendModes m_srcBlend = eBlendModes::Zero;
+    eBlendModes m_dstBlend = eBlendModes::One;
+    eBlendOps m_blendOp = eBlendOps::Add;
+    eColorMask m_colorMask = eColorMask::All;
     bool m_zwrite = true;
     bool m_enableStencill = false;
     bool m_windingCCW = true;

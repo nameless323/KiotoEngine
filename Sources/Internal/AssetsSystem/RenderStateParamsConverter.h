@@ -16,30 +16,30 @@ T FromString(const std::string& s)
 {}
 
 template <>
-BlendModes FromString<BlendModes>(const std::string& s);
+eBlendModes FromString<eBlendModes>(const std::string& s);
 
 template <>
-RenderLayerType FromString<RenderLayerType>(const std::string& s);
+eRenderLayerType FromString<eRenderLayerType>(const std::string& s);
 
 template <>
-BlendOps FromString<BlendOps>(const std::string& s);
+eBlendOps FromString<eBlendOps>(const std::string& s);
 
 template <>
-FillMode FromString<FillMode>(const std::string& s);
+eFillMode FromString<eFillMode>(const std::string& s);
 
 template <>
-ColorMask FromString<ColorMask>(const std::string& s);
+eColorMask FromString<eColorMask>(const std::string& s);
 
 template <>
-CullMode FromString<CullMode>(const std::string& s);
+eCullMode FromString<eCullMode>(const std::string& s);
 
 template <>
-ZTest FromString<ZTest>(const std::string& s);
+eZTest FromString<eZTest>(const std::string& s);
 
 template <>
-StencilOp FromString<StencilOp>(const std::string& s);
+eStencilOp FromString<eStencilOp>(const std::string& s);
 
 template <>
-StencilTest FromString<StencilTest>(const std::string& s);
+eStencilTest FromString<eStencilTest>(const std::string& s);
 
 }
