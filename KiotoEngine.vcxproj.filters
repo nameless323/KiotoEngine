@@ -159,6 +159,9 @@
     <ClInclude Include="Sources\Internal\AssetsSystem\RenderStateParamsConverter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Sources\Internal\Render\VertexLayout.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -234,6 +237,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Sources\Internal\AssetsSystem\RenderStateParamsConverter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Internal\Render\VertexLayout.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
