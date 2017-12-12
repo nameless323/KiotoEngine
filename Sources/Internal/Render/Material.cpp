@@ -49,7 +49,7 @@ Material::Material(const std::wstring& path)
         if (dsNode["writeMask"] != nullptr)
             m_stencilWriteMask = static_cast<uint8>(std::stoul(dsNode["writeMask"].as<std::string>(), 0, 0));
         if (dsNode["readMask"] != nullptr)
-            m_stencilWriteMask = static_cast<uint8>(std::stoul(dsNode["readMask"].as<std::string>(), 0, 0));
+            m_stencilReadMask = static_cast<uint8>(std::stoul(dsNode["readMask"].as<std::string>(), 0, 0));
 
         if (dsNode["stencilFront"] != nullptr)
         {

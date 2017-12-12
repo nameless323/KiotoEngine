@@ -21,6 +21,8 @@
 #include "Math/Vector4.h"
 #include "Render/Geometry/GeometryGenerator.h"
 #include "Render/Geometry/Mesh.h"
+#include "Render/VertexLayout.h"
+#include "Render/DX12/VertexLayoutDX12.h"
 
 #include "Component/CameraComponent.h"
 #include "Systems/CameraSystem.h"
@@ -32,6 +34,11 @@ namespace Kioto::Renderer
 
 using Microsoft::WRL::ComPtr;
 using std::wstring;
+
+RendererDX12::RendererDX12()
+{
+    m_inputLayouts.reserve(256);
+}
 
 void RendererDX12::Init(uint16 width, uint16 height)
 {
@@ -623,6 +630,18 @@ void RendererDX12::UpdatePassCB(PassBuffer& buffer)
     CameraComponent* cc = Kioto::GetScene()->GetCameraSystem()->GetMainCamera();
     buffer.View = cc->GetView().Tranposed();
     buffer.ViewProjection = cc->GetVP().Tranposed();
+}
+
+Handle RendererDX12::GenerateVertexLayout(const VertexLayout& layout) const
+{
+    Handle res = static_cast<Handle>(m_inputLayouts.size());
+    std::vector<D3D12_INPUT_ELEMENT_DESC> currentLayout;
+    currentLayout.reserve(16);
+    for (const auto& e : layout.GetElements()) // [a_vorontsov] TODO: Check if layout exist.
+    {
+        currentLayout.push_back(D3D12_INPUT_ELEMENT_DESC{ SemanticNames[e.Semantic].c_str(), e.SemanticIndex, VertexDataFormats[e.Format], 0, e.Offset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+    }
+    return res;
 }
 
 }

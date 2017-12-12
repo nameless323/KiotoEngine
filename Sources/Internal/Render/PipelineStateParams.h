@@ -7,7 +7,7 @@
 
 namespace Kioto
 {
-enum class eBlendModes // [a_vorontsov] TODO: To eBlendModes and so on.
+enum class eBlendModes
 {
     Zero,
     One,

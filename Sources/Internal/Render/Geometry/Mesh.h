@@ -11,6 +11,7 @@
 #include "Math/Vector2.h"
 #include "Math/Vector3.h"
 #include "Math/Vector4.h"
+#include "Render/VertexLayout.h"
 
 namespace Kioto
 {
@@ -69,6 +70,7 @@ public:
     eIndexFormat GetIndexFormat() const;
     const byte* GetIndexData() const;
     uint32 GetIndexDataSize() const;
+    Renderer::VertexLayout GetVertexLayout() const;
 
 private:
     byte* m_data = nullptr;
@@ -80,6 +82,7 @@ private:
     uint32 m_indexDataSize = 0;
     uint32 m_indexCount = 0;
     eIndexFormat m_indexFormat = eIndexFormat::Format32Bit;
+    Renderer::VertexLayout m_vertexLayout;
 };
 
 inline const byte* Mesh::GetVertexData() const
@@ -120,5 +123,10 @@ inline const byte* Mesh::GetIndexData() const
 inline uint32 Mesh::GetIndexDataSize() const
 {
     return m_dataSize;
+}
+
+inline Renderer::VertexLayout Mesh::GetVertexLayout() const
+{
+    return m_vertexLayout;
 }
 }

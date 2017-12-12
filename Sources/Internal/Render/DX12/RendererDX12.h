@@ -16,14 +16,17 @@
 #include "Render/DX12/Buffers/VertexBufferDX12.h"
 #include "Render/DX12/Buffers/IndexBufferDX12.h"
 #include "Render/Texture/Texture.h"
+#include "Render/RendererPublic.h"
 
 namespace Kioto::Renderer
 {
 
+class VertexLayout;
+
 class RendererDX12 final
 {
 public:
-    RendererDX12() = default;
+    RendererDX12();
     RendererDX12(const RendererDX12&) = delete;
     RendererDX12(RendererDX12&&) = delete;
     RendererDX12& operator= (const RendererDX12&) = delete;
@@ -36,6 +39,8 @@ public:
     void Shutdown();
     void Present();
     void Update(float32 dt);
+
+    Handle GenerateVertexLayout(const VertexLayout& layout) const;
 
     ID3D12Resource* GetCurrentBackBuffer() const;
     D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentBackBufferView() const;
@@ -100,6 +105,8 @@ private:
 
     D3D12_VIEWPORT m_viewport = {};
     D3D12_RECT m_scissor = {};
+
+    std::vector<std::vector<D3D12_INPUT_ELEMENT_DESC>> m_inputLayouts;
 };
 
 }

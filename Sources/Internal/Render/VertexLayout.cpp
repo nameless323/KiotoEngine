@@ -26,4 +26,10 @@ void VertexLayout::AddElement(eVertexSemantic semantic, uint8 semanticIndex, eVe
     if (it != formats.end())
         m_totalOffset += it->second;
 }
+
+void VertexLayout::CleanElements()
+{
+    m_verticesDesc.clear();
+}
+
 }

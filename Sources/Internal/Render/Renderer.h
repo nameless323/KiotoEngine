@@ -7,11 +7,14 @@
 
 #include "Core/Core.h"
 #include "Core/CoreTypes.h"
+#include "Render/RendererPublic.h"
 
 namespace Kioto
 {
 namespace Renderer
 {
+
+class VertexLayout;
 
 enum class eRenderApi
 {
@@ -27,6 +30,8 @@ void ChangeFullScreenMode(bool fullScreen);
 KIOTO_API uint16 GetWidth();
 KIOTO_API uint16 GetHeight();
 KIOTO_API float32 GetAspect();
+
+Handle GenerateVertexLayout(const VertexLayout& layout);
 
 }
 }

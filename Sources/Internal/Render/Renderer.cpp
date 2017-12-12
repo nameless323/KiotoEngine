@@ -87,4 +87,9 @@ float32 GetAspect()
     return m_aspect;
 }
 
+Handle GenerateVertexLayout(const VertexLayout& layout)
+{
+    return GameRenderer->GenerateVertexLayout(layout);
+}
+
 }
