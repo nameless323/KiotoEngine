@@ -25,6 +25,13 @@ VertexLayout::VertexLayout(const VertexLayout& other)
     m_totalOffset = other.m_totalOffset;
 }
 
+VertexLayout::VertexLayout(VertexLayout&& other)
+{
+    using namespace std;
+    swap(m_verticesDesc, other.m_verticesDesc);
+    swap(m_totalOffset, other.m_totalOffset);
+}
+
 VertexLayout& VertexLayout::operator=(VertexLayout other)
 {
     using namespace std;

@@ -7,16 +7,36 @@
 
 #include "Render/Geometry/Mesh.h"
 
+#include "Render/Renderer.h"
+
 namespace Kioto
 {
 
-Mesh::Mesh(byte* data, uint32 dataSize, uint32 dataStride, uint32 vertexCount, byte* indexData, uint32 indexDataSize, uint32 indexCount, eIndexFormat indexFormat)
-    : m_data(data), m_dataSize(dataSize), m_vertexCount(vertexCount),m_dataStride(dataStride), m_indexData(indexData), m_indexDataSize(indexDataSize), m_indexCount(indexCount), m_indexFormat(indexFormat)
+Mesh::Mesh(byte* data, uint32 dataSize, uint32 dataStride, uint32 vertexCount, byte* indexData, uint32 indexDataSize, uint32 indexCount, eIndexFormat indexFormat, Renderer::VertexLayout vertexLayout, bool dynamic)
+    : m_data(data)
+    , m_dataSize(dataSize)
+    , m_vertexCount(vertexCount)
+    , m_dataStride(dataStride)
+    , m_indexData(indexData)
+    , m_indexDataSize(indexDataSize)
+    , m_indexCount(indexCount)
+    , m_indexFormat(indexFormat)
+    , m_vertexLayout(std::move(vertexLayout))
+    , m_isDynamic(dynamic)
 {
 }
 
 Mesh::Mesh(const Mesh& other)
-    : m_dataSize(other.m_dataSize), m_dataStride(other.m_dataStride), m_indexDataSize(other.m_indexDataSize), m_vertexCount(other.m_vertexCount), m_indexCount(other.m_indexCount), m_indexFormat(other.m_indexFormat)
+    : m_dataSize(other.m_dataSize)
+    , m_dataStride(other.m_dataStride)
+    , m_indexDataSize(other.m_indexDataSize)
+    , m_vertexCount(other.m_vertexCount)
+    , m_indexCount(other.m_indexCount)
+    , m_indexFormat(other.m_indexFormat)
+    , m_vertexLayout(other.m_vertexLayout)
+    , m_isDynamic(other.m_isDynamic)
+    , m_handle(other.m_handle)
+    , m_isDirty(other.m_isDirty)
 {
     m_data = new byte[m_dataSize];
     memcpy(m_data, other.m_data, m_dataSize);
@@ -32,7 +52,18 @@ Mesh::Mesh(const Mesh& other)
 }
 
 Mesh::Mesh(Mesh&& other)
-    : m_data(other.m_data), m_dataSize(other.m_dataSize), m_dataStride(other.m_dataStride), m_indexData(other.m_indexData), m_indexDataSize(other.m_indexDataSize), m_vertexCount(other.m_vertexCount), m_indexCount(other.m_indexCount), m_indexFormat(other.m_indexFormat)
+    : m_data(other.m_data)
+    , m_dataSize(other.m_dataSize)
+    , m_dataStride(other.m_dataStride)
+    , m_indexData(other.m_indexData)
+    , m_indexDataSize(other.m_indexDataSize)
+    , m_vertexCount(other.m_vertexCount)
+    , m_indexCount(other.m_indexCount)
+    , m_indexFormat(other.m_indexFormat)
+    , m_vertexLayout(other.m_vertexLayout)
+    , m_isDynamic(other.m_isDynamic)
+    , m_handle(other.m_handle)
+    , m_isDirty(other.m_isDirty)
 {
     other.m_data = nullptr;
     other.m_indexData = nullptr;
@@ -49,7 +80,7 @@ Mesh::~Mesh()
     SafeDelete(m_indexData);
 }
 
-void Mesh::SetData(byte* data, uint32 dataSize, uint32 dataStride, uint32 vertexCount, byte* indexData, uint32 indexDataSize, uint32 indexCount, eIndexFormat indexFormat)
+void Mesh::SetData(byte* data, uint32 dataSize, uint32 dataStride, uint32 vertexCount, byte* indexData, uint32 indexDataSize, uint32 indexCount, eIndexFormat indexFormat, Renderer::VertexLayout layout, bool dynamic)
 {
     SafeDelete(m_data);
     SafeDelete(m_indexData);
@@ -63,6 +94,13 @@ void Mesh::SetData(byte* data, uint32 dataSize, uint32 dataStride, uint32 vertex
     m_indexDataSize = indexDataSize;
     m_indexCount = indexCount;
     m_indexFormat = indexFormat;
+
+    m_vertexLayout = layout;
+
+    m_handle = Renderer::GenerateVertexLayout(m_vertexLayout);
+
+    m_isDynamic = dynamic;
+    m_isDirty = false;
 }
 
 void Mesh::PrepareForUpload()
@@ -81,14 +119,28 @@ void Mesh::PrepareForUpload()
     m_indexCount = static_cast<uint32>(Triangles.size());
     m_vertexCount = pSize;
 
+    m_vertexLayout.CleanElements();
+
     if (!Position.empty())
+    {
         m_dataStride += sizeof(Vector3);
+        m_vertexLayout.AddElement(Renderer::eVertexSemantic::Position, 0, Renderer::eVertexDataFormat::R32_G32_B32);
+    }
     if (!Normal.empty())
+    {
         m_dataStride += sizeof(Vector3);
+        m_vertexLayout.AddElement(Renderer::eVertexSemantic::Normal, 0, Renderer::eVertexDataFormat::R32_G32_B32);
+    }
     if (!Color.empty())
+    {
         m_dataStride += sizeof(Vector4);
+        m_vertexLayout.AddElement(Renderer::eVertexSemantic::Color, 0, Renderer::eVertexDataFormat::R32_G32_B32_A32);
+    }
     if (!UV0.empty())
+    {
         m_dataStride += sizeof(Vector2);
+        m_vertexLayout.AddElement(Renderer::eVertexSemantic::Texcoord, 0, Renderer::eVertexDataFormat::R32_G32);
+    }
     byte* currDataPtr = m_data;
     for (uint32 i = 0; i < pSize; ++i)
     {
@@ -124,6 +176,9 @@ void Mesh::PrepareForUpload()
         *currIndexPtr = index;
         ++currIndexPtr;
     }
+
+    m_handle = Renderer::GenerateVertexLayout(m_vertexLayout);
+    m_isDirty = false;
 }
 
 Mesh& Mesh::operator=(Mesh&& other)
@@ -151,6 +206,11 @@ Mesh& Mesh::operator=(Mesh&& other)
     Color = std::move(other.Color);
     UV0 = std::move(other.UV0);
     Triangles = std::move(other.Triangles);
+
+    m_vertexLayout = std::move(other.m_vertexLayout);
+    m_handle = other.m_handle;
+    m_isDirty = other.m_isDirty;
+    m_isDynamic = other.m_isDynamic;
 
     return *this;
 }
@@ -180,6 +240,12 @@ Mesh& Mesh::operator=(const Mesh& other)
     Color = other.Color;
     UV0 = other.UV0;
     Triangles = other.Triangles;
+
+    m_vertexLayout = other.m_vertexLayout;
+
+    m_handle = other.m_handle;
+    m_isDirty = other.m_isDirty;
+    m_isDynamic = other.m_isDynamic;
 
     return *this;
 }
