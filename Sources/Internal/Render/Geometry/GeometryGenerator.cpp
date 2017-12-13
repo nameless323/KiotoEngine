@@ -16,6 +16,8 @@
 #include "Math/Vector3.h"
 #include "Math/Vector4.h"
 
+#include "Render/VertexLayout.h"
+
 namespace Kioto::GeometryGenerator
 {
 namespace
@@ -80,6 +82,11 @@ Mesh GeometryGenerator::GeneratePlane(float32 sizeX /*= 1.0f*/, float32 sizeZ /*
     byte* vData = new byte[vCount * stride];
     byte* vDataBegin = vData;
 
+    Renderer::VertexLayout layout;
+    layout.AddElement(Renderer::eVertexSemantic::Position, 0, Renderer::eVertexDataFormat::R32_G32_B32);
+    layout.AddElement(Renderer::eVertexSemantic::Normal, 0, Renderer::eVertexDataFormat::R32_G32_B32);
+    layout.AddElement(Renderer::eVertexSemantic::Texcoord, 0, Renderer::eVertexDataFormat::R32_G32);
+
     for (uint32 z = 0; z < resZ; z++)
     {
         // [a_vorontsov] [ -length / 2, length / 2 ]
@@ -132,7 +139,7 @@ Mesh GeometryGenerator::GeneratePlane(float32 sizeX /*= 1.0f*/, float32 sizeZ /*
         *iData++ = i + 1;
     }
 
-    return { vDataBegin, stride * vCount, stride, vCount, iDataBegin, iCount * sizeof(uint16), iCount, eIndexFormat::Format16Bit };
+    return { vDataBegin, stride * vCount, stride, vCount, iDataBegin, iCount * sizeof(uint16), iCount, eIndexFormat::Format16Bit, layout };
 }
 
 Mesh GenerateCube(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/, float32 sizeZ /*= 1.0f*/)
@@ -150,6 +157,11 @@ Mesh GenerateCube(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/, float32 si
     Vector3 p5(zHalf, xHalf, yHalf);
     Vector3 p6(zHalf, xHalf, -yHalf);
     Vector3 p7(-zHalf, xHalf, -yHalf);
+
+    Renderer::VertexLayout layout;
+    layout.AddElement(Renderer::eVertexSemantic::Position, 0, Renderer::eVertexDataFormat::R32_G32_B32);
+    layout.AddElement(Renderer::eVertexSemantic::Normal, 0, Renderer::eVertexDataFormat::R32_G32_B32);
+    layout.AddElement(Renderer::eVertexSemantic::Texcoord, 0, Renderer::eVertexDataFormat::R32_G32);
 
     uint32 stride = sizeof(Vector3) + sizeof(Vector2) + sizeof(Vector3);
     byte* vData = new byte[stride * 24];
@@ -319,7 +331,7 @@ Mesh GenerateCube(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/, float32 si
 
     iData = iDataBegin;
 
-    return { vData, stride * 24, stride, 24, reinterpret_cast<byte*>(iData), 36 * sizeof(uint32), 36, eIndexFormat::Format32Bit };
+    return { vData, stride * 24, stride, 24, reinterpret_cast<byte*>(iData), 36 * sizeof(uint32), 36, eIndexFormat::Format32Bit, layout };
 }
 
 Mesh GenerateCone(float32 height /*= 1.0f*/, float32 bottomRadius /*= 0.25f*/, float32 topRadius /*= 0.05f*/)
@@ -336,6 +348,11 @@ Mesh GenerateCone(float32 height /*= 1.0f*/, float32 bottomRadius /*= 0.25f*/, f
     byte* vDataBegin = vData;
 
     uint32 vert = 0;
+
+    Renderer::VertexLayout layout;
+    layout.AddElement(Renderer::eVertexSemantic::Position, 0, Renderer::eVertexDataFormat::R32_G32_B32);
+    layout.AddElement(Renderer::eVertexSemantic::Normal, 0, Renderer::eVertexDataFormat::R32_G32_B32);
+    layout.AddElement(Renderer::eVertexSemantic::Texcoord, 0, Renderer::eVertexDataFormat::R32_G32);
 
     // [a_vorontsov] Bottom cap.
     *reinterpret_cast<Vector3*>(vData) = Vector3(0.0f, 0.0f, 0.0f);
@@ -509,7 +526,7 @@ Mesh GenerateCone(float32 height /*= 1.0f*/, float32 bottomRadius /*= 0.25f*/, f
         *iData++ = tri + 0;
         tri++;
     }
-    return { vDataBegin, vCount * stride, stride, vCount, iDataBegin, iCount * sizeof(uint16), iCount, eIndexFormat::Format16Bit };
+    return { vDataBegin, vCount * stride, stride, vCount, iDataBegin, iCount * sizeof(uint16), iCount, eIndexFormat::Format16Bit, layout };
 }
 
 Mesh GenerateSphere(float32 radius /*=1.0f*/)
@@ -521,6 +538,11 @@ Mesh GenerateSphere(float32 radius /*=1.0f*/)
     uint32 stride = sizeof(Vector3) + sizeof(Vector3) + sizeof(Vector2);
     byte* vData = new byte[vCount * stride];
     byte* vDataBegin = vData;
+
+    Renderer::VertexLayout layout;
+    layout.AddElement(Renderer::eVertexSemantic::Position, 0, Renderer::eVertexDataFormat::R32_G32_B32);
+    layout.AddElement(Renderer::eVertexSemantic::Normal, 0, Renderer::eVertexDataFormat::R32_G32_B32);
+    layout.AddElement(Renderer::eVertexSemantic::Texcoord, 0, Renderer::eVertexDataFormat::R32_G32);
 
     *reinterpret_cast<Vector3*>(vData) = Vector3(0.0f, 1.0f, 0.0) * radius;
     vData += stride;
@@ -607,7 +629,7 @@ Mesh GenerateSphere(float32 radius /*=1.0f*/)
         *iData++ = vCount - (lon + 2) - 1;
         *iData++ = vCount - (lon + 1) - 1;
     }
-    return { vDataBegin, stride * vCount, stride, vCount, iDataBegin, iCount * sizeof(uint32), iCount, eIndexFormat::Format32Bit };
+    return { vDataBegin, stride * vCount, stride, vCount, iDataBegin, iCount * sizeof(uint32), iCount, eIndexFormat::Format32Bit, layout };
 }
 
 Mesh GenerateTube(float32 height /*= 1.0f*/, float32 bottomRadius1 /*= 0.5f*/, float32 bottomRadius2 /*= 0.15f*/, float32 topRadius1 /*= 0.5f*/, float32 topRadius2 /*= 0.15f*/)
@@ -625,6 +647,10 @@ Mesh GenerateTube(float32 height /*= 1.0f*/, float32 bottomRadius1 /*= 0.5f*/, f
 
     uint32 vert = 0;
 
+    Renderer::VertexLayout layout;
+    layout.AddElement(Renderer::eVertexSemantic::Position, 0, Renderer::eVertexDataFormat::R32_G32_B32);
+    layout.AddElement(Renderer::eVertexSemantic::Normal, 0, Renderer::eVertexDataFormat::R32_G32_B32);
+    layout.AddElement(Renderer::eVertexSemantic::Texcoord, 0, Renderer::eVertexDataFormat::R32_G32);
 
     // [a_vorontsov] Bottom cap.
     int32 sideCounter = 0;
@@ -871,13 +897,17 @@ Mesh GenerateTube(float32 height /*= 1.0f*/, float32 bottomRadius1 /*= 0.5f*/, f
 
         sideCounter++;
     }
-    return { vDataBegin, vCount * stride, stride, vCount, iDataBegin, iCount * sizeof(uint16), iCount, eIndexFormat::Format16Bit };
+    return { vDataBegin, vCount * stride, stride, vCount, iDataBegin, iCount * sizeof(uint16), iCount, eIndexFormat::Format16Bit, layout };
 }
 
 Mesh GenerateIcosphere(int32 recursionLevel /*= 3*/, float32 radius /*= 1.0f*/)
 {
     std::vector<Vector3> positions;
     std::map<uint64, uint16> middlePointIndexCache;
+
+    Renderer::VertexLayout layout;
+    layout.AddElement(Renderer::eVertexSemantic::Position, 0, Renderer::eVertexDataFormat::R32_G32_B32);
+    layout.AddElement(Renderer::eVertexSemantic::Normal, 0, Renderer::eVertexDataFormat::R32_G32_B32);
 
     // [a_vorontsov] Create 12 vertices of a icosahedron.
     float32 t = (1.0f + std::sqrt(5.0f)) / 2.0f;
@@ -968,7 +998,7 @@ Mesh GenerateIcosphere(int32 recursionLevel /*= 3*/, float32 radius /*= 1.0f*/)
         *indices++ = face.i3;
     }
     uint32 vCount = static_cast<uint32>(positions.size());
-    return { vDataBegin, stride * vCount, stride, vCount, iDataBegin, iCount * sizeof(uint32), iCount, eIndexFormat::Format16Bit };
+    return { vDataBegin, stride * vCount, stride, vCount, iDataBegin, iCount * sizeof(uint32), iCount, eIndexFormat::Format16Bit, layout };
 }
 
 }

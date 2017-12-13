@@ -47,6 +47,7 @@ class VertexLayout
 public:
     VertexLayout() = default;
     VertexLayout(const VertexLayout& other);
+    VertexLayout(VertexLayout&& other);
     VertexLayout& operator=(VertexLayout other);
 
     void AddElement(eVertexSemantic semantic, uint8 semanticIndex, eVertexDataFormat format);

@@ -177,7 +177,7 @@ void Mesh::PrepareForUpload()
         ++currIndexPtr;
     }
 
-    m_handle = Renderer::GenerateVertexLayout(m_vertexLayout);
+    m_handle = Renderer::GenerateVertexLayout(m_vertexLayout); // [a_vorontsov] And here we will generate new layout every time. TODO: Make lookup!
     m_isDirty = false;
 }
 

@@ -37,6 +37,7 @@ VertexLayout& VertexLayout::operator=(VertexLayout other)
     using namespace std;
     swap(m_verticesDesc, other.m_verticesDesc);
     swap(m_totalOffset, other.m_totalOffset);
+    return *this;
 }
 
 void VertexLayout::AddElement(eVertexSemantic semantic, uint8 semanticIndex, eVertexDataFormat format)

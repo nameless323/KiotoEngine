@@ -5,6 +5,8 @@
 
 #include "Core/CoreTypes.h"
 
+#include "Render/VertexLayout.h"
+
 #pragma once
 
 namespace Kioto::Renderer
@@ -23,6 +25,7 @@ public:
     SafeHandle& operator=(const SafeHandle& other)
     {
         this->Handle = other.Handle;
+        return this;
     }
 
     Handle Handle = 0;
