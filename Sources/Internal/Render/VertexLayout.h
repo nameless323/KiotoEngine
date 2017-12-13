@@ -45,6 +45,10 @@ struct VertexDesc
 class VertexLayout
 {
 public:
+    VertexLayout() = default;
+    VertexLayout(const VertexLayout& other);
+    VertexLayout& operator=(VertexLayout other);
+
     void AddElement(eVertexSemantic semantic, uint8 semanticIndex, eVertexDataFormat format);
     void CleanElements();
     std::vector<VertexDesc> GetElements() const;

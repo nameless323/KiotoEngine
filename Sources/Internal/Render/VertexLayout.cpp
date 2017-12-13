@@ -19,6 +19,19 @@ static const std::map<const eVertexDataFormat, uint16> formats
     { eVertexDataFormat::R32, 4 }
 };
 
+VertexLayout::VertexLayout(const VertexLayout& other)
+{
+    m_verticesDesc = other.m_verticesDesc;
+    m_totalOffset = other.m_totalOffset;
+}
+
+VertexLayout& VertexLayout::operator=(VertexLayout other)
+{
+    using namespace std;
+    swap(m_verticesDesc, other.m_verticesDesc);
+    swap(m_totalOffset, other.m_totalOffset);
+}
+
 void VertexLayout::AddElement(eVertexSemantic semantic, uint8 semanticIndex, eVertexDataFormat format)
 {
     m_verticesDesc.emplace_back(semantic, semanticIndex, format, m_totalOffset);
