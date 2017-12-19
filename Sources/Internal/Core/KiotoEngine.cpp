@@ -71,8 +71,9 @@ void Init()
         InitEngineCallback();
 
 
-    std::string shaderPath = WstrToStr(AssetsSystem::GetAssetFullPath(L"Materials\\Test.mt"));
-    Material m(shaderPath);
+    std::string matPath = WstrToStr(AssetsSystem::GetAssetFullPath(L"Materials\\Test.mt"));
+    Material* m = AssetsSystem::LoadAsset<Material>(matPath);
+    Material* p = AssetsSystem::LoadAsset<Material>(matPath);
 
     WindowsApplication::Run();
 }

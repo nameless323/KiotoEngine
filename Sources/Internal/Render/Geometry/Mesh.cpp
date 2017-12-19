@@ -13,7 +13,8 @@ namespace Kioto
 {
 
 Mesh::Mesh(byte* data, uint32 dataSize, uint32 dataStride, uint32 vertexCount, byte* indexData, uint32 indexDataSize, uint32 indexCount, eIndexFormat indexFormat, Renderer::VertexLayout vertexLayout, bool dynamic)
-    : m_data(data)
+    : Asset("")
+    , m_data(data)
     , m_dataSize(dataSize)
     , m_vertexCount(vertexCount)
     , m_dataStride(dataStride)
@@ -27,7 +28,8 @@ Mesh::Mesh(byte* data, uint32 dataSize, uint32 dataStride, uint32 vertexCount, b
 }
 
 Mesh::Mesh(const Mesh& other)
-    : m_dataSize(other.m_dataSize)
+    : Asset("")
+    , m_dataSize(other.m_dataSize)
     , m_dataStride(other.m_dataStride)
     , m_indexDataSize(other.m_indexDataSize)
     , m_vertexCount(other.m_vertexCount)
@@ -52,7 +54,8 @@ Mesh::Mesh(const Mesh& other)
 }
 
 Mesh::Mesh(Mesh&& other)
-    : m_data(other.m_data)
+    : Asset("")
+    , m_data(other.m_data)
     , m_dataSize(other.m_dataSize)
     , m_dataStride(other.m_dataStride)
     , m_indexData(other.m_indexData)
@@ -72,6 +75,10 @@ Mesh::Mesh(Mesh&& other)
     Color = std::move(other.Color);
     UV0 = std::move(other.UV0);
     Triangles = std::move(other.Triangles);
+}
+
+Mesh::Mesh() : Asset("")
+{
 }
 
 Mesh::~Mesh()

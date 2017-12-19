@@ -24,7 +24,7 @@ public:
 
 private:
     std::string m_shaderPath;
-    Renderer::Shader shader;
+    Renderer::Shader* m_shader = nullptr;
     eRenderLayerType m_layerType = eRenderLayerType::Opaque;
     eFillMode m_fill = eFillMode::Solid;
     eCullMode m_cull = eCullMode::Back;

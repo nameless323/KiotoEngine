@@ -39,7 +39,7 @@ enum class eIndexFormat
 class Mesh : public Asset // [a_vorontsov] TODO:: template for index type.
 {
 public:
-    Mesh() = default;
+    Mesh();
     ///
     /// Mesh will steal data pointer and will handle it lifetime by himself.
     ///

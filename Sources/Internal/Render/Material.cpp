@@ -28,7 +28,10 @@ Material::Material(const std::string& path)
     if (config["version"] != nullptr)
         version = config["version"].as<float32>();
     if (config["shader"] != nullptr)
+    {
         m_shaderPath = config["shader"].as<std::string>();
+        m_shader = AssetsSystem::LoadAsset<Renderer::Shader>(m_shaderPath);
+    }
     if (config["renderLayer"] != nullptr)
         m_layerType = FromString<eRenderLayerType>(config["renderLayer"].as<std::string>());
     if (config["fill"] != nullptr)

@@ -14,6 +14,10 @@ namespace Kioto::Renderer
 {
 class Shader : public Asset
 {
+public:
+    Shader() : Asset("") {}
+    Shader(const std::string& path) : Asset(path) {}
+
 private:
     std::string m_path;
     std::string m_shader;

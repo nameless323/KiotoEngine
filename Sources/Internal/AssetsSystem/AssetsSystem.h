@@ -38,7 +38,11 @@ T* Kioto::AssetsSystem::LoadAsset(std::string assetPath)
 {
     auto it = m_assets.find(assetPath);
     if (it != m_assets.end())
-        return static_cast<T*>(it->second());
+        return static_cast<T*>(it->second);
+
+    if (!CheckIfFileExist(assetPath))
+        return nullptr;
+
     Asset* newAsset = new T(assetPath);
     m_assets[assetPath] = newAsset;
     return static_cast<T*>(newAsset);
@@ -57,7 +61,7 @@ void UnloadAsset(T* asset)
     auto mapIt = std::find_if(m_assets.begin(), m_assets.end(), [&asset](const auto& pair) { return pair.second() == asset; });
     if (mapIt != m_assets.end())
     {
-        SafeDelete(mapIt->second());
+        SafeDelete(mapIt->second);
         m_assets.erase(mapIt);
     }
 }

@@ -12,7 +12,7 @@ namespace Kioto
 class Asset
 {
 public:
-    Asset() = default; // [a_vorontsov] Delete maybe.
+    Asset() = delete; // [a_vorontsov] Delete maybe.
     Asset(std::string assetPath);
     Asset(const Asset& other) = default;
     Asset(Asset&& other) = default;
