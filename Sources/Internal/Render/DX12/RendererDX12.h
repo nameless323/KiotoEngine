@@ -99,7 +99,7 @@ private:
     std::unique_ptr<VertexBufferDX12> m_vertexBuffer;
     std::unique_ptr<IndexBufferDX12> m_indexBuffer;
 
-    Mesh m_box;
+    Mesh* m_box;
     std::unique_ptr<Texture> m_texture;
     Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_textureHeap;
 

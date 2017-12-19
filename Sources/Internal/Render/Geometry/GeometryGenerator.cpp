@@ -71,6 +71,24 @@ T GetMiddlePoint(T p1, T p2, std::vector<Vector3>& vertices, std::map<uint64, T>
     cache[key] = i;
     return i;
 }
+
+Mesh* m_unitCube = nullptr;
+Mesh* m_unitSphere = nullptr;
+Mesh* m_unitIcosphere = nullptr;
+}
+
+void Init()
+{
+    m_unitCube = new Mesh(GenerateCube());
+    m_unitSphere = new Mesh(GenerateSphere());
+    m_unitIcosphere = new Mesh(GenerateIcosphere());
+}
+
+void Shutdown()
+{
+    SafeDelete(m_unitCube);
+    SafeDelete(m_unitSphere);
+    SafeDelete(m_unitIcosphere);
 }
 
 Mesh GeometryGenerator::GeneratePlane(float32 sizeX /*= 1.0f*/, float32 sizeZ /*= 1.0f*/)
@@ -999,6 +1017,21 @@ Mesh GenerateIcosphere(int32 recursionLevel /*= 3*/, float32 radius /*= 1.0f*/)
     }
     uint32 vCount = static_cast<uint32>(positions.size());
     return { vDataBegin, stride * vCount, stride, vCount, iDataBegin, iCount * sizeof(uint32), iCount, eIndexFormat::Format16Bit, layout };
+}
+
+Mesh* GetUnitCube()
+{
+    return m_unitCube;
+}
+
+Mesh* GetUnitSphere()
+{
+    return m_unitSphere;
+}
+
+Mesh* GetUnitIcosphere()
+{
+    return m_unitIcosphere;
 }
 
 }

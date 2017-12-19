@@ -13,6 +13,7 @@
 #include "Core/Scene.h"
 #include "Core/Timer/GlobalTimer.h"
 #include "Core/WindowsApplication.h"
+#include "Render/Geometry/GeometryGenerator.h"
 #include "Render/Renderer.h"
 
 #include "Render/Material.h"
@@ -62,8 +63,9 @@ namespace KiotoCore
 {
 void Init()
 {
-    AssetsSystem::Init();
     GlobalTimer::Init();
+    AssetsSystem::Init();
+    GeometryGenerator::Init();
     WindowsApplication::Init(ApplicationInfo.HInstance, ApplicationInfo.NCmdShow, ApplicationInfo.WindowCapture);
     Renderer::Init(Renderer::eRenderApi::DirectX12, 1024, 768);
 
@@ -95,6 +97,7 @@ void Shutdown()
 
     Renderer::Shutdown();
     SafeDelete(m_scene);
+    GeometryGenerator::Shutdown();
     AssetsSystem::Shutdown();
 }
 
