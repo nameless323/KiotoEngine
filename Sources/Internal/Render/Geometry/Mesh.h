@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "AssetsSystem/Asset.h"
 #include "Core/CoreTypes.h"
 #include "Math/Vector2.h"
 #include "Math/Vector3.h"
@@ -35,7 +36,7 @@ enum class eIndexFormat
 /// Represent model's mesh. Use overloads with *data for best performance.
 /// If you use *data overloads - mesh owns data and handle it lifetime.
 ///
-class Mesh // [a_vorontsov] TODO:: template for index type.
+class Mesh : public Asset // [a_vorontsov] TODO:: template for index type.
 {
 public:
     Mesh() = default;

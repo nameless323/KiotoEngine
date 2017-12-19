@@ -71,7 +71,7 @@ void Init()
         InitEngineCallback();
 
 
-    std::wstring shaderPath = AssetsSystem::GetAssetFullPath(L"Materials\\Test.mt");
+    std::string shaderPath = WstrToStr(AssetsSystem::GetAssetFullPath(L"Materials\\Test.mt"));
     Material m(shaderPath);
 
     WindowsApplication::Run();
@@ -94,6 +94,7 @@ void Shutdown()
 
     Renderer::Shutdown();
     SafeDelete(m_scene);
+    AssetsSystem::Shutdown();
 }
 
 void ChangeFullscreenMode(bool fullScreen)

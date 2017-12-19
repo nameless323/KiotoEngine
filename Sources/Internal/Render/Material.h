@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "AssetsSystem/Asset.h"
 #include "Core/CoreTypes.h"
 #include "Render/PipelineStateParams.h"
 #include "Render/RenderLayer.h"
@@ -14,11 +15,11 @@
 
 namespace Kioto
 {
-class Material
+class Material : public Asset
 {
 public:
     Material() = default;
-    Material(const std::wstring& path);
+    Material(const std::string& path);
     ~Material() = default;
 
 private:

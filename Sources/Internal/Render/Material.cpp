@@ -16,14 +16,14 @@ namespace Kioto
 {
 static const float32 CurrentVersion = 0.01f;
 
-Material::Material(const std::wstring& path)
+Material::Material(const std::string& path)
+    : Asset(path)
 {
     using namespace RenderParamsConverter;
-    std::string pathStr = WstrToStr(path);
     if (!AssetsSystem::CheckIfFileExist(path))
         throw "Material not exist";
 
-    YAML::Node config = YAML::LoadFile(pathStr);
+    YAML::Node config = YAML::LoadFile(path);
     float32 version = -1.0f;
     if (config["version"] != nullptr)
         version = config["version"].as<float32>();

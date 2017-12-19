@@ -70,6 +70,11 @@ void Init()
 #endif
 }
 
+void Shutdown()
+{
+    CleanAssets();
+}
+
 bool CheckIfFileExist(const std::wstring& path)
 {
     FILE* file = nullptr;
@@ -91,4 +96,30 @@ bool CheckIfFileExist(const std::string& path)
     }
     return false;
 }
+
+void UnloadAsset(std::string assetPath)
+{
+    auto it = m_assets.find(assetPath);
+    if (it != m_assets.end())
+    {
+        SafeDelete(it->second);
+        m_assets.erase(assetPath);
+    }
+}
+
+void CleanAssets()
+{
+    for (auto& pair : m_assets)
+        SafeDelete(pair.second);
+    m_assets.clear();
+    for (auto& dynAsset : m_dynamicAssets)
+        delete dynAsset;
+    m_dynamicAssets.clear();
+}
+
+void RegisterAsset(Asset* asset)
+{
+    m_dynamicAssets.push_back(asset);
+}
+
 }

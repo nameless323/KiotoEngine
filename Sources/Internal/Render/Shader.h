@@ -7,11 +7,12 @@
 
 #include <string>
 
+#include "AssetsSystem/Asset.h"
 #include "Render/RendererPublic.h"
 
 namespace Kioto::Renderer
 {
-class Shader
+class Shader : public Asset
 {
 private:
     std::string m_path;

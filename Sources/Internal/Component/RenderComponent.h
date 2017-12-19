@@ -25,7 +25,7 @@ public:
 
     Component* Clone() const override;
 
-    void SetMaterial(const std::wstring& path);
+    void SetMaterial(const std::string& path);
     void SetMaterial(Material* material);
 
     void SetMesh(const Mesh& mesh);
@@ -36,7 +36,7 @@ private:
     Mesh* m_mesh = nullptr;
 };
 
-inline void RenderComponent::SetMaterial(const std::wstring& path)
+inline void RenderComponent::SetMaterial(const std::string& path)
 {
     SafeDelete(m_material); // [a_vorontsov] Too fragile. TODO: all material work via asset system.
     m_material = new Material(path);
