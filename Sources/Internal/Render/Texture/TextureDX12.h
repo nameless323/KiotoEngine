@@ -11,7 +11,7 @@
 
 namespace Kioto
 {
-struct Texture
+struct TextureDX12
 {
     std::wstring Path;
     Microsoft::WRL::ComPtr<ID3D12Resource> Resource = nullptr;

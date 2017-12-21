@@ -75,7 +75,7 @@ public:
     const byte* GetIndexData() const;
     uint32 GetIndexDataSize() const;
     Renderer::VertexLayout GetVertexLayout() const;
-    Renderer::Handle GetVertexLayoutHandle() const;
+    Renderer::VertexLayoutHandle GetVertexLayoutHandle() const;
     bool GetIsDirty() const;
     bool GetIsDynamic() const;
 
@@ -90,7 +90,7 @@ private:
     uint32 m_indexCount = 0;
     eIndexFormat m_indexFormat = eIndexFormat::Format32Bit;
     Renderer::VertexLayout m_vertexLayout;
-    Renderer::Handle m_handle = Renderer::InvalidHandle;
+    Renderer::VertexLayoutHandle m_handle;
 
     bool m_isDirty = true;
     bool m_isDynamic = false;
@@ -146,7 +146,7 @@ inline Renderer::VertexLayout Mesh::GetVertexLayout() const
     return m_vertexLayout;
 }
 
-inline Renderer::Handle Mesh::GetVertexLayoutHandle() const
+inline Renderer::VertexLayoutHandle Mesh::GetVertexLayoutHandle() const
 {
     return m_handle;
 }

@@ -102,9 +102,6 @@
     <ClInclude Include="Sources\External\Dx12Helpers\DDSTextureLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\Internal\Render\Texture\Texture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Sources\Internal\Core\ECS\Component.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -172,6 +169,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Sources\Internal\AssetsSystem\Asset.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Internal\Render\Texture\TextureDX12.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

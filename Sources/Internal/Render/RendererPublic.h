@@ -5,19 +5,21 @@
 
 #include "Core/CoreTypes.h"
 
-#include "Render/VertexLayout.h"
-
 #pragma once
 
 namespace Kioto::Renderer
 {
-using Handle = uint32; // [a_vorontsov] Maybe some template class to some type safe.
+class Shader;
+class VertexLayout;
 
 template <typename T>
 struct SafeHandle
 {
 public:
     SafeHandle() = default;
+    SafeHandle(uint32 handle) : Handle(handle)
+    {
+    }
     SafeHandle(const SafeHandle& other)
     {
         this->Handle = other.Handle;
@@ -25,12 +27,12 @@ public:
     SafeHandle& operator=(const SafeHandle& other)
     {
         this->Handle = other.Handle;
-        return this;
+        return *this;
     }
 
-    Handle Handle = 0;
+    uint32 Handle = -1;
 };
 
 using VertexLayoutHandle = SafeHandle<VertexLayout>;
-const Handle InvalidHandle = static_cast<Handle>(-1);
+using ShaderHandle = SafeHandle<Shader>;
 }

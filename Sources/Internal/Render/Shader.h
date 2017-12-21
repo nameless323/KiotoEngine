@@ -21,8 +21,8 @@ public:
 private:
     std::string m_path;
     std::string m_shader;
-    Handle m_vsHandle;
-    Handle m_psHandle;
+    ShaderHandle m_vsHandle;
+    ShaderHandle m_psHandle;
 
     friend class Material;
 };

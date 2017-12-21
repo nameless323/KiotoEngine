@@ -201,7 +201,7 @@
     <ClInclude Include="Sources\Internal\Render\RendererPublic.h" />
     <ClInclude Include="Sources\Internal\Render\RenderLayer.h" />
     <ClInclude Include="Sources\Internal\Render\Shader.h" />
-    <ClInclude Include="Sources\Internal\Render\Texture\Texture.h" />
+    <ClInclude Include="Sources\Internal\Render\Texture\TextureDX12.h" />
     <ClInclude Include="Sources\Internal\Render\VertexLayout.h" />
     <ClInclude Include="Sources\Internal\Systems\CameraSystem.h" />
     <ClInclude Include="Sources\Internal\Systems\EventSystem\EngineEvents.h" />

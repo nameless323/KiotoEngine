@@ -229,7 +229,7 @@ void RendererDX12::LoadPipeline()
     m_vertexBuffer = std::make_unique<VertexBufferDX12>(m_box->GetVertexData(), m_box->GetVertexDataSize(), m_box->GetVertexDataStride(), m_commandList.Get(), m_device.Get());
     m_indexBuffer = std::make_unique<IndexBufferDX12>(m_box->GetIndexData(), m_box->GetIndexDataSize(), m_commandList.Get(), m_device.Get(), IndexFormatToDXGI(m_box->GetIndexFormat()));
 
-    m_texture = std::make_unique<Texture>();
+    m_texture = std::make_unique<TextureDX12>();
     m_texture->Path = AssetsSystem::GetAssetFullPath(L"Textures\\rick_and_morty.dds");
     HRESULT texRes = DirectX::CreateDDSTextureFromFile12(m_device.Get(), m_commandList.Get(), m_texture->Path.c_str(), m_texture->Resource, m_texture->UploadResource);
     ThrowIfFailed(texRes);
@@ -632,9 +632,9 @@ void RendererDX12::UpdatePassCB(PassBuffer& buffer)
     buffer.ViewProjection = cc->GetVP().Tranposed();
 }
 
-Handle RendererDX12::GenerateVertexLayout(const VertexLayout& layout) const
+VertexLayoutHandle RendererDX12::GenerateVertexLayout(const VertexLayout& layout) const
 {
-    Handle res = static_cast<Handle>(m_inputLayouts.size());
+    VertexLayoutHandle res(static_cast<uint32>(m_inputLayouts.size()));
     std::vector<D3D12_INPUT_ELEMENT_DESC> currentLayout;
     currentLayout.reserve(16);
     for (const auto& e : layout.GetElements()) // [a_vorontsov] TODO: Check if layout exist.

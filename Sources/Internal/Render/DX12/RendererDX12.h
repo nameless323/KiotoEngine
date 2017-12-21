@@ -15,7 +15,7 @@
 #include "Render/DX12/Buffers/UploadBuffer.h"
 #include "Render/DX12/Buffers/VertexBufferDX12.h"
 #include "Render/DX12/Buffers/IndexBufferDX12.h"
-#include "Render/Texture/Texture.h"
+#include "Render/Texture/TextureDX12.h"
 #include "Render/RendererPublic.h"
 
 namespace Kioto::Renderer
@@ -40,7 +40,7 @@ public:
     void Present();
     void Update(float32 dt);
 
-    Handle GenerateVertexLayout(const VertexLayout& layout) const;
+    VertexLayoutHandle GenerateVertexLayout(const VertexLayout& layout) const;
 
     ID3D12Resource* GetCurrentBackBuffer() const;
     D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentBackBufferView() const;
@@ -100,7 +100,7 @@ private:
     std::unique_ptr<IndexBufferDX12> m_indexBuffer;
 
     Mesh* m_box;
-    std::unique_ptr<Texture> m_texture;
+    std::unique_ptr<TextureDX12> m_texture;
     Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_textureHeap;
 
     D3D12_VIEWPORT m_viewport = {};

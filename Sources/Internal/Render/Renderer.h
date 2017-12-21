@@ -31,7 +31,7 @@ KIOTO_API uint16 GetWidth();
 KIOTO_API uint16 GetHeight();
 KIOTO_API float32 GetAspect();
 
-Handle GenerateVertexLayout(const VertexLayout& layout);
+VertexLayoutHandle GenerateVertexLayout(const VertexLayout& layout);
 
 }
 }
