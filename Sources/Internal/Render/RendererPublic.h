@@ -11,6 +11,9 @@ namespace Kioto::Renderer
 {
 class Shader;
 class VertexLayout;
+class Texture;
+
+constexpr uint32 InvalidHandle = -1;
 
 template <typename T>
 struct SafeHandle
@@ -30,9 +33,10 @@ public:
         return *this;
     }
 
-    uint32 Handle = -1;
+    uint32 Handle = InvalidHandle;
 };
 
 using VertexLayoutHandle = SafeHandle<VertexLayout>;
 using ShaderHandle = SafeHandle<Shader>;
+using TextureHandle = SafeHandle<Texture>;
 }
