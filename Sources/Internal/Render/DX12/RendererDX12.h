@@ -17,6 +17,7 @@
 #include "Render/DX12/Buffers/IndexBufferDX12.h"
 #include "Render/Texture/TextureDX12.h"
 #include "Render/RendererPublic.h"
+#include "Render/RenderPass/RenderPass.h"
 
 namespace Kioto::Renderer
 {
@@ -39,6 +40,8 @@ public:
     void Shutdown();
     void Present();
     void Update(float32 dt);
+
+    void AddRenderPass(const RenderPass& renderPass);
 
     VertexLayoutHandle GenerateVertexLayout(const VertexLayout& layout) const;
 

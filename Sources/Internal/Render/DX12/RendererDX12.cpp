@@ -644,4 +644,9 @@ VertexLayoutHandle RendererDX12::GenerateVertexLayout(const VertexLayout& layout
     return res;
 }
 
+void RendererDX12::AddRenderPass(const RenderPass& renderPass)
+{
+
+}
+
 }

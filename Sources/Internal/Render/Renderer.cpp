@@ -92,4 +92,9 @@ VertexLayoutHandle GenerateVertexLayout(const VertexLayout& layout)
     return GameRenderer->GenerateVertexLayout(layout);
 }
 
+void AddRenderPass(const RenderPass& renderPass)
+{
+    GameRenderer->AddRenderPass(renderPass);
+}
+
 }

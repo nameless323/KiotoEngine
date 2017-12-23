@@ -201,6 +201,7 @@
     <ClInclude Include="Sources\Internal\Render\Renderer.h" />
     <ClInclude Include="Sources\Internal\Render\RendererPublic.h" />
     <ClInclude Include="Sources\Internal\Render\RenderLayer.h" />
+    <ClInclude Include="Sources\Internal\Render\RenderPass\MainForwardPass.h" />
     <ClInclude Include="Sources\Internal\Render\RenderPass\RenderPass.h" />
     <ClInclude Include="Sources\Internal\Render\Shader.h" />
     <ClInclude Include="Sources\Internal\Render\Texture\Texture.h" />
@@ -210,6 +211,7 @@
     <ClInclude Include="Sources\Internal\Systems\EventSystem\EngineEvents.h" />
     <ClInclude Include="Sources\Internal\Systems\EventSystem\Event.h" />
     <ClInclude Include="Sources\Internal\Systems\EventSystem\EventSystem.h" />
+    <ClInclude Include="Sources\Internal\Systems\RenderSystem.h" />
     <ClInclude Include="Sources\Internal\Systems\TransformSystem.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -241,6 +243,7 @@
     <ClCompile Include="Sources\Internal\Systems\CameraSystem.cpp" />
     <ClCompile Include="Sources\Internal\Systems\EventSystem\EngineEvents.cpp" />
     <ClCompile Include="Sources\Internal\Systems\EventSystem\EventSystem.cpp" />
+    <ClCompile Include="Sources\Internal\Systems\RenderSystem.cpp" />
     <ClCompile Include="Sources\Internal\Systems\TransformSystem.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

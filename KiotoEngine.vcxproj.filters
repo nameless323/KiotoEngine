@@ -183,6 +183,12 @@
     <ClInclude Include="Sources\Internal\Math\Rect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Sources\Internal\Render\RenderPass\MainForwardPass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Internal\Systems\RenderSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -267,6 +273,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Sources\Internal\Render\RenderPass\RenderPass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Internal\Systems\RenderSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
