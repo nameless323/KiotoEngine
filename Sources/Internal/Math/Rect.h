@@ -39,7 +39,7 @@ Rect_<T>::Rect_(const Rect_<T>& other)
 
 template <typename T>
 Rect_<T>::Rect_(T left, T top, T right, T bottom)
-    : Left(left), Top(Top), Right(right), Bottom(bottom)
+    : Left(left), Top(top), Right(right), Bottom(bottom)
 {
 }
 
@@ -49,7 +49,7 @@ Rect_<T>& Rect_<T>::operator= (const Rect_& other)
     Left = other.Left;
     Top = other.Top;
     Right = other.Right;
-    Left = other.Left;
+    Bottom = other.Bottom;
 
     return *this;
 }

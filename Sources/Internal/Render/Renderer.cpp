@@ -97,4 +97,14 @@ void AddRenderPass(const RenderPass& renderPass)
     GameRenderer->AddRenderPass(renderPass);
 }
 
+TextureHandle GetCurrentBackBufferHandle()
+{
+    return GameRenderer->GetCurrentBackBufferHandle();
+}
+
+TextureHandle GetDepthStencilHandle()
+{
+    return GameRenderer->GetDepthStencilHandle();
+}
+
 }

@@ -26,6 +26,6 @@ public:
     void Shutdown() override;
 
 private:
-    Renderer::MainForwardRenderPass renderPass;
+    Renderer::MainForwardRenderPass m_renderPass;
 };
 }

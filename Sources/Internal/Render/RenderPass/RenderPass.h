@@ -26,8 +26,8 @@ public:
     RenderPass(const RenderPass& other);
     RenderPass& operator= (const RenderPass& other);
 
-    void SetScissor(const RectI scissor);
-    void SetViewport(const RectI viewport);
+    void SetScissor(const RectI& scissor);
+    void SetViewport(const RectI& viewport);
     void SetClearColor(bool clearColor);
     void SetClearDepth(bool clearDepth);
     void SetClearDepthValue(float32 clearDepthValue);
@@ -61,12 +61,12 @@ private:
     uint32 m_priority = PassPriority::MainPass;
 };
 
-inline void RenderPass::SetScissor(const RectI scissor)
+inline void RenderPass::SetScissor(const RectI& scissor)
 {
     m_scissor = scissor;
 }
 
-inline void RenderPass::SetViewport(const RectI viewport)
+inline void RenderPass::SetViewport(const RectI& viewport)
 {
     m_viewport = viewport;
 }
@@ -154,5 +154,10 @@ inline TextureHandle RenderPass::GetRenderTarget(int32 index) const
 inline TextureHandle RenderPass::GetDepthStencil() const
 {
     return m_depthStencil;
+}
+
+inline uint32 RenderPass::GetPriority() const
+{
+    return m_priority;
 }
 }

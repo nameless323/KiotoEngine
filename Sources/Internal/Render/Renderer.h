@@ -29,6 +29,8 @@ void Update(float32 dt);
 void Present();
 void ChangeFullScreenMode(bool fullScreen);
 void AddRenderPass(const RenderPass& renderPass);
+TextureHandle GetCurrentBackBufferHandle();
+TextureHandle GetDepthStencilHandle();
 KIOTO_API uint16 GetWidth();
 KIOTO_API uint16 GetHeight();
 KIOTO_API float32 GetAspect();
