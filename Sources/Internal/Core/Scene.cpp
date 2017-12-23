@@ -13,6 +13,7 @@
 #include "Systems/CameraSystem.h"
 #include "Systems/EventSystem/EventSystem.h"
 #include "Systems/TransformSystem.h"
+#include "Systems/RenderSystem.h"
 
 namespace Kioto
 {
@@ -46,6 +47,8 @@ void Scene::Init()
     AddSystemInternal(transformSystem);
     m_cameraSystem = new CameraSystem();
     AddSystemInternal(m_cameraSystem);
+    RenderSystem* renderSystem = new RenderSystem();
+    AddSystemInternal(renderSystem);
 
     for (auto system : m_systems)
         system->Init();

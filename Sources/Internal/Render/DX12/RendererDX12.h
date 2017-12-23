@@ -15,8 +15,10 @@
 #include "Render/DX12/Buffers/UploadBuffer.h"
 #include "Render/DX12/Buffers/VertexBufferDX12.h"
 #include "Render/DX12/Buffers/IndexBufferDX12.h"
+#include "Render/DX12/Buffers/ResourceDX12.h"
 #include "Render/Texture/TextureDX12.h"
 #include "Render/RendererPublic.h"
+#include "Render/RenderPass/RenderPass.h"
 
 namespace Kioto::Renderer
 {
@@ -40,13 +42,21 @@ public:
     void Present();
     void Update(float32 dt);
 
+    void AddRenderPass(const RenderPass& renderPass);
+
+    TextureHandle GetCurrentBackBufferHandle() const;
+    TextureHandle GetDepthStencilHandle() const;
+
     VertexLayoutHandle GenerateVertexLayout(const VertexLayout& layout) const;
 
-    ID3D12Resource* GetCurrentBackBuffer() const;
-    D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentBackBufferView() const;
-    D3D12_CPU_DESCRIPTOR_HANDLE GetDepthStencilView() const;
-
 private:
+    static constexpr UINT FrameCount = 3;
+
+    std::unordered_map<uint32, ResourceDX12> m_resources;
+    std::array<std::vector<RenderPass>, FrameCount> m_renderPasses;
+
+    ResourceDX12* FindDxResource(uint32 handle);
+
     void GetHardwareAdapter(IDXGIFactory4* factory, IDXGIAdapter1** adapter);
     void WaitForGPU();
     void LogAdapters();
@@ -58,10 +68,9 @@ private:
     void UpdateRenderObjectCB(RenderObjectBuffer& buffer);
     void UpdatePassCB(PassBuffer& buffer);
 
-    static constexpr UINT FrameCount = 3;
 
     bool m_isTearingSupported = false; // [a_vorontsov] TODO: Properly handle when tearing is not supported.
-    UINT m_frameIndex = -1;
+    UINT m_currentFrameIndex = -1;
     UINT m_cbvSrvUavDescriptorSize = -1;
     UINT m_rtvDescriptorSize = -1;
     UINT m_dsvDescriptorSize = -1;
@@ -82,8 +91,8 @@ private:
     Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_rtvHeap;
     Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_dsvHeap;
     Microsoft::WRL::ComPtr<ID3D12Fence> m_fence;
-    Microsoft::WRL::ComPtr<ID3D12Resource> m_swapChainBuffers[FrameCount];
-    Microsoft::WRL::ComPtr<ID3D12Resource> m_depthStencilBuffer;
+    ResourceDX12 m_backBuffers[FrameCount];
+    ResourceDX12 m_depthStencil;
     std::array<Microsoft::WRL::ComPtr<ID3D12CommandAllocator>, FrameCount> m_commandAllocators; // [a_vorontsov] For each render thread?
     Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_commandList;
 
@@ -103,10 +112,16 @@ private:
     std::unique_ptr<TextureDX12> m_texture;
     Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_textureHeap;
 
-    D3D12_VIEWPORT m_viewport = {};
-    D3D12_RECT m_scissor = {};
-
     std::vector<std::vector<D3D12_INPUT_ELEMENT_DESC>> m_inputLayouts;
 };
 
+inline TextureHandle RendererDX12::GetCurrentBackBufferHandle() const
+{
+    return m_backBuffers[m_currentFrameIndex].Handle.Handle;
+}
+
+inline TextureHandle RendererDX12::GetDepthStencilHandle() const
+{
+    return m_depthStencil.Handle.Handle;
+}
 }
