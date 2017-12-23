@@ -7,13 +7,15 @@
 
 namespace Kioto
 {
-
-enum class eRenderApi
+enum class eRenderLayerType
 {
-    DirectX12
-} RenderApi;
+    Opaque,
+    Transparent,
+    COUNT
+};
 
-void Init(eRenderApi api);
-void Shutdown();
+class RenderLayer
+{
 
+};
 }

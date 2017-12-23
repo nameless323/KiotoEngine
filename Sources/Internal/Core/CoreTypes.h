@@ -13,6 +13,7 @@ namespace Kioto
 
 #if _WIN64 && _MSC_VER && !__INTEL_COMPILER
 using byte = unsigned char;
+using uint8 = unsigned char;
 using int16 = short;
 using uint16 = unsigned short;
 using int32 = int;

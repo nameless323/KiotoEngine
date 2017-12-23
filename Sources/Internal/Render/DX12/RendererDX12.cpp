@@ -21,6 +21,8 @@
 #include "Math/Vector4.h"
 #include "Render/Geometry/GeometryGenerator.h"
 #include "Render/Geometry/Mesh.h"
+#include "Render/VertexLayout.h"
+#include "Render/DX12/VertexLayoutDX12.h"
 
 #include "Component/CameraComponent.h"
 #include "Systems/CameraSystem.h"
@@ -32,6 +34,11 @@ namespace Kioto::Renderer
 
 using Microsoft::WRL::ComPtr;
 using std::wstring;
+
+RendererDX12::RendererDX12()
+{
+    m_inputLayouts.reserve(256);
+}
 
 void RendererDX12::Init(uint16 width, uint16 height)
 {
@@ -218,11 +225,11 @@ void RendererDX12::LoadPipeline()
 
     m_commandList->Reset(m_commandAllocators[0].Get(), nullptr);
 
-    m_box = GeometryGenerator::GenerateCube();
-    m_vertexBuffer = std::make_unique<VertexBufferDX12>(m_box.GetVertexData(), m_box.GetVertexDataSize(), m_box.GetVertexDataStride(), m_commandList.Get(), m_device.Get());
-    m_indexBuffer = std::make_unique<IndexBufferDX12>(m_box.GetIndexData(), m_box.GetIndexDataSize(), m_commandList.Get(), m_device.Get(), IndexFormatToDXGI(m_box.GetIndexFormat()));
+    m_box = GeometryGenerator::GetUnitCube();
+    m_vertexBuffer = std::make_unique<VertexBufferDX12>(m_box->GetVertexData(), m_box->GetVertexDataSize(), m_box->GetVertexDataStride(), m_commandList.Get(), m_device.Get());
+    m_indexBuffer = std::make_unique<IndexBufferDX12>(m_box->GetIndexData(), m_box->GetIndexDataSize(), m_commandList.Get(), m_device.Get(), IndexFormatToDXGI(m_box->GetIndexFormat()));
 
-    m_texture = std::make_unique<Texture>();
+    m_texture = std::make_unique<TextureDX12>();
     m_texture->Path = AssetsSystem::GetAssetFullPath(L"Textures\\rick_and_morty.dds");
     HRESULT texRes = DirectX::CreateDDSTextureFromFile12(m_device.Get(), m_commandList.Get(), m_texture->Path.c_str(), m_texture->Resource, m_texture->UploadResource);
     ThrowIfFailed(texRes);
@@ -488,7 +495,7 @@ void RendererDX12::Present()
     m_commandList->IASetIndexBuffer(&m_indexBuffer->GetIndexBufferView());
     m_commandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-    m_commandList->DrawIndexedInstanced(m_box.GetIndexCount(), 1, 0, 0, 0);
+    m_commandList->DrawIndexedInstanced(m_box->GetIndexCount(), 1, 0, 0, 0);
 
     auto toPresent = CD3DX12_RESOURCE_BARRIER::Transition(GetCurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
     m_commandList->ResourceBarrier(1, &toPresent);
@@ -623,6 +630,18 @@ void RendererDX12::UpdatePassCB(PassBuffer& buffer)
     CameraComponent* cc = Kioto::GetScene()->GetCameraSystem()->GetMainCamera();
     buffer.View = cc->GetView().Tranposed();
     buffer.ViewProjection = cc->GetVP().Tranposed();
+}
+
+VertexLayoutHandle RendererDX12::GenerateVertexLayout(const VertexLayout& layout) const
+{
+    VertexLayoutHandle res(static_cast<uint32>(m_inputLayouts.size()));
+    std::vector<D3D12_INPUT_ELEMENT_DESC> currentLayout;
+    currentLayout.reserve(16);
+    for (const auto& e : layout.GetElements()) // [a_vorontsov] TODO: Check if layout exist.
+    {
+        currentLayout.push_back(D3D12_INPUT_ELEMENT_DESC{ SemanticNames[e.Semantic].c_str(), e.SemanticIndex, VertexDataFormats[e.Format], 0, e.Offset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+    }
+    return res;
 }
 
 }

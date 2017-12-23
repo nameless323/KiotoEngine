@@ -13,7 +13,10 @@
 #include "Core/Scene.h"
 #include "Core/Timer/GlobalTimer.h"
 #include "Core/WindowsApplication.h"
+#include "Render/Geometry/GeometryGenerator.h"
 #include "Render/Renderer.h"
+
+#include "Render/Material.h"
 
 namespace Kioto
 {
@@ -60,13 +63,19 @@ namespace KiotoCore
 {
 void Init()
 {
-    AssetsSystem::Init();
     GlobalTimer::Init();
+    AssetsSystem::Init();
+    GeometryGenerator::Init();
     WindowsApplication::Init(ApplicationInfo.HInstance, ApplicationInfo.NCmdShow, ApplicationInfo.WindowCapture);
     Renderer::Init(Renderer::eRenderApi::DirectX12, 1024, 768);
 
     if (InitEngineCallback != nullptr)
         InitEngineCallback();
+
+
+    std::string matPath = WstrToStr(AssetsSystem::GetAssetFullPath(L"Materials\\Test.mt"));
+    Material* m = AssetsSystem::LoadAsset<Material>(matPath);
+    Material* p = AssetsSystem::LoadAsset<Material>(matPath);
 
     WindowsApplication::Run();
 }
@@ -88,6 +97,8 @@ void Shutdown()
 
     Renderer::Shutdown();
     SafeDelete(m_scene);
+    GeometryGenerator::Shutdown();
+    AssetsSystem::Shutdown();
 }
 
 void ChangeFullscreenMode(bool fullScreen)

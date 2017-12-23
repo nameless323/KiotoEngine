@@ -13,6 +13,9 @@ class Mesh;
 
 namespace GeometryGenerator
 {
+void Init();
+void Shutdown();
+
 ///
 /// Generate XZ aligned plane.
 ///
@@ -37,5 +40,9 @@ Mesh GenerateTube(float32 height = 1.0f, float32 bottomRadius1 = 0.5f, float32 b
 /// Generate icosphere.
 ///
 Mesh GenerateIcosphere(int32 recursionLevel = 3, float32 radius = 1.0f);
+
+Mesh* GetUnitCube();
+Mesh* GetUnitSphere();
+Mesh* GetUnitIcosphere();
 }
 }
