@@ -180,6 +180,9 @@
     <ClInclude Include="Sources\Internal\Render\RenderPass\RenderPass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Sources\Internal\Math\Rect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -261,6 +264,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Sources\Internal\Component\RenderComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Internal\Render\RenderPass\RenderPass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

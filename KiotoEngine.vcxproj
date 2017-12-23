@@ -182,6 +182,7 @@
     <ClInclude Include="Sources\Internal\Kioto.h" />
     <ClInclude Include="Sources\Internal\Math\MathHelpers.h" />
     <ClInclude Include="Sources\Internal\Math\Matrix4.h" />
+    <ClInclude Include="Sources\Internal\Math\Rect.h" />
     <ClInclude Include="Sources\Internal\Math\Vector2.h" />
     <ClInclude Include="Sources\Internal\Math\Vector3.h" />
     <ClInclude Include="Sources\Internal\Math\Vector4.h" />
@@ -235,6 +236,7 @@
     <ClCompile Include="Sources\Internal\Render\Geometry\Mesh.cpp" />
     <ClCompile Include="Sources\Internal\Render\Material.cpp" />
     <ClCompile Include="Sources\Internal\Render\Renderer.cpp" />
+    <ClCompile Include="Sources\Internal\Render\RenderPass\RenderPass.cpp" />
     <ClCompile Include="Sources\Internal\Render\VertexLayout.cpp" />
     <ClCompile Include="Sources\Internal\Systems\CameraSystem.cpp" />
     <ClCompile Include="Sources\Internal\Systems\EventSystem\EngineEvents.cpp" />
