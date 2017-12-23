@@ -19,7 +19,6 @@ public:
     Shader(const std::string& path) : Asset(path) {}
 
 private:
-    std::string m_path;
     std::string m_shader;
     ShaderHandle m_vsHandle;
     ShaderHandle m_psHandle;
