@@ -176,12 +176,14 @@ void RendererDX12::LoadPipeline()
 #endif
     wstring shaderPath = AssetsSystem::GetAssetFullPath(L"Shaders\\Fallback.hlsl");
     ComPtr<ID3DBlob> shaderError;
-    HRESULT hr = D3DCompileFromFile(shaderPath.c_str(), nullptr, nullptr, "vs", "vs_5_1", shaderFlags, 0, &m_vsFallbackByteCode, &shaderError);
+    std::string shaderStr = AssetsSystem::ReadFileAsString(std::string(shaderPath.begin(), shaderPath.end()));
+    HRESULT hr = D3DCompile(shaderStr.c_str(), shaderStr.length() * sizeof(char), nullptr, nullptr, nullptr, "vs", "vs_5_1", shaderFlags, 0, &m_vsFallbackByteCode, &shaderError);
+
     if (shaderError != nullptr)
         OutputDebugStringA(reinterpret_cast<char*>(shaderError->GetBufferPointer()));
     ThrowIfFailed(hr);
 
-    hr = D3DCompileFromFile(shaderPath.c_str(), nullptr, nullptr, "ps", "ps_5_1", shaderFlags, 0, &m_psFallbackByteCode, &shaderError);
+    hr = D3DCompile(shaderStr.c_str(), shaderStr.length() * sizeof(char), nullptr, nullptr, nullptr, "ps", "ps_5_1", shaderFlags, 0, &m_psFallbackByteCode, &shaderError);
     if (shaderError != nullptr)
         OutputDebugStringA(reinterpret_cast<char*>(shaderError->GetBufferPointer()));
     ThrowIfFailed(hr);

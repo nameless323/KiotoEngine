@@ -18,6 +18,7 @@ void Shutdown();
 std::wstring GetAssetFullPath(const std::wstring& assetName);
 bool CheckIfFileExist(const std::wstring& path);
 bool CheckIfFileExist(const std::string& path);
+std::string ReadFileAsString(const std::string& path);
 
 void UnloadAsset(std::string assetPath);
 void CleanAssets();
