@@ -175,18 +175,26 @@ void RendererDX12::LoadPipeline()
     UINT shaderFlags = 0;
 #endif
     wstring shaderPath = AssetsSystem::GetAssetFullPath(L"Shaders\\Fallback.hlsl");
-    ComPtr<ID3DBlob> shaderError;
+    ShaderDX12* vs = new ShaderDX12();
+    ShaderDX12* ps = new ShaderDX12();
+    vs->SetHandle(CurrentHandle++);
+    ps->SetHandle(CurrentHandle++);
+    ShaderHandle vsHandle = vs->GetHandle();
+    ShaderHandle psHandle = ps->GetHandle();
+
     std::string shaderStr = AssetsSystem::ReadFileAsString(std::string(shaderPath.begin(), shaderPath.end()));
-    HRESULT hr = D3DCompile(shaderStr.c_str(), shaderStr.length() * sizeof(char), nullptr, nullptr, nullptr, "vs", "vs_5_1", shaderFlags, 0, &m_vsFallbackByteCode, &shaderError);
+    HRESULT hr = vs->Compile(shaderStr.c_str(), shaderStr.length() * sizeof(char), "vs", "vs_5_1", shaderFlags);
 
-    if (shaderError != nullptr)
-        OutputDebugStringA(reinterpret_cast<char*>(shaderError->GetBufferPointer()));
+    if (!vs->GetIsCompiled())
+        OutputDebugStringA(vs->GetErrorMsg());
     ThrowIfFailed(hr);
+    m_shaders.push_back(vs);
 
-    hr = D3DCompile(shaderStr.c_str(), shaderStr.length() * sizeof(char), nullptr, nullptr, nullptr, "ps", "ps_5_1", shaderFlags, 0, &m_psFallbackByteCode, &shaderError);
-    if (shaderError != nullptr)
-        OutputDebugStringA(reinterpret_cast<char*>(shaderError->GetBufferPointer()));
+    hr = ps->Compile(shaderStr.c_str(), shaderStr.length() * sizeof(char), "ps", "ps_5_1", shaderFlags);
+    if (!ps->GetIsCompiled())
+        OutputDebugStringA(ps->GetErrorMsg());
     ThrowIfFailed(hr);
+    m_shaders.push_back(ps);
 
     D3D12_INPUT_ELEMENT_DESC inputElementDesc[] =
     {
@@ -236,8 +244,8 @@ void RendererDX12::LoadPipeline()
 
     desc.InputLayout = { inputElementDesc, _countof(inputElementDesc) };
     desc.pRootSignature = m_rootSignature.Get();
-    desc.VS = CD3DX12_SHADER_BYTECODE(m_vsFallbackByteCode.Get());
-    desc.PS = CD3DX12_SHADER_BYTECODE(m_psFallbackByteCode.Get());
+    desc.VS = *GetShaderBytecode(vsHandle);
+    desc.PS = *GetShaderBytecode(psHandle);
     desc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 
     desc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
@@ -318,6 +326,12 @@ void RendererDX12::Shutdown()
     {
         ThrowIfFailed(m_swapChain->SetFullscreenState(false, nullptr));
     }
+    for (auto& shader : m_shaders)
+    {
+        delete shader;
+    }
+    m_shaders.clear();
+
 #ifdef _DEBUG
     ComPtr<IDXGIDebug1> dxgiDebug;
     if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&dxgiDebug))))
@@ -482,8 +496,8 @@ void RendererDX12::Present()
 
     for (auto& renderPass : thisFramePasses)
     {
-        ResourceDX12* currentBackBuffer = FindDxResource(renderPass.GetRenderTarget(0).Handle);
-        ResourceDX12* currentDS = FindDxResource(renderPass.GetDepthStencil().Handle);
+        ResourceDX12* currentBackBuffer = FindDxResource(renderPass.GetRenderTarget(0).GetHandle());
+        ResourceDX12* currentDS = FindDxResource(renderPass.GetDepthStencil().GetHandle());
         if (currentBackBuffer == nullptr || currentDS == nullptr)
             return;
 
@@ -670,13 +684,21 @@ void RendererDX12::AddRenderPass(const RenderPass& renderPass)
 
 ResourceDX12* RendererDX12::FindDxResource(uint32 handle)
 {
-    if (m_depthStencil.Handle.Handle == handle)
+    if (m_depthStencil.Handle.GetHandle() == handle)
         return &m_depthStencil;
     for (auto& backBuffer : m_backBuffers)
     {
-        if (backBuffer.Handle.Handle == handle)
+        if (backBuffer.Handle.GetHandle() == handle)
             return &backBuffer;
     }
+    return nullptr;
+}
+
+const CD3DX12_SHADER_BYTECODE* RendererDX12::GetShaderBytecode(ShaderHandle handle) const
+{
+    auto it = std::find_if(m_shaders.cbegin(), m_shaders.cend(), [&handle](const ShaderDX12* s) { return s->GetHandle() == handle; });
+    if (it != m_shaders.cend() && (*it)->GetIsCompiled())
+        return &(*it)->GetBytecode();
     return nullptr;
 }
 

@@ -16,6 +16,7 @@
 #include "Render/DX12/Buffers/VertexBufferDX12.h"
 #include "Render/DX12/Buffers/IndexBufferDX12.h"
 #include "Render/DX12/Buffers/ResourceDX12.h"
+#include "Render/DX12/ShaderDX12.h"
 #include "Render/Texture/TextureDX12.h"
 #include "Render/RendererPublic.h"
 #include "Render/RenderPass/RenderPass.h"
@@ -56,6 +57,7 @@ private:
     std::array<std::vector<RenderPass>, FrameCount> m_renderPasses;
 
     ResourceDX12* FindDxResource(uint32 handle);
+    const CD3DX12_SHADER_BYTECODE* GetShaderBytecode(ShaderHandle handle) const;
 
     void GetHardwareAdapter(IDXGIFactory4* factory, IDXGIAdapter1** adapter);
     void WaitForGPU();
@@ -99,8 +101,9 @@ private:
     Microsoft::WRL::ComPtr<ID3D12RootSignature> m_rootSignature;
 
     Microsoft::WRL::ComPtr<ID3D12PipelineState> m_fallbackPSO;
-    Microsoft::WRL::ComPtr<ID3DBlob> m_vsFallbackByteCode;
-    Microsoft::WRL::ComPtr<ID3DBlob> m_psFallbackByteCode;
+    ShaderHandle m_vs;
+    ShaderHandle m_ps;
+    std::vector<ShaderDX12*> m_shaders;
 
     std::unique_ptr<UploadBuffer<TimeConstantBuffer>> m_timeBuffer;
     std::unique_ptr<UploadBuffer<PassBuffer>> m_passBuffer;
@@ -117,11 +120,11 @@ private:
 
 inline TextureHandle RendererDX12::GetCurrentBackBufferHandle() const
 {
-    return m_backBuffers[m_currentFrameIndex].Handle.Handle;
+    return m_backBuffers[m_currentFrameIndex].Handle.GetHandle();
 }
 
 inline TextureHandle RendererDX12::GetDepthStencilHandle() const
 {
-    return m_depthStencil.Handle.Handle;
+    return m_depthStencil.Handle.GetHandle();
 }
 }
