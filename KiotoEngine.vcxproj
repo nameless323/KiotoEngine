@@ -186,6 +186,7 @@
     <ClInclude Include="Sources\Internal\Math\Vector2.h" />
     <ClInclude Include="Sources\Internal\Math\Vector3.h" />
     <ClInclude Include="Sources\Internal\Math\Vector4.h" />
+    <ClInclude Include="Sources\Internal\Render\ConstantBuffer.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\Buffers\DefaultHeapBuffer.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\Buffers\EngineBuffers.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\Buffers\IndexBufferDX12.h" />
@@ -194,6 +195,7 @@
     <ClInclude Include="Sources\Internal\Render\DX12\Buffers\VertexBufferDX12.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\DXHelpers.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\RendererDX12.h" />
+    <ClInclude Include="Sources\Internal\Render\DX12\RenderPacket.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\ShaderDX12.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\VertexLayoutDX12.h" />
     <ClInclude Include="Sources\Internal\Render\Geometry\GeometryGenerator.h" />
@@ -232,6 +234,7 @@
     <ClCompile Include="Sources\Internal\Core\Timer\GlobalTimer.cpp" />
     <ClCompile Include="Sources\Internal\Core\WindowsApplication.cpp" />
     <ClCompile Include="Sources\Internal\AssetsSystem\AssetsSystem.cpp" />
+    <ClCompile Include="Sources\Internal\Render\ConstantBuffer.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\Buffers\DefaultHeapBuffer.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\Buffers\IndexBufferDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\Buffers\VertexBufferDX12.cpp" />
