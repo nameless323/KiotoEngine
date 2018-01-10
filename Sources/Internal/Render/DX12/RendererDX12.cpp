@@ -23,6 +23,7 @@
 #include "Render/Geometry/Mesh.h"
 #include "Render/VertexLayout.h"
 #include "Render/DX12/VertexLayoutDX12.h"
+#include "Render/DX12/Shader/ShaderPreprocessorDX12.h"
 
 #include "Component/CameraComponent.h"
 #include "Systems/CameraSystem.h"
@@ -183,6 +184,7 @@ void RendererDX12::LoadPipeline()
     ShaderHandle psHandle = ps->GetHandle();
 
     std::string shaderStr = AssetsSystem::ReadFileAsString(std::string(shaderPath.begin(), shaderPath.end()));
+    shaderStr = ShaderPreprocessorDX12::UnfoldIncludes(shaderStr);
     HRESULT hr = vs->Compile(shaderStr.c_str(), shaderStr.length() * sizeof(char), "vs", "vs_5_1", shaderFlags);
 
     if (!vs->GetIsCompiled())
@@ -223,9 +225,9 @@ void RendererDX12::LoadPipeline()
     texRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 
     CD3DX12_ROOT_PARAMETER1 rootParam[4];
-    rootParam[0].InitAsConstantBufferView(0);
-    rootParam[1].InitAsConstantBufferView(1);
-    rootParam[2].InitAsConstantBufferView(2);
+    rootParam[0].InitAsConstantBufferView(0, 1);
+    rootParam[1].InitAsConstantBufferView(1, 1);
+    rootParam[2].InitAsConstantBufferView(2, 1);
     rootParam[3].InitAsDescriptorTable(1, &texRange, D3D12_SHADER_VISIBILITY_PIXEL);
     auto staticSamplers = GetStaticSamplers();
     rootSignatureDesc.Init_1_1(4, rootParam, static_cast<UINT>(staticSamplers.size()), staticSamplers.data(), flags);

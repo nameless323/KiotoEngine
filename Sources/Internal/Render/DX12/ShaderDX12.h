@@ -49,7 +49,7 @@ inline bool ShaderDX12::operator!= (const ShaderDX12& other) const
 inline HRESULT ShaderDX12::Compile(LPCVOID shaderStr, SIZE_T size, LPCSTR sourceName, const D3D_SHADER_MACRO* defines, ID3DInclude* includes, LPCSTR entry, LPCSTR target, UINT flags1, UINT flags2)
 {
     m_compiled = false;
-    HRESULT hr = D3DCompile(shaderStr, size, sourceName, defines, includes, entry, target, flags1, flags2, &m_shaderBlob, &m_error);
+    HRESULT hr = D3DCompile(shaderStr, size, sourceName, defines, D3D_COMPILE_STANDARD_FILE_INCLUDE, entry, target, flags1, flags2, &m_shaderBlob, &m_error);
     if (SUCCEEDED(hr))
     {
         m_bytecode = CD3DX12_SHADER_BYTECODE(m_shaderBlob.Get());

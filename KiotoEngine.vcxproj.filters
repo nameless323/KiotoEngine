@@ -201,6 +201,9 @@
     <ClInclude Include="Sources\Internal\Render\ConstantBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Sources\Internal\Render\DX12\Shader\ShaderPreprocessorDX12.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -293,8 +296,5 @@
     <ClCompile Include="Sources\Internal\Render\ConstantBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="Assets\Shaders\Fallback.hlsl" />
   </ItemGroup>
 </Project>
