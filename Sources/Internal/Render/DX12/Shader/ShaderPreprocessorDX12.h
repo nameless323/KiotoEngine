@@ -14,8 +14,6 @@ class ShaderPreprocessorDX12
 public:
     static std::string UnfoldIncludes(std::string source)
     {
-
-        OutputDebugStringA(source.c_str());
         size_t includePos = source.find("#include", 0);
         size_t includeFin = source.find("\n", includePos);
         if (includePos != std::string::npos && includeFin != std::string::npos)
@@ -38,17 +36,16 @@ public:
                     break;
                 p += s[i];
             }
-            OutputDebugStringA(p.c_str());
             p.insert(0, "Shaders\\");
             std::wstring shaderPath = AssetsSystem::GetAssetFullPath(StrToWstr(p));
             bool iisExist = AssetsSystem::CheckIfFileExist(shaderPath);
             std::string incl = AssetsSystem::ReadFileAsString(std::string(shaderPath.begin(), shaderPath.end()));
-            OutputDebugStringA(incl.c_str());
-            std::string includePath = WstrToStr(shaderPath) + s;
+
+            source.insert(0, UnfoldIncludes(incl));
         }
         else
             return source;
-        OutputDebugStringA(source.c_str());
+
         return source;
     }
 
