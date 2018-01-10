@@ -21,6 +21,7 @@ ConstantBuffer::eReturnCode ConstantBuffer::Add(std::string& name, float32 data)
     Param* p = nullptr;
     if (Find(name, offset, p))
         return eReturnCode::AlreadyAdded;
+    m_dataSize4ByteElem++;
     m_params.push_back({ name, Vector4(data, 0.0f, 0.0f, 0.0f), eTypeName::v1 });
     m_regenerateMemLayout = true;
     return eReturnCode::Ok;
@@ -32,6 +33,7 @@ ConstantBuffer::eReturnCode ConstantBuffer::Add(std::string& name, const Vector2
     Param* p = nullptr;
     if (Find(name, offset, p))
         return eReturnCode::AlreadyAdded;
+    m_dataSize4ByteElem += 2;
     m_params.push_back({ name, Vector4(data.x, data.y, 0.0f, 0.0f), eTypeName::v2 });
     m_regenerateMemLayout = true;
     return eReturnCode::Ok;
@@ -43,6 +45,7 @@ ConstantBuffer::eReturnCode ConstantBuffer::Add(std::string& name, const Vector3
     Param* p = nullptr;
     if (Find(name, offset, p))
         return eReturnCode::AlreadyAdded;
+    m_dataSize4ByteElem += 3;
     m_params.push_back({ name, Vector4(data.x, data.y, data.z, 0.0f), eTypeName::v3 });
     m_regenerateMemLayout = true;
     return eReturnCode::Ok;
@@ -54,6 +57,7 @@ ConstantBuffer::eReturnCode ConstantBuffer::Add(std::string& name, const Vector4
     Param* p = nullptr;
     if (Find(name, offset, p))
         return eReturnCode::AlreadyAdded;
+    m_dataSize4ByteElem += 4;
     m_params.push_back({ name, data, eTypeName::v4 });
     m_regenerateMemLayout = true;
     return eReturnCode::Ok;
@@ -150,7 +154,34 @@ void ConstantBuffer::ComposeBufferData()
 
     m_regenerateMemLayout = false;
     SafeDeleteArray(m_memData);
-
+    m_dataSize = m_dataSize4ByteElem * sizeof(float32);
+    m_memData = new float32[m_dataSize4ByteElem];
+    float32* ptr = m_memData;
+    for (const auto& param : m_params)
+    {
+        if (param.Type == eTypeName::v1)
+        {
+            *ptr++ = param.Data.x;
+        }
+        else if (param.Type == eTypeName::v2)
+        {
+            *ptr++ = param.Data.x;
+            *ptr++ = param.Data.y;
+        }
+        else if (param.Type == eTypeName::v3)
+        {
+            *ptr++ = param.Data.x;
+            *ptr++ = param.Data.y;
+            *ptr++ = param.Data.z;
+        }
+        else if (param.Type == eTypeName::v4)
+        {
+            *ptr++ = param.Data.x;
+            *ptr++ = param.Data.y;
+            *ptr++ = param.Data.z;
+            *ptr++ = param.Data.w;
+        }
+    }
 }
 
 bool ConstantBuffer::Find(const std::string& name, uint32& offsetInData, Param* resParam)

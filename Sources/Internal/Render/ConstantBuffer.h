@@ -70,6 +70,7 @@ private:
 
     std::vector<Param> m_params;
     float32* m_memData = nullptr;
-    byte dataSize = 0;
+    uint32 m_dataSize = 0;
+    uint32 m_dataSize4ByteElem = 0;
 };
 }
