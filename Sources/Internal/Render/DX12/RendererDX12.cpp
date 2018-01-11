@@ -183,8 +183,10 @@ void RendererDX12::LoadPipeline()
     ShaderHandle vsHandle = vs->GetHandle();
     ShaderHandle psHandle = ps->GetHandle();
 
-    std::string shaderStr = AssetsSystem::ReadFileAsString(std::string(shaderPath.begin(), shaderPath.end()));
-    shaderStr = ShaderPreprocessorDX12::UnfoldIncludes(shaderStr);
+    ShaderPreprocessorDX12::ParseResult parseResult;
+    std::string shaderStr = ShaderPreprocessorDX12::ParseShader(WstrToStr(shaderPath)).output;
+
+    OutputDebugStringA(shaderStr.c_str());
     HRESULT hr = vs->Compile(shaderStr.c_str(), shaderStr.length() * sizeof(char), "vs", "vs_5_1", shaderFlags);
 
     if (!vs->GetIsCompiled())

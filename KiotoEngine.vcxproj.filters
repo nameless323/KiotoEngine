@@ -296,5 +296,8 @@
     <ClCompile Include="Sources\Internal\Render\ConstantBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Sources\Internal\Render\DX12\Shader\ShaderPreprocessorDX12.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

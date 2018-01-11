@@ -3,7 +3,11 @@
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
+#include "Include\tst3.hlsl"
 #include "Include\tst1.hlsl"
+#include "Include\tst2.hlsl"
+#include "Include\tst3.hlsl"
+#include "Include\tst3.hlsl"
 
 cbuffer cbEngineBuffer : register(b0, space1)
 {
