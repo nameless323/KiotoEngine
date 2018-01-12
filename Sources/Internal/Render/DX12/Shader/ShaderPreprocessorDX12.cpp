@@ -6,6 +6,7 @@
 #include "stdafx.h"
 
 #include "Render/DX12/Shader/ShaderPreprocessorDX12.h"
+#include "Render/VertexLayout.h"
 
 #include "AssetsSystem/AssetsSystem.h"
 
@@ -68,12 +69,174 @@ std::string UnfoldIncludes(std::string source, uint16 recursionDepth)
     return source;
 }
 
+bool IsEmptyChar(char c)
+{
+    return c == '\n' || c == ' ' || c == '\r\n';
+}
+
+uint8 CharToInt(char c)
+{
+    return c - '0';
+}
+
+bool TryParseSemantics(const std::string& source, size_t pos, eVertexSemantic& semantic, uint8& semanticIndex, uint8& semStringLen)
+{
+    if (source.substr(pos, 8) == "POSITION")
+    {
+        semantic = eVertexSemantic::Position;
+        if (isdigit(source[pos + 8]))
+        {
+            semanticIndex = CharToInt(source[pos + 8]);
+            semStringLen = 9;
+            return true;
+        }
+        semanticIndex = 0;
+        semStringLen = 8;
+        return true;
+    }
+    if (source.substr(pos, 6) == "NORMAL")
+    {
+        semantic = eVertexSemantic::Normal;
+        if (isdigit(source[pos + 6]))
+        {
+            semanticIndex = CharToInt(source[pos + 6]);
+            semStringLen = 7;
+            return true;
+        }
+        semanticIndex = 0;
+        semStringLen = 6;
+        return true;
+    }
+    if (source.substr(pos, 8) == "TEXCOORD")
+    {
+        semantic = eVertexSemantic::Texcoord;
+        if (isdigit(source[pos + 8]))
+        {
+            semanticIndex = CharToInt(source[pos + 8]);
+            semStringLen = 9;
+            return true;
+        }
+        semanticIndex = 0;
+        semStringLen = 8;
+        return true;
+    }
+    if (source.substr(pos, 5) == "COLOR")
+    {
+        semantic = eVertexSemantic::Color;
+        if (isdigit(source[pos + 5]))
+        {
+            semanticIndex = CharToInt(source[pos + 5]);
+            semStringLen = 6;
+            return true;
+        }
+        semanticIndex = 0;
+        semStringLen = 6;
+        return true;
+    }
+    if (source.substr(pos, 9) == "BITANGENT")
+    {
+        semantic = eVertexSemantic::Bitangent;
+        if (isdigit(source[pos + 9]))
+        {
+            semanticIndex = CharToInt(source[pos + 9]);
+            semStringLen = 10;
+            return true;
+        }
+        semanticIndex = 0;
+        semStringLen = 9;
+        return true;
+    }
+    if (source.substr(pos, 7) == "TANGENT")
+    {
+        semantic = eVertexSemantic::Tangent;
+        if (isdigit(source[pos + 7]))
+        {
+            semanticIndex = CharToInt(source[pos + 7]);
+            semStringLen = 8;
+            return true;
+        }
+        semanticIndex = 0;
+        semStringLen = 7;
+        return true;
+    }
+    return false;
+}
+
+VertexLayout GetVertexLayout(const std::string& source)
+{
+    static constexpr uint8 floatLen = 5;
+
+    VertexLayout res;
+    size_t structBegin = source.find("struct vIn", 0);
+    if (structBegin == std::string::npos)
+        throw "Input structure does not exist";
+    size_t closeBracetPos = structBegin;
+    for (; closeBracetPos < source.size() - 1; ++closeBracetPos)
+    {
+        if (source[closeBracetPos] == '}' && source[closeBracetPos + 1] == ';')
+            break;
+    }
+    for (size_t i = structBegin; i < closeBracetPos - 6; ++i)
+    {
+        eVertexDataFormat format;
+        eVertexSemantic semantic;
+        byte semanticIndex;
+        if (source.substr(i, 5) == "float")
+        {
+            bool typeFound = false;
+            if (IsEmptyChar(source[i + floatLen]))
+            {
+                format = eVertexDataFormat::R32;
+                typeFound = true;
+            }
+            else if (isdigit(source[i + floatLen]) && IsEmptyChar(source[i + floatLen + 1]))
+            {
+                uint8 dim = CharToInt(source[i + floatLen]);
+                if (dim == 2)
+                    format = eVertexDataFormat::R32_G32;
+                else if (dim == 3)
+                    format = eVertexDataFormat::R32_G32_B32;
+                else if (dim == 4)
+                    format = eVertexDataFormat::R32_G32_B32_A32;
+                else
+                    throw "wtf?";
+
+                typeFound = true;
+            }
+            if (typeFound)
+            {
+                bool foundSemStart = false;
+                for (size_t j = i + floatLen; j < closeBracetPos; ++j)
+                {
+                    if (source[j] == ':')
+                        foundSemStart = true;
+                    if (source[j] == ';')
+                    {
+                        if (!foundSemStart)
+                            throw "wtf?";
+                        break;
+                    }
+                    uint8 semStingLen = 0;
+                    if (foundSemStart && TryParseSemantics(source, j, semantic, semanticIndex, semStingLen))
+                    {
+                        res.AddElement(semantic, semanticIndex, format);
+                        i = j + semStingLen;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    return res;
+}
+
 ParseResult ParseShader(const std::string& path)
 {
     ParseResult res;
     m_preprocessedHeaders.clear();
     std::string shaderStr = AssetsSystem::ReadFileAsString(path);
     shaderStr = ShaderPreprocessorDX12::UnfoldIncludes(shaderStr, 0);
+    VertexLayout vl = GetVertexLayout(shaderStr);
     res.output = shaderStr;
     return res;
 }
