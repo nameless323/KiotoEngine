@@ -20,7 +20,10 @@ static constexpr uint16 m_maxDepth = 128;
 std::string UnfoldIncludes(std::string source, uint16 recursionDepth)
 {
     if (recursionDepth > m_maxDepth)
+    {
+        throw "Too deep shader includes.";
         return "";
+    }
     size_t includePos = source.find("#include", 0);
     size_t includeFin = source.find("\n", includePos);
     while (includePos != std::string::npos)
@@ -53,7 +56,7 @@ std::string UnfoldIncludes(std::string source, uint16 recursionDepth)
                 std::wstring shaderPath = AssetsSystem::GetAssetFullPath(StrToWstr(relativeIncludePath));
                 bool isExist = AssetsSystem::CheckIfFileExist(shaderPath);
                 std::string incl = AssetsSystem::ReadFileAsString(std::string(shaderPath.begin(), shaderPath.end()));
-                source.insert(0, UnfoldIncludes(incl, recursionDepth + 1));
+                source.insert(includePos, UnfoldIncludes(incl, recursionDepth + 1));
                 m_preprocessedHeaders.push_back(relativeIncludePath);
             }
         }

@@ -1,4 +1,5 @@
-float sqrtMyOlolo(float a)
+
+float tst3(float a)
 {
     return sqrt(a);
 }
