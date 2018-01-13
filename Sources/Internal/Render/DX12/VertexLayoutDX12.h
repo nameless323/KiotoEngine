@@ -23,11 +23,11 @@ std::map<eVertexSemantic, std::string> SemanticNames =
     { eVertexSemantic::Bitangent, "BITANGENT" }
 };
 
-std::map<eVertexDataFormat, DXGI_FORMAT> VertexDataFormats =
+std::map<eDataFormat, DXGI_FORMAT> VertexDataFormats =
 {
-    { eVertexDataFormat::R32_G32_B32_A32, DXGI_FORMAT_R32G32B32A32_FLOAT },
-    { eVertexDataFormat::R32_G32_B32, DXGI_FORMAT_R32G32B32_FLOAT },
-    { eVertexDataFormat::R32_G32, DXGI_FORMAT_R32G32_FLOAT },
-    { eVertexDataFormat::R32, DXGI_FORMAT_R32_FLOAT}
+    { eDataFormat::R32_G32_B32_A32, DXGI_FORMAT_R32G32B32A32_FLOAT },
+    { eDataFormat::R32_G32_B32, DXGI_FORMAT_R32G32B32_FLOAT },
+    { eDataFormat::R32_G32, DXGI_FORMAT_R32G32_FLOAT },
+    { eDataFormat::R32, DXGI_FORMAT_R32_FLOAT}
 };
 }

@@ -23,7 +23,7 @@
 #include "Render/Geometry/Mesh.h"
 #include "Render/VertexLayout.h"
 #include "Render/DX12/VertexLayoutDX12.h"
-#include "Render/DX12/Shader/ShaderPreprocessorDX12.h"
+#include "Render/DX12/Shader/ShaderParser.h"
 
 #include "Component/CameraComponent.h"
 #include "Systems/CameraSystem.h"
@@ -183,8 +183,8 @@ void RendererDX12::LoadPipeline()
     ShaderHandle vsHandle = vs->GetHandle();
     ShaderHandle psHandle = ps->GetHandle();
 
-    ShaderPreprocessorDX12::ParseResult parseResult;
-    std::string shaderStr = ShaderPreprocessorDX12::ParseShader(WstrToStr(shaderPath)).output;
+    ShaderParser::ParseResult parseResult;
+    std::string shaderStr = ShaderParser::ParseShader(WstrToStr(shaderPath)).output;
 
     OutputDebugStringA(shaderStr.c_str());
     HRESULT hr = vs->Compile(shaderStr.c_str(), shaderStr.length() * sizeof(char), "vs", "vs_5_1", shaderFlags);

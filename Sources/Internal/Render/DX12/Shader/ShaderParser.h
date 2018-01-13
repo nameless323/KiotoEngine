@@ -13,13 +13,13 @@
 
 namespace Kioto::Renderer
 {
-namespace ShaderPreprocessorDX12
+namespace ShaderParser
 {
 struct ParseResult
 {
     std::string output;
     VertexLayout vertexLayout;
-    std::vector<ConstantBuffer> constantBuffer;
+    std::vector<ConstantBuffer> constantBuffers;
 };
 
 ParseResult ParseShader(const std::string& path);

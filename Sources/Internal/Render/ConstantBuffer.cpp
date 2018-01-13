@@ -11,7 +11,7 @@ namespace Kioto::Renderer
 {
 
 ConstantBuffer::ConstantBuffer(uint16 index, uint16 space)
-    : m_index(index), m_space(space)
+    : m_index(index), m_space(space), m_key(m_index | m_space << 16)
 {
 }
 

@@ -11,12 +11,12 @@
 
 namespace Kioto::Renderer
 {
-static const std::map<const eVertexDataFormat, uint16> formats
+static const std::map<const eDataFormat, uint16> formats
 {
-    { eVertexDataFormat::R32_G32_B32_A32, 16},
-    { eVertexDataFormat::R32_G32_B32, 12 },
-    { eVertexDataFormat::R32_G32, 8 },
-    { eVertexDataFormat::R32, 4 }
+    { eDataFormat::R32_G32_B32_A32, 16},
+    { eDataFormat::R32_G32_B32, 12 },
+    { eDataFormat::R32_G32, 8 },
+    { eDataFormat::R32, 4 }
 };
 
 VertexLayout::VertexLayout(const VertexLayout& other)
@@ -40,7 +40,7 @@ VertexLayout& VertexLayout::operator=(VertexLayout other)
     return *this;
 }
 
-void VertexLayout::AddElement(eVertexSemantic semantic, uint8 semanticIndex, eVertexDataFormat format)
+void VertexLayout::AddElement(eVertexSemantic semantic, uint8 semanticIndex, eDataFormat format)
 {
     m_verticesDesc.emplace_back(semantic, semanticIndex, format, m_totalOffset);
     auto it = formats.find(format);

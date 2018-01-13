@@ -131,22 +131,22 @@ void Mesh::PrepareForUpload()
     if (!Position.empty())
     {
         m_dataStride += sizeof(Vector3);
-        m_vertexLayout.AddElement(Renderer::eVertexSemantic::Position, 0, Renderer::eVertexDataFormat::R32_G32_B32);
+        m_vertexLayout.AddElement(Renderer::eVertexSemantic::Position, 0, Renderer::eDataFormat::R32_G32_B32);
     }
     if (!Normal.empty())
     {
         m_dataStride += sizeof(Vector3);
-        m_vertexLayout.AddElement(Renderer::eVertexSemantic::Normal, 0, Renderer::eVertexDataFormat::R32_G32_B32);
+        m_vertexLayout.AddElement(Renderer::eVertexSemantic::Normal, 0, Renderer::eDataFormat::R32_G32_B32);
     }
     if (!Color.empty())
     {
         m_dataStride += sizeof(Vector4);
-        m_vertexLayout.AddElement(Renderer::eVertexSemantic::Color, 0, Renderer::eVertexDataFormat::R32_G32_B32_A32);
+        m_vertexLayout.AddElement(Renderer::eVertexSemantic::Color, 0, Renderer::eDataFormat::R32_G32_B32_A32);
     }
     if (!UV0.empty())
     {
         m_dataStride += sizeof(Vector2);
-        m_vertexLayout.AddElement(Renderer::eVertexSemantic::Texcoord, 0, Renderer::eVertexDataFormat::R32_G32);
+        m_vertexLayout.AddElement(Renderer::eVertexSemantic::Texcoord, 0, Renderer::eDataFormat::R32_G32);
     }
     byte* currDataPtr = m_data;
     for (uint32 i = 0; i < pSize; ++i)

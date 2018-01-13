@@ -201,7 +201,7 @@
     <ClInclude Include="Sources\Internal\Render\ConstantBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\Internal\Render\DX12\Shader\ShaderPreprocessorDX12.h">
+    <ClInclude Include="Sources\Internal\Render\DX12\Shader\ShaderParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -296,7 +296,7 @@
     <ClCompile Include="Sources\Internal\Render\ConstantBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\Internal\Render\DX12\Shader\ShaderPreprocessorDX12.cpp">
+    <ClCompile Include="Sources\Internal\Render\DX12\Shader\ShaderParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

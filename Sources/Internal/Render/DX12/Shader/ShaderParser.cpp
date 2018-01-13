@@ -5,13 +5,13 @@
 
 #include "stdafx.h"
 
-#include "Render/DX12/Shader/ShaderPreprocessorDX12.h"
+#include "Render/DX12/Shader/ShaderParser.h"
 
 #include "AssetsSystem/AssetsSystem.h"
 
 namespace Kioto::Renderer
 {
-namespace ShaderPreprocessorDX12
+namespace ShaderParser
 {
 
 std::vector<std::string> m_preprocessedHeaders;
@@ -210,7 +210,7 @@ VertexLayout GetVertexLayout(const std::string& source)
     }
     for (size_t i = structBegin; i < closeBracetPos - 6; ++i)
     {
-        eVertexDataFormat format;
+        eDataFormat format;
         eVertexSemantic semantic;
         byte semanticIndex;
         if (source.substr(i, 5) == "float")
@@ -218,23 +218,24 @@ VertexLayout GetVertexLayout(const std::string& source)
             bool typeFound = false;
             if (IsEmptyChar(source[i + m_floatLen]))
             {
-                format = eVertexDataFormat::R32;
+                format = eDataFormat::R32;
                 typeFound = true;
             }
             else if (isdigit(source[i + m_floatLen]) && IsEmptyChar(source[i + m_floatLen + 1]))
             {
                 uint8 dim = CharToInt(source[i + m_floatLen]);
                 if (dim == 2)
-                    format = eVertexDataFormat::R32_G32;
+                    format = eDataFormat::R32_G32;
                 else if (dim == 3)
-                    format = eVertexDataFormat::R32_G32_B32;
+                    format = eDataFormat::R32_G32_B32;
                 else if (dim == 4)
-                    format = eVertexDataFormat::R32_G32_B32_A32;
+                    format = eDataFormat::R32_G32_B32_A32;
                 else
                     throw "wtf?";
 
                 typeFound = true;
             }
+
             if (typeFound)
             {
                 bool foundSemStart = false;
@@ -295,9 +296,9 @@ bool TryParseConstantBufferIndex(const std::string& source, size_t pos, size_t b
     return false;
 }
 
-bool TryParseParams(const std::string& source, size_t start, size_t end, ConstantBuffer& buffer)
+void TryParseParams(const std::string& source, size_t start, size_t end, ConstantBuffer& buffer)
 {
-    eVertexDataFormat format;
+    eDataFormat format;
     for (size_t i = start; i < end; ++i)
     {
         bool typeFound = false;
@@ -305,19 +306,33 @@ bool TryParseParams(const std::string& source, size_t start, size_t end, Constan
         {
             if (!typeFound && IsEmptyChar(source[i + m_floatLen]))
             {
-                format = eVertexDataFormat::R32;
+                format = eDataFormat::R32;
                 i += m_floatLen;
+                typeFound = true;
+            }
+            else if (!typeFound && source[i + m_floatLen] == '3' && source[i + m_floatLen + 1] == 'x' && source[i + m_floatLen + 2] == '3' && IsEmptyChar(source[i + m_floatLen + 3]))
+            {
+                format = eDataFormat::MATRIX3x3;
+
+                i += m_floatLen + 3;
+                typeFound = true;
+            }
+            else if (!typeFound && source[i + m_floatLen] == '4' && source[i + m_floatLen + 1] == 'x' && source[i + m_floatLen + 2] == '4' && IsEmptyChar(source[i + m_floatLen + 3]))
+            {
+                format = eDataFormat::MATRIX4x4;
+
+                i += m_floatLen + 3;
                 typeFound = true;
             }
             else if (!typeFound && isdigit(source[i + m_floatLen]) && IsEmptyChar(source[i + m_floatLen + 1]))
             {
                 uint8 dim = CharToInt(source[i + m_floatLen]);
                 if (dim == 2)
-                    format = eVertexDataFormat::R32_G32;
+                    format = eDataFormat::R32_G32;
                 else if (dim == 3)
-                    format = eVertexDataFormat::R32_G32_B32;
+                    format = eDataFormat::R32_G32_B32;
                 else if (dim == 4)
-                    format = eVertexDataFormat::R32_G32_B32_A32;
+                    format = eDataFormat::R32_G32_B32_A32;
                 else
                     throw "wtf?";
                 i += m_floatLen + 1;
@@ -345,18 +360,24 @@ bool TryParseParams(const std::string& source, size_t start, size_t end, Constan
             if (!startComponseName)
                 throw "wtf";
 
-            if (format == eVertexDataFormat::R32)
+            if (format == eDataFormat::R32)
                 buffer.Add(name, 0);
-            else if (format == eVertexDataFormat::R32_G32)
+            else if (format == eDataFormat::R32_G32)
                 buffer.Add(name, Vector2());
-            else if (format == eVertexDataFormat::R32_G32_B32)
+            else if (format == eDataFormat::R32_G32_B32)
                 buffer.Add(name, Vector3());
-            else if (format == eVertexDataFormat::R32_G32_B32_A32)
+            else if (format == eDataFormat::R32_G32_B32_A32)
                 buffer.Add(name, Vector4());
+            else if (format == eDataFormat::MATRIX3x3)
+                buffer.Add(name, Vector4());
+            else if (format == eDataFormat::MATRIX4x4)
+                buffer.Add(name, Vector4());
+            else
+                throw "wtf";
+
             i = opEnd;
         }
     }
-    return true;
 }
 
 std::vector<ConstantBuffer> GetConstantBuffers(const std::string& source)
@@ -409,7 +430,7 @@ ParseResult ParseShader(const std::string& path)
     TrimMultilineComments(shaderStr);
     TrimLineComments(shaderStr);
     res.vertexLayout = GetVertexLayout(shaderStr);
-    res.constantBuffer = GetConstantBuffers(shaderStr);
+    res.constantBuffers = GetConstantBuffers(shaderStr);
     res.output = shaderStr;
     return res;
 }
