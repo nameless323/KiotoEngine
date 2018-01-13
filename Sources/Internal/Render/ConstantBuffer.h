@@ -26,8 +26,9 @@ public:
         TypesDontMatch
     };
 
+    ConstantBuffer() {}
     ConstantBuffer(uint16 index, uint16 space);
-    ConstantBuffer(const ConstantBuffer&) = delete;
+    ConstantBuffer(const ConstantBuffer&) {} // [a_vorontsov] TODO
     ~ConstantBuffer();
 
     ConstantBuffer& operator= (const ConstantBuffer&) = delete;
@@ -46,6 +47,7 @@ public:
     void ComposeBufferData();
 
 private:
+
     enum class eTypeName : byte
     {
         v1 = 1,

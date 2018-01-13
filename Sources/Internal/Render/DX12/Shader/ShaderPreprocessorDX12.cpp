@@ -6,7 +6,6 @@
 #include "stdafx.h"
 
 #include "Render/DX12/Shader/ShaderPreprocessorDX12.h"
-#include "Render/VertexLayout.h"
 
 #include "AssetsSystem/AssetsSystem.h"
 
@@ -17,8 +16,9 @@ namespace ShaderPreprocessorDX12
 
 std::vector<std::string> m_preprocessedHeaders;
 static constexpr uint16 m_maxDepth = 128;
+static constexpr uint8 m_floatLen = 5;
 
-std::string UnfoldIncludes(std::string source, uint16 recursionDepth)
+std::string UnfoldIncludes(std::string& source, uint16 recursionDepth) // remove return
 {
     if (recursionDepth > m_maxDepth)
     {
@@ -66,6 +66,24 @@ std::string UnfoldIncludes(std::string source, uint16 recursionDepth)
         includeFin = source.find("\n", includePos);
     }
 
+    return source;
+}
+
+std::string TrimLineComments(std::string& source)
+{
+    size_t pos = source.find("//");
+    while (pos != std::string::npos)
+    {
+        for (size_t i = pos; i < source.length(); ++i)
+        {
+            if (source[i] == '\n')
+            {
+                source.erase(pos, i - pos);
+                break;
+            }
+        }
+        pos = source.find("//", pos);
+    }
     return source;
 }
 
@@ -164,8 +182,6 @@ bool TryParseSemantics(const std::string& source, size_t pos, eVertexSemantic& s
 
 VertexLayout GetVertexLayout(const std::string& source)
 {
-    static constexpr uint8 floatLen = 5;
-
     VertexLayout res;
     size_t structBegin = source.find("struct vIn", 0);
     if (structBegin == std::string::npos)
@@ -184,14 +200,14 @@ VertexLayout GetVertexLayout(const std::string& source)
         if (source.substr(i, 5) == "float")
         {
             bool typeFound = false;
-            if (IsEmptyChar(source[i + floatLen]))
+            if (IsEmptyChar(source[i + m_floatLen]))
             {
                 format = eVertexDataFormat::R32;
                 typeFound = true;
             }
-            else if (isdigit(source[i + floatLen]) && IsEmptyChar(source[i + floatLen + 1]))
+            else if (isdigit(source[i + m_floatLen]) && IsEmptyChar(source[i + m_floatLen + 1]))
             {
-                uint8 dim = CharToInt(source[i + floatLen]);
+                uint8 dim = CharToInt(source[i + m_floatLen]);
                 if (dim == 2)
                     format = eVertexDataFormat::R32_G32;
                 else if (dim == 3)
@@ -206,7 +222,7 @@ VertexLayout GetVertexLayout(const std::string& source)
             if (typeFound)
             {
                 bool foundSemStart = false;
-                for (size_t j = i + floatLen; j < closeBracetPos; ++j)
+                for (size_t j = i + m_floatLen; j < closeBracetPos; ++j)
                 {
                     if (source[j] == ':')
                         foundSemStart = true;
@@ -230,13 +246,143 @@ VertexLayout GetVertexLayout(const std::string& source)
     return res;
 }
 
+bool TryParseConstantBufferIndex(const std::string& source, size_t pos, size_t bound, uint16& index, uint16& space)
+{
+    if (source.substr(pos, 8) == "register")
+    {
+        space = 0;
+        bool indexFound = false;
+        size_t p = pos + 8;
+        for (; p < bound - 1; ++p)
+        {
+            if (!indexFound && source[p] == 'b' && isdigit(source[p + 1]))
+            {
+                index = CharToInt(source[p + 1]);
+                indexFound = true;
+                break;
+            }
+        }
+        for (; p < bound - 5; ++p)
+        {
+            if (source.substr(p, 5) == "space" && isdigit(source[p + 5]))
+            {
+                space = CharToInt(source[p + 5]);
+                return true;
+            }
+        }
+
+        if (!indexFound)
+            throw "wtf";
+        else
+            return true;
+    }
+    return false;
+}
+
+bool TryParseParams(const std::string& source, size_t start, size_t end)
+{
+    eVertexDataFormat format;
+    for (size_t i = start; i < end; ++i)
+    {
+        bool typeFound = false;
+        if (source.substr(i, m_floatLen) == "float")
+        {
+            if (!typeFound && IsEmptyChar(source[i + m_floatLen]))
+            {
+                format = eVertexDataFormat::R32;
+                i += m_floatLen;
+                typeFound = true;
+            }
+            else if (!typeFound && isdigit(source[i + m_floatLen]) && IsEmptyChar(source[i + m_floatLen + 1]))
+            {
+                uint8 dim = CharToInt(source[i + m_floatLen]);
+                if (dim == 2)
+                    format = eVertexDataFormat::R32_G32;
+                else if (dim == 3)
+                    format = eVertexDataFormat::R32_G32_B32;
+                else if (dim == 4)
+                    format = eVertexDataFormat::R32_G32_B32_A32;
+                else
+                    throw "wtf?";
+                i += m_floatLen + 1;
+
+                typeFound = true;
+            }
+        }
+        if (typeFound)
+        {
+            size_t opEnd = source.find(";", i);
+            if (opEnd == std::string::npos && opEnd > end)
+                throw "wtf";
+            std::string name;
+            bool startComponseName = false;
+            for (; i < opEnd; ++i)
+            {
+                if (!IsEmptyChar(source[i]))
+                {
+                    startComponseName = true;
+                    name += source[i];
+                }
+                else if (startComponseName == true)
+                    break;
+            }
+            i = opEnd;
+        }
+    }
+    return true;
+}
+
+std::vector<ConstantBuffer> GetConstantBuffers(const std::string& source)
+{
+    size_t cbStart = source.find("cbuffer ", 0);
+    std::vector<ConstantBuffer> res;
+    res.reserve(8);
+    while (cbStart != std::string::npos)
+    {
+        size_t closedBPos = 0;
+        if (cbStart == 0 || IsEmptyChar(source[cbStart - 1]))
+        {
+            uint16 index = 0;
+            uint16 space = 0;
+            size_t openBPos = source.find("{", cbStart + 6);
+            closedBPos = source.find("}", cbStart + 7);
+            if (openBPos == std::string::npos || closedBPos == std::string::npos || closedBPos < openBPos)
+                throw "wtf";
+            bool found = false;
+            bool indexAcqired = false;
+            for (size_t pos = cbStart + 6; pos < openBPos; ++pos)
+            {
+                if (source[pos] == ':')
+                {
+                    found = true;
+                    continue;
+                }
+                if (found && TryParseConstantBufferIndex(source, pos, openBPos, index, space))
+                {
+                    indexAcqired = true;
+                    break;
+                }
+            }
+            if (!found || !indexAcqired)
+                throw "wtf";
+
+            TryParseParams(source, openBPos, closedBPos);
+        }
+        cbStart = source.find("cbuffer ", closedBPos);
+    }
+    return res;
+}
+
 ParseResult ParseShader(const std::string& path)
 {
     ParseResult res;
     m_preprocessedHeaders.clear();
     std::string shaderStr = AssetsSystem::ReadFileAsString(path);
-    shaderStr = ShaderPreprocessorDX12::UnfoldIncludes(shaderStr, 0);
-    VertexLayout vl = GetVertexLayout(shaderStr);
+    shaderStr = UnfoldIncludes(shaderStr, 0);
+    shaderStr = TrimLineComments(shaderStr);
+    OutputDebugStringA(shaderStr.c_str());
+    res.vertexLayout = GetVertexLayout(shaderStr);
+    GetConstantBuffers(shaderStr);
     res.output = shaderStr;
     return res;
 }
