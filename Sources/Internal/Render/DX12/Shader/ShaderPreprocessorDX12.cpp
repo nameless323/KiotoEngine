@@ -74,7 +74,8 @@ std::string TrimLineComments(std::string& source)
     size_t pos = source.find("//");
     while (pos != std::string::npos)
     {
-        for (size_t i = pos; i < source.length(); ++i)
+        size_t i = pos;
+        for (; i < source.length(); ++i)
         {
             if (source[i] == '\n')
             {
@@ -82,6 +83,8 @@ std::string TrimLineComments(std::string& source)
                 break;
             }
         }
+        if (i == source.length())
+            source.erase(pos, i - pos);
         pos = source.find("//", pos);
     }
     return source;
