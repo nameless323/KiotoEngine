@@ -18,7 +18,7 @@ std::vector<std::string> m_preprocessedHeaders;
 static constexpr uint16 m_maxDepth = 128;
 static constexpr uint8 m_floatLen = 5;
 
-std::string UnfoldIncludes(std::string& source, uint16 recursionDepth) // remove return
+std::string UnfoldIncludes(std::string& source, uint16 recursionDepth)
 {
     if (recursionDepth > m_maxDepth)
     {
@@ -69,7 +69,7 @@ std::string UnfoldIncludes(std::string& source, uint16 recursionDepth) // remove
     return source;
 }
 
-std::string TrimLineComments(std::string& source)
+void TrimLineComments(std::string& source)
 {
     size_t pos = source.find("//");
     while (pos != std::string::npos)
@@ -87,7 +87,20 @@ std::string TrimLineComments(std::string& source)
             source.erase(pos, i - pos);
         pos = source.find("//", pos);
     }
-    return source;
+}
+
+void TrimMultilineComments(std::string& source)
+{
+    size_t open = source.find("/*");
+    size_t close = source.find("*/");
+    while (open != std::string::npos || close != std::string::npos)
+    {
+        if (close < open)
+            return;
+        source.erase(open, close + 2 - open);
+        open = source.find("/*", open);
+        close = source.find("*/", open);
+    }
 }
 
 bool IsEmptyChar(char c)
@@ -382,7 +395,8 @@ ParseResult ParseShader(const std::string& path)
     m_preprocessedHeaders.clear();
     std::string shaderStr = AssetsSystem::ReadFileAsString(path);
     shaderStr = UnfoldIncludes(shaderStr, 0);
-    shaderStr = TrimLineComments(shaderStr);
+    TrimMultilineComments(shaderStr);
+    TrimLineComments(shaderStr);
     OutputDebugStringA(shaderStr.c_str());
     res.vertexLayout = GetVertexLayout(shaderStr);
     GetConstantBuffers(shaderStr);
