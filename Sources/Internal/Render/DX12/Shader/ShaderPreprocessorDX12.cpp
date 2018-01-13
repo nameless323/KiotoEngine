@@ -295,7 +295,7 @@ bool TryParseConstantBufferIndex(const std::string& source, size_t pos, size_t b
     return false;
 }
 
-bool TryParseParams(const std::string& source, size_t start, size_t end)
+bool TryParseParams(const std::string& source, size_t start, size_t end, ConstantBuffer& buffer)
 {
     eVertexDataFormat format;
     for (size_t i = start; i < end; ++i)
@@ -342,6 +342,17 @@ bool TryParseParams(const std::string& source, size_t start, size_t end)
                 else if (startComponseName == true)
                     break;
             }
+            if (!startComponseName)
+                throw "wtf";
+
+            if (format == eVertexDataFormat::R32)
+                buffer.Add(name, 0);
+            else if (format == eVertexDataFormat::R32_G32)
+                buffer.Add(name, Vector2());
+            else if (format == eVertexDataFormat::R32_G32_B32)
+                buffer.Add(name, Vector3());
+            else if (format == eVertexDataFormat::R32_G32_B32_A32)
+                buffer.Add(name, Vector4());
             i = opEnd;
         }
     }
@@ -381,8 +392,8 @@ std::vector<ConstantBuffer> GetConstantBuffers(const std::string& source)
             }
             if (!found || !indexAcqired)
                 throw "wtf";
-
-            TryParseParams(source, openBPos, closedBPos);
+            res.emplace_back(index, space);
+            TryParseParams(source, openBPos, closedBPos, res.back());
         }
         cbStart = source.find("cbuffer ", closedBPos);
     }
@@ -397,9 +408,8 @@ ParseResult ParseShader(const std::string& path)
     shaderStr = UnfoldIncludes(shaderStr, 0);
     TrimMultilineComments(shaderStr);
     TrimLineComments(shaderStr);
-    OutputDebugStringA(shaderStr.c_str());
     res.vertexLayout = GetVertexLayout(shaderStr);
-    GetConstantBuffers(shaderStr);
+    res.constantBuffer = GetConstantBuffers(shaderStr);
     res.output = shaderStr;
     return res;
 }
