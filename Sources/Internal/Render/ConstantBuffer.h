@@ -10,8 +10,11 @@
 #include "Math/Vector2.h"
 #include "Math/Vector3.h"
 #include "Math/Vector4.h"
+#include "Math/Matrix3.h"
+#include "Math/Matrix4.h"
 
 #include <vector>
+#include <variant>
 
 namespace Kioto::Renderer
 {
@@ -37,12 +40,15 @@ public:
     eReturnCode Add(std::string& name, const Vector2& data);
     eReturnCode Add(std::string& name, const Vector3& data);
     eReturnCode Add(std::string& name, const Vector4& data);
-
+    eReturnCode Add(std::string& name, const Matrix3& data);
+    eReturnCode Add(std::string& name, const Matrix4& data);
 
     eReturnCode Set(std::string& name, float32 data);
     eReturnCode Set(std::string& name, const Vector2& data);
     eReturnCode Set(std::string& name, const Vector3& data);
     eReturnCode Set(std::string& name, const Vector4& data);
+    eReturnCode Set(std::string& name, const Matrix3& data);
+    eReturnCode Set(std::string& name, const Matrix4& data);
 
     void ComposeBufferData();
 
@@ -53,13 +59,15 @@ private:
         v1 = 1,
         v2 = 2,
         v3 = 3,
-        v4 = 4
+        v4 = 4,
+        m3 = 9,
+        m4 = 16
     };
     struct Param
     {
         std::string name;
-        Vector4 Data;
         eTypeName Type;
+        std::variant<float32, Vector2, Vector3, Vector4, Matrix3, Matrix4> Data;
     };
 
     bool Find(const std::string& name, uint32& offsetInData, Param* resParam);

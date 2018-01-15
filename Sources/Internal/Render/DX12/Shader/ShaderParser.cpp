@@ -5,6 +5,11 @@
 
 #include "stdafx.h"
 
+#include "Math/Vector2.h"
+#include "Math/Vector3.h"
+#include "Math/Vector4.h"
+#include "Math/Matrix3.h"
+#include "Math/Matrix4.h"
 #include "Render/DX12/Shader/ShaderParser.h"
 
 #include "AssetsSystem/AssetsSystem.h"
@@ -369,12 +374,11 @@ void TryParseParams(const std::string& source, size_t start, size_t end, Constan
             else if (format == eDataFormat::R32_G32_B32_A32)
                 buffer.Add(name, Vector4());
             else if (format == eDataFormat::MATRIX3x3)
-                buffer.Add(name, Vector4());
+                buffer.Add(name, Matrix3());
             else if (format == eDataFormat::MATRIX4x4)
-                buffer.Add(name, Vector4());
+                buffer.Add(name, Matrix4());
             else
                 throw "wtf";
-
             i = opEnd;
         }
     }

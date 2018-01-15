@@ -18,11 +18,16 @@ ConstantBuffer::ConstantBuffer(uint16 index, uint16 space)
 ConstantBuffer::eReturnCode ConstantBuffer::Add(std::string& name, float32 data)
 {
     uint32 offset = 0;
-    Param* p = nullptr;
-    if (Find(name, offset, p))
+    Param* pptr = nullptr;
+    if (Find(name, offset, pptr))
         return eReturnCode::AlreadyAdded;
     m_dataSize4ByteElem++;
-    m_params.push_back({ name, Vector4(data, 0.0f, 0.0f, 0.0f), eTypeName::v1 });
+
+    Param p;
+    p.name = name;
+    p.Type = eTypeName::v1;
+    p.Data = data;
+    m_params.push_back(std::move(p));
     m_regenerateMemLayout = true;
     return eReturnCode::Ok;
 }
@@ -30,11 +35,16 @@ ConstantBuffer::eReturnCode ConstantBuffer::Add(std::string& name, float32 data)
 ConstantBuffer::eReturnCode ConstantBuffer::Add(std::string& name, const Vector2& data)
 {
     uint32 offset = 0;
-    Param* p = nullptr;
-    if (Find(name, offset, p))
+    Param* pptr = nullptr;
+    if (Find(name, offset, pptr))
         return eReturnCode::AlreadyAdded;
     m_dataSize4ByteElem += 2;
-    m_params.push_back({ name, Vector4(data.x, data.y, 0.0f, 0.0f), eTypeName::v2 });
+
+    Param p;
+    p.name = name;
+    p.Type = eTypeName::v2;
+    p.Data = data;
+    m_params.push_back(std::move(p));
     m_regenerateMemLayout = true;
     return eReturnCode::Ok;
 }
@@ -42,11 +52,16 @@ ConstantBuffer::eReturnCode ConstantBuffer::Add(std::string& name, const Vector2
 ConstantBuffer::eReturnCode ConstantBuffer::Add(std::string& name, const Vector3& data)
 {
     uint32 offset = 0;
-    Param* p = nullptr;
-    if (Find(name, offset, p))
+    Param* pptr = nullptr;
+    if (Find(name, offset, pptr))
         return eReturnCode::AlreadyAdded;
     m_dataSize4ByteElem += 3;
-    m_params.push_back({ name, Vector4(data.x, data.y, data.z, 0.0f), eTypeName::v3 });
+
+    Param p;
+    p.name = name;
+    p.Type = eTypeName::v3;
+    p.Data = data;
+    m_params.push_back(std::move(p));
     m_regenerateMemLayout = true;
     return eReturnCode::Ok;
 }
@@ -54,11 +69,50 @@ ConstantBuffer::eReturnCode ConstantBuffer::Add(std::string& name, const Vector3
 ConstantBuffer::eReturnCode ConstantBuffer::Add(std::string& name, const Vector4& data)
 {
     uint32 offset = 0;
-    Param* p = nullptr;
-    if (Find(name, offset, p))
+    Param* pptr = nullptr;
+    if (Find(name, offset, pptr))
         return eReturnCode::AlreadyAdded;
     m_dataSize4ByteElem += 4;
-    m_params.push_back({ name, data, eTypeName::v4 });
+
+    Param p;
+    p.name = name;
+    p.Type = eTypeName::v3;
+    p.Data = data;
+    m_params.push_back(std::move(p));
+    m_regenerateMemLayout = true;
+    return eReturnCode::Ok;
+}
+
+ConstantBuffer::eReturnCode ConstantBuffer::Add(std::string& name, const Matrix3& data)
+{
+    uint32 offset = 0;
+    Param* pptr = nullptr;
+    if (Find(name, offset, pptr))
+        return eReturnCode::AlreadyAdded;
+    m_dataSize4ByteElem += 9;
+
+    Param p;
+    p.name = name;
+    p.Type = eTypeName::m3;
+    p.Data = data;
+    m_params.push_back(std::move(p));
+    m_regenerateMemLayout = true;
+    return eReturnCode::Ok;
+}
+
+ConstantBuffer::eReturnCode ConstantBuffer::Add(std::string& name, const Matrix4& data)
+{
+    uint32 offset = 0;
+    Param* pptr = nullptr;
+    if (Find(name, offset, pptr))
+        return eReturnCode::AlreadyAdded;
+    m_dataSize4ByteElem += 16;
+
+    Param p;
+    p.name = name;
+    p.Type = eTypeName::m4;
+    p.Data = data;
+    m_params.push_back(std::move(p));
     m_regenerateMemLayout = true;
     return eReturnCode::Ok;
 }
@@ -71,7 +125,7 @@ ConstantBuffer::eReturnCode ConstantBuffer::Set(std::string& name, float32 data)
         return eReturnCode::NotFound;
     if (p->Type != eTypeName::v1)
         return eReturnCode::TypesDontMatch;
-    p->Data.x = data;
+    p->Data = data;
 
     if (!m_regenerateMemLayout)
         m_memData[offset] = data;
@@ -87,8 +141,7 @@ ConstantBuffer::eReturnCode ConstantBuffer::Set(std::string& name, const Vector2
         return eReturnCode::NotFound;
     if (p->Type != eTypeName::v2)
         return eReturnCode::TypesDontMatch;
-    p->Data.x = data.x;
-    p->Data.y = data.y;
+    p->Data = data;
 
     if (!m_regenerateMemLayout)
     {
@@ -107,9 +160,7 @@ ConstantBuffer::eReturnCode ConstantBuffer::Set(std::string& name, const Vector3
         return eReturnCode::NotFound;
     if (p->Type != eTypeName::v3)
         return eReturnCode::TypesDontMatch;
-    p->Data.x = data.x;
-    p->Data.y = data.y;
-    p->Data.z = data.z;
+    p->Data = data;
 
     if (!m_regenerateMemLayout)
     {
@@ -142,6 +193,38 @@ ConstantBuffer::eReturnCode ConstantBuffer::Set(std::string& name, const Vector4
     return eReturnCode::Ok;
 }
 
+ConstantBuffer::eReturnCode ConstantBuffer::Set(std::string& name, const Matrix3& data)
+{
+    uint32 offset = 0;
+    Param* p = nullptr;
+    if (!Find(name, offset, p))
+        return eReturnCode::NotFound;
+    if (p->Type != eTypeName::m4)
+        return eReturnCode::TypesDontMatch;
+    p->Data = data;
+
+    if (!m_regenerateMemLayout)
+        memcpy(m_memData + offset, data.data, sizeof(9 * sizeof(float32)));
+
+    return eReturnCode::Ok;
+}
+
+ConstantBuffer::eReturnCode ConstantBuffer::Set(std::string& name, const Matrix4& data)
+{
+    uint32 offset = 0;
+    Param* p = nullptr;
+    if (!Find(name, offset, p))
+        return eReturnCode::NotFound;
+    if (p->Type != eTypeName::m4)
+        return eReturnCode::TypesDontMatch;
+    p->Data = data;
+
+    if (!m_regenerateMemLayout)
+        memcpy(m_memData + offset, data.data, sizeof(16 * sizeof(float32)));
+
+    return eReturnCode::Ok;
+}
+
 ConstantBuffer::~ConstantBuffer()
 {
     SafeDeleteArray(m_memData);
@@ -161,25 +244,40 @@ void ConstantBuffer::ComposeBufferData()
     {
         if (param.Type == eTypeName::v1)
         {
-            *ptr++ = param.Data.x;
+            *ptr++ = std::get<float32>(param.Data);
         }
         else if (param.Type == eTypeName::v2)
         {
-            *ptr++ = param.Data.x;
-            *ptr++ = param.Data.y;
+            Vector2 d = std::get<Vector2>(param.Data);
+            *ptr++ = d.x;
+            *ptr++ = d.y;
         }
         else if (param.Type == eTypeName::v3)
         {
-            *ptr++ = param.Data.x;
-            *ptr++ = param.Data.y;
-            *ptr++ = param.Data.z;
+            Vector3 d = std::get<Vector3>(param.Data);
+            *ptr++ = d.x;
+            *ptr++ = d.y;
+            *ptr++ = d.z;
         }
         else if (param.Type == eTypeName::v4)
         {
-            *ptr++ = param.Data.x;
-            *ptr++ = param.Data.y;
-            *ptr++ = param.Data.z;
-            *ptr++ = param.Data.w;
+            Vector4 d = std::get<Vector4>(param.Data);
+            *ptr++ = d.x;
+            *ptr++ = d.y;
+            *ptr++ = d.z;
+            *ptr++ = d.w;
+        }
+        else if (param.Type == eTypeName::m3)
+        {
+            Matrix3 d = std::get<Matrix3>(param.Data);
+            memcpy(ptr, d.data, sizeof(9 * sizeof(float32)));
+            ptr += 9;
+        }
+        else if (param.Type == eTypeName::m4)
+        {
+            Matrix4 d = std::get<Matrix4>(param.Data);
+            memcpy(ptr, d.data, sizeof(16 * sizeof(float32)));
+            ptr += 16;
         }
     }
 }
