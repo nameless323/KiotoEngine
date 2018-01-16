@@ -38,6 +38,9 @@ struct VertexDesc
         : Offset(offset), Semantic(semantic), SemanticIndex(semanticIndex), Format(format)
     {}
 
+    bool operator==(const VertexDesc& other) const;
+    bool operator!=(const VertexDesc& other) const;
+
     uint16 Offset = 0;
     eVertexSemantic Semantic = eVertexSemantic::Position;
     uint8 SemanticIndex = 0;
@@ -51,6 +54,8 @@ public:
     VertexLayout(const VertexLayout& other);
     VertexLayout(VertexLayout&& other);
     VertexLayout& operator=(VertexLayout other);
+    bool operator==(const VertexLayout& other) const;
+    bool operator!=(const VertexLayout& other) const;
 
     void AddElement(eVertexSemantic semantic, uint8 semanticIndex, eDataFormat format);
     void CleanElements();

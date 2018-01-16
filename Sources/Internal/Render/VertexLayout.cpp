@@ -53,4 +53,31 @@ void VertexLayout::CleanElements()
     m_verticesDesc.clear();
 }
 
+bool VertexLayout::operator==(const VertexLayout& other) const
+{
+    if (other.m_verticesDesc.size() != m_verticesDesc.size())
+        return false;
+    for (uint32 i = 0; i < m_verticesDesc.size(); ++i)
+    {
+        if (m_verticesDesc[i] != other.m_verticesDesc[i])
+            return false;
+    }
+    return true;
+}
+
+bool VertexLayout::operator!=(const VertexLayout& other) const
+{
+    return !(*this == other);
+}
+
+bool VertexDesc::operator==(const VertexDesc& other) const
+{
+    return Semantic == other.Semantic && SemanticIndex == other.SemanticIndex && Format == other.Format;
+}
+
+bool VertexDesc::operator!=(const VertexDesc& other) const
+{
+    return !(*this == other);
+}
+
 }
