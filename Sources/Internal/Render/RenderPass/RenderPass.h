@@ -19,7 +19,7 @@ enum PassPriority
     MainPass = 100
 };
 
-class RenderPass
+class RenderPass // [a_vorontsov] Add render target and depth stencil resource state before and after.
 {
 public:
     RenderPass() = default;

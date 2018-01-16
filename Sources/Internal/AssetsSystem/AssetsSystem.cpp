@@ -5,6 +5,8 @@
 
 #include "stdafx.h"
 
+#include <fstream>
+
 #include "AssetsSystem/AssetsSystem.h"
 #include "Core/CoreHelpers.h"
 
@@ -120,6 +122,14 @@ void CleanAssets()
 void RegisterAsset(Asset* asset)
 {
     m_dynamicAssets.push_back(asset);
+}
+
+std::string ReadFileAsString(const std::string& path)
+{
+    std::ifstream f(path);
+    std::stringstream buffer;
+    buffer << f.rdbuf();
+    return buffer.str();
 }
 
 }

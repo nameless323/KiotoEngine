@@ -22,24 +22,29 @@ enum class eVertexSemantic
     Bitangent
 };
 
-enum class eVertexDataFormat
+enum class eDataFormat
 {
     R32_G32_B32_A32,
     R32_G32_B32,
     R32_G32,
-    R32
+    R32,
+    MATRIX3x3,
+    MATRIX4x4
 };
 
 struct VertexDesc
 {
-    VertexDesc(eVertexSemantic semantic, uint8 semanticIndex, eVertexDataFormat format, uint16 offset)
+    VertexDesc(eVertexSemantic semantic, uint8 semanticIndex, eDataFormat format, uint16 offset)
         : Offset(offset), Semantic(semantic), SemanticIndex(semanticIndex), Format(format)
     {}
+
+    bool operator==(const VertexDesc& other) const;
+    bool operator!=(const VertexDesc& other) const;
 
     uint16 Offset = 0;
     eVertexSemantic Semantic = eVertexSemantic::Position;
     uint8 SemanticIndex = 0;
-    eVertexDataFormat Format = eVertexDataFormat::R32_G32_B32_A32;
+    eDataFormat Format = eDataFormat::R32_G32_B32_A32;
 };
 
 class VertexLayout
@@ -49,8 +54,10 @@ public:
     VertexLayout(const VertexLayout& other);
     VertexLayout(VertexLayout&& other);
     VertexLayout& operator=(VertexLayout other);
+    bool operator==(const VertexLayout& other) const;
+    bool operator!=(const VertexLayout& other) const;
 
-    void AddElement(eVertexSemantic semantic, uint8 semanticIndex, eVertexDataFormat format);
+    void AddElement(eVertexSemantic semantic, uint8 semanticIndex, eDataFormat format);
     void CleanElements();
     std::vector<VertexDesc> GetElements() const;
 

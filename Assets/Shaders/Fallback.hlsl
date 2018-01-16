@@ -3,7 +3,13 @@
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
-cbuffer cbEngineBuffer : register(b0)
+#include "Include\tst2.hlsl"
+#include "Include\tst3.hlsl"
+#include "Include\tst1.hlsl"
+#include "Include\tst3.hlsl"
+#include "Include\tst3.hlsl"
+
+cbuffer cbEngineBuffer : register(b0, space1)
 {
     float4 Time; // [a_vorontsov] Time since start: (t / 20, t, t * 2, t * 3).
     float4 SinTime; // [a_vorontsov] Sin of time: (t / 4, t / 2, t, t * 2).
@@ -11,7 +17,43 @@ cbuffer cbEngineBuffer : register(b0)
     float4 DeltaTime; // [a_vorontsov] Delta time: (dt, 1 / dt, smoothDt, 1 / smoothDt).
 }
 
-cbuffer cbPassBuffer : register(b1)
+PIPELINE_DESCR:
+renderLayer: Opaque
+fill: Solid
+cull: Back
+windingCCW: true
+depthStencil:
+    enableStencil: false
+    ZTest: LEqual
+    ZWrite: true
+    writeMask: 0xF
+    readMask: 0xF
+    stencilFront:
+        fail: Zero
+        ZFfail: Zero
+        pass: Zero
+        func: Never
+    stencilBack:
+        fail: Zero
+        ZFfail: Zero
+        pass: Zero
+        func: Never
+blending:
+    blendOp: Add
+    srcBlend: Zero
+    dstBlend: Zero
+colorMask: All
+PIPELINE_DESCR_END;
+/*
+cbuffer chuufer : register(b0, space1)
+{
+    float4 Time; // [a_vorontsov] Time since start: (t / 20, t, t * 2, t * 3).
+    float4 SinTime; // [a_vorontsov] Sin of time: (t / 4, t / 2, t, t * 2).
+    float4 CosTime; // [a_vorontsov] Cos of time: (t / 4, t / 2, t, t * 2).
+    float4 DeltaTime; // [a_vorontsov] Delta time: (dt, 1 / dt, smoothDt, 1 / smoothDt).
+}*/
+
+cbuffer cbPassBuffer : register(b1, space1)
 {
     float4x4 ViewProjection;
     float4x4 View;
@@ -25,7 +67,7 @@ cbuffer cbPassBuffer : register(b1)
 SamplerState LinearClampSampl : register(s0);
 Texture2D Diffuse : register(t0);
 
-cbuffer cbRenderObjectBuffer : register(b2)
+cbuffer cbRenderObjectBuffer : register(b2, space1)
 {
     float4x4 ToWorld;
     float4x4 ToModel;
@@ -73,3 +115,12 @@ float4 ps(vOut i) : SV_Target
 {
     return Diffuse.Sample(LinearClampSampl, i.uv);
 }
+
+/*
+cbuffer fuck : register(b0, space1)
+{
+    float4 Time; // [a_vorontsov] Time since start: (t / 20, t, t * 2, t * 3).
+    float4 SinTime; // [a_vorontsov] Sin of time: (t / 4, t / 2, t, t * 2).
+    float4 CosTime; // [a_vorontsov] Cos of time: (t / 4, t / 2, t, t * 2).
+    float4 DeltaTime; // [a_vorontsov] Delta time: (dt, 1 / dt, smoothDt, 1 / smoothDt).
+}*/

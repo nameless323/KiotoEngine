@@ -20,20 +20,39 @@ struct SafeHandle
 {
 public:
     SafeHandle() = default;
-    SafeHandle(uint32 handle) : Handle(handle)
+    SafeHandle(uint32 handle) : m_handle(handle)
     {
     }
     SafeHandle(const SafeHandle& other)
     {
-        this->Handle = other.Handle;
+        this->m_handle = other.m_handle;
     }
     SafeHandle& operator=(const SafeHandle& other)
     {
-        this->Handle = other.Handle;
+        this->m_handle = other.m_handle;
         return *this;
     }
+    bool operator== (const SafeHandle& other) const
+    {
+        return m_handle == other.m_handle;
+    }
+    bool operator!= (const SafeHandle& other) const
+    {
+        return !(*this == other);
+    }
 
-    uint32 Handle = InvalidHandle;
+    uint32 GetHandle() const
+    {
+        return m_handle;
+    }
+
+    void SetHandle(uint32 handle)
+    {
+        m_handle = handle;
+    }
+
+private:
+    uint32 m_handle = InvalidHandle;
 };
 
 using VertexLayoutHandle = SafeHandle<VertexLayout>;

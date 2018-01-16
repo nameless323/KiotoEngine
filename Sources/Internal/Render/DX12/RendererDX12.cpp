@@ -23,6 +23,7 @@
 #include "Render/Geometry/Mesh.h"
 #include "Render/VertexLayout.h"
 #include "Render/DX12/VertexLayoutDX12.h"
+#include "Render/DX12/Shader/ShaderParser.h"
 
 #include "Component/CameraComponent.h"
 #include "Systems/CameraSystem.h"
@@ -175,16 +176,29 @@ void RendererDX12::LoadPipeline()
     UINT shaderFlags = 0;
 #endif
     wstring shaderPath = AssetsSystem::GetAssetFullPath(L"Shaders\\Fallback.hlsl");
-    ComPtr<ID3DBlob> shaderError;
-    HRESULT hr = D3DCompileFromFile(shaderPath.c_str(), nullptr, nullptr, "vs", "vs_5_1", shaderFlags, 0, &m_vsFallbackByteCode, &shaderError);
-    if (shaderError != nullptr)
-        OutputDebugStringA(reinterpret_cast<char*>(shaderError->GetBufferPointer()));
-    ThrowIfFailed(hr);
+    ShaderDX12* vs = new ShaderDX12();
+    ShaderDX12* ps = new ShaderDX12();
+    vs->SetHandle(CurrentHandle++);
+    ps->SetHandle(CurrentHandle++);
+    ShaderHandle vsHandle = vs->GetHandle();
+    ShaderHandle psHandle = ps->GetHandle();
 
-    hr = D3DCompileFromFile(shaderPath.c_str(), nullptr, nullptr, "ps", "ps_5_1", shaderFlags, 0, &m_psFallbackByteCode, &shaderError);
-    if (shaderError != nullptr)
-        OutputDebugStringA(reinterpret_cast<char*>(shaderError->GetBufferPointer()));
+    ShaderParser::ParseResult parseResult;
+    std::string shaderStr = ShaderParser::ParseShader(WstrToStr(shaderPath)).output;
+
+    OutputDebugStringA(shaderStr.c_str());
+    HRESULT hr = vs->Compile(shaderStr.c_str(), shaderStr.length() * sizeof(char), "vs", "vs_5_1", shaderFlags);
+
+    if (!vs->GetIsCompiled())
+        OutputDebugStringA(vs->GetErrorMsg());
     ThrowIfFailed(hr);
+    m_shaders.push_back(vs);
+
+    hr = ps->Compile(shaderStr.c_str(), shaderStr.length() * sizeof(char), "ps", "ps_5_1", shaderFlags);
+    if (!ps->GetIsCompiled())
+        OutputDebugStringA(ps->GetErrorMsg());
+    ThrowIfFailed(hr);
+    m_shaders.push_back(ps);
 
     D3D12_INPUT_ELEMENT_DESC inputElementDesc[] =
     {
@@ -213,9 +227,9 @@ void RendererDX12::LoadPipeline()
     texRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 
     CD3DX12_ROOT_PARAMETER1 rootParam[4];
-    rootParam[0].InitAsConstantBufferView(0);
-    rootParam[1].InitAsConstantBufferView(1);
-    rootParam[2].InitAsConstantBufferView(2);
+    rootParam[0].InitAsConstantBufferView(0, 1);
+    rootParam[1].InitAsConstantBufferView(1, 1);
+    rootParam[2].InitAsConstantBufferView(2, 1);
     rootParam[3].InitAsDescriptorTable(1, &texRange, D3D12_SHADER_VISIBILITY_PIXEL);
     auto staticSamplers = GetStaticSamplers();
     rootSignatureDesc.Init_1_1(4, rootParam, static_cast<UINT>(staticSamplers.size()), staticSamplers.data(), flags);
@@ -234,8 +248,8 @@ void RendererDX12::LoadPipeline()
 
     desc.InputLayout = { inputElementDesc, _countof(inputElementDesc) };
     desc.pRootSignature = m_rootSignature.Get();
-    desc.VS = CD3DX12_SHADER_BYTECODE(m_vsFallbackByteCode.Get());
-    desc.PS = CD3DX12_SHADER_BYTECODE(m_psFallbackByteCode.Get());
+    desc.VS = *GetShaderBytecode(vsHandle);
+    desc.PS = *GetShaderBytecode(psHandle);
     desc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 
     desc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
@@ -316,6 +330,12 @@ void RendererDX12::Shutdown()
     {
         ThrowIfFailed(m_swapChain->SetFullscreenState(false, nullptr));
     }
+    for (auto& shader : m_shaders)
+    {
+        delete shader;
+    }
+    m_shaders.clear();
+
 #ifdef _DEBUG
     ComPtr<IDXGIDebug1> dxgiDebug;
     if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&dxgiDebug))))
@@ -480,8 +500,8 @@ void RendererDX12::Present()
 
     for (auto& renderPass : thisFramePasses)
     {
-        ResourceDX12* currentBackBuffer = FindDxResource(renderPass.GetRenderTarget(0).Handle);
-        ResourceDX12* currentDS = FindDxResource(renderPass.GetDepthStencil().Handle);
+        ResourceDX12* currentBackBuffer = FindDxResource(renderPass.GetRenderTarget(0).GetHandle());
+        ResourceDX12* currentDS = FindDxResource(renderPass.GetDepthStencil().GetHandle());
         if (currentBackBuffer == nullptr || currentDS == nullptr)
             return;
 
@@ -649,16 +669,23 @@ void RendererDX12::UpdatePassCB(PassBuffer& buffer)
     buffer.ViewProjection = cc->GetVP().Tranposed();
 }
 
-VertexLayoutHandle RendererDX12::GenerateVertexLayout(const VertexLayout& layout) const
+VertexLayoutHandle RendererDX12::GenerateVertexLayout(const VertexLayout& layout)
 {
-    VertexLayoutHandle res(static_cast<uint32>(m_inputLayouts.size()));
-    std::vector<D3D12_INPUT_ELEMENT_DESC> currentLayout;
-    currentLayout.reserve(16);
-    for (const auto& e : layout.GetElements()) // [a_vorontsov] TODO: Check if layout exist.
+    for (auto& l : m_inputLayouts)
     {
-        currentLayout.push_back(D3D12_INPUT_ELEMENT_DESC{ SemanticNames[e.Semantic].c_str(), e.SemanticIndex, VertexDataFormats[e.Format], 0, e.Offset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+        if (layout == l.LayoutKioto)
+            return l.Handle;
     }
-    return res;
+    VertexLayoutDX12 res;
+    res.Handle = CurrentHandle++;
+    res.LayoutDX.reserve(layout.GetElements().size());
+    res.LayoutKioto = layout;
+    for (const auto& e : layout.GetElements())
+    {
+        res.LayoutDX.push_back(D3D12_INPUT_ELEMENT_DESC{ SemanticNames[e.Semantic].c_str(), e.SemanticIndex, VertexDataFormats[e.Format], 0, e.Offset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+    }
+    m_inputLayouts.push_back(res);
+    return res.Handle;
 }
 
 void RendererDX12::AddRenderPass(const RenderPass& renderPass)
@@ -668,12 +695,30 @@ void RendererDX12::AddRenderPass(const RenderPass& renderPass)
 
 ResourceDX12* RendererDX12::FindDxResource(uint32 handle)
 {
-    if (m_depthStencil.Handle.Handle == handle)
+    if (m_depthStencil.Handle.GetHandle() == handle)
         return &m_depthStencil;
     for (auto& backBuffer : m_backBuffers)
     {
-        if (backBuffer.Handle.Handle == handle)
+        if (backBuffer.Handle.GetHandle() == handle)
             return &backBuffer;
+    }
+    return nullptr;
+}
+
+const CD3DX12_SHADER_BYTECODE* RendererDX12::GetShaderBytecode(ShaderHandle handle) const
+{
+    auto it = std::find_if(m_shaders.cbegin(), m_shaders.cend(), [&handle](const ShaderDX12* s) { return s->GetHandle() == handle; });
+    if (it != m_shaders.cend() && (*it)->GetIsCompiled())
+        return &(*it)->GetBytecode();
+    return nullptr;
+}
+
+const std::vector<D3D12_INPUT_ELEMENT_DESC>* RendererDX12::FindVertexLayout(VertexLayoutHandle handle) const
+{
+    for (const auto& l : m_inputLayouts)
+    {
+        if (l.Handle == handle)
+            return &l.LayoutDX;
     }
     return nullptr;
 }

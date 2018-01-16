@@ -181,11 +181,13 @@
     <ClInclude Include="Sources\Internal\AssetsSystem\AssetsSystem.h" />
     <ClInclude Include="Sources\Internal\Kioto.h" />
     <ClInclude Include="Sources\Internal\Math\MathHelpers.h" />
+    <ClInclude Include="Sources\Internal\Math\Matrix3.h" />
     <ClInclude Include="Sources\Internal\Math\Matrix4.h" />
     <ClInclude Include="Sources\Internal\Math\Rect.h" />
     <ClInclude Include="Sources\Internal\Math\Vector2.h" />
     <ClInclude Include="Sources\Internal\Math\Vector3.h" />
     <ClInclude Include="Sources\Internal\Math\Vector4.h" />
+    <ClInclude Include="Sources\Internal\Render\ConstantBuffer.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\Buffers\DefaultHeapBuffer.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\Buffers\EngineBuffers.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\Buffers\IndexBufferDX12.h" />
@@ -194,10 +196,14 @@
     <ClInclude Include="Sources\Internal\Render\DX12\Buffers\VertexBufferDX12.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\DXHelpers.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\RendererDX12.h" />
+    <ClInclude Include="Sources\Internal\Render\DX12\RenderPacket.h" />
+    <ClInclude Include="Sources\Internal\Render\DX12\ShaderDX12.h" />
+    <ClInclude Include="Sources\Internal\Render\DX12\Shader\ShaderParser.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\VertexLayoutDX12.h" />
     <ClInclude Include="Sources\Internal\Render\Geometry\GeometryGenerator.h" />
     <ClInclude Include="Sources\Internal\Render\Geometry\Mesh.h" />
     <ClInclude Include="Sources\Internal\Render\Material.h" />
+    <ClInclude Include="Sources\Internal\Render\PipelineState.h" />
     <ClInclude Include="Sources\Internal\Render\PipelineStateParams.h" />
     <ClInclude Include="Sources\Internal\Render\Renderer.h" />
     <ClInclude Include="Sources\Internal\Render\RendererPublic.h" />
@@ -231,13 +237,16 @@
     <ClCompile Include="Sources\Internal\Core\Timer\GlobalTimer.cpp" />
     <ClCompile Include="Sources\Internal\Core\WindowsApplication.cpp" />
     <ClCompile Include="Sources\Internal\AssetsSystem\AssetsSystem.cpp" />
+    <ClCompile Include="Sources\Internal\Render\ConstantBuffer.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\Buffers\DefaultHeapBuffer.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\Buffers\IndexBufferDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\Buffers\VertexBufferDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\RendererDX12.cpp" />
+    <ClCompile Include="Sources\Internal\Render\DX12\Shader\ShaderParser.cpp" />
     <ClCompile Include="Sources\Internal\Render\Geometry\GeometryGenerator.cpp" />
     <ClCompile Include="Sources\Internal\Render\Geometry\Mesh.cpp" />
     <ClCompile Include="Sources\Internal\Render\Material.cpp" />
+    <ClCompile Include="Sources\Internal\Render\PipelineState.cpp" />
     <ClCompile Include="Sources\Internal\Render\Renderer.cpp" />
     <ClCompile Include="Sources\Internal\Render\RenderPass\RenderPass.cpp" />
     <ClCompile Include="Sources\Internal\Render\VertexLayout.cpp" />
@@ -252,11 +261,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="Assets\Shaders\Fallback.hlsl">
-      <FileType>Document</FileType>
-    </Text>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
