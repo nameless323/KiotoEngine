@@ -17,6 +17,33 @@ cbuffer cbEngineBuffer : register(b0, space1)
     float4 DeltaTime; // [a_vorontsov] Delta time: (dt, 1 / dt, smoothDt, 1 / smoothDt).
 }
 
+PIPELINE_DESCR:
+renderLayer: Opaque
+fill: Solid
+cull: Back
+windingCCW: true
+depthStencil:
+    enableStencil: false
+    ZTest: LEqual
+    ZWrite: true
+    writeMask: 0xF
+    readMask: 0xF
+    stencilFront:
+        fail: Zero
+        ZFfail: Zero
+        pass: Zero
+        func: Never
+    stencilBack:
+        fail: Zero
+        ZFfail: Zero
+        pass: Zero
+        func: Never
+blending:
+    blendOp: Add
+    srcBlend: Zero
+    dstBlend: Zero
+colorMask: All
+PIPELINE_DESCR_END;
 /*
 cbuffer chuufer : register(b0, space1)
 {

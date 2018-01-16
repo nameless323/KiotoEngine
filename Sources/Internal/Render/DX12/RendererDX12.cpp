@@ -673,7 +673,7 @@ VertexLayoutHandle RendererDX12::GenerateVertexLayout(const VertexLayout& layout
 {
     for (auto& l : m_inputLayouts)
     {
-        if (layout == l)
+        if (layout == l.LayoutKioto)
             return l.Handle;
     }
     VertexLayoutDX12 res;
@@ -710,6 +710,16 @@ const CD3DX12_SHADER_BYTECODE* RendererDX12::GetShaderBytecode(ShaderHandle hand
     auto it = std::find_if(m_shaders.cbegin(), m_shaders.cend(), [&handle](const ShaderDX12* s) { return s->GetHandle() == handle; });
     if (it != m_shaders.cend() && (*it)->GetIsCompiled())
         return &(*it)->GetBytecode();
+    return nullptr;
+}
+
+const std::vector<D3D12_INPUT_ELEMENT_DESC>* RendererDX12::FindVertexLayout(VertexLayoutHandle handle) const
+{
+    for (const auto& l : m_inputLayouts)
+    {
+        if (l.Handle == handle)
+            return &l.LayoutDX;
+    }
     return nullptr;
 }
 

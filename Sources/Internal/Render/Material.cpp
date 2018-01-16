@@ -32,64 +32,6 @@ Material::Material(const std::string& path)
         m_shaderPath = config["shader"].as<std::string>();
         m_shader = AssetsSystem::LoadAsset<Renderer::Shader>(m_shaderPath);
     }
-    if (config["renderLayer"] != nullptr)
-        m_layerType = FromString<eRenderLayerType>(config["renderLayer"].as<std::string>());
-    if (config["fill"] != nullptr)
-        m_fill = FromString<eFillMode>(config["fill"].as<std::string>());
-    if (config["cull"] != nullptr)
-        m_cull = FromString<eCullMode>(config["cull"].as<std::string>());
-    if (config["windingCCW"] != nullptr)
-        m_windingCCW = config["windingCCW"].as<bool>();
-    if (config["depthStencil"] != nullptr)
-    {
-        YAML::Node dsNode = config["depthStencil"];
-        if (dsNode["enableStencil"] != nullptr)
-            m_enableStencill = dsNode["enableStencil"].as<bool>();
-        if (dsNode["ZTest"] != nullptr)
-            m_ztest = FromString<eZTest>(dsNode["ZTest"].as<std::string>());
-        if (dsNode["ZWrite"] != nullptr)
-            m_zwrite = dsNode["ZWrite"].as<bool>();
-        if (dsNode["writeMask"] != nullptr)
-            m_stencilWriteMask = static_cast<uint8>(std::stoul(dsNode["writeMask"].as<std::string>(), 0, 0));
-        if (dsNode["readMask"] != nullptr)
-            m_stencilReadMask = static_cast<uint8>(std::stoul(dsNode["readMask"].as<std::string>(), 0, 0));
-
-        if (dsNode["stencilFront"] != nullptr)
-        {
-            YAML::Node frontNode = dsNode["stencilFront"];
-            if (frontNode["fail"] != nullptr)
-                m_frontFaceStencilDesc.StencilDepthFailOp = FromString<eStencilOp>(frontNode["fail"].as<std::string>());
-            if (frontNode["ZFfail"] != nullptr)
-                m_frontFaceStencilDesc.StencilDepthFailOp = FromString<eStencilOp>(frontNode["ZFfail"].as<std::string>());
-            if (frontNode["pass"] != nullptr)
-                m_frontFaceStencilDesc.StencilPassOp = FromString<eStencilOp>(frontNode["pass"].as<std::string>());
-            if (frontNode["func"] != nullptr)
-                m_frontFaceStencilDesc.StencilFunc = FromString<eStencilTest>(frontNode["func"].as<std::string>());
-        }
-        if (dsNode["stencilBack"] != nullptr)
-        {
-            YAML::Node backNode = dsNode["stencilBack"];
-            if (backNode["fail"] != nullptr)
-                m_backFaceStencilDesc.StencilDepthFailOp = FromString<eStencilOp>(backNode["fail"].as<std::string>());
-            if (backNode["ZFfail"] != nullptr)
-                m_backFaceStencilDesc.StencilDepthFailOp = FromString<eStencilOp>(backNode["ZFfail"].as<std::string>());
-            if (backNode["pass"] != nullptr)
-                m_backFaceStencilDesc.StencilPassOp = FromString<eStencilOp>(backNode["pass"].as<std::string>());
-            if (backNode["func"] != nullptr)
-                m_backFaceStencilDesc.StencilFunc = FromString<eStencilTest>(backNode["func"].as<std::string>());
-        }
-    }
-    if (config["blending"] != nullptr)
-    {
-        YAML::Node bNode = config["blending"];
-        if (bNode["blendOp"] != nullptr)
-            m_blendOp = FromString<eBlendOps>(bNode["blendOp"].as<std::string>());
-        if (bNode["srcBlend"] != nullptr)
-            m_srcBlend = FromString<eBlendModes>(bNode["srcBlend"].as<std::string>());
-        if (bNode["dstBlend"] != nullptr)
-            m_srcBlend = FromString<eBlendModes>(bNode["dstBlend"].as<std::string>());
-    }
-    if (config["colorMask"] != nullptr)
-        m_colorMask = FromString<eColorMask>(config["colorMask"].as<std::string>());
+    m_pipelineState = PipelineState::FromYaml(config);
 }
 }

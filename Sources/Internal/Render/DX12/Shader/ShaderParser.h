@@ -10,6 +10,7 @@
 
 #include "Render/ConstantBuffer.h"
 #include "Render/VertexLayout.h"
+#include "Render/PipelineState.h"
 
 namespace Kioto::Renderer
 {
@@ -19,6 +20,7 @@ struct ParseResult
 {
     std::string output;
     VertexLayout vertexLayout;
+    PipelineState pipelineState;
     std::vector<ConstantBuffer> constantBuffers;
 };
 

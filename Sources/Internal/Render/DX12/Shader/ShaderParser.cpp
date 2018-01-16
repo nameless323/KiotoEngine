@@ -268,6 +268,19 @@ VertexLayout GetVertexLayout(const std::string& source)
     return res;
 }
 
+PipelineState GetPipelineState(std::string& source)
+{
+    size_t stateStart = source.find("PIPELINE_DESCR:");
+    size_t stateEnd = source.find("PIPELINE_DESCR_END;");
+    if (stateStart == std::string::npos || stateEnd == std::string::npos)
+        return PipelineState();
+    std::string stateStr = source.substr(stateStart + 15, stateEnd - stateStart - 15);
+    source.erase(stateStart, stateEnd - stateStart + 19);
+
+    PipelineState state = PipelineState::FromYaml(stateStr);
+    return state;
+}
+
 bool TryParseConstantBufferIndex(const std::string& source, size_t pos, size_t bound, uint16& index, uint16& space)
 {
     if (source.substr(pos, 8) == "register")
@@ -425,6 +438,16 @@ std::vector<ConstantBuffer> GetConstantBuffers(const std::string& source)
     return res;
 }
 
+void ParseTextures(std::string& source)
+{
+    size_t texBegin = source.find("[_IN_]");
+    while (texBegin != std::string::npos)
+    {
+        source.erase(texBegin, 6);
+        texBegin = source.find("[_IN_]", texBegin);
+    }
+}
+
 ParseResult ParseShader(const std::string& path)
 {
     ParseResult res;
@@ -433,6 +456,8 @@ ParseResult ParseShader(const std::string& path)
     shaderStr = UnfoldIncludes(shaderStr, 0);
     TrimMultilineComments(shaderStr);
     TrimLineComments(shaderStr);
+    GetPipelineState(shaderStr);
+    OutputDebugStringA(shaderStr.c_str());
     res.vertexLayout = GetVertexLayout(shaderStr);
     res.constantBuffers = GetConstantBuffers(shaderStr);
     res.output = shaderStr;

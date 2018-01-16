@@ -203,6 +203,7 @@
     <ClInclude Include="Sources\Internal\Render\Geometry\GeometryGenerator.h" />
     <ClInclude Include="Sources\Internal\Render\Geometry\Mesh.h" />
     <ClInclude Include="Sources\Internal\Render\Material.h" />
+    <ClInclude Include="Sources\Internal\Render\PipelineState.h" />
     <ClInclude Include="Sources\Internal\Render\PipelineStateParams.h" />
     <ClInclude Include="Sources\Internal\Render\Renderer.h" />
     <ClInclude Include="Sources\Internal\Render\RendererPublic.h" />
@@ -245,6 +246,7 @@
     <ClCompile Include="Sources\Internal\Render\Geometry\GeometryGenerator.cpp" />
     <ClCompile Include="Sources\Internal\Render\Geometry\Mesh.cpp" />
     <ClCompile Include="Sources\Internal\Render\Material.cpp" />
+    <ClCompile Include="Sources\Internal\Render\PipelineState.cpp" />
     <ClCompile Include="Sources\Internal\Render\Renderer.cpp" />
     <ClCompile Include="Sources\Internal\Render\RenderPass\RenderPass.cpp" />
     <ClCompile Include="Sources\Internal\Render\VertexLayout.cpp" />

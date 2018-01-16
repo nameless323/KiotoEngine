@@ -16,6 +16,7 @@
 #include "Render/DX12/Buffers/VertexBufferDX12.h"
 #include "Render/DX12/Buffers/IndexBufferDX12.h"
 #include "Render/DX12/Buffers/ResourceDX12.h"
+#include "Render/DX12/VertexLayoutDX12.h"
 #include "Render/DX12/ShaderDX12.h"
 #include "Render/Texture/TextureDX12.h"
 #include "Render/RendererPublic.h"
@@ -58,6 +59,7 @@ private:
 
     ResourceDX12* FindDxResource(uint32 handle);
     const CD3DX12_SHADER_BYTECODE* GetShaderBytecode(ShaderHandle handle) const;
+    const std::vector<D3D12_INPUT_ELEMENT_DESC>* FindVertexLayout(VertexLayoutHandle handle) const;
 
     void GetHardwareAdapter(IDXGIFactory4* factory, IDXGIAdapter1** adapter);
     void WaitForGPU();
@@ -69,7 +71,6 @@ private:
     void UpdateTimeCB(TimeConstantBuffer& buffer);
     void UpdateRenderObjectCB(RenderObjectBuffer& buffer);
     void UpdatePassCB(PassBuffer& buffer);
-
 
     bool m_isTearingSupported = false; // [a_vorontsov] TODO: Properly handle when tearing is not supported.
     UINT m_currentFrameIndex = -1;
