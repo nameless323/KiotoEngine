@@ -30,4 +30,11 @@ std::map<eDataFormat, DXGI_FORMAT> VertexDataFormats =
     { eDataFormat::R32_G32, DXGI_FORMAT_R32G32_FLOAT },
     { eDataFormat::R32, DXGI_FORMAT_R32_FLOAT}
 };
+
+struct VertexLayoutDX12
+{
+    VertexLayoutHandle Handle;
+    VertexLayout LayoutKioto;
+    std::vector<D3D12_INPUT_ELEMENT_DESC> LayoutDX;
+};
 }

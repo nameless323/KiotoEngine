@@ -669,16 +669,23 @@ void RendererDX12::UpdatePassCB(PassBuffer& buffer)
     buffer.ViewProjection = cc->GetVP().Tranposed();
 }
 
-VertexLayoutHandle RendererDX12::GenerateVertexLayout(const VertexLayout& layout) const
+VertexLayoutHandle RendererDX12::GenerateVertexLayout(const VertexLayout& layout)
 {
-    VertexLayoutHandle res(static_cast<uint32>(m_inputLayouts.size()));
-    std::vector<D3D12_INPUT_ELEMENT_DESC> currentLayout;
-    currentLayout.reserve(16);
-    for (const auto& e : layout.GetElements()) // [a_vorontsov] TODO: Check if layout exist.
+    for (auto& l : m_inputLayouts)
     {
-        currentLayout.push_back(D3D12_INPUT_ELEMENT_DESC{ SemanticNames[e.Semantic].c_str(), e.SemanticIndex, VertexDataFormats[e.Format], 0, e.Offset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+        if (layout == l)
+            return l.Handle;
     }
-    return res;
+    VertexLayoutDX12 res;
+    res.Handle = CurrentHandle++;
+    res.LayoutDX.reserve(layout.GetElements().size());
+    res.LayoutKioto = layout;
+    for (const auto& e : layout.GetElements())
+    {
+        res.LayoutDX.push_back(D3D12_INPUT_ELEMENT_DESC{ SemanticNames[e.Semantic].c_str(), e.SemanticIndex, VertexDataFormats[e.Format], 0, e.Offset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+    }
+    m_inputLayouts.push_back(res);
+    return res.Handle;
 }
 
 void RendererDX12::AddRenderPass(const RenderPass& renderPass)

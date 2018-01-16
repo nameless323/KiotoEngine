@@ -48,7 +48,7 @@ public:
     TextureHandle GetCurrentBackBufferHandle() const;
     TextureHandle GetDepthStencilHandle() const;
 
-    VertexLayoutHandle GenerateVertexLayout(const VertexLayout& layout) const;
+    VertexLayoutHandle GenerateVertexLayout(const VertexLayout& layout);
 
 private:
     static constexpr UINT FrameCount = 3;
@@ -115,7 +115,7 @@ private:
     std::unique_ptr<TextureDX12> m_texture;
     Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_textureHeap;
 
-    std::vector<std::vector<D3D12_INPUT_ELEMENT_DESC>> m_inputLayouts;
+    std::vector<VertexLayoutDX12> m_inputLayouts;
 };
 
 inline TextureHandle RendererDX12::GetCurrentBackBufferHandle() const
