@@ -11,6 +11,7 @@
 #include "Render/ConstantBuffer.h"
 #include "Render/VertexLayout.h"
 #include "Render/PipelineState.h"
+#include "Render/RendererPublic.h"
 
 namespace Kioto::Renderer
 {
@@ -24,6 +25,6 @@ struct ParseResult
     std::vector<ConstantBuffer> constantBuffers;
 };
 
-ParseResult ParseShader(const std::string& path);
+ParseResult ParseShader(const std::string& path, const std::vector<ShaderDefine>* const defines);
 }
 }

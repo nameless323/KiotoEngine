@@ -184,7 +184,7 @@ void RendererDX12::LoadPipeline()
     ShaderHandle psHandle = ps->GetHandle();
 
     ShaderParser::ParseResult parseResult;
-    std::string shaderStr = ShaderParser::ParseShader(WstrToStr(shaderPath)).output;
+    std::string shaderStr = ShaderParser::ParseShader(WstrToStr(shaderPath), nullptr).output;
 
     OutputDebugStringA(shaderStr.c_str());
     HRESULT hr = vs->Compile(shaderStr.c_str(), shaderStr.length() * sizeof(char), "vs", "vs_5_1", shaderFlags);

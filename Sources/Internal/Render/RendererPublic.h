@@ -5,6 +5,8 @@
 
 #include "Core/CoreTypes.h"
 
+#include <string>
+
 #pragma once
 
 namespace Kioto::Renderer
@@ -12,6 +14,12 @@ namespace Kioto::Renderer
 class Shader;
 class VertexLayout;
 class Texture;
+
+struct ShaderDefine
+{
+    std::string Name;
+    uint32 Value;
+};
 
 constexpr uint32 InvalidHandle = -1;
 
