@@ -210,7 +210,7 @@ VertexLayout GetVertexLayout(const std::string& source)
     size_t closeBracetPos = structBegin;
     for (; closeBracetPos < source.size() - 1; ++closeBracetPos)
     {
-        if (source[closeBracetPos] == '}' && source[closeBracetPos + 1] == ';')
+        if (source[closeBracetPos] == '}')
             break;
     }
     for (size_t i = structBegin; i < closeBracetPos - 6; ++i)
@@ -448,15 +448,27 @@ void ParseTextures(std::string& source)
     }
 }
 
+std::string DXPreprocess(const std::string& source)
+{
+    Microsoft::WRL::ComPtr<ID3DBlob> rr; // [a_vorontsov] TODO: dependence from dx compiler. De better later.
+    Microsoft::WRL::ComPtr<ID3DBlob> err;
+
+    D3D_SHADER_MACRO Shader_Macros[] = { "OLOLOSHA", "1", NULL };
+    D3DPreprocess(source.c_str(), source.size(), nullptr, Shader_Macros, nullptr, rr.GetAddressOf(), err.GetAddressOf());
+    if (err != nullptr)
+        throw "wtf";
+
+    return std::string(reinterpret_cast<char*>(rr->GetBufferPointer()));
+}
+
 ParseResult ParseShader(const std::string& path)
 {
     ParseResult res;
     m_preprocessedHeaders.clear();
     std::string shaderStr = AssetsSystem::ReadFileAsString(path);
     shaderStr = UnfoldIncludes(shaderStr, 0);
-    TrimMultilineComments(shaderStr);
-    TrimLineComments(shaderStr);
     GetPipelineState(shaderStr);
+    shaderStr = DXPreprocess(shaderStr);
     OutputDebugStringA(shaderStr.c_str());
     res.vertexLayout = GetVertexLayout(shaderStr);
     res.constantBuffers = GetConstantBuffers(shaderStr);
