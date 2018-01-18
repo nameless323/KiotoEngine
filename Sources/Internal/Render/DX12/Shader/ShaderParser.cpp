@@ -448,27 +448,45 @@ void ParseTextures(std::string& source)
     }
 }
 
-std::string DXPreprocess(const std::string& source)
+std::string DXPreprocess(const std::string& source, const std::vector<ShaderDefine>* const defines)
 {
     Microsoft::WRL::ComPtr<ID3DBlob> rr; // [a_vorontsov] TODO: dependence from dx compiler. De better later.
     Microsoft::WRL::ComPtr<ID3DBlob> err;
 
-    D3D_SHADER_MACRO Shader_Macros[] = { "OLOLOSHA", "1", NULL };
-    D3DPreprocess(source.c_str(), source.size(), nullptr, Shader_Macros, nullptr, rr.GetAddressOf(), err.GetAddressOf());
+    const D3D_SHADER_MACRO* macroData = nullptr;
+    std::vector<D3D_SHADER_MACRO> macroDefines;
+    char buff[4];
+    if (defines != nullptr)
+    {
+        for (const auto& d : *defines)
+        {
+            macroDefines.emplace_back();
+            D3D_SHADER_MACRO* m = &macroDefines.back();
+            m->Name = d.Name.c_str();
+            snprintf(buff, 4, "%d", d.Value);
+            m->Definition = buff;
+        }
+        macroDefines.emplace_back();
+        D3D_SHADER_MACRO* m = &macroDefines.back();
+        m->Name = NULL;
+        m->Definition = NULL;
+        macroData = macroDefines.data();
+    };
+    D3DPreprocess(source.c_str(), source.size(), nullptr, macroData, nullptr, rr.GetAddressOf(), err.GetAddressOf());
     if (err != nullptr)
         throw "wtf";
 
     return std::string(reinterpret_cast<char*>(rr->GetBufferPointer()));
 }
 
-ParseResult ParseShader(const std::string& path)
+ParseResult ParseShader(const std::string& path, const std::vector<ShaderDefine>* const defines)
 {
     ParseResult res;
     m_preprocessedHeaders.clear();
     std::string shaderStr = AssetsSystem::ReadFileAsString(path);
     shaderStr = UnfoldIncludes(shaderStr, 0);
     GetPipelineState(shaderStr);
-    shaderStr = DXPreprocess(shaderStr);
+    shaderStr = DXPreprocess(shaderStr, defines);
     OutputDebugStringA(shaderStr.c_str());
     res.vertexLayout = GetVertexLayout(shaderStr);
     res.constantBuffers = GetConstantBuffers(shaderStr);
