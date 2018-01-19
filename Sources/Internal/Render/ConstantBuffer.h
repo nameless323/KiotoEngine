@@ -52,6 +52,10 @@ public:
 
     void ComposeBufferData();
 
+    uint16 GetIndex() const;
+    uint16 GetSpace() const;
+    uint32 GetKey() const;
+
 private:
 
     enum class eTypeName : byte
@@ -83,4 +87,19 @@ private:
     uint32 m_dataSize = 0;
     uint32 m_dataSize4ByteElem = 0;
 };
+
+inline uint16 ConstantBuffer::GetIndex() const
+{
+    return m_index;
+}
+
+inline uint16 ConstantBuffer::GetSpace() const
+{
+    return m_space;
+}
+
+inline uint32 ConstantBuffer::GetKey() const
+{
+    return m_key;
+}
 }
