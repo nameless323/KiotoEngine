@@ -222,13 +222,13 @@ void RendererDX12::LoadPipeline()
     texRange.RegisterSpace = 0;
     texRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 
-    CD3DX12_ROOT_PARAMETER1 rootParam[4];
-    rootParam[0].InitAsConstantBufferView(0, 1);
-    rootParam[1].InitAsConstantBufferView(1, 1);
-    rootParam[2].InitAsConstantBufferView(2, 1);
-    rootParam[3].InitAsDescriptorTable(1, &texRange, D3D12_SHADER_VISIBILITY_PIXEL);
+    auto rootParams = CreateDXRootSignatureParamsPack(parseResult);
+    CD3DX12_ROOT_PARAMETER1 table;
+    table.InitAsDescriptorTable(1, &texRange, D3D12_SHADER_VISIBILITY_PIXEL);
+    rootParams.push_back(table);
+
     auto staticSamplers = GetStaticSamplers();
-    rootSignatureDesc.Init_1_1(4, rootParam, static_cast<UINT>(staticSamplers.size()), staticSamplers.data(), flags);
+    rootSignatureDesc.Init_1_1(static_cast<UINT>(rootParams.size()), rootParams.data(), static_cast<UINT>(staticSamplers.size()), staticSamplers.data(), flags);
 
     ComPtr<ID3DBlob> signature;
     ComPtr<ID3DBlob> rootSignatureCreationError;
@@ -719,6 +719,18 @@ const std::vector<D3D12_INPUT_ELEMENT_DESC>* RendererDX12::FindVertexLayout(Vert
             return &l.LayoutDX;
     }
     return nullptr;
+}
+
+std::vector<CD3DX12_ROOT_PARAMETER1> RendererDX12::CreateDXRootSignatureParamsPack(const ShaderParser::ParseResult& result)
+{
+    std::vector<CD3DX12_ROOT_PARAMETER1> res;
+    for (size_t i = 0; i < result.constantBuffers.size(); ++i)
+    {
+        CD3DX12_ROOT_PARAMETER1 param;
+        param.InitAsConstantBufferView(result.constantBuffers[i].GetIndex(), result.constantBuffers[i].GetSpace());
+        res.push_back(param);
+    }
+    return res;
 }
 
 }

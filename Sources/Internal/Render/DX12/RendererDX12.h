@@ -26,6 +26,10 @@ namespace Kioto::Renderer
 {
 
 class VertexLayout;
+namespace ShaderParser
+{
+struct ParseResult;
+}
 
 class RendererDX12 final
 {
@@ -117,6 +121,7 @@ private:
     Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_textureHeap;
 
     std::vector<VertexLayoutDX12> m_inputLayouts;
+    std::vector<CD3DX12_ROOT_PARAMETER1> CreateDXRootSignatureParamsPack(const ShaderParser::ParseResult& result);
 };
 
 inline TextureHandle RendererDX12::GetCurrentBackBufferHandle() const
