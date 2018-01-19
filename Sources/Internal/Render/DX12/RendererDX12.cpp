@@ -184,8 +184,9 @@ void RendererDX12::LoadPipeline()
     ShaderHandle psHandle = ps->GetHandle();
 
     ShaderParser::ParseResult parseResult;
-    std::string shaderStr = ShaderParser::ParseShader(WstrToStr(shaderPath), nullptr).output;
+    parseResult = ShaderParser::ParseShader(WstrToStr(shaderPath), nullptr);
 
+    std::string shaderStr = parseResult.output;
     OutputDebugStringA(shaderStr.c_str());
     HRESULT hr = vs->Compile(shaderStr.c_str(), shaderStr.length() * sizeof(char), "vs", "vs_5_1", shaderFlags);
 
@@ -200,12 +201,7 @@ void RendererDX12::LoadPipeline()
     ThrowIfFailed(hr);
     m_shaders.push_back(ps);
 
-    D3D12_INPUT_ELEMENT_DESC inputElementDesc[] =
-    {
-        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-        { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-    };
+    VertexLayoutHandle vertexLayoutHandle = GenerateVertexLayout(parseResult.vertexLayout);
 
     D3D12_FEATURE_DATA_ROOT_SIGNATURE signatureData = {};
     signatureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
@@ -246,7 +242,9 @@ void RendererDX12::LoadPipeline()
 
     D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};
 
-    desc.InputLayout = { inputElementDesc, _countof(inputElementDesc) };
+    auto currentLayout = FindVertexLayout(vertexLayoutHandle);
+
+    desc.InputLayout = { currentLayout->data(), static_cast<UINT>(currentLayout->size()) };
     desc.pRootSignature = m_rootSignature.Get();
     desc.VS = *GetShaderBytecode(vsHandle);
     desc.PS = *GetShaderBytecode(psHandle);
