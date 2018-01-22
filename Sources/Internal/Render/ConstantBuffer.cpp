@@ -15,7 +15,7 @@ ConstantBuffer::ConstantBuffer(uint16 index, uint16 space)
 {
 }
 
-ConstantBuffer::eReturnCode ConstantBuffer::Add(std::string& name, float32 data)
+ConstantBuffer::eReturnCode ConstantBuffer::Add(const std::string& name, float32 data)
 {
     uint32 offset = 0;
     Param* pptr = nullptr;
@@ -32,7 +32,7 @@ ConstantBuffer::eReturnCode ConstantBuffer::Add(std::string& name, float32 data)
     return eReturnCode::Ok;
 }
 
-ConstantBuffer::eReturnCode ConstantBuffer::Add(std::string& name, const Vector2& data)
+ConstantBuffer::eReturnCode ConstantBuffer::Add(const std::string& name, const Vector2& data)
 {
     uint32 offset = 0;
     Param* pptr = nullptr;
@@ -49,7 +49,7 @@ ConstantBuffer::eReturnCode ConstantBuffer::Add(std::string& name, const Vector2
     return eReturnCode::Ok;
 }
 
-ConstantBuffer::eReturnCode ConstantBuffer::Add(std::string& name, const Vector3& data)
+ConstantBuffer::eReturnCode ConstantBuffer::Add(const std::string& name, const Vector3& data)
 {
     uint32 offset = 0;
     Param* pptr = nullptr;
@@ -66,7 +66,7 @@ ConstantBuffer::eReturnCode ConstantBuffer::Add(std::string& name, const Vector3
     return eReturnCode::Ok;
 }
 
-ConstantBuffer::eReturnCode ConstantBuffer::Add(std::string& name, const Vector4& data)
+ConstantBuffer::eReturnCode ConstantBuffer::Add(const std::string& name, const Vector4& data)
 {
     uint32 offset = 0;
     Param* pptr = nullptr;
@@ -83,7 +83,7 @@ ConstantBuffer::eReturnCode ConstantBuffer::Add(std::string& name, const Vector4
     return eReturnCode::Ok;
 }
 
-ConstantBuffer::eReturnCode ConstantBuffer::Add(std::string& name, const Matrix3& data)
+ConstantBuffer::eReturnCode ConstantBuffer::Add(const std::string& name, const Matrix3& data)
 {
     uint32 offset = 0;
     Param* pptr = nullptr;
@@ -100,7 +100,7 @@ ConstantBuffer::eReturnCode ConstantBuffer::Add(std::string& name, const Matrix3
     return eReturnCode::Ok;
 }
 
-ConstantBuffer::eReturnCode ConstantBuffer::Add(std::string& name, const Matrix4& data)
+ConstantBuffer::eReturnCode ConstantBuffer::Add(const std::string& name, const Matrix4& data)
 {
     uint32 offset = 0;
     Param* pptr = nullptr;
@@ -117,7 +117,7 @@ ConstantBuffer::eReturnCode ConstantBuffer::Add(std::string& name, const Matrix4
     return eReturnCode::Ok;
 }
 
-ConstantBuffer::eReturnCode ConstantBuffer::Set(std::string& name, float32 data)
+ConstantBuffer::eReturnCode ConstantBuffer::Set(const std::string& name, float32 data)
 {
     uint32 offset = 0;
     Param* p = nullptr;
@@ -133,7 +133,7 @@ ConstantBuffer::eReturnCode ConstantBuffer::Set(std::string& name, float32 data)
     return eReturnCode::Ok;
 }
 
-ConstantBuffer::eReturnCode ConstantBuffer::Set(std::string& name, const Vector2& data)
+ConstantBuffer::eReturnCode ConstantBuffer::Set(const std::string& name, const Vector2& data)
 {
     uint32 offset = 0;
     Param* p = nullptr;
@@ -152,7 +152,7 @@ ConstantBuffer::eReturnCode ConstantBuffer::Set(std::string& name, const Vector2
     return eReturnCode::Ok;
 }
 
-ConstantBuffer::eReturnCode ConstantBuffer::Set(std::string& name, const Vector3& data)
+ConstantBuffer::eReturnCode ConstantBuffer::Set(const std::string& name, const Vector3& data)
 {
     uint32 offset = 0;
     Param* p = nullptr;
@@ -172,7 +172,7 @@ ConstantBuffer::eReturnCode ConstantBuffer::Set(std::string& name, const Vector3
     return eReturnCode::Ok;
 }
 
-ConstantBuffer::eReturnCode ConstantBuffer::Set(std::string& name, const Vector4& data)
+ConstantBuffer::eReturnCode ConstantBuffer::Set(const std::string& name, const Vector4& data)
 {
     uint32 offset = 0;
     Param* p = nullptr;
@@ -193,7 +193,7 @@ ConstantBuffer::eReturnCode ConstantBuffer::Set(std::string& name, const Vector4
     return eReturnCode::Ok;
 }
 
-ConstantBuffer::eReturnCode ConstantBuffer::Set(std::string& name, const Matrix3& data)
+ConstantBuffer::eReturnCode ConstantBuffer::Set(const std::string& name, const Matrix3& data)
 {
     uint32 offset = 0;
     Param* p = nullptr;
@@ -209,7 +209,7 @@ ConstantBuffer::eReturnCode ConstantBuffer::Set(std::string& name, const Matrix3
     return eReturnCode::Ok;
 }
 
-ConstantBuffer::eReturnCode ConstantBuffer::Set(std::string& name, const Matrix4& data)
+ConstantBuffer::eReturnCode ConstantBuffer::Set(const std::string& name, const Matrix4& data)
 {
     uint32 offset = 0;
     Param* p = nullptr;

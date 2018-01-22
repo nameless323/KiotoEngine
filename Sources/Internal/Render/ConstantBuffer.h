@@ -36,21 +36,23 @@ public:
 
     ConstantBuffer& operator= (const ConstantBuffer&) = delete;
 
-    eReturnCode Add(std::string& name, float32 data);
-    eReturnCode Add(std::string& name, const Vector2& data);
-    eReturnCode Add(std::string& name, const Vector3& data);
-    eReturnCode Add(std::string& name, const Vector4& data);
-    eReturnCode Add(std::string& name, const Matrix3& data);
-    eReturnCode Add(std::string& name, const Matrix4& data);
+    eReturnCode Add(const std::string& name, float32 data);
+    eReturnCode Add(const std::string& name, const Vector2& data);
+    eReturnCode Add(const std::string& name, const Vector3& data);
+    eReturnCode Add(const std::string& name, const Vector4& data);
+    eReturnCode Add(const std::string& name, const Matrix3& data);
+    eReturnCode Add(const std::string& name, const Matrix4& data);
 
-    eReturnCode Set(std::string& name, float32 data);
-    eReturnCode Set(std::string& name, const Vector2& data);
-    eReturnCode Set(std::string& name, const Vector3& data);
-    eReturnCode Set(std::string& name, const Vector4& data);
-    eReturnCode Set(std::string& name, const Matrix3& data);
-    eReturnCode Set(std::string& name, const Matrix4& data);
+    eReturnCode Set(const std::string& name, float32 data);
+    eReturnCode Set(const std::string& name, const Vector2& data);
+    eReturnCode Set(const std::string& name, const Vector3& data);
+    eReturnCode Set(const std::string& name, const Vector4& data);
+    eReturnCode Set(const std::string& name, const Matrix3& data);
+    eReturnCode Set(const std::string& name, const Matrix4& data);
 
     void ComposeBufferData();
+    float32* GetBufferData();
+    uint32 GetDataSize() const;
 
     uint16 GetIndex() const;
     uint16 GetSpace() const;
@@ -101,5 +103,15 @@ inline uint16 ConstantBuffer::GetSpace() const
 inline uint32 ConstantBuffer::GetKey() const
 {
     return m_key;
+}
+
+inline float32* ConstantBuffer::GetBufferData()
+{
+    return m_memData;
+}
+
+inline uint32 ConstantBuffer::GetDataSize() const
+{
+    return m_dataSize;
 }
 }
