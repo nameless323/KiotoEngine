@@ -51,7 +51,7 @@ ID3D12Resource* UploadBufferDX12::GetResource() const
 
 void UploadBufferDX12::UploadData(uint32 frameIndex, const float32* data)
 {
-    memcpy(m_data + frameIndex * m_frameDataSize, &data, m_rawDataSize);
+    memcpy(m_data + frameIndex * m_frameDataSize, data, m_rawDataSize);
 }
 
 const byte* const UploadBufferDX12::GetBufferStart() const
