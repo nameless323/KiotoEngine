@@ -30,6 +30,8 @@
 #include "Core/Scene.h"
 #include "Core/KiotoEngine.h" // [a_vorontsov] For now. TODO: render pass with render target and so on. This class shouldn't know 'bout camera and so on.
 
+#include "Render/DX12/Buffers/UploadBufferDX12.h"
+
 namespace Kioto::Renderer
 {
 
@@ -65,6 +67,7 @@ RendererDX12::RendererDX12()
 
 void RendererDX12::Init(uint16 width, uint16 height)
 {
+    engineBuffers.Init();
     for (auto& res : m_backBuffers)
         res.Handle = CurrentHandle++;
     m_depthStencil.Handle = CurrentHandle++;
@@ -292,13 +295,14 @@ void RendererDX12::LoadPipeline()
     ID3D12CommandList* cmdLists[] = { m_commandList.Get() };
     m_commandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
 
-    m_timeBuffer = std::make_unique<UploadBuffer<TimeConstantBuffer>>(FrameCount, true, m_device.Get());
+    //m_timeBuffer = std::make_unique<UploadBuffer<TimeConstantBuffer>>(FrameCount, true, m_device.Get());
     TimeConstantBuffer timeBuffer;
-    UpdateTimeCB(timeBuffer);
+    UpdateTimeCB();
+    m_timeBuffer_ = new UploadBufferDX12(FrameCount, engineBuffers.TimeCB.GetBufferData(), engineBuffers.TimeCB.GetDataSize(), true, m_device.Get());
 
-    m_timeBuffer->UploadData(0, timeBuffer);
-    m_timeBuffer->UploadData(1, timeBuffer);
-    m_timeBuffer->UploadData(2, timeBuffer);
+    m_timeBuffer_->UploadData(0, engineBuffers.TimeCB.GetBufferData());
+    m_timeBuffer_->UploadData(1, engineBuffers.TimeCB.GetBufferData());
+    m_timeBuffer_->UploadData(2, engineBuffers.TimeCB.GetBufferData());
 
     m_passBuffer = std::make_unique<UploadBuffer<PassBuffer>>(FrameCount, true, m_device.Get());
     PassBuffer passBuffer;
@@ -333,6 +337,7 @@ void RendererDX12::Shutdown()
         delete shader;
     }
     m_shaders.clear();
+    SafeDelete(m_timeBuffer_);
 
 #ifdef _DEBUG
     ComPtr<IDXGIDebug1> dxgiDebug;
@@ -477,9 +482,8 @@ void RendererDX12::Resize(uint16 width, uint16 heigth)
 
 void RendererDX12::Update(float32 dt)
 {
-    TimeConstantBuffer timeBuffer;
-    UpdateTimeCB(timeBuffer);
-    m_timeBuffer->UploadData(m_currentFrameIndex, timeBuffer);
+    UpdateTimeCB();
+    m_timeBuffer_->UploadData(m_currentFrameIndex, engineBuffers.TimeCB.GetBufferData());
 
     RenderObjectBuffer roBuffer;
     UpdateRenderObjectCB(roBuffer);
@@ -514,7 +518,7 @@ void RendererDX12::Present()
         m_commandList->OMSetRenderTargets(1, &currentBackBuffer->CPUdescriptorHandle, false, &currentDS->CPUdescriptorHandle);
 
         m_commandList->SetGraphicsRootSignature(m_rootSignature.Get());
-        m_commandList->SetGraphicsRootConstantBufferView(0, m_timeBuffer->GetElementGpuAddress(m_currentFrameIndex));
+        m_commandList->SetGraphicsRootConstantBufferView(0, m_timeBuffer_->GetFrameDataGpuAddress(m_currentFrameIndex));
         m_commandList->SetGraphicsRootConstantBufferView(1, m_passBuffer->GetElementGpuAddress(m_currentFrameIndex));
         m_commandList->SetGraphicsRootConstantBufferView(2, m_renderObjectBuffer->GetElementGpuAddress(m_currentFrameIndex));
 
@@ -633,15 +637,15 @@ void RendererDX12::ChangeFullScreenMode(bool fullScreen)
     Resize(m_width, m_height);
 }
 
-void RendererDX12::UpdateTimeCB(TimeConstantBuffer& buffer)
+void RendererDX12::UpdateTimeCB()
 {
     float32 timeFromStart = static_cast<float32>(GlobalTimer::GetTimeFromStart());
-    buffer.Time = Vector4(timeFromStart / 20.0f, timeFromStart, timeFromStart * 2, timeFromStart * 3);
-    buffer.SinTime = Vector4(sin(timeFromStart / 4.0f), sin(timeFromStart / 2.0f), sin(timeFromStart), sin(timeFromStart * 2.0f));
-    buffer.CosTime = Vector4(cos(timeFromStart / 4.0f), cos(timeFromStart / 2.0f), cos(timeFromStart), cos(timeFromStart * 2.0f));
+    engineBuffers.TimeCB.Set("Time", Vector4(timeFromStart / 20.0f, timeFromStart, timeFromStart * 2, timeFromStart * 3));
+    engineBuffers.TimeCB.Set("SinTime", Vector4(sin(timeFromStart / 4.0f), sin(timeFromStart / 2.0f), sin(timeFromStart), sin(timeFromStart * 2.0f)));
+    engineBuffers.TimeCB.Set("CosTime", Vector4(cos(timeFromStart / 4.0f), cos(timeFromStart / 2.0f), cos(timeFromStart), cos(timeFromStart * 2.0f)));
     float32 dt = static_cast<float32>(GlobalTimer::GetDeltaTime());
     float32 smoothDt = static_cast<float32>(GlobalTimer::GetSmoothDt());
-    buffer.DeltaTime = Vector4(dt, 1.0f / dt, smoothDt, 1.0f / smoothDt);
+    engineBuffers.TimeCB.Set("DeltaTime", Vector4(dt, 1.0f / dt, smoothDt, 1.0f / smoothDt));
 }
 
 void RendererDX12::UpdateRenderObjectCB(RenderObjectBuffer& buffer)

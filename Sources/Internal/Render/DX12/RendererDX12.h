@@ -26,6 +26,7 @@ namespace Kioto::Renderer
 {
 
 class VertexLayout;
+class UploadBufferDX12;
 namespace ShaderParser
 {
 struct ParseResult;
@@ -72,7 +73,7 @@ private:
     void LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format);
 
     void LoadPipeline();
-    void UpdateTimeCB(TimeConstantBuffer& buffer);
+    void UpdateTimeCB();
     void UpdateRenderObjectCB(RenderObjectBuffer& buffer);
     void UpdatePassCB(PassBuffer& buffer);
 
@@ -110,7 +111,7 @@ private:
     ShaderHandle m_ps;
     std::vector<ShaderDX12*> m_shaders;
 
-    std::unique_ptr<UploadBuffer<TimeConstantBuffer>> m_timeBuffer;
+    //std::unique_ptr<UploadBuffer<TimeConstantBuffer>> m_timeBuffer;
     std::unique_ptr<UploadBuffer<PassBuffer>> m_passBuffer;
     std::unique_ptr<UploadBuffer<RenderObjectBuffer>> m_renderObjectBuffer;
     std::unique_ptr<VertexBufferDX12> m_vertexBuffer;
@@ -122,6 +123,9 @@ private:
 
     std::vector<VertexLayoutDX12> m_inputLayouts;
     std::vector<CD3DX12_ROOT_PARAMETER1> CreateDXRootSignatureParamsPack(const ShaderParser::ParseResult& result);
+
+    EngineBuffers engineBuffers;
+    UploadBufferDX12* m_timeBuffer_ = nullptr;
 };
 
 inline TextureHandle RendererDX12::GetCurrentBackBufferHandle() const

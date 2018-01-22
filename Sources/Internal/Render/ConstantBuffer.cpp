@@ -76,7 +76,7 @@ ConstantBuffer::eReturnCode ConstantBuffer::Add(const std::string& name, const V
 
     Param p;
     p.name = name;
-    p.Type = eTypeName::v3;
+    p.Type = eTypeName::v4;
     p.Data = data;
     m_params.push_back(std::move(p));
     m_regenerateMemLayout = true;
@@ -178,7 +178,7 @@ ConstantBuffer::eReturnCode ConstantBuffer::Set(const std::string& name, const V
     Param* p = nullptr;
     if (!Find(name, offset, p))
         return eReturnCode::NotFound;
-    if (p->Type != eTypeName::v3)
+    if (p->Type != eTypeName::v4)
         return eReturnCode::TypesDontMatch;
     p->Data = data;
 
@@ -282,7 +282,7 @@ void ConstantBuffer::ComposeBufferData()
     }
 }
 
-bool ConstantBuffer::Find(const std::string& name, uint32& offsetInData, Param* resParam)
+bool ConstantBuffer::Find(const std::string& name, uint32& offsetInData, Param*& resParam)
 {
     offsetInData = 0;
     for (uint32 i = 0; i < m_params.size(); ++i)

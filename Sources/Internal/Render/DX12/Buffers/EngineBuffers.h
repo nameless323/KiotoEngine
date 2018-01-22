@@ -9,6 +9,7 @@
 
 #include "Math/Matrix4.h"
 #include "Math/Vector4.h"
+#include "Render/ConstantBuffer.h"
 
 namespace Kioto::Renderer
 {
@@ -40,5 +41,15 @@ struct PassBuffer
 struct MaterialBuffer
 {
     Vector4 Albedo;
+};
+
+class EngineBuffers
+{
+public:
+    void Init();
+
+    ConstantBuffer TimeCB{ 0, 1 };
+    ConstantBuffer RenderObjectCB{ 1, 1 };
+    ConstantBuffer PassCB{ 2, 1 };
 };
 }

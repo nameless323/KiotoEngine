@@ -76,7 +76,7 @@ private:
         std::variant<float32, Vector2, Vector3, Vector4, Matrix3, Matrix4> Data;
     };
 
-    bool Find(const std::string& name, uint32& offsetInData, Param* resParam);
+    bool Find(const std::string& name, uint32& offsetInData, Param*& resParam);
 
     uint16 m_index = 0;
     uint16 m_space = 0;
