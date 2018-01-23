@@ -302,18 +302,17 @@ void RendererDX12::LoadPipeline()
     m_timeBuffer->UploadData(1, engineBuffers.TimeCB.GetBufferData());
     m_timeBuffer->UploadData(2, engineBuffers.TimeCB.GetBufferData());
 
-    m_passBuffer_ = new UploadBufferDX12(FrameCount, engineBuffers.PassCB.GetBufferData(), engineBuffers.PassCB.GetDataSize(), true, m_device.Get());
+    m_passBuffer = new UploadBufferDX12(FrameCount, engineBuffers.PassCB.GetBufferData(), engineBuffers.PassCB.GetDataSize(), true, m_device.Get());
 
-    m_passBuffer_->UploadData(0, engineBuffers.PassCB.GetBufferData());
-    m_passBuffer_->UploadData(1, engineBuffers.PassCB.GetBufferData());
-    m_passBuffer_->UploadData(2, engineBuffers.PassCB.GetBufferData());
+    m_passBuffer->UploadData(0, engineBuffers.PassCB.GetBufferData());
+    m_passBuffer->UploadData(1, engineBuffers.PassCB.GetBufferData());
+    m_passBuffer->UploadData(2, engineBuffers.PassCB.GetBufferData());
 
-    m_renderObjectBuffer = std::make_unique<UploadBuffer<RenderObjectBuffer>>(FrameCount, true, m_device.Get());
-    RenderObjectBuffer roBuff;
-    UpdateRenderObjectCB(roBuff);
-    m_renderObjectBuffer->UploadData(0, roBuff);
-    m_renderObjectBuffer->UploadData(1, roBuff);
-    m_renderObjectBuffer->UploadData(2, roBuff);
+    m_renderObjectBuffer = new UploadBufferDX12(FrameCount, engineBuffers.RenderObjectCB.GetBufferData(), engineBuffers.RenderObjectCB.GetDataSize(), true, m_device.Get());
+    UpdateRenderObjectCB();
+    m_renderObjectBuffer->UploadData(0, engineBuffers.RenderObjectCB.GetBufferData());
+    m_renderObjectBuffer->UploadData(1, engineBuffers.RenderObjectCB.GetBufferData());
+    m_renderObjectBuffer->UploadData(2, engineBuffers.RenderObjectCB.GetBufferData());
 
     WaitForGPU();
 }
@@ -480,12 +479,11 @@ void RendererDX12::Update(float32 dt)
     UpdateTimeCB();
     m_timeBuffer->UploadData(m_currentFrameIndex, engineBuffers.TimeCB.GetBufferData());
 
-    RenderObjectBuffer roBuffer;
-    UpdateRenderObjectCB(roBuffer);
-    m_renderObjectBuffer->UploadData(m_currentFrameIndex, roBuffer);
+    UpdateRenderObjectCB();
+    m_renderObjectBuffer->UploadData(m_currentFrameIndex, engineBuffers.RenderObjectCB.GetBufferData());
 
     UpdatePassCB();
-    m_passBuffer_->UploadData(m_currentFrameIndex, engineBuffers.PassCB.GetBufferData());
+    m_passBuffer->UploadData(m_currentFrameIndex, engineBuffers.PassCB.GetBufferData());
 }
 
 void RendererDX12::Present()
@@ -513,8 +511,8 @@ void RendererDX12::Present()
 
         m_commandList->SetGraphicsRootSignature(m_rootSignature.Get());
         m_commandList->SetGraphicsRootConstantBufferView(0, m_timeBuffer->GetFrameDataGpuAddress(m_currentFrameIndex));
-        m_commandList->SetGraphicsRootConstantBufferView(1, m_passBuffer_->GetFrameDataGpuAddress(m_currentFrameIndex));
-        m_commandList->SetGraphicsRootConstantBufferView(2, m_renderObjectBuffer->GetElementGpuAddress(m_currentFrameIndex));
+        m_commandList->SetGraphicsRootConstantBufferView(1, m_passBuffer->GetFrameDataGpuAddress(m_currentFrameIndex));
+        m_commandList->SetGraphicsRootConstantBufferView(2, m_renderObjectBuffer->GetFrameDataGpuAddress(m_currentFrameIndex));
 
         ID3D12DescriptorHeap* descHeap[] = { m_textureHeap.Get() };
         m_commandList->SetDescriptorHeaps(_countof(descHeap), descHeap);
@@ -642,7 +640,7 @@ void RendererDX12::UpdateTimeCB()
     engineBuffers.TimeCB.Set("DeltaTime", Vector4(dt, 1.0f / dt, smoothDt, 1.0f / smoothDt));
 }
 
-void RendererDX12::UpdateRenderObjectCB(RenderObjectBuffer& buffer)
+void RendererDX12::UpdateRenderObjectCB()
 {
     static float32 angle = 0.0f;
     //angle += GlobalTimer::GetDeltaTime();
@@ -654,8 +652,8 @@ void RendererDX12::UpdateRenderObjectCB(RenderObjectBuffer& buffer)
     Matrix4 toModel;
     toWorld.Inversed(toModel);
 
-    buffer.ToModel = toModel.Tranposed();
-    buffer.ToWorld = toWorld.Tranposed();
+    engineBuffers.RenderObjectCB.Set("ToModel", toModel.Tranposed());
+    engineBuffers.RenderObjectCB.Set("ToWorld", toWorld.Tranposed());
 }
 
 void RendererDX12::UpdatePassCB()

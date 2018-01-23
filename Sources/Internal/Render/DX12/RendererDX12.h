@@ -74,7 +74,7 @@ private:
 
     void LoadPipeline();
     void UpdateTimeCB();
-    void UpdateRenderObjectCB(RenderObjectBuffer& buffer);
+    void UpdateRenderObjectCB();
     void UpdatePassCB();
 
     bool m_isTearingSupported = false; // [a_vorontsov] TODO: Properly handle when tearing is not supported.
@@ -111,7 +111,6 @@ private:
     ShaderHandle m_ps;
     std::vector<ShaderDX12*> m_shaders;
 
-    std::unique_ptr<UploadBuffer<RenderObjectBuffer>> m_renderObjectBuffer;
     std::unique_ptr<VertexBufferDX12> m_vertexBuffer;
     std::unique_ptr<IndexBufferDX12> m_indexBuffer;
 
@@ -124,7 +123,8 @@ private:
 
     EngineBuffers engineBuffers;
     UploadBufferDX12* m_timeBuffer = nullptr;
-    UploadBufferDX12* m_passBuffer_ = nullptr;
+    UploadBufferDX12* m_passBuffer = nullptr;
+    UploadBufferDX12* m_renderObjectBuffer = nullptr;
 };
 
 inline TextureHandle RendererDX12::GetCurrentBackBufferHandle() const
