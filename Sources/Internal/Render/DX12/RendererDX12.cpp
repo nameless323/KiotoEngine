@@ -30,6 +30,8 @@
 #include "Core/Scene.h"
 #include "Core/KiotoEngine.h" // [a_vorontsov] For now. TODO: render pass with render target and so on. This class shouldn't know 'bout camera and so on.
 
+#include "Render/DX12/Buffers/UploadBufferDX12.h"
+
 namespace Kioto::Renderer
 {
 
@@ -65,6 +67,7 @@ RendererDX12::RendererDX12()
 
 void RendererDX12::Init(uint16 width, uint16 height)
 {
+    engineBuffers.Init();
     for (auto& res : m_backBuffers)
         res.Handle = CurrentHandle++;
     m_depthStencil.Handle = CurrentHandle++;
@@ -184,8 +187,9 @@ void RendererDX12::LoadPipeline()
     ShaderHandle psHandle = ps->GetHandle();
 
     ShaderParser::ParseResult parseResult;
-    std::string shaderStr = ShaderParser::ParseShader(WstrToStr(shaderPath), nullptr).output;
+    parseResult = ShaderParser::ParseShader(WstrToStr(shaderPath), nullptr);
 
+    std::string shaderStr = parseResult.output;
     OutputDebugStringA(shaderStr.c_str());
     HRESULT hr = vs->Compile(shaderStr.c_str(), shaderStr.length() * sizeof(char), "vs", "vs_5_1", shaderFlags);
 
@@ -200,12 +204,7 @@ void RendererDX12::LoadPipeline()
     ThrowIfFailed(hr);
     m_shaders.push_back(ps);
 
-    D3D12_INPUT_ELEMENT_DESC inputElementDesc[] =
-    {
-        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-        { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-    };
+    VertexLayoutHandle vertexLayoutHandle = GenerateVertexLayout(parseResult.vertexLayout);
 
     D3D12_FEATURE_DATA_ROOT_SIGNATURE signatureData = {};
     signatureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
@@ -226,13 +225,13 @@ void RendererDX12::LoadPipeline()
     texRange.RegisterSpace = 0;
     texRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 
-    CD3DX12_ROOT_PARAMETER1 rootParam[4];
-    rootParam[0].InitAsConstantBufferView(0, 1);
-    rootParam[1].InitAsConstantBufferView(1, 1);
-    rootParam[2].InitAsConstantBufferView(2, 1);
-    rootParam[3].InitAsDescriptorTable(1, &texRange, D3D12_SHADER_VISIBILITY_PIXEL);
+    auto rootParams = CreateDXRootSignatureParamsPack(parseResult);
+    CD3DX12_ROOT_PARAMETER1 table;
+    table.InitAsDescriptorTable(1, &texRange, D3D12_SHADER_VISIBILITY_PIXEL);
+    rootParams.push_back(table);
+
     auto staticSamplers = GetStaticSamplers();
-    rootSignatureDesc.Init_1_1(4, rootParam, static_cast<UINT>(staticSamplers.size()), staticSamplers.data(), flags);
+    rootSignatureDesc.Init_1_1(static_cast<UINT>(rootParams.size()), rootParams.data(), static_cast<UINT>(staticSamplers.size()), staticSamplers.data(), flags);
 
     ComPtr<ID3DBlob> signature;
     ComPtr<ID3DBlob> rootSignatureCreationError;
@@ -246,7 +245,9 @@ void RendererDX12::LoadPipeline()
 
     D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};
 
-    desc.InputLayout = { inputElementDesc, _countof(inputElementDesc) };
+    auto currentLayout = FindVertexLayout(vertexLayoutHandle);
+
+    desc.InputLayout = { currentLayout->data(), static_cast<UINT>(currentLayout->size()) };
     desc.pRootSignature = m_rootSignature.Get();
     desc.VS = *GetShaderBytecode(vsHandle);
     desc.PS = *GetShaderBytecode(psHandle);
@@ -294,29 +295,24 @@ void RendererDX12::LoadPipeline()
     ID3D12CommandList* cmdLists[] = { m_commandList.Get() };
     m_commandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
 
-    m_timeBuffer = std::make_unique<UploadBuffer<TimeConstantBuffer>>(FrameCount, true, m_device.Get());
-    TimeConstantBuffer timeBuffer;
-    UpdateTimeCB(timeBuffer);
+    UpdateTimeCB();
+    m_timeBuffer = new UploadBufferDX12(FrameCount, engineBuffers.TimeCB.GetBufferData(), engineBuffers.TimeCB.GetDataSize(), true, m_device.Get());
 
-    m_timeBuffer->UploadData(0, timeBuffer);
-    m_timeBuffer->UploadData(1, timeBuffer);
-    m_timeBuffer->UploadData(2, timeBuffer);
+    m_timeBuffer->UploadData(0, engineBuffers.TimeCB.GetBufferData());
+    m_timeBuffer->UploadData(1, engineBuffers.TimeCB.GetBufferData());
+    m_timeBuffer->UploadData(2, engineBuffers.TimeCB.GetBufferData());
 
-    m_passBuffer = std::make_unique<UploadBuffer<PassBuffer>>(FrameCount, true, m_device.Get());
-    PassBuffer passBuffer;
+    m_passBuffer = new UploadBufferDX12(FrameCount, engineBuffers.PassCB.GetBufferData(), engineBuffers.PassCB.GetDataSize(), true, m_device.Get());
 
-    passBuffer.View = Matrix4::Identity;
-    passBuffer.ViewProjection = Matrix4::Identity;
-    m_passBuffer->UploadData(0, passBuffer);
-    m_passBuffer->UploadData(1, passBuffer);
-    m_passBuffer->UploadData(2, passBuffer);
+    m_passBuffer->UploadData(0, engineBuffers.PassCB.GetBufferData());
+    m_passBuffer->UploadData(1, engineBuffers.PassCB.GetBufferData());
+    m_passBuffer->UploadData(2, engineBuffers.PassCB.GetBufferData());
 
-    m_renderObjectBuffer = std::make_unique<UploadBuffer<RenderObjectBuffer>>(FrameCount, true, m_device.Get());
-    RenderObjectBuffer roBuff;
-    UpdateRenderObjectCB(roBuff);
-    m_renderObjectBuffer->UploadData(0, roBuff);
-    m_renderObjectBuffer->UploadData(1, roBuff);
-    m_renderObjectBuffer->UploadData(2, roBuff);
+    m_renderObjectBuffer = new UploadBufferDX12(FrameCount, engineBuffers.RenderObjectCB.GetBufferData(), engineBuffers.RenderObjectCB.GetDataSize(), true, m_device.Get());
+    UpdateRenderObjectCB();
+    m_renderObjectBuffer->UploadData(0, engineBuffers.RenderObjectCB.GetBufferData());
+    m_renderObjectBuffer->UploadData(1, engineBuffers.RenderObjectCB.GetBufferData());
+    m_renderObjectBuffer->UploadData(2, engineBuffers.RenderObjectCB.GetBufferData());
 
     WaitForGPU();
 }
@@ -335,6 +331,7 @@ void RendererDX12::Shutdown()
         delete shader;
     }
     m_shaders.clear();
+    SafeDelete(m_timeBuffer);
 
 #ifdef _DEBUG
     ComPtr<IDXGIDebug1> dxgiDebug;
@@ -479,17 +476,14 @@ void RendererDX12::Resize(uint16 width, uint16 heigth)
 
 void RendererDX12::Update(float32 dt)
 {
-    TimeConstantBuffer timeBuffer;
-    UpdateTimeCB(timeBuffer);
-    m_timeBuffer->UploadData(m_currentFrameIndex, timeBuffer);
+    UpdateTimeCB();
+    m_timeBuffer->UploadData(m_currentFrameIndex, engineBuffers.TimeCB.GetBufferData());
 
-    RenderObjectBuffer roBuffer;
-    UpdateRenderObjectCB(roBuffer);
-    m_renderObjectBuffer->UploadData(m_currentFrameIndex, roBuffer);
+    UpdateRenderObjectCB();
+    m_renderObjectBuffer->UploadData(m_currentFrameIndex, engineBuffers.RenderObjectCB.GetBufferData());
 
-    PassBuffer pBuffer;
-    UpdatePassCB(pBuffer);
-    m_passBuffer->UploadData(m_currentFrameIndex, pBuffer);
+    UpdatePassCB();
+    m_passBuffer->UploadData(m_currentFrameIndex, engineBuffers.PassCB.GetBufferData());
 }
 
 void RendererDX12::Present()
@@ -516,9 +510,9 @@ void RendererDX12::Present()
         m_commandList->OMSetRenderTargets(1, &currentBackBuffer->CPUdescriptorHandle, false, &currentDS->CPUdescriptorHandle);
 
         m_commandList->SetGraphicsRootSignature(m_rootSignature.Get());
-        m_commandList->SetGraphicsRootConstantBufferView(0, m_timeBuffer->GetElementGpuAddress(m_currentFrameIndex));
-        m_commandList->SetGraphicsRootConstantBufferView(1, m_passBuffer->GetElementGpuAddress(m_currentFrameIndex));
-        m_commandList->SetGraphicsRootConstantBufferView(2, m_renderObjectBuffer->GetElementGpuAddress(m_currentFrameIndex));
+        m_commandList->SetGraphicsRootConstantBufferView(0, m_timeBuffer->GetFrameDataGpuAddress(m_currentFrameIndex));
+        m_commandList->SetGraphicsRootConstantBufferView(1, m_passBuffer->GetFrameDataGpuAddress(m_currentFrameIndex));
+        m_commandList->SetGraphicsRootConstantBufferView(2, m_renderObjectBuffer->GetFrameDataGpuAddress(m_currentFrameIndex));
 
         ID3D12DescriptorHeap* descHeap[] = { m_textureHeap.Get() };
         m_commandList->SetDescriptorHeaps(_countof(descHeap), descHeap);
@@ -635,18 +629,18 @@ void RendererDX12::ChangeFullScreenMode(bool fullScreen)
     Resize(m_width, m_height);
 }
 
-void RendererDX12::UpdateTimeCB(TimeConstantBuffer& buffer)
+void RendererDX12::UpdateTimeCB()
 {
     float32 timeFromStart = static_cast<float32>(GlobalTimer::GetTimeFromStart());
-    buffer.Time = Vector4(timeFromStart / 20.0f, timeFromStart, timeFromStart * 2, timeFromStart * 3);
-    buffer.SinTime = Vector4(sin(timeFromStart / 4.0f), sin(timeFromStart / 2.0f), sin(timeFromStart), sin(timeFromStart * 2.0f));
-    buffer.CosTime = Vector4(cos(timeFromStart / 4.0f), cos(timeFromStart / 2.0f), cos(timeFromStart), cos(timeFromStart * 2.0f));
+    engineBuffers.TimeCB.Set("Time", Vector4(timeFromStart / 20.0f, timeFromStart, timeFromStart * 2, timeFromStart * 3));
+    engineBuffers.TimeCB.Set("SinTime", Vector4(sin(timeFromStart / 4.0f), sin(timeFromStart / 2.0f), sin(timeFromStart), sin(timeFromStart * 2.0f)));
+    engineBuffers.TimeCB.Set("CosTime", Vector4(cos(timeFromStart / 4.0f), cos(timeFromStart / 2.0f), cos(timeFromStart), cos(timeFromStart * 2.0f)));
     float32 dt = static_cast<float32>(GlobalTimer::GetDeltaTime());
     float32 smoothDt = static_cast<float32>(GlobalTimer::GetSmoothDt());
-    buffer.DeltaTime = Vector4(dt, 1.0f / dt, smoothDt, 1.0f / smoothDt);
+    engineBuffers.TimeCB.Set("DeltaTime", Vector4(dt, 1.0f / dt, smoothDt, 1.0f / smoothDt));
 }
 
-void RendererDX12::UpdateRenderObjectCB(RenderObjectBuffer& buffer)
+void RendererDX12::UpdateRenderObjectCB()
 {
     static float32 angle = 0.0f;
     //angle += GlobalTimer::GetDeltaTime();
@@ -658,15 +652,15 @@ void RendererDX12::UpdateRenderObjectCB(RenderObjectBuffer& buffer)
     Matrix4 toModel;
     toWorld.Inversed(toModel);
 
-    buffer.ToModel = toModel.Tranposed();
-    buffer.ToWorld = toWorld.Tranposed();
+    engineBuffers.RenderObjectCB.Set("ToModel", toModel.Tranposed());
+    engineBuffers.RenderObjectCB.Set("ToWorld", toWorld.Tranposed());
 }
 
-void RendererDX12::UpdatePassCB(PassBuffer& buffer)
+void RendererDX12::UpdatePassCB()
 {
     CameraComponent* cc = Kioto::GetScene()->GetCameraSystem()->GetMainCamera();
-    buffer.View = cc->GetView().Tranposed();
-    buffer.ViewProjection = cc->GetVP().Tranposed();
+    engineBuffers.PassCB.Set("View", cc->GetView().Tranposed());
+    engineBuffers.PassCB.Set("ViewProjection", cc->GetVP().Tranposed());
 }
 
 VertexLayoutHandle RendererDX12::GenerateVertexLayout(const VertexLayout& layout)
@@ -721,6 +715,18 @@ const std::vector<D3D12_INPUT_ELEMENT_DESC>* RendererDX12::FindVertexLayout(Vert
             return &l.LayoutDX;
     }
     return nullptr;
+}
+
+std::vector<CD3DX12_ROOT_PARAMETER1> RendererDX12::CreateDXRootSignatureParamsPack(const ShaderParser::ParseResult& result)
+{
+    std::vector<CD3DX12_ROOT_PARAMETER1> res;
+    for (size_t i = 0; i < result.constantBuffers.size(); ++i)
+    {
+        CD3DX12_ROOT_PARAMETER1 param;
+        param.InitAsConstantBufferView(result.constantBuffers[i].GetIndex(), result.constantBuffers[i].GetSpace());
+        res.push_back(param);
+    }
+    return res;
 }
 
 }

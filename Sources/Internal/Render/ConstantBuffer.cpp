@@ -15,7 +15,7 @@ ConstantBuffer::ConstantBuffer(uint16 index, uint16 space)
 {
 }
 
-ConstantBuffer::eReturnCode ConstantBuffer::Add(std::string& name, float32 data)
+ConstantBuffer::eReturnCode ConstantBuffer::Add(const std::string& name, float32 data)
 {
     uint32 offset = 0;
     Param* pptr = nullptr;
@@ -32,7 +32,7 @@ ConstantBuffer::eReturnCode ConstantBuffer::Add(std::string& name, float32 data)
     return eReturnCode::Ok;
 }
 
-ConstantBuffer::eReturnCode ConstantBuffer::Add(std::string& name, const Vector2& data)
+ConstantBuffer::eReturnCode ConstantBuffer::Add(const std::string& name, const Vector2& data)
 {
     uint32 offset = 0;
     Param* pptr = nullptr;
@@ -49,7 +49,7 @@ ConstantBuffer::eReturnCode ConstantBuffer::Add(std::string& name, const Vector2
     return eReturnCode::Ok;
 }
 
-ConstantBuffer::eReturnCode ConstantBuffer::Add(std::string& name, const Vector3& data)
+ConstantBuffer::eReturnCode ConstantBuffer::Add(const std::string& name, const Vector3& data)
 {
     uint32 offset = 0;
     Param* pptr = nullptr;
@@ -66,7 +66,7 @@ ConstantBuffer::eReturnCode ConstantBuffer::Add(std::string& name, const Vector3
     return eReturnCode::Ok;
 }
 
-ConstantBuffer::eReturnCode ConstantBuffer::Add(std::string& name, const Vector4& data)
+ConstantBuffer::eReturnCode ConstantBuffer::Add(const std::string& name, const Vector4& data)
 {
     uint32 offset = 0;
     Param* pptr = nullptr;
@@ -76,14 +76,14 @@ ConstantBuffer::eReturnCode ConstantBuffer::Add(std::string& name, const Vector4
 
     Param p;
     p.name = name;
-    p.Type = eTypeName::v3;
+    p.Type = eTypeName::v4;
     p.Data = data;
     m_params.push_back(std::move(p));
     m_regenerateMemLayout = true;
     return eReturnCode::Ok;
 }
 
-ConstantBuffer::eReturnCode ConstantBuffer::Add(std::string& name, const Matrix3& data)
+ConstantBuffer::eReturnCode ConstantBuffer::Add(const std::string& name, const Matrix3& data)
 {
     uint32 offset = 0;
     Param* pptr = nullptr;
@@ -100,7 +100,7 @@ ConstantBuffer::eReturnCode ConstantBuffer::Add(std::string& name, const Matrix3
     return eReturnCode::Ok;
 }
 
-ConstantBuffer::eReturnCode ConstantBuffer::Add(std::string& name, const Matrix4& data)
+ConstantBuffer::eReturnCode ConstantBuffer::Add(const std::string& name, const Matrix4& data)
 {
     uint32 offset = 0;
     Param* pptr = nullptr;
@@ -117,7 +117,7 @@ ConstantBuffer::eReturnCode ConstantBuffer::Add(std::string& name, const Matrix4
     return eReturnCode::Ok;
 }
 
-ConstantBuffer::eReturnCode ConstantBuffer::Set(std::string& name, float32 data)
+ConstantBuffer::eReturnCode ConstantBuffer::Set(const std::string& name, float32 data)
 {
     uint32 offset = 0;
     Param* p = nullptr;
@@ -133,7 +133,7 @@ ConstantBuffer::eReturnCode ConstantBuffer::Set(std::string& name, float32 data)
     return eReturnCode::Ok;
 }
 
-ConstantBuffer::eReturnCode ConstantBuffer::Set(std::string& name, const Vector2& data)
+ConstantBuffer::eReturnCode ConstantBuffer::Set(const std::string& name, const Vector2& data)
 {
     uint32 offset = 0;
     Param* p = nullptr;
@@ -152,7 +152,7 @@ ConstantBuffer::eReturnCode ConstantBuffer::Set(std::string& name, const Vector2
     return eReturnCode::Ok;
 }
 
-ConstantBuffer::eReturnCode ConstantBuffer::Set(std::string& name, const Vector3& data)
+ConstantBuffer::eReturnCode ConstantBuffer::Set(const std::string& name, const Vector3& data)
 {
     uint32 offset = 0;
     Param* p = nullptr;
@@ -172,13 +172,13 @@ ConstantBuffer::eReturnCode ConstantBuffer::Set(std::string& name, const Vector3
     return eReturnCode::Ok;
 }
 
-ConstantBuffer::eReturnCode ConstantBuffer::Set(std::string& name, const Vector4& data)
+ConstantBuffer::eReturnCode ConstantBuffer::Set(const std::string& name, const Vector4& data)
 {
     uint32 offset = 0;
     Param* p = nullptr;
     if (!Find(name, offset, p))
         return eReturnCode::NotFound;
-    if (p->Type != eTypeName::v3)
+    if (p->Type != eTypeName::v4)
         return eReturnCode::TypesDontMatch;
     p->Data = data;
 
@@ -193,7 +193,7 @@ ConstantBuffer::eReturnCode ConstantBuffer::Set(std::string& name, const Vector4
     return eReturnCode::Ok;
 }
 
-ConstantBuffer::eReturnCode ConstantBuffer::Set(std::string& name, const Matrix3& data)
+ConstantBuffer::eReturnCode ConstantBuffer::Set(const std::string& name, const Matrix3& data)
 {
     uint32 offset = 0;
     Param* p = nullptr;
@@ -204,12 +204,12 @@ ConstantBuffer::eReturnCode ConstantBuffer::Set(std::string& name, const Matrix3
     p->Data = data;
 
     if (!m_regenerateMemLayout)
-        memcpy(m_memData + offset, data.data, sizeof(9 * sizeof(float32)));
+        memcpy(m_memData + offset, data.data, 9 * sizeof(float32));
 
     return eReturnCode::Ok;
 }
 
-ConstantBuffer::eReturnCode ConstantBuffer::Set(std::string& name, const Matrix4& data)
+ConstantBuffer::eReturnCode ConstantBuffer::Set(const std::string& name, const Matrix4& data)
 {
     uint32 offset = 0;
     Param* p = nullptr;
@@ -220,7 +220,7 @@ ConstantBuffer::eReturnCode ConstantBuffer::Set(std::string& name, const Matrix4
     p->Data = data;
 
     if (!m_regenerateMemLayout)
-        memcpy(m_memData + offset, data.data, sizeof(16 * sizeof(float32)));
+        memcpy(m_memData + offset, data.data, 16 * sizeof(float32));
 
     return eReturnCode::Ok;
 }
@@ -270,19 +270,19 @@ void ConstantBuffer::ComposeBufferData()
         else if (param.Type == eTypeName::m3)
         {
             Matrix3 d = std::get<Matrix3>(param.Data);
-            memcpy(ptr, d.data, sizeof(9 * sizeof(float32)));
+            memcpy(ptr, d.data, 9 * sizeof(float32));
             ptr += 9;
         }
         else if (param.Type == eTypeName::m4)
         {
             Matrix4 d = std::get<Matrix4>(param.Data);
-            memcpy(ptr, d.data, sizeof(16 * sizeof(float32)));
+            memcpy(ptr, d.data, 16 * sizeof(float32));
             ptr += 16;
         }
     }
 }
 
-bool ConstantBuffer::Find(const std::string& name, uint32& offsetInData, Param* resParam)
+bool ConstantBuffer::Find(const std::string& name, uint32& offsetInData, Param*& resParam)
 {
     offsetInData = 0;
     for (uint32 i = 0; i < m_params.size(); ++i)

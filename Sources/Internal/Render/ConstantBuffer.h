@@ -36,21 +36,27 @@ public:
 
     ConstantBuffer& operator= (const ConstantBuffer&) = delete;
 
-    eReturnCode Add(std::string& name, float32 data);
-    eReturnCode Add(std::string& name, const Vector2& data);
-    eReturnCode Add(std::string& name, const Vector3& data);
-    eReturnCode Add(std::string& name, const Vector4& data);
-    eReturnCode Add(std::string& name, const Matrix3& data);
-    eReturnCode Add(std::string& name, const Matrix4& data);
+    eReturnCode Add(const std::string& name, float32 data);
+    eReturnCode Add(const std::string& name, const Vector2& data);
+    eReturnCode Add(const std::string& name, const Vector3& data);
+    eReturnCode Add(const std::string& name, const Vector4& data);
+    eReturnCode Add(const std::string& name, const Matrix3& data);
+    eReturnCode Add(const std::string& name, const Matrix4& data);
 
-    eReturnCode Set(std::string& name, float32 data);
-    eReturnCode Set(std::string& name, const Vector2& data);
-    eReturnCode Set(std::string& name, const Vector3& data);
-    eReturnCode Set(std::string& name, const Vector4& data);
-    eReturnCode Set(std::string& name, const Matrix3& data);
-    eReturnCode Set(std::string& name, const Matrix4& data);
+    eReturnCode Set(const std::string& name, float32 data);
+    eReturnCode Set(const std::string& name, const Vector2& data);
+    eReturnCode Set(const std::string& name, const Vector3& data);
+    eReturnCode Set(const std::string& name, const Vector4& data);
+    eReturnCode Set(const std::string& name, const Matrix3& data);
+    eReturnCode Set(const std::string& name, const Matrix4& data);
 
     void ComposeBufferData();
+    float32* GetBufferData();
+    uint32 GetDataSize() const;
+
+    uint16 GetIndex() const;
+    uint16 GetSpace() const;
+    uint32 GetKey() const;
 
 private:
 
@@ -70,7 +76,7 @@ private:
         std::variant<float32, Vector2, Vector3, Vector4, Matrix3, Matrix4> Data;
     };
 
-    bool Find(const std::string& name, uint32& offsetInData, Param* resParam);
+    bool Find(const std::string& name, uint32& offsetInData, Param*& resParam);
 
     uint16 m_index = 0;
     uint16 m_space = 0;
@@ -83,4 +89,29 @@ private:
     uint32 m_dataSize = 0;
     uint32 m_dataSize4ByteElem = 0;
 };
+
+inline uint16 ConstantBuffer::GetIndex() const
+{
+    return m_index;
+}
+
+inline uint16 ConstantBuffer::GetSpace() const
+{
+    return m_space;
+}
+
+inline uint32 ConstantBuffer::GetKey() const
+{
+    return m_key;
+}
+
+inline float32* ConstantBuffer::GetBufferData()
+{
+    return m_memData;
+}
+
+inline uint32 ConstantBuffer::GetDataSize() const
+{
+    return m_dataSize;
+}
 }

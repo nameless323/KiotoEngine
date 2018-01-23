@@ -15,7 +15,7 @@ namespace Kioto::Renderer
 {
 static inline std::map<eVertexSemantic, std::string> SemanticNames =
 {
-    { eVertexSemantic::Position, "POSIITON" },
+    { eVertexSemantic::Position, "POSITION" },
     { eVertexSemantic::Normal, "NORMAL" },
     { eVertexSemantic::Texcoord, "TEXCOORD" },
     { eVertexSemantic::Color, "COLOR" },

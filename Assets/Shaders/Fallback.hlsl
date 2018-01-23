@@ -113,7 +113,7 @@ vOut vs(vIn i)
 
 float4 ps(vOut i) : SV_Target
 {
-    return Diffuse.Sample(LinearClampSampl, i.uv);
+    return Diffuse.Sample(LinearClampSampl, i.uv) * (SinTime.w * 0.5f + 0.5f);
 }
 
 /*
