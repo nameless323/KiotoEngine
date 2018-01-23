@@ -295,23 +295,18 @@ void RendererDX12::LoadPipeline()
     ID3D12CommandList* cmdLists[] = { m_commandList.Get() };
     m_commandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
 
-    //m_timeBuffer = std::make_unique<UploadBuffer<TimeConstantBuffer>>(FrameCount, true, m_device.Get());
-    TimeConstantBuffer timeBuffer;
     UpdateTimeCB();
-    m_timeBuffer_ = new UploadBufferDX12(FrameCount, engineBuffers.TimeCB.GetBufferData(), engineBuffers.TimeCB.GetDataSize(), true, m_device.Get());
+    m_timeBuffer = new UploadBufferDX12(FrameCount, engineBuffers.TimeCB.GetBufferData(), engineBuffers.TimeCB.GetDataSize(), true, m_device.Get());
 
-    m_timeBuffer_->UploadData(0, engineBuffers.TimeCB.GetBufferData());
-    m_timeBuffer_->UploadData(1, engineBuffers.TimeCB.GetBufferData());
-    m_timeBuffer_->UploadData(2, engineBuffers.TimeCB.GetBufferData());
+    m_timeBuffer->UploadData(0, engineBuffers.TimeCB.GetBufferData());
+    m_timeBuffer->UploadData(1, engineBuffers.TimeCB.GetBufferData());
+    m_timeBuffer->UploadData(2, engineBuffers.TimeCB.GetBufferData());
 
-    m_passBuffer = std::make_unique<UploadBuffer<PassBuffer>>(FrameCount, true, m_device.Get());
-    PassBuffer passBuffer;
+    m_passBuffer_ = new UploadBufferDX12(FrameCount, engineBuffers.PassCB.GetBufferData(), engineBuffers.PassCB.GetDataSize(), true, m_device.Get());
 
-    passBuffer.View = Matrix4::Identity;
-    passBuffer.ViewProjection = Matrix4::Identity;
-    m_passBuffer->UploadData(0, passBuffer);
-    m_passBuffer->UploadData(1, passBuffer);
-    m_passBuffer->UploadData(2, passBuffer);
+    m_passBuffer_->UploadData(0, engineBuffers.PassCB.GetBufferData());
+    m_passBuffer_->UploadData(1, engineBuffers.PassCB.GetBufferData());
+    m_passBuffer_->UploadData(2, engineBuffers.PassCB.GetBufferData());
 
     m_renderObjectBuffer = std::make_unique<UploadBuffer<RenderObjectBuffer>>(FrameCount, true, m_device.Get());
     RenderObjectBuffer roBuff;
@@ -337,7 +332,7 @@ void RendererDX12::Shutdown()
         delete shader;
     }
     m_shaders.clear();
-    SafeDelete(m_timeBuffer_);
+    SafeDelete(m_timeBuffer);
 
 #ifdef _DEBUG
     ComPtr<IDXGIDebug1> dxgiDebug;
@@ -483,15 +478,14 @@ void RendererDX12::Resize(uint16 width, uint16 heigth)
 void RendererDX12::Update(float32 dt)
 {
     UpdateTimeCB();
-    m_timeBuffer_->UploadData(m_currentFrameIndex, engineBuffers.TimeCB.GetBufferData());
+    m_timeBuffer->UploadData(m_currentFrameIndex, engineBuffers.TimeCB.GetBufferData());
 
     RenderObjectBuffer roBuffer;
     UpdateRenderObjectCB(roBuffer);
     m_renderObjectBuffer->UploadData(m_currentFrameIndex, roBuffer);
 
-    PassBuffer pBuffer;
-    UpdatePassCB(pBuffer);
-    m_passBuffer->UploadData(m_currentFrameIndex, pBuffer);
+    UpdatePassCB();
+    m_passBuffer_->UploadData(m_currentFrameIndex, engineBuffers.PassCB.GetBufferData());
 }
 
 void RendererDX12::Present()
@@ -518,8 +512,8 @@ void RendererDX12::Present()
         m_commandList->OMSetRenderTargets(1, &currentBackBuffer->CPUdescriptorHandle, false, &currentDS->CPUdescriptorHandle);
 
         m_commandList->SetGraphicsRootSignature(m_rootSignature.Get());
-        m_commandList->SetGraphicsRootConstantBufferView(0, m_timeBuffer_->GetFrameDataGpuAddress(m_currentFrameIndex));
-        m_commandList->SetGraphicsRootConstantBufferView(1, m_passBuffer->GetElementGpuAddress(m_currentFrameIndex));
+        m_commandList->SetGraphicsRootConstantBufferView(0, m_timeBuffer->GetFrameDataGpuAddress(m_currentFrameIndex));
+        m_commandList->SetGraphicsRootConstantBufferView(1, m_passBuffer_->GetFrameDataGpuAddress(m_currentFrameIndex));
         m_commandList->SetGraphicsRootConstantBufferView(2, m_renderObjectBuffer->GetElementGpuAddress(m_currentFrameIndex));
 
         ID3D12DescriptorHeap* descHeap[] = { m_textureHeap.Get() };
@@ -664,11 +658,11 @@ void RendererDX12::UpdateRenderObjectCB(RenderObjectBuffer& buffer)
     buffer.ToWorld = toWorld.Tranposed();
 }
 
-void RendererDX12::UpdatePassCB(PassBuffer& buffer)
+void RendererDX12::UpdatePassCB()
 {
     CameraComponent* cc = Kioto::GetScene()->GetCameraSystem()->GetMainCamera();
-    buffer.View = cc->GetView().Tranposed();
-    buffer.ViewProjection = cc->GetVP().Tranposed();
+    engineBuffers.PassCB.Set("View", cc->GetView().Tranposed());
+    engineBuffers.PassCB.Set("ViewProjection", cc->GetVP().Tranposed());
 }
 
 VertexLayoutHandle RendererDX12::GenerateVertexLayout(const VertexLayout& layout)

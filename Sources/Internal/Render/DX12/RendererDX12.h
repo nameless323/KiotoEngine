@@ -75,7 +75,7 @@ private:
     void LoadPipeline();
     void UpdateTimeCB();
     void UpdateRenderObjectCB(RenderObjectBuffer& buffer);
-    void UpdatePassCB(PassBuffer& buffer);
+    void UpdatePassCB();
 
     bool m_isTearingSupported = false; // [a_vorontsov] TODO: Properly handle when tearing is not supported.
     UINT m_currentFrameIndex = -1;
@@ -111,8 +111,6 @@ private:
     ShaderHandle m_ps;
     std::vector<ShaderDX12*> m_shaders;
 
-    //std::unique_ptr<UploadBuffer<TimeConstantBuffer>> m_timeBuffer;
-    std::unique_ptr<UploadBuffer<PassBuffer>> m_passBuffer;
     std::unique_ptr<UploadBuffer<RenderObjectBuffer>> m_renderObjectBuffer;
     std::unique_ptr<VertexBufferDX12> m_vertexBuffer;
     std::unique_ptr<IndexBufferDX12> m_indexBuffer;
@@ -125,7 +123,8 @@ private:
     std::vector<CD3DX12_ROOT_PARAMETER1> CreateDXRootSignatureParamsPack(const ShaderParser::ParseResult& result);
 
     EngineBuffers engineBuffers;
-    UploadBufferDX12* m_timeBuffer_ = nullptr;
+    UploadBufferDX12* m_timeBuffer = nullptr;
+    UploadBufferDX12* m_passBuffer_ = nullptr;
 };
 
 inline TextureHandle RendererDX12::GetCurrentBackBufferHandle() const

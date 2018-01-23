@@ -204,7 +204,7 @@ ConstantBuffer::eReturnCode ConstantBuffer::Set(const std::string& name, const M
     p->Data = data;
 
     if (!m_regenerateMemLayout)
-        memcpy(m_memData + offset, data.data, sizeof(9 * sizeof(float32)));
+        memcpy(m_memData + offset, data.data, 9 * sizeof(float32));
 
     return eReturnCode::Ok;
 }
@@ -220,7 +220,7 @@ ConstantBuffer::eReturnCode ConstantBuffer::Set(const std::string& name, const M
     p->Data = data;
 
     if (!m_regenerateMemLayout)
-        memcpy(m_memData + offset, data.data, sizeof(16 * sizeof(float32)));
+        memcpy(m_memData + offset, data.data, 16 * sizeof(float32));
 
     return eReturnCode::Ok;
 }
@@ -270,13 +270,13 @@ void ConstantBuffer::ComposeBufferData()
         else if (param.Type == eTypeName::m3)
         {
             Matrix3 d = std::get<Matrix3>(param.Data);
-            memcpy(ptr, d.data, sizeof(9 * sizeof(float32)));
+            memcpy(ptr, d.data, 9 * sizeof(float32));
             ptr += 9;
         }
         else if (param.Type == eTypeName::m4)
         {
             Matrix4 d = std::get<Matrix4>(param.Data);
-            memcpy(ptr, d.data, sizeof(16 * sizeof(float32)));
+            memcpy(ptr, d.data, 16 * sizeof(float32));
             ptr += 16;
         }
     }
