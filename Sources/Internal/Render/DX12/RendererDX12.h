@@ -119,7 +119,7 @@ private:
     Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_textureHeap;
 
     std::vector<VertexLayoutDX12> m_inputLayouts;
-    std::vector<CD3DX12_ROOT_PARAMETER1> CreateDXRootSignatureParamsPack(const ShaderParser::ParseResult& result);
+    void CreateRootSignature(const ShaderParser::ParseResult& parseResult);
 
     EngineBuffers engineBuffers;
     UploadBufferDX12* m_timeBuffer = nullptr;

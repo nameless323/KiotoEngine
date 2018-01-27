@@ -29,6 +29,7 @@ public:
     eReturnCode AddTexture(const std::string& name, uint16 offset, Texture* texture);
     eReturnCode SetTexture(const std::string& name, Texture* texture);
 
+    uint16 GetTexturesCount() const;
     uint16 GetMaxOffset() const;
 
     bool GetRebuildState() const;
@@ -48,6 +49,11 @@ private:
     uint16 m_maxOffset = 0;
     bool m_needRebuild = true;
 };
+
+inline uint16 TextureSet::GetTexturesCount() const
+{
+    return static_cast<uint16>(m_data.size());
+}
 
 inline uint16 TextureSet::GetMaxOffset() const
 {

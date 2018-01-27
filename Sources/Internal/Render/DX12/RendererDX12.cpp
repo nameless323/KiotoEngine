@@ -204,44 +204,9 @@ void RendererDX12::LoadPipeline()
     ThrowIfFailed(hr);
     m_shaders.push_back(ps);
 
+    CreateRootSignature(parseResult); // [a_vorontsov] Root sig and shader 1 to 1 connection.
+
     VertexLayoutHandle vertexLayoutHandle = GenerateVertexLayout(parseResult.vertexLayout);
-
-    D3D12_FEATURE_DATA_ROOT_SIGNATURE signatureData = {};
-    signatureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
-
-    if (FAILED(m_device->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &signatureData, sizeof(signatureData))))
-    {
-        signatureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
-    }
-
-    D3D12_ROOT_SIGNATURE_FLAGS flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
-    CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
-
-    D3D12_DESCRIPTOR_RANGE1 texRange = {};
-    texRange.NumDescriptors = 1;
-    texRange.BaseShaderRegister = 0;
-    texRange.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
-    texRange.Flags = D3D12_DESCRIPTOR_RANGE_FLAG_NONE;
-    texRange.RegisterSpace = 0;
-    texRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-
-    auto rootParams = CreateDXRootSignatureParamsPack(parseResult);
-    CD3DX12_ROOT_PARAMETER1 table;
-    table.InitAsDescriptorTable(1, &texRange, D3D12_SHADER_VISIBILITY_PIXEL);
-    rootParams.push_back(table);
-
-    auto staticSamplers = GetStaticSamplers();
-    rootSignatureDesc.Init_1_1(static_cast<UINT>(rootParams.size()), rootParams.data(), static_cast<UINT>(staticSamplers.size()), staticSamplers.data(), flags);
-
-    ComPtr<ID3DBlob> signature;
-    ComPtr<ID3DBlob> rootSignatureCreationError;
-    ThrowIfFailed(D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, signatureData.HighestVersion, &signature, &rootSignatureCreationError));
-    hr = m_device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature));
-    if (hr != S_OK)
-        OutputDebugStringA(reinterpret_cast<char*>(rootSignatureCreationError->GetBufferPointer()));
-    ThrowIfFailed(hr);
-
-    NAME_D3D12_OBJECT(m_rootSignature);
 
     D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};
 
@@ -717,16 +682,53 @@ const std::vector<D3D12_INPUT_ELEMENT_DESC>* RendererDX12::FindVertexLayout(Vert
     return nullptr;
 }
 
-std::vector<CD3DX12_ROOT_PARAMETER1> RendererDX12::CreateDXRootSignatureParamsPack(const ShaderParser::ParseResult& result)
+void RendererDX12::CreateRootSignature(const ShaderParser::ParseResult& parseResult)
 {
-    std::vector<CD3DX12_ROOT_PARAMETER1> res;
-    for (size_t i = 0; i < result.constantBuffers.size(); ++i)
+    std::vector<CD3DX12_ROOT_PARAMETER1> rootParams;
+    for (size_t i = 0; i < parseResult.constantBuffers.size(); ++i)
     {
         CD3DX12_ROOT_PARAMETER1 param;
-        param.InitAsConstantBufferView(result.constantBuffers[i].GetIndex(), result.constantBuffers[i].GetSpace());
-        res.push_back(param);
+        param.InitAsConstantBufferView(parseResult.constantBuffers[i].GetIndex(), parseResult.constantBuffers[i].GetSpace());
+        rootParams.push_back(std::move(param));
     }
-    return res;
+    std::vector<D3D12_DESCRIPTOR_RANGE1> ranges; // [a_vorontsov] Careful, table remembers pointer to range.
+    ranges.reserve(parseResult.textureSet.GetTexturesCount());
+    if (parseResult.textureSet.GetTexturesCount() > 0)
+    {
+        ranges.emplace_back();
+        D3D12_DESCRIPTOR_RANGE1* texRange = &ranges.back();
+        texRange->NumDescriptors = 1;
+        texRange->BaseShaderRegister = 0;
+        texRange->OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+        texRange->Flags = D3D12_DESCRIPTOR_RANGE_FLAG_NONE;
+        texRange->RegisterSpace = 0;
+        texRange->RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+
+        CD3DX12_ROOT_PARAMETER1 table;
+        table.InitAsDescriptorTable(1, texRange, D3D12_SHADER_VISIBILITY_PIXEL);
+        rootParams.push_back(std::move(table));
+    }
+
+    D3D12_FEATURE_DATA_ROOT_SIGNATURE signatureData = {};
+    signatureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
+
+    if (FAILED(m_device->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &signatureData, sizeof(signatureData))))
+        signatureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
+
+    D3D12_ROOT_SIGNATURE_FLAGS flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+    CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
+    auto staticSamplers = GetStaticSamplers();
+    rootSignatureDesc.Init_1_1(static_cast<UINT>(rootParams.size()), rootParams.data(), static_cast<UINT>(staticSamplers.size()), staticSamplers.data(), flags);
+
+    ComPtr<ID3DBlob> signature;
+    ComPtr<ID3DBlob> rootSignatureCreationError;
+    ThrowIfFailed(D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, signatureData.HighestVersion, &signature, &rootSignatureCreationError));
+    HRESULT hr = m_device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature));
+    if (hr != S_OK)
+        OutputDebugStringA(reinterpret_cast<char*>(rootSignatureCreationError->GetBufferPointer()));
+    ThrowIfFailed(hr);
+
+    NAME_D3D12_OBJECT(m_rootSignature);
 }
 
 }
