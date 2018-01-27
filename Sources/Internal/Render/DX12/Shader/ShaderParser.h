@@ -12,6 +12,7 @@
 #include "Render/VertexLayout.h"
 #include "Render/PipelineState.h"
 #include "Render/RendererPublic.h"
+#include "Render/Texture/TextureSet.h"
 
 namespace Kioto::Renderer
 {
@@ -22,6 +23,7 @@ struct ParseResult
     std::string output;
     VertexLayout vertexLayout;
     PipelineState pipelineState;
+    TextureSet textureSet;
     std::vector<ConstantBuffer> constantBuffers;
 };
 

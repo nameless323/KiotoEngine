@@ -19,7 +19,8 @@ public:
     {
         Ok,
         AlreadyAdded,
-        NotFound
+        NotFound,
+        TextureIsEmpty
     };
 
     TextureSet() = default;

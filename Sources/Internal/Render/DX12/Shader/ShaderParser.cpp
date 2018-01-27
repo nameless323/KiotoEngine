@@ -16,7 +16,7 @@
 
 namespace Kioto::Renderer
 {
-namespace ShaderParser
+namespace ShaderParser // [a_vorontsov] Real parser via AST tree too time consuming for now.
 {
 
 std::vector<std::string> m_preprocessedHeaders;
@@ -438,19 +438,82 @@ std::vector<ConstantBuffer> GetConstantBuffers(const std::string& source)
     return res;
 }
 
-void ParseTextures(std::string& source)
+bool TryParseTextureIndex(const std::string& source, size_t pos, size_t bound, uint16& index)
 {
+    bool registerFound = false;
+    for (size_t i = pos; i < bound; ++i)
+    {
+        if (!registerFound)
+        {
+            if (!registerFound && source.substr(i, 8) == "register")
+            {
+                registerFound = true;
+                i += 8;
+            }
+            continue;
+        }
+        if (source[i] == 't' && isdigit(source[i + 1]))
+        {
+            index = CharToInt(source[i + 1]);
+            return true;
+        }
+    }
+    return false;
+}
+
+TextureSet ParseTextures(std::string& source)
+{
+    TextureSet res;
     size_t texBegin = source.find("[_IN_]");
     while (texBegin != std::string::npos)
     {
         source.erase(texBegin, 6);
+        size_t texEnd = source.find(";", texBegin);
+        if (texEnd == std::string::npos)
+            throw "wtf";
+        bool typeFound = false;
+        bool nameFound = false;
+        std::string name;
+        for (size_t i = texBegin; i < texEnd; ++i)
+        {
+            if (!typeFound)
+            {
+                if (source.substr(i, 9) == "Texture2D")
+                {
+                    i += 9;
+                    typeFound = true;
+                }
+                continue;
+            }
+
+            if (!nameFound)
+            {
+                if (IsEmptyChar(source[i]))
+                    continue;
+                name += source[i];
+                if (source[i + 1] == ' ')
+                    nameFound = true;
+                continue;
+            }
+
+            uint16 index = 0;
+            if (!TryParseTextureIndex(source, i, texEnd, index))
+                throw "wtf";
+
+            res.AddTexture(name, index, nullptr);
+            break;
+        }
+        if (!typeFound || !nameFound)
+            throw "wtf";
+
         texBegin = source.find("[_IN_]", texBegin);
     }
+    return res;
 }
 
 std::string DXPreprocess(const std::string& source, const std::vector<ShaderDefine>* const defines)
 {
-    Microsoft::WRL::ComPtr<ID3DBlob> rr; // [a_vorontsov] TODO: dependence from dx compiler. De better later.
+    Microsoft::WRL::ComPtr<ID3DBlob> rr; // [a_vorontsov] TODO: dependence from dx compiler. Do better later.
     Microsoft::WRL::ComPtr<ID3DBlob> err;
 
     const D3D_SHADER_MACRO* macroData = nullptr;
@@ -486,6 +549,7 @@ ParseResult ParseShader(const std::string& path, const std::vector<ShaderDefine>
     std::string shaderStr = AssetsSystem::ReadFileAsString(path);
     shaderStr = UnfoldIncludes(shaderStr, 0);
     GetPipelineState(shaderStr);
+    res.textureSet = ParseTextures(shaderStr);
     shaderStr = DXPreprocess(shaderStr, defines);
     OutputDebugStringA(shaderStr.c_str());
     res.vertexLayout = GetVertexLayout(shaderStr);
