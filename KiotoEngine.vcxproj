@@ -253,6 +253,7 @@
     <ClCompile Include="Sources\Internal\Render\PipelineState.cpp" />
     <ClCompile Include="Sources\Internal\Render\Renderer.cpp" />
     <ClCompile Include="Sources\Internal\Render\RenderPass\RenderPass.cpp" />
+    <ClCompile Include="Sources\Internal\Render\Texture\TextureDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\Texture\TextureSet.cpp" />
     <ClCompile Include="Sources\Internal\Render\VertexLayout.cpp" />
     <ClCompile Include="Sources\Internal\Systems\CameraSystem.cpp" />

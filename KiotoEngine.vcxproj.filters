@@ -323,5 +323,8 @@
     <ClCompile Include="Sources\Internal\Render\Texture\TextureSet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Sources\Internal\Render\Texture\TextureDX12.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

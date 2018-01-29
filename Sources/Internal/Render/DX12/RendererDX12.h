@@ -25,6 +25,7 @@
 namespace Kioto::Renderer
 {
 
+class Texture;
 class VertexLayout;
 class UploadBufferDX12;
 namespace ShaderParser
@@ -53,6 +54,8 @@ public:
 
     TextureHandle GetCurrentBackBufferHandle() const;
     TextureHandle GetDepthStencilHandle() const;
+
+    void RegisterTexture(Texture* texture);
 
     VertexLayoutHandle GenerateVertexLayout(const VertexLayout& layout);
 
@@ -110,12 +113,13 @@ private:
     ShaderHandle m_vs;
     ShaderHandle m_ps;
     std::vector<ShaderDX12*> m_shaders;
+    std::vector<TextureDX12*> m_textures;
 
     std::unique_ptr<VertexBufferDX12> m_vertexBuffer;
     std::unique_ptr<IndexBufferDX12> m_indexBuffer;
 
     Mesh* m_box;
-    std::unique_ptr<TextureDX12> m_texture;
+    std::unique_ptr<TextureDX12> m_textureDX;
     Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_textureHeap;
 
     std::vector<VertexLayoutDX12> m_inputLayouts;
@@ -125,6 +129,8 @@ private:
     UploadBufferDX12* m_timeBuffer = nullptr;
     UploadBufferDX12* m_passBuffer = nullptr;
     UploadBufferDX12* m_renderObjectBuffer = nullptr;
+
+    Texture* m_texture = nullptr;
 };
 
 inline TextureHandle RendererDX12::GetCurrentBackBufferHandle() const

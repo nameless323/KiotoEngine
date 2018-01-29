@@ -31,6 +31,7 @@
 #include "Core/KiotoEngine.h" // [a_vorontsov] For now. TODO: render pass with render target and so on. This class shouldn't know 'bout camera and so on.
 
 #include "Render/DX12/Buffers/UploadBufferDX12.h"
+#include "Render/Texture/Texture.h"
 
 namespace Kioto::Renderer
 {
@@ -235,9 +236,10 @@ void RendererDX12::LoadPipeline()
     m_vertexBuffer = std::make_unique<VertexBufferDX12>(m_box->GetVertexData(), m_box->GetVertexDataSize(), m_box->GetVertexDataStride(), m_commandList.Get(), m_device.Get());
     m_indexBuffer = std::make_unique<IndexBufferDX12>(m_box->GetIndexData(), m_box->GetIndexDataSize(), m_commandList.Get(), m_device.Get(), IndexFormatToDXGI(m_box->GetIndexFormat()));
 
-    m_texture = std::make_unique<TextureDX12>();
-    m_texture->Path = AssetsSystem::GetAssetFullPath(L"Textures\\rick_and_morty.dds");
-    HRESULT texRes = DirectX::CreateDDSTextureFromFile12(m_device.Get(), m_commandList.Get(), m_texture->Path.c_str(), m_texture->Resource, m_texture->UploadResource);
+    m_texture = new Kioto::Texture(WstrToStr(AssetsSystem::GetAssetFullPath(L"Textures\\rick_and_morty.dds")));
+    m_textureDX = std::make_unique<TextureDX12>();
+    m_textureDX->Path = AssetsSystem::GetAssetFullPath(L"Textures\\rick_and_morty.dds");
+    HRESULT texRes = DirectX::CreateDDSTextureFromFile12(m_device.Get(), m_commandList.Get(), m_textureDX->Path.c_str(), m_textureDX->Resource, m_textureDX->UploadResource);
     ThrowIfFailed(texRes);
 
     D3D12_DESCRIPTOR_HEAP_DESC heapDescr = {};
@@ -248,13 +250,13 @@ void RendererDX12::LoadPipeline()
 
     D3D12_SHADER_RESOURCE_VIEW_DESC texDescr = {};
     texDescr.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-    texDescr.Format = m_texture->Resource->GetDesc().Format;
+    texDescr.Format = m_textureDX->Resource->GetDesc().Format;
     texDescr.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-    texDescr.Texture2D.MipLevels = m_texture->Resource->GetDesc().MipLevels;
+    texDescr.Texture2D.MipLevels = m_textureDX->Resource->GetDesc().MipLevels;
     texDescr.Texture2D.MostDetailedMip = 0;
     texDescr.Texture2D.ResourceMinLODClamp = 0.0f;
 
-    m_device->CreateShaderResourceView(m_texture->Resource.Get(), &texDescr, m_textureHeap->GetCPUDescriptorHandleForHeapStart());
+    m_device->CreateShaderResourceView(m_textureDX->Resource.Get(), &texDescr, m_textureHeap->GetCPUDescriptorHandleForHeapStart());
 
     m_commandList->Close();
     ID3D12CommandList* cmdLists[] = { m_commandList.Get() };
@@ -296,6 +298,12 @@ void RendererDX12::Shutdown()
         delete shader;
     }
     m_shaders.clear();
+    for (auto& tex : m_textures)
+    {
+        delete tex;
+    }
+
+    SafeDelete(m_texture);
     SafeDelete(m_timeBuffer);
 
 #ifdef _DEBUG
@@ -729,6 +737,18 @@ void RendererDX12::CreateRootSignature(const ShaderParser::ParseResult& parseRes
     ThrowIfFailed(hr);
 
     NAME_D3D12_OBJECT(m_rootSignature);
+}
+
+void RendererDX12::RegisterTexture(Texture* texture)
+{
+    auto it = std::find_if(m_textures.cbegin(), m_textures.cend(), [texture](const TextureDX12* tex) { return tex->GetTextureHandle() == texture->GetTextureHandle(); });
+    if (it != m_textures.cend())
+        throw "Texture Already Registred";
+    m_textures.emplace_back();
+    m_textures.back()->Path = StrToWstr(texture->GetAssetPath());
+    m_textures.back()->Create(m_device.Get(), m_commandList.Get());
+    m_textures.back()->SetTextureHandle(CurrentHandle++);
+    texture->SetTextureHandle(m_textures.back()->GetTextureHandle());
 }
 
 }
