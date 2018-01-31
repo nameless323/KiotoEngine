@@ -189,6 +189,7 @@ void RendererDX12::LoadPipeline()
 
     ShaderParser::ParseResult parseResult;
     parseResult = ShaderParser::ParseShader(WstrToStr(shaderPath), nullptr);
+    parseResult.textureSet.SetHandle(CurrentHandle++);
 
     std::string shaderStr = parseResult.output;
     OutputDebugStringA(shaderStr.c_str());
@@ -236,7 +237,7 @@ void RendererDX12::LoadPipeline()
     m_vertexBuffer = std::make_unique<VertexBufferDX12>(m_box->GetVertexData(), m_box->GetVertexDataSize(), m_box->GetVertexDataStride(), m_commandList.Get(), m_device.Get());
     m_indexBuffer = std::make_unique<IndexBufferDX12>(m_box->GetIndexData(), m_box->GetIndexDataSize(), m_commandList.Get(), m_device.Get(), IndexFormatToDXGI(m_box->GetIndexFormat()));
 
-    m_texture = new Kioto::Texture(WstrToStr(AssetsSystem::GetAssetFullPath(L"Textures\\rick_and_morty.dds")));
+    m_texture = new Texture(WstrToStr(AssetsSystem::GetAssetFullPath(L"Textures\\rick_and_morty.dds")));
     m_textureDX = std::make_unique<TextureDX12>();
     m_textureDX->Path = AssetsSystem::GetAssetFullPath(L"Textures\\rick_and_morty.dds");
     HRESULT texRes = DirectX::CreateDDSTextureFromFile12(m_device.Get(), m_commandList.Get(), m_textureDX->Path.c_str(), m_textureDX->Resource, m_textureDX->UploadResource);
@@ -749,6 +750,44 @@ void RendererDX12::RegisterTexture(Texture* texture)
     m_textures.back()->Create(m_device.Get(), m_commandList.Get());
     m_textures.back()->SetTextureHandle(CurrentHandle++);
     texture->SetTextureHandle(m_textures.back()->GetTextureHandle());
+}
+
+void RendererDX12::UpdateTextureSetHeap(const TextureSet& texSet)
+{
+    if (m_textureHeaps.find(texSet.GetHandle()) != m_textureHeaps.end())
+        m_textureHeaps[texSet.GetHandle()].Reset();
+
+    D3D12_DESCRIPTOR_HEAP_DESC heapDescr = {};
+    heapDescr.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+    heapDescr.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+    heapDescr.NumDescriptors = texSet.GetTexturesCount();
+    ThrowIfFailed(m_device->CreateDescriptorHeap(&heapDescr, IID_PPV_ARGS(&m_textureHeaps[texSet.GetHandle()])));
+
+    CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_textureHeaps[texSet.GetHandle()]->GetCPUDescriptorHandleForHeapStart());
+    for (uint32 i = 0; i < texSet.GetTexturesCount(); ++i)
+    {
+        const Texture* kiotoTex = texSet.GetTexture(i);
+        auto it = std::find_if(m_textures.begin(), m_textures.end(), [&kiotoTex](const TextureDX12* tex) { return kiotoTex->GetTextureHandle() == tex->GetTextureHandle(); });
+        if (it == m_textures.end())
+            throw "ololo";
+        TextureDX12* dxTex = *it;
+
+        D3D12_SHADER_RESOURCE_VIEW_DESC texDescr = {};
+        texDescr.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+        texDescr.Format = dxTex->Resource->GetDesc().Format;
+        texDescr.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+        texDescr.Texture2D.MipLevels = dxTex->Resource->GetDesc().MipLevels;
+        texDescr.Texture2D.MostDetailedMip = 0;
+        texDescr.Texture2D.ResourceMinLODClamp = 0.0f;
+
+        m_device->CreateShaderResourceView(dxTex->Resource.Get(), &texDescr, handle);
+        handle.Offset(m_cbvSrvUavDescriptorSize);
+    }
+}
+
+ID3D12DescriptorHeap* RendererDX12::GetTextureHeap(TextureSetHandle handle)
+{
+    return m_textureHeaps[handle].Get();
 }
 
 }

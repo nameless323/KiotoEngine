@@ -7,10 +7,11 @@
 
 #include "Core/CoreTypes.h"
 #include "Render/Texture/Texture.h"
+#include "Render/RendererPublic.h"
 
 #include <string>
 
-namespace Kioto
+namespace Kioto::Renderer
 {
 class TextureSet
 {
@@ -35,6 +36,11 @@ public:
     bool GetRebuildState() const;
     void SetRebuildState(bool newState);
 
+    void SetHandle(TextureSetHandle handle);
+    TextureSetHandle GetHandle() const;
+
+    const Texture* GetTexture(uint32 index) const;
+
 private:
     struct TextureSetData
     {
@@ -48,6 +54,8 @@ private:
     std::vector<TextureSetData> m_data;
     uint16 m_maxOffset = 0;
     bool m_needRebuild = true;
+
+    TextureSetHandle m_handle;
 };
 
 inline uint16 TextureSet::GetTexturesCount() const
@@ -68,5 +76,20 @@ inline bool TextureSet::GetRebuildState() const
 inline void TextureSet::SetRebuildState(bool newState)
 {
     m_needRebuild = newState;
+}
+
+inline void TextureSet::SetHandle(TextureSetHandle handle)
+{
+    m_handle = handle;
+}
+
+inline TextureSetHandle TextureSet::GetHandle() const
+{
+    return m_handle;
+}
+
+inline const Texture* TextureSet::GetTexture(uint32 index) const
+{
+    return m_data[index].Texture;
 }
 }

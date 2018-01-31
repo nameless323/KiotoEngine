@@ -14,6 +14,7 @@ namespace Kioto::Renderer
 class Shader;
 class VertexLayout;
 class Texture;
+class TextureSet;
 
 struct ShaderDefine
 {
@@ -48,6 +49,14 @@ public:
     {
         return !(*this == other);
     }
+    bool operator> (const SafeHandle& other) const
+    {
+        return m_handle > other.m_handle;
+    }
+    bool operator< (const SafeHandle& other) const
+    {
+        return m_handle < other.m_handle;
+    }
 
     uint32 GetHandle() const
     {
@@ -66,4 +75,5 @@ private:
 using VertexLayoutHandle = SafeHandle<VertexLayout>;
 using ShaderHandle = SafeHandle<Shader>;
 using TextureHandle = SafeHandle<Texture>;
+using TextureSetHandle = SafeHandle<TextureSet>;
 }

@@ -80,6 +80,10 @@ private:
     void UpdateRenderObjectCB();
     void UpdatePassCB();
 
+    void CreateRootSignature(const ShaderParser::ParseResult& parseResult);
+    void UpdateTextureSetHeap(const TextureSet& texSet);
+    ID3D12DescriptorHeap* GetTextureHeap(TextureSetHandle handle);
+
     bool m_isTearingSupported = false; // [a_vorontsov] TODO: Properly handle when tearing is not supported.
     UINT m_currentFrameIndex = -1;
     UINT m_cbvSrvUavDescriptorSize = -1;
@@ -112,8 +116,9 @@ private:
     Microsoft::WRL::ComPtr<ID3D12PipelineState> m_fallbackPSO;
     ShaderHandle m_vs;
     ShaderHandle m_ps;
-    std::vector<ShaderDX12*> m_shaders;
+    std::vector<ShaderDX12*> m_shaders; // [a_vorontsov] To map or set.
     std::vector<TextureDX12*> m_textures;
+    std::map<TextureSetHandle, Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>> m_textureHeaps; // [a_vorontsov] One tex heap for all textures?
 
     std::unique_ptr<VertexBufferDX12> m_vertexBuffer;
     std::unique_ptr<IndexBufferDX12> m_indexBuffer;
@@ -123,7 +128,6 @@ private:
     Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_textureHeap;
 
     std::vector<VertexLayoutDX12> m_inputLayouts;
-    void CreateRootSignature(const ShaderParser::ParseResult& parseResult);
 
     EngineBuffers engineBuffers;
     UploadBufferDX12* m_timeBuffer = nullptr;

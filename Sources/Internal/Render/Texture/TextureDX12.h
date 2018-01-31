@@ -17,7 +17,7 @@ class TextureDX12
 {
 public:
     std::wstring Path;
-    Microsoft::WRL::ComPtr<ID3D12Resource> Resource = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> Resource = nullptr; // [a_vorontsov] Change to ResourceDX12.
     Microsoft::WRL::ComPtr<ID3D12Resource> UploadResource = nullptr;
 
     void Create(ID3D12Device* device, ID3D12GraphicsCommandList* commandList);

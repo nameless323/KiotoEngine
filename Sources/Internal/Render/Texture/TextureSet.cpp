@@ -7,7 +7,7 @@
 
 #include "Render/Texture/TextureSet.h"
 
-namespace Kioto
+namespace Kioto::Renderer
 {
 
 TextureSet::eReturnCode TextureSet::AddTexture(const std::string& name, uint16 offset, Texture* texture)
