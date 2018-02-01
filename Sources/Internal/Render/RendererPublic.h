@@ -57,6 +57,14 @@ public:
     {
         return m_handle < other.m_handle;
     }
+    bool operator<= (const SafeHandle& other) const
+    {
+        return !(m_handle > other.m_handle);
+    }
+    bool operator>= (const SafeHandle& other) const
+    {
+        return !(m_handle < other.m_handle);
+    }
 
     uint32 GetHandle() const
     {
