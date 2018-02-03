@@ -31,6 +31,7 @@
 #include "Core/KiotoEngine.h" // [a_vorontsov] For now. TODO: render pass with render target and so on. This class shouldn't know 'bout camera and so on.
 
 #include "Render/DX12/Buffers/UploadBufferDX12.h"
+#include "Render/Texture/Texture.h"
 
 namespace Kioto::Renderer
 {
@@ -178,16 +179,23 @@ void RendererDX12::LoadPipeline()
 #else
     UINT shaderFlags = 0;
 #endif
+
+    m_commandList->Reset(m_commandAllocators[0].Get(), nullptr);
     wstring shaderPath = AssetsSystem::GetAssetFullPath(L"Shaders\\Fallback.hlsl");
     ShaderDX12* vs = new ShaderDX12();
     ShaderDX12* ps = new ShaderDX12();
     vs->SetHandle(CurrentHandle++);
     ps->SetHandle(CurrentHandle++);
-    ShaderHandle vsHandle = vs->GetHandle();
-    ShaderHandle psHandle = ps->GetHandle();
+    m_vs = vs->GetHandle();
+    m_ps = ps->GetHandle();
+    m_texture = new Texture(WstrToStr(AssetsSystem::GetAssetFullPath(L"Textures\\rick_and_morty.dds")));
+    RegisterTexture(m_texture);
 
-    ShaderParser::ParseResult parseResult;
-    parseResult = ShaderParser::ParseShader(WstrToStr(shaderPath), nullptr);
+    ShaderParser::ParseResult parseResult = ShaderParser::ParseShader(WstrToStr(shaderPath), nullptr);
+    parseResult.textureSet.SetHandle(CurrentHandle++);
+    m_textureSet = parseResult.textureSet;
+    m_textureSet.SetTexture("Diffuse", m_texture);
+    UpdateTextureSetHeap(m_textureSet);
 
     std::string shaderStr = parseResult.output;
     OutputDebugStringA(shaderStr.c_str());
@@ -204,53 +212,18 @@ void RendererDX12::LoadPipeline()
     ThrowIfFailed(hr);
     m_shaders.push_back(ps);
 
+    CreateRootSignature(parseResult, m_vs); // [a_vorontsov] Root sig and shader 1 to 1 connection.
+
     VertexLayoutHandle vertexLayoutHandle = GenerateVertexLayout(parseResult.vertexLayout);
-
-    D3D12_FEATURE_DATA_ROOT_SIGNATURE signatureData = {};
-    signatureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
-
-    if (FAILED(m_device->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &signatureData, sizeof(signatureData))))
-    {
-        signatureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
-    }
-
-    D3D12_ROOT_SIGNATURE_FLAGS flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
-    CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
-
-    D3D12_DESCRIPTOR_RANGE1 texRange = {};
-    texRange.NumDescriptors = 1;
-    texRange.BaseShaderRegister = 0;
-    texRange.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
-    texRange.Flags = D3D12_DESCRIPTOR_RANGE_FLAG_NONE;
-    texRange.RegisterSpace = 0;
-    texRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-
-    auto rootParams = CreateDXRootSignatureParamsPack(parseResult);
-    CD3DX12_ROOT_PARAMETER1 table;
-    table.InitAsDescriptorTable(1, &texRange, D3D12_SHADER_VISIBILITY_PIXEL);
-    rootParams.push_back(table);
-
-    auto staticSamplers = GetStaticSamplers();
-    rootSignatureDesc.Init_1_1(static_cast<UINT>(rootParams.size()), rootParams.data(), static_cast<UINT>(staticSamplers.size()), staticSamplers.data(), flags);
-
-    ComPtr<ID3DBlob> signature;
-    ComPtr<ID3DBlob> rootSignatureCreationError;
-    ThrowIfFailed(D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, signatureData.HighestVersion, &signature, &rootSignatureCreationError));
-    hr = m_device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature));
-    if (hr != S_OK)
-        OutputDebugStringA(reinterpret_cast<char*>(rootSignatureCreationError->GetBufferPointer()));
-    ThrowIfFailed(hr);
-
-    NAME_D3D12_OBJECT(m_rootSignature);
 
     D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};
 
     auto currentLayout = FindVertexLayout(vertexLayoutHandle);
 
     desc.InputLayout = { currentLayout->data(), static_cast<UINT>(currentLayout->size()) };
-    desc.pRootSignature = m_rootSignature.Get();
-    desc.VS = *GetShaderBytecode(vsHandle);
-    desc.PS = *GetShaderBytecode(psHandle);
+    desc.pRootSignature = m_rootSignature[m_vs].Get();
+    desc.VS = *GetShaderBytecode(m_vs);
+    desc.PS = *GetShaderBytecode(m_ps);
     desc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 
     desc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
@@ -264,32 +237,30 @@ void RendererDX12::LoadPipeline()
 
     ThrowIfFailed(m_device->CreateGraphicsPipelineState(&desc, IID_PPV_ARGS(&m_fallbackPSO)));
 
-    m_commandList->Reset(m_commandAllocators[0].Get(), nullptr);
-
     m_box = GeometryGenerator::GetUnitCube();
     m_vertexBuffer = std::make_unique<VertexBufferDX12>(m_box->GetVertexData(), m_box->GetVertexDataSize(), m_box->GetVertexDataStride(), m_commandList.Get(), m_device.Get());
     m_indexBuffer = std::make_unique<IndexBufferDX12>(m_box->GetIndexData(), m_box->GetIndexDataSize(), m_commandList.Get(), m_device.Get(), IndexFormatToDXGI(m_box->GetIndexFormat()));
 
-    m_texture = std::make_unique<TextureDX12>();
-    m_texture->Path = AssetsSystem::GetAssetFullPath(L"Textures\\rick_and_morty.dds");
-    HRESULT texRes = DirectX::CreateDDSTextureFromFile12(m_device.Get(), m_commandList.Get(), m_texture->Path.c_str(), m_texture->Resource, m_texture->UploadResource);
-    ThrowIfFailed(texRes);
+    //m_textureDX = std::make_unique<TextureDX12>();
+    //m_textureDX->Path = AssetsSystem::GetAssetFullPath(L"Textures\\rick_and_morty.dds");
+    //HRESULT texRes = DirectX::CreateDDSTextureFromFile12(m_device.Get(), m_commandList.Get(), m_textureDX->Path.c_str(), m_textureDX->Resource, m_textureDX->UploadResource);
+    //ThrowIfFailed(texRes);
 
-    D3D12_DESCRIPTOR_HEAP_DESC heapDescr = {};
-    heapDescr.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-    heapDescr.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-    heapDescr.NumDescriptors = 1;
-    ThrowIfFailed(m_device->CreateDescriptorHeap(&heapDescr, IID_PPV_ARGS(&m_textureHeap)));
+    //D3D12_DESCRIPTOR_HEAP_DESC heapDescr = {};
+    //heapDescr.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+    //heapDescr.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+    //heapDescr.NumDescriptors = 1;
+    //ThrowIfFailed(m_device->CreateDescriptorHeap(&heapDescr, IID_PPV_ARGS(&m_textureHeap)));
 
-    D3D12_SHADER_RESOURCE_VIEW_DESC texDescr = {};
-    texDescr.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-    texDescr.Format = m_texture->Resource->GetDesc().Format;
-    texDescr.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-    texDescr.Texture2D.MipLevels = m_texture->Resource->GetDesc().MipLevels;
-    texDescr.Texture2D.MostDetailedMip = 0;
-    texDescr.Texture2D.ResourceMinLODClamp = 0.0f;
+    //D3D12_SHADER_RESOURCE_VIEW_DESC texDescr = {};
+    //texDescr.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+    //texDescr.Format = m_textureDX->Resource->GetDesc().Format;
+    //texDescr.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+    //texDescr.Texture2D.MipLevels = m_textureDX->Resource->GetDesc().MipLevels;
+    //texDescr.Texture2D.MostDetailedMip = 0;
+    //texDescr.Texture2D.ResourceMinLODClamp = 0.0f;
 
-    m_device->CreateShaderResourceView(m_texture->Resource.Get(), &texDescr, m_textureHeap->GetCPUDescriptorHandleForHeapStart());
+    //m_device->CreateShaderResourceView(m_textureDX->Resource.Get(), &texDescr, m_textureHeap->GetCPUDescriptorHandleForHeapStart());
 
     m_commandList->Close();
     ID3D12CommandList* cmdLists[] = { m_commandList.Get() };
@@ -331,6 +302,12 @@ void RendererDX12::Shutdown()
         delete shader;
     }
     m_shaders.clear();
+    for (auto& tex : m_textures)
+    {
+        delete tex;
+    }
+
+    SafeDelete(m_texture);
     SafeDelete(m_timeBuffer);
 
 #ifdef _DEBUG
@@ -509,15 +486,17 @@ void RendererDX12::Present()
 
         m_commandList->OMSetRenderTargets(1, &currentBackBuffer->CPUdescriptorHandle, false, &currentDS->CPUdescriptorHandle);
 
-        m_commandList->SetGraphicsRootSignature(m_rootSignature.Get());
+        ID3D12RootSignature* rootSig = m_rootSignature[m_vs].Get();
+        m_commandList->SetGraphicsRootSignature(rootSig);
         m_commandList->SetGraphicsRootConstantBufferView(0, m_timeBuffer->GetFrameDataGpuAddress(m_currentFrameIndex));
         m_commandList->SetGraphicsRootConstantBufferView(1, m_passBuffer->GetFrameDataGpuAddress(m_currentFrameIndex));
         m_commandList->SetGraphicsRootConstantBufferView(2, m_renderObjectBuffer->GetFrameDataGpuAddress(m_currentFrameIndex));
 
-        ID3D12DescriptorHeap* descHeap[] = { m_textureHeap.Get() };
+        ID3D12DescriptorHeap* currHeap = m_textureHeaps[m_textureSet.GetHandle()].Get();
+        ID3D12DescriptorHeap* descHeap[] = { currHeap };
         m_commandList->SetDescriptorHeaps(_countof(descHeap), descHeap);
 
-        m_commandList->SetGraphicsRootDescriptorTable(3, m_textureHeap->GetGPUDescriptorHandleForHeapStart());
+        m_commandList->SetGraphicsRootDescriptorTable(3, currHeap->GetGPUDescriptorHandleForHeapStart());
 
         m_commandList->IASetVertexBuffers(0, 1, &m_vertexBuffer->GetVertexBufferView());
         m_commandList->IASetIndexBuffer(&m_indexBuffer->GetIndexBufferView());
@@ -717,16 +696,109 @@ const std::vector<D3D12_INPUT_ELEMENT_DESC>* RendererDX12::FindVertexLayout(Vert
     return nullptr;
 }
 
-std::vector<CD3DX12_ROOT_PARAMETER1> RendererDX12::CreateDXRootSignatureParamsPack(const ShaderParser::ParseResult& result)
+void RendererDX12::CreateRootSignature(const ShaderParser::ParseResult& parseResult, ShaderHandle handle)
 {
-    std::vector<CD3DX12_ROOT_PARAMETER1> res;
-    for (size_t i = 0; i < result.constantBuffers.size(); ++i)
+    std::vector<CD3DX12_ROOT_PARAMETER1> rootParams;
+    for (size_t i = 0; i < parseResult.constantBuffers.size(); ++i)
     {
         CD3DX12_ROOT_PARAMETER1 param;
-        param.InitAsConstantBufferView(result.constantBuffers[i].GetIndex(), result.constantBuffers[i].GetSpace());
-        res.push_back(param);
+        param.InitAsConstantBufferView(parseResult.constantBuffers[i].GetIndex(), parseResult.constantBuffers[i].GetSpace());
+        rootParams.push_back(std::move(param));
     }
-    return res;
+    std::vector<D3D12_DESCRIPTOR_RANGE1> ranges; // [a_vorontsov] Careful, table remembers pointer to range.
+    ranges.reserve(parseResult.textureSet.GetTexturesCount());
+    if (parseResult.textureSet.GetTexturesCount() > 0)
+    {
+        ranges.emplace_back();
+        D3D12_DESCRIPTOR_RANGE1* texRange = &ranges.back();
+        texRange->NumDescriptors = 1;
+        texRange->BaseShaderRegister = 0;
+        texRange->OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+        texRange->Flags = D3D12_DESCRIPTOR_RANGE_FLAG_NONE;
+        texRange->RegisterSpace = 0;
+        texRange->RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+
+        CD3DX12_ROOT_PARAMETER1 table;
+        table.InitAsDescriptorTable(1, texRange, D3D12_SHADER_VISIBILITY_PIXEL);
+        rootParams.push_back(std::move(table));
+    }
+
+    D3D12_FEATURE_DATA_ROOT_SIGNATURE signatureData = {};
+    signatureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
+
+    if (FAILED(m_device->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &signatureData, sizeof(signatureData))))
+        signatureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
+
+    D3D12_ROOT_SIGNATURE_FLAGS flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+    CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
+    auto staticSamplers = GetStaticSamplers();
+    rootSignatureDesc.Init_1_1(static_cast<UINT>(rootParams.size()), rootParams.data(), static_cast<UINT>(staticSamplers.size()), staticSamplers.data(), flags);
+
+    ComPtr<ID3DBlob> signature;
+    ComPtr<ID3DBlob> rootSignatureCreationError;
+    HRESULT hr = D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, signatureData.HighestVersion, &signature, &rootSignatureCreationError);
+    if (hr != S_OK)
+        OutputDebugStringA(reinterpret_cast<char*>(rootSignatureCreationError->GetBufferPointer()));
+    m_rootSignature[handle] = Microsoft::WRL::ComPtr<ID3D12RootSignature>();
+    hr = m_device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature[handle]));
+    if (hr != S_OK)
+        OutputDebugStringA(reinterpret_cast<char*>(rootSignatureCreationError->GetBufferPointer()));
+    ThrowIfFailed(hr);
+
+    NAME_D3D12_OBJECT(m_rootSignature[handle]);
+}
+
+void RendererDX12::RegisterTexture(Texture* texture)
+{
+    auto it = std::find_if(m_textures.cbegin(), m_textures.cend(), [texture](const TextureDX12* tex) { return tex->GetTextureHandle() == texture->GetTextureHandle(); });
+    if (it != m_textures.cend())
+        throw "Texture Already Registred";
+    m_textures.emplace_back(new TextureDX12());
+    m_textures.back()->Path = StrToWstr(texture->GetAssetPath());
+    m_textures.back()->Create(m_device.Get(), m_commandList.Get());
+    m_textures.back()->SetTextureHandle(CurrentHandle++);
+    texture->SetTextureHandle(m_textures.back()->GetTextureHandle());
+}
+
+void RendererDX12::UpdateTextureSetHeap(const TextureSet& texSet)
+{
+    if (m_textureHeaps.find(texSet.GetHandle()) != m_textureHeaps.end())
+        m_textureHeaps[texSet.GetHandle()].Reset();
+
+    D3D12_DESCRIPTOR_HEAP_DESC heapDescr = {};
+    heapDescr.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+    heapDescr.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+    heapDescr.NumDescriptors = texSet.GetTexturesCount();
+    ThrowIfFailed(m_device->CreateDescriptorHeap(&heapDescr, IID_PPV_ARGS(&m_textureHeaps[texSet.GetHandle()])));
+
+    CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_textureHeaps[texSet.GetHandle()]->GetCPUDescriptorHandleForHeapStart());
+    for (uint32 i = 0; i < texSet.GetTexturesCount(); ++i)
+    {
+        const Texture* kiotoTex = texSet.GetTexture(i);
+        auto it = std::find_if(m_textures.begin(), m_textures.end(), [&kiotoTex](const TextureDX12* tex) { return kiotoTex->GetTextureHandle() == tex->GetTextureHandle(); });
+        if (it == m_textures.end())
+            throw "ololo";
+        TextureDX12* dxTex = *it;
+
+        D3D12_SHADER_RESOURCE_VIEW_DESC texDescr = {};
+        texDescr.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+        texDescr.Format = dxTex->Resource->GetDesc().Format;
+        texDescr.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+        texDescr.Texture2D.MipLevels = dxTex->Resource->GetDesc().MipLevels;
+        texDescr.Texture2D.MostDetailedMip = 0;
+        texDescr.Texture2D.ResourceMinLODClamp = 0.0f;
+
+        m_device->CreateShaderResourceView(dxTex->Resource.Get(), &texDescr, handle);
+        handle.Offset(m_cbvSrvUavDescriptorSize);
+    }
+}
+
+ID3D12DescriptorHeap* RendererDX12::GetTextureHeap(TextureSetHandle handle) const
+{
+    auto it = m_textureHeaps.find(handle);
+    if (it != m_textureHeaps.cend())
+        return it->second.Get();
+    return nullptr;
 }
 
 }

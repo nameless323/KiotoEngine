@@ -65,7 +65,7 @@ cbuffer cbPassBuffer : register(b1, space1)
 };
 
 SamplerState LinearClampSampl : register(s0);
-Texture2D Diffuse : register(t0);
+[_IN_] Texture2D Diffuse : register(t0);
 
 cbuffer cbRenderObjectBuffer : register(b2, space1)
 {
