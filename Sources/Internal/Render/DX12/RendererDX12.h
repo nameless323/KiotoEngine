@@ -21,6 +21,7 @@
 #include "Render/Texture/TextureDX12.h"
 #include "Render/RendererPublic.h"
 #include "Render/RenderPass/RenderPass.h"
+#include "Render/Texture/TextureSet.h"
 
 namespace Kioto::Renderer
 {
@@ -80,9 +81,9 @@ private:
     void UpdateRenderObjectCB();
     void UpdatePassCB();
 
-    void CreateRootSignature(const ShaderParser::ParseResult& parseResult);
+    void CreateRootSignature(const ShaderParser::ParseResult& parseResult, ShaderHandle handle);
     void UpdateTextureSetHeap(const TextureSet& texSet);
-    ID3D12DescriptorHeap* GetTextureHeap(TextureSetHandle handle);
+    ID3D12DescriptorHeap* GetTextureHeap(TextureSetHandle handle) const;
 
     bool m_isTearingSupported = false; // [a_vorontsov] TODO: Properly handle when tearing is not supported.
     UINT m_currentFrameIndex = -1;
@@ -111,7 +112,7 @@ private:
     std::array<Microsoft::WRL::ComPtr<ID3D12CommandAllocator>, FrameCount> m_commandAllocators; // [a_vorontsov] For each render thread?
     Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_commandList;
 
-    Microsoft::WRL::ComPtr<ID3D12RootSignature> m_rootSignature;
+    std::map<ShaderHandle, Microsoft::WRL::ComPtr<ID3D12RootSignature>> m_rootSignature;
 
     Microsoft::WRL::ComPtr<ID3D12PipelineState> m_fallbackPSO;
     ShaderHandle m_vs;
@@ -124,8 +125,8 @@ private:
     std::unique_ptr<IndexBufferDX12> m_indexBuffer;
 
     Mesh* m_box;
-    std::unique_ptr<TextureDX12> m_textureDX;
-    Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_textureHeap;
+    //std::unique_ptr<TextureDX12> m_textureDX;
+    //Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_textureHeap;
 
     std::vector<VertexLayoutDX12> m_inputLayouts;
 
@@ -135,6 +136,7 @@ private:
     UploadBufferDX12* m_renderObjectBuffer = nullptr;
 
     Texture* m_texture = nullptr;
+    TextureSet m_textureSet;
 };
 
 inline TextureHandle RendererDX12::GetCurrentBackBufferHandle() const
