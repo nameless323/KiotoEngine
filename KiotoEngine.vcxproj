@@ -200,6 +200,7 @@
     <ClInclude Include="Sources\Internal\Render\DX12\RenderPacket.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\ShaderDX12.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\Shader\ShaderParser.h" />
+    <ClInclude Include="Sources\Internal\Render\DX12\StateDX.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\VertexLayoutDX12.h" />
     <ClInclude Include="Sources\Internal\Render\Geometry\GeometryGenerator.h" />
     <ClInclude Include="Sources\Internal\Render\Geometry\Mesh.h" />

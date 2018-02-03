@@ -22,6 +22,7 @@
 #include "Render/RendererPublic.h"
 #include "Render/RenderPass/RenderPass.h"
 #include "Render/Texture/TextureSet.h"
+#include "Render/DX12/StateDX.h"
 
 namespace Kioto::Renderer
 {
@@ -61,10 +62,10 @@ public:
     VertexLayoutHandle GenerateVertexLayout(const VertexLayout& layout);
 
 private:
-    static constexpr UINT FrameCount = 3;
+    StateDX m_state;
 
     std::unordered_map<uint32, ResourceDX12> m_resources;
-    std::array<std::vector<RenderPass>, FrameCount> m_renderPasses;
+    std::array<std::vector<RenderPass>, StateDX::FrameCount> m_renderPasses;
 
     ResourceDX12* FindDxResource(uint32 handle);
     const CD3DX12_SHADER_BYTECODE* GetShaderBytecode(ShaderHandle handle) const;
@@ -87,12 +88,7 @@ private:
 
     bool m_isTearingSupported = false; // [a_vorontsov] TODO: Properly handle when tearing is not supported.
     UINT m_currentFrameIndex = -1;
-    UINT m_cbvSrvUavDescriptorSize = -1;
-    UINT m_rtvDescriptorSize = -1;
-    UINT m_dsvDescriptorSize = -1;
-    UINT m_samplerDescriptorSize = -1;
-    std::array<UINT64, FrameCount> m_fenceValues;
-    UINT64 m_currentFence = 0;
+    
     DXGI_FORMAT m_backBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
     DXGI_FORMAT m_depthStencilFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
     UINT m_width = -1;
@@ -100,17 +96,11 @@ private:
     bool m_isFullScreen = false;
     bool m_isSwapChainChainInFullScreen = false;
 
-    Microsoft::WRL::ComPtr<IDXGIFactory4> m_factory;
-    Microsoft::WRL::ComPtr<ID3D12Device> m_device;
-    Microsoft::WRL::ComPtr<ID3D12CommandQueue> m_commandQueue;
     Microsoft::WRL::ComPtr<IDXGISwapChain3> m_swapChain;
     Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_rtvHeap;
     Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_dsvHeap;
-    Microsoft::WRL::ComPtr<ID3D12Fence> m_fence;
-    ResourceDX12 m_backBuffers[FrameCount];
+    ResourceDX12 m_backBuffers[StateDX::FrameCount];
     ResourceDX12 m_depthStencil;
-    std::array<Microsoft::WRL::ComPtr<ID3D12CommandAllocator>, FrameCount> m_commandAllocators; // [a_vorontsov] For each render thread?
-    Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_commandList;
 
     std::map<ShaderHandle, Microsoft::WRL::ComPtr<ID3D12RootSignature>> m_rootSignature;
 
