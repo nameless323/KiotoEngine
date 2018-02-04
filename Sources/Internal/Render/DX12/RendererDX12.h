@@ -23,6 +23,7 @@
 #include "Render/RenderPass/RenderPass.h"
 #include "Render/Texture/TextureSet.h"
 #include "Render/DX12/StateDX.h"
+#include "Render/DX12/SwapChain.h"
 
 namespace Kioto::Renderer
 {
@@ -46,7 +47,7 @@ public:
     ~RendererDX12() = default;
 
     void Init(uint16 width, uint16 height);
-    void Resize(uint16 width, uint16 heigth);
+    void Resize(uint16 width, uint16 height);
     void ChangeFullScreenMode(bool fullScreen);
     void Shutdown();
     void Present();
@@ -54,15 +55,17 @@ public:
 
     void AddRenderPass(const RenderPass& renderPass);
 
-    TextureHandle GetCurrentBackBufferHandle() const;
-    TextureHandle GetDepthStencilHandle() const;
 
     void RegisterTexture(Texture* texture);
 
     VertexLayoutHandle GenerateVertexLayout(const VertexLayout& layout);
 
+    TextureHandle GetCurrentBackBufferHandle() const;
+    TextureHandle GetDepthStencilHandle() const;
+
 private:
     StateDX m_state;
+    SwapChain m_swapChain;
 
     std::unordered_map<uint32, ResourceDX12> m_resources;
     std::array<std::vector<RenderPass>, StateDX::FrameCount> m_renderPasses;
@@ -87,20 +90,10 @@ private:
     ID3D12DescriptorHeap* GetTextureHeap(TextureSetHandle handle) const;
 
     bool m_isTearingSupported = false; // [a_vorontsov] TODO: Properly handle when tearing is not supported.
-    UINT m_currentFrameIndex = -1;
-    
-    DXGI_FORMAT m_backBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
-    DXGI_FORMAT m_depthStencilFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
     UINT m_width = -1;
     UINT m_height = -1;
     bool m_isFullScreen = false;
-    bool m_isSwapChainChainInFullScreen = false;
 
-    Microsoft::WRL::ComPtr<IDXGISwapChain3> m_swapChain;
-    Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_rtvHeap;
-    Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_dsvHeap;
-    ResourceDX12 m_backBuffers[StateDX::FrameCount];
-    ResourceDX12 m_depthStencil;
 
     std::map<ShaderHandle, Microsoft::WRL::ComPtr<ID3D12RootSignature>> m_rootSignature;
 
@@ -131,11 +124,11 @@ private:
 
 inline TextureHandle RendererDX12::GetCurrentBackBufferHandle() const
 {
-    return m_backBuffers[m_currentFrameIndex].Handle.GetHandle();
+    return m_swapChain.GetCurrentBackBufferHandle();
 }
 
 inline TextureHandle RendererDX12::GetDepthStencilHandle() const
 {
-    return m_depthStencil.Handle.GetHandle();
+    return m_swapChain.GetDepthStencilHandle();
 }
 }

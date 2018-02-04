@@ -201,6 +201,7 @@
     <ClInclude Include="Sources\Internal\Render\DX12\ShaderDX12.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\Shader\ShaderParser.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\StateDX.h" />
+    <ClInclude Include="Sources\Internal\Render\DX12\SwapChain.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\VertexLayoutDX12.h" />
     <ClInclude Include="Sources\Internal\Render\Geometry\GeometryGenerator.h" />
     <ClInclude Include="Sources\Internal\Render\Geometry\Mesh.h" />
@@ -248,6 +249,7 @@
     <ClCompile Include="Sources\Internal\Render\DX12\Buffers\VertexBufferDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\RendererDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\Shader\ShaderParser.cpp" />
+    <ClCompile Include="Sources\Internal\Render\DX12\SwapChain.cpp" />
     <ClCompile Include="Sources\Internal\Render\Geometry\GeometryGenerator.cpp" />
     <ClCompile Include="Sources\Internal\Render\Geometry\Mesh.cpp" />
     <ClCompile Include="Sources\Internal\Render\Material.cpp" />

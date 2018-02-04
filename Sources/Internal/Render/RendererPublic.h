@@ -80,6 +80,12 @@ private:
     uint32 m_handle = InvalidHandle;
 };
 
+inline uint32 GetNewHandle()
+{
+    static uint32 handle;
+    return handle++;
+}
+
 using VertexLayoutHandle = SafeHandle<VertexLayout>;
 using ShaderHandle = SafeHandle<Shader>;
 using TextureHandle = SafeHandle<Texture>;
