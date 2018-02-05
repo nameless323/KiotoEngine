@@ -159,7 +159,7 @@ void RendererDX12::LoadPipeline()
     parseResult.textureSet.SetHandle(GetNewHandle());
     m_textureSet = parseResult.textureSet;
     m_textureSet.SetTexture("Diffuse", m_texture);
-    UpdateTextureSetHeap(m_textureSet);
+    m_textureManager.UpdateTextureSetHeap(m_state, m_textureSet);
 
     std::string shaderStr = parseResult.output;
     OutputDebugStringA(shaderStr.c_str());
@@ -245,10 +245,6 @@ void RendererDX12::Shutdown()
         delete shader;
     }
     m_shaders.clear();
-    for (auto& tex : m_textures)
-    {
-        delete tex;
-    }
 
     SafeDelete(m_texture);
     SafeDelete(m_timeBuffer);
@@ -393,7 +389,7 @@ void RendererDX12::Present()
         m_state.CommandList->SetGraphicsRootConstantBufferView(1, m_passBuffer->GetFrameDataGpuAddress(m_swapChain.GetCurrentFrameIndex()));
         m_state.CommandList->SetGraphicsRootConstantBufferView(2, m_renderObjectBuffer->GetFrameDataGpuAddress(m_swapChain.GetCurrentFrameIndex()));
 
-        ID3D12DescriptorHeap* currHeap = m_textureHeaps[m_textureSet.GetHandle()].Get();
+        ID3D12DescriptorHeap* currHeap = m_textureManager.GetTextureHeap(m_textureSet.GetHandle());
         ID3D12DescriptorHeap* descHeap[] = { currHeap };
         m_state.CommandList->SetDescriptorHeaps(_countof(descHeap), descHeap);
 
@@ -642,55 +638,7 @@ void RendererDX12::CreateRootSignature(const ShaderParser::ParseResult& parseRes
 
 void RendererDX12::RegisterTexture(Texture* texture)
 {
-    auto it = std::find_if(m_textures.cbegin(), m_textures.cend(), [texture](const TextureDX12* tex) { return tex->GetTextureHandle() == texture->GetTextureHandle(); });
-    if (it != m_textures.cend())
-        throw "Texture Already Registered";
-    m_textures.emplace_back(new TextureDX12());
-    m_textures.back()->Path = StrToWstr(texture->GetAssetPath());
-    m_textures.back()->Create(m_state.Device.Get(), m_state.CommandList.Get());
-    m_textures.back()->SetTextureHandle(GetNewHandle());
-    texture->SetTextureHandle(m_textures.back()->GetTextureHandle());
-}
-
-void RendererDX12::UpdateTextureSetHeap(const TextureSet& texSet)
-{
-    if (m_textureHeaps.find(texSet.GetHandle()) != m_textureHeaps.end())
-        m_textureHeaps[texSet.GetHandle()].Reset();
-
-    D3D12_DESCRIPTOR_HEAP_DESC heapDescr = {};
-    heapDescr.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-    heapDescr.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-    heapDescr.NumDescriptors = texSet.GetTexturesCount();
-    ThrowIfFailed(m_state.Device->CreateDescriptorHeap(&heapDescr, IID_PPV_ARGS(&m_textureHeaps[texSet.GetHandle()])));
-
-    CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_textureHeaps[texSet.GetHandle()]->GetCPUDescriptorHandleForHeapStart());
-    for (uint32 i = 0; i < texSet.GetTexturesCount(); ++i)
-    {
-        const Texture* kiotoTex = texSet.GetTexture(i);
-        auto it = std::find_if(m_textures.begin(), m_textures.end(), [&kiotoTex](const TextureDX12* tex) { return kiotoTex->GetTextureHandle() == tex->GetTextureHandle(); });
-        if (it == m_textures.end())
-            throw "ololo";
-        TextureDX12* dxTex = *it;
-
-        D3D12_SHADER_RESOURCE_VIEW_DESC texDescr = {};
-        texDescr.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-        texDescr.Format = dxTex->Resource->GetDesc().Format;
-        texDescr.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-        texDescr.Texture2D.MipLevels = dxTex->Resource->GetDesc().MipLevels;
-        texDescr.Texture2D.MostDetailedMip = 0;
-        texDescr.Texture2D.ResourceMinLODClamp = 0.0f;
-
-        m_state.Device->CreateShaderResourceView(dxTex->Resource.Get(), &texDescr, handle);
-        handle.Offset(m_state.CbvSrvUavDescriptorSize);
-    }
-}
-
-ID3D12DescriptorHeap* RendererDX12::GetTextureHeap(TextureSetHandle handle) const
-{
-    auto it = m_textureHeaps.find(handle);
-    if (it != m_textureHeaps.cend())
-        return it->second.Get();
-    return nullptr;
+    m_textureManager.RegisterTexture(m_state, texture);
 }
 
 }

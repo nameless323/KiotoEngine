@@ -214,6 +214,7 @@
     <ClInclude Include="Sources\Internal\Render\RenderPass\MainForwardPass.h" />
     <ClInclude Include="Sources\Internal\Render\RenderPass\RenderPass.h" />
     <ClInclude Include="Sources\Internal\Render\Shader.h" />
+    <ClInclude Include="Sources\Internal\Render\Texture\TextureManagerDX12.h" />
     <ClInclude Include="Sources\Internal\Render\Texture\TextureSet.h" />
     <ClInclude Include="Sources\Internal\Render\Texture\Texture.h" />
     <ClInclude Include="Sources\Internal\Render\Texture\TextureDX12.h" />
@@ -257,6 +258,7 @@
     <ClCompile Include="Sources\Internal\Render\Renderer.cpp" />
     <ClCompile Include="Sources\Internal\Render\RenderPass\RenderPass.cpp" />
     <ClCompile Include="Sources\Internal\Render\Texture\TextureDX12.cpp" />
+    <ClCompile Include="Sources\Internal\Render\Texture\TextureManagerDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\Texture\TextureSet.cpp" />
     <ClCompile Include="Sources\Internal\Render\VertexLayout.cpp" />
     <ClCompile Include="Sources\Internal\Systems\CameraSystem.cpp" />

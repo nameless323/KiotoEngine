@@ -23,7 +23,7 @@ public:
     void Create(ID3D12Device* device, ID3D12GraphicsCommandList* commandList);
 
     void SetTextureHandle(TextureHandle handle);
-    TextureHandle GetTextureHandle() const;
+    TextureHandle GetHandle() const;
 
     static DXGI_FORMAT ToDXGIFormat(eTextureFormat format);
 
@@ -41,7 +41,7 @@ inline void TextureDX12::SetTextureHandle(TextureHandle handle)
     m_handle = handle;
 }
 
-inline TextureHandle TextureDX12::GetTextureHandle() const
+inline TextureHandle TextureDX12::GetHandle() const
 {
     return m_handle;
 }

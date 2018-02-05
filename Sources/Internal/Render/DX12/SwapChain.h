@@ -17,6 +17,8 @@ public:
     SwapChain(const SwapChain&) = delete;
     ~SwapChain() = default;
 
+    SwapChain& operator= (const SwapChain&) = delete;
+
     void Init(const StateDX& state, bool isTearingSupported, uint16 width, uint16 height);
 
     void Resize(const StateDX& state, uint16 width, uint16 height);

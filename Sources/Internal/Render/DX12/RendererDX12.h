@@ -22,6 +22,7 @@
 #include "Render/RendererPublic.h"
 #include "Render/RenderPass/RenderPass.h"
 #include "Render/Texture/TextureSet.h"
+#include "Render/Texture/TextureManagerDX12.h"
 #include "Render/DX12/StateDX.h"
 #include "Render/DX12/SwapChain.h"
 
@@ -55,7 +56,6 @@ public:
 
     void AddRenderPass(const RenderPass& renderPass);
 
-
     void RegisterTexture(Texture* texture);
 
     VertexLayoutHandle GenerateVertexLayout(const VertexLayout& layout);
@@ -64,6 +64,7 @@ public:
     TextureHandle GetDepthStencilHandle() const;
 
 private:
+    TextureManagerDX12 m_textureManager;
     StateDX m_state;
     SwapChain m_swapChain;
 
@@ -86,8 +87,6 @@ private:
     void UpdatePassCB();
 
     void CreateRootSignature(const ShaderParser::ParseResult& parseResult, ShaderHandle handle);
-    void UpdateTextureSetHeap(const TextureSet& texSet);
-    ID3D12DescriptorHeap* GetTextureHeap(TextureSetHandle handle) const;
 
     bool m_isTearingSupported = false; // [a_vorontsov] TODO: Properly handle when tearing is not supported.
     UINT m_width = -1;
@@ -101,15 +100,11 @@ private:
     ShaderHandle m_vs;
     ShaderHandle m_ps;
     std::vector<ShaderDX12*> m_shaders; // [a_vorontsov] To map or set.
-    std::vector<TextureDX12*> m_textures;
-    std::map<TextureSetHandle, Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>> m_textureHeaps; // [a_vorontsov] One tex heap for all textures?
-
+    
     std::unique_ptr<VertexBufferDX12> m_vertexBuffer;
     std::unique_ptr<IndexBufferDX12> m_indexBuffer;
 
     Mesh* m_box;
-    //std::unique_ptr<TextureDX12> m_textureDX;
-    //Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_textureHeap;
 
     std::vector<VertexLayoutDX12> m_inputLayouts;
 

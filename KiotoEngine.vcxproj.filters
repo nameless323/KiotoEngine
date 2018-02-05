@@ -222,6 +222,9 @@
     <ClInclude Include="Sources\Internal\Render\DX12\SwapChain.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Sources\Internal\Render\Texture\TextureManagerDX12.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -333,6 +336,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Sources\Internal\Render\DX12\SwapChain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Internal\Render\Texture\TextureManagerDX12.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
