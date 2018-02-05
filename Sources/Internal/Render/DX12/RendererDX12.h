@@ -25,6 +25,7 @@
 #include "Render/Texture/TextureManagerDX12.h"
 #include "Render/DX12/StateDX.h"
 #include "Render/DX12/SwapChain.h"
+#include "Render/DX12/RootSignatureManager.h"
 
 namespace Kioto::Renderer
 {
@@ -67,6 +68,7 @@ private:
     TextureManagerDX12 m_textureManager;
     StateDX m_state;
     SwapChain m_swapChain;
+    RootSignatureManager m_rootSignatureManager;
 
     std::unordered_map<uint32, ResourceDX12> m_resources;
     std::array<std::vector<RenderPass>, StateDX::FrameCount> m_renderPasses;
@@ -86,15 +88,11 @@ private:
     void UpdateRenderObjectCB();
     void UpdatePassCB();
 
-    void CreateRootSignature(const ShaderParser::ParseResult& parseResult, ShaderHandle handle);
-
     bool m_isTearingSupported = false; // [a_vorontsov] TODO: Properly handle when tearing is not supported.
     UINT m_width = -1;
     UINT m_height = -1;
     bool m_isFullScreen = false;
 
-
-    std::map<ShaderHandle, Microsoft::WRL::ComPtr<ID3D12RootSignature>> m_rootSignature;
 
     Microsoft::WRL::ComPtr<ID3D12PipelineState> m_fallbackPSO;
     ShaderHandle m_vs;
