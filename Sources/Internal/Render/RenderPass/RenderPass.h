@@ -36,6 +36,8 @@ public:
     void SetRenderTarget(uint32 index, TextureHandle tex);
     void SetDepthStencil(TextureHandle depthStencil);
     void SetPriority(uint32 priority);
+    void SetRenderTargetCount(uint8 count);
+    void SetHandle(RenderPassHandle handle);
 
     RectI GetScissor() const;
     RectI GetViewport() const;
@@ -47,6 +49,8 @@ public:
     TextureHandle GetRenderTarget(int32 index) const;
     TextureHandle GetDepthStencil() const;
     uint32 GetPriority() const;
+    uint8 GetRenderTargetCount() const;
+    RenderPassHandle GetHandle() const;
 
 private:
     RectI m_scissor;
@@ -56,6 +60,8 @@ private:
     float32 m_clearDepthValue = 0.0f;
     bool m_clearStencil = true;
     int32 m_clearStencilValue = 1;
+    uint8 m_renderTargetCount = -1;
+    RenderPassHandle m_handle = InvalidHandle;
     std::array<TextureHandle, 4> m_renderTargets;
     TextureHandle m_depthStencil;
     uint32 m_priority = PassPriority::MainPass;
@@ -111,6 +117,16 @@ inline void RenderPass::SetPriority(uint32 priority)
     m_priority = priority;
 }
 
+inline void RenderPass::SetRenderTargetCount(uint8 count)
+{
+    m_renderTargetCount = count;
+}
+
+inline void RenderPass::SetHandle(RenderPassHandle handle)
+{
+    m_handle = handle;
+}
+
 inline RectI RenderPass::GetScissor() const
 {
     return m_scissor;
@@ -159,5 +175,15 @@ inline TextureHandle RenderPass::GetDepthStencil() const
 inline uint32 RenderPass::GetPriority() const
 {
     return m_priority;
+}
+
+inline uint8 RenderPass::GetRenderTargetCount() const
+{
+    return m_renderTargetCount;
+}
+
+inline RenderPassHandle RenderPass::GetHandle() const
+{
+    return m_handle;
 }
 }

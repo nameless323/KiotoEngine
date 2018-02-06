@@ -15,6 +15,8 @@ class Shader;
 class VertexLayout;
 class Texture;
 class TextureSet;
+class Material;
+class RenderPass;
 
 struct ShaderDefine
 {
@@ -90,4 +92,6 @@ using VertexLayoutHandle = SafeHandle<VertexLayout>;
 using ShaderHandle = SafeHandle<Shader>;
 using TextureHandle = SafeHandle<Texture>;
 using TextureSetHandle = SafeHandle<TextureSet>;
+using MaterialHandle = SafeHandle<Material>;
+using RenderPassHandle = SafeHandle<RenderPass>;
 }
