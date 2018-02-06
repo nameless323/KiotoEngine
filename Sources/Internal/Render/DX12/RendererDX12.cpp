@@ -356,7 +356,6 @@ void RendererDX12::Present()
     m_state.CommandAllocators[m_swapChain.GetCurrentFrameIndex()]->Reset();
     m_state.CommandList->Reset(m_state.CommandAllocators[m_swapChain.GetCurrentFrameIndex()].Get(), m_fallbackPSO.Get());
     std::vector<RenderPass> thisFramePasses = m_renderPasses[m_swapChain.GetCurrentFrameIndex()];
-
     for (auto& renderPass : thisFramePasses)
     {
         ResourceDX12* currentRenderTarget = nullptr;

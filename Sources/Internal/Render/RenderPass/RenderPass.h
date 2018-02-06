@@ -14,6 +14,8 @@
 namespace Kioto::Renderer
 {
 
+static constexpr uint8 MaxRenderTargetsCount = 8;
+
 enum PassPriority
 {
     MainPass = 100
@@ -62,7 +64,7 @@ private:
     int32 m_clearStencilValue = 1;
     uint8 m_renderTargetCount = -1;
     RenderPassHandle m_handle = InvalidHandle;
-    std::array<TextureHandle, 4> m_renderTargets;
+    std::array<TextureHandle, MaxRenderTargetsCount> m_renderTargets;
     TextureHandle m_depthStencil;
     uint32 m_priority = PassPriority::MainPass;
 };

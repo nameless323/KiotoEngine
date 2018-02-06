@@ -23,7 +23,7 @@ public:
 
 private:
     std::string m_shaderPath;
-    PipelineState m_pipelineState;
+    Renderer::PipelineState m_pipelineState;
     Renderer::Shader* m_shader = nullptr;
 };
 }

@@ -32,6 +32,6 @@ Material::Material(const std::string& path)
         m_shaderPath = config["shader"].as<std::string>();
         m_shader = AssetsSystem::LoadAsset<Renderer::Shader>(m_shaderPath);
     }
-    m_pipelineState = PipelineState::FromYaml(config);
+    m_pipelineState = Renderer::PipelineState::FromYaml(config);
 }
 }

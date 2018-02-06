@@ -11,7 +11,7 @@
 #include "Core/CoreTypes.h"
 #include "Render/PipelineState.h"
 
-namespace Kioto
+namespace Kioto::Renderer
 {
 
 PipelineState PipelineState::FromYaml(const YAML::Node& config)
