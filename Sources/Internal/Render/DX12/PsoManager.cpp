@@ -76,6 +76,44 @@ D3D12_BLEND_DESC ParseBlendState(const PipelineState& state)
     return desc;
 }
 
+D3D12_DEPTH_STENCIL_DESC ParseDepthStencil(const PipelineState& state)
+{
+    static std::map<eStencilOp, D3D12_STENCIL_OP> stencilOps
+    {
+        { eStencilOp::Keep, D3D12_STENCIL_OP_KEEP },
+        { eStencilOp::Zero, D3D12_STENCIL_OP_ZERO },
+        { eStencilOp::Replace, D3D12_STENCIL_OP_REPLACE },
+        { eStencilOp::IncrSat, D3D12_STENCIL_OP_INCR_SAT },
+        { eStencilOp::DectSat, D3D12_STENCIL_OP_DECR_SAT },
+        { eStencilOp::Invert, D3D12_STENCIL_OP_INVERT },
+        { eStencilOp::Incr, D3D12_STENCIL_OP_INCR },
+        { eStencilOp::Decr, D3D12_STENCIL_OP_DECR }
+    };
+    static std::map<eStencilTest, D3D12_COMPARISON_FUNC> stencilFunc
+    {
+        { eStencilTest::Never, D3D12_COMPARISON_FUNC_NEVER },
+        { eStencilTest::Less, D3D12_COMPARISON_FUNC_LESS },
+        { eStencilTest::Equal, D3D12_COMPARISON_FUNC_EQUAL },
+        { eStencilTest::LEqual, D3D12_COMPARISON_FUNC_LESS_EQUAL },
+        { eStencilTest::Greater, D3D12_COMPARISON_FUNC_GREATER },
+        { eStencilTest::NotEqual, D3D12_COMPARISON_FUNC_NOT_EQUAL },
+        { eStencilTest::GEqual, D3D12_COMPARISON_FUNC_GREATER_EQUAL },
+        { eStencilTest::Always, D3D12_COMPARISON_FUNC_ALWAYS }
+    };
+    D3D12_DEPTH_STENCIL_DESC desc = {};
+    desc.BackFace.StencilDepthFailOp = stencilOps[state.BackFaceStencilDesc.StencilDepthFailOp];
+    desc.BackFace.StencilFailOp = stencilOps[state.BackFaceStencilDesc.StencilFailOp];
+    desc.BackFace.StencilFunc = stencilFunc[state.BackFaceStencilDesc.StencilFunc];
+    desc.BackFace.StencilPassOp = stencilOps[state.BackFaceStencilDesc.StencilPassOp];
+
+    desc.FrontFace.StencilDepthFailOp = stencilOps[state.FrontFaceStencilDesc.StencilDepthFailOp];
+    desc.FrontFace.StencilFailOp = stencilOps[state.FrontFaceStencilDesc.StencilFailOp];
+    desc.FrontFace.StencilFunc = stencilFunc[state.FrontFaceStencilDesc.StencilFunc];
+    desc.FrontFace.StencilPassOp = stencilOps[state.FrontFaceStencilDesc.StencilPassOp];
+
+    return desc;
+}
+
 D3D12_GRAPHICS_PIPELINE_STATE_DESC ParsePipelineState(const PipelineState& state, const RenderPass& pass, ID3D12RootSignature* sig)
 {
     D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};
@@ -85,6 +123,7 @@ D3D12_GRAPHICS_PIPELINE_STATE_DESC ParsePipelineState(const PipelineState& state
     //desc.PS
     desc.RasterizerState = ParseRasterizerDesc(state);
     desc.BlendState = ParseBlendState(state);
+    desc.DepthStencilState = ParseDepthStencil(state);
 
     return desc;
 }

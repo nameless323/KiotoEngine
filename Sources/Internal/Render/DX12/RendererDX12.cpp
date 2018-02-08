@@ -100,7 +100,9 @@ void RendererDX12::Init(uint16 width, uint16 height)
     NAME_D3D12_OBJECT(m_state.CommandQueue);
 
     m_swapChain.Init(m_state, m_isTearingSupported, width, height);
-
+    for (uint8 i = 0; i < StateDX::FrameCount; ++i)
+        m_textureManager.RegisterTextureWithoutOwnership(m_swapChain.GetBackBuffer(i));
+    m_textureManager.RegisterTextureWithoutOwnership(m_swapChain.GetDepthStencil());
 
     for (uint32 i = 0; i < StateDX::FrameCount; ++i)
     {
@@ -327,9 +329,9 @@ void RendererDX12::Resize(uint16 width, uint16 height)
         fenceVal = m_state.CurrentFence;
 
     ThrowIfFailed(m_state.CommandList->Reset(m_state.CommandAllocators[m_swapChain.GetCurrentFrameIndex()].Get(), nullptr));
-    
+
     m_swapChain.Resize(m_state, width, height);
-    
+
     ThrowIfFailed(m_state.CommandList->Close());
     ID3D12CommandList* cmdLists[] = { m_state.CommandList.Get() };
     m_state.CommandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);

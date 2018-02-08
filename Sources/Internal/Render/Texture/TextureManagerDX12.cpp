@@ -86,7 +86,21 @@ TextureDX12* TextureManagerDX12::FindTexture(TextureHandle handle)
     auto it = m_textures.find(handle);
     if (it != m_textures.cend())
         return it->second;
+    it = m_notOwningTextures.find(handle);
+    if (it != m_notOwningTextures.cend())
+        return it->second;
     return nullptr;
+}
+
+void TextureManagerDX12::RegisterTextureWithoutOwnership(TextureDX12* texture)
+{
+    auto it = m_notOwningTextures.find(texture->GetHandle());
+    if (it != m_notOwningTextures.end())
+    {
+        throw "Texture Already Registered";
+        return;
+    }
+    m_notOwningTextures[texture->GetHandle()] = texture;
 }
 
 }

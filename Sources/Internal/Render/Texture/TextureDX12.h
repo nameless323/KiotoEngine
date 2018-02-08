@@ -35,7 +35,6 @@ public:
 
 private:
     TextureHandle m_handle;
-    DXGI_FORMAT m_format;
     D3D12_CPU_DESCRIPTOR_HANDLE m_CPUdescriptorHandle;
     D3D12_GPU_DESCRIPTOR_HANDLE m_GPUdescriptorHandle;
 };
@@ -57,7 +56,7 @@ inline TextureHandle TextureDX12::GetHandle() const
 
 inline DXGI_FORMAT TextureDX12::GetFormat() const
 {
-    return m_format;
+    return Resource->GetDesc().Format;
 }
 
 inline D3D12_CPU_DESCRIPTOR_HANDLE TextureDX12::GetCPUHandle() const
