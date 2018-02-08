@@ -27,7 +27,7 @@ void TextureManagerDX12::RegisterTexture(const StateDX& state, Texture* texture)
     TextureDX12* tex = new TextureDX12();
     tex->Path = StrToWstr(texture->GetAssetPath());
     tex->Create(state.Device.Get(), state.CommandList.Get());
-    tex->SetTextureHandle(GetNewHandle());
+    tex->SetHandle(GetNewHandle());
     texture->SetHandle(tex->GetHandle());
 
     m_textures[tex->GetHandle()] = tex;
@@ -78,6 +78,14 @@ ID3D12DescriptorHeap* TextureManagerDX12::GetTextureHeap(TextureSetHandle handle
     auto it = m_textureHeaps.find(handle);
     if (it != m_textureHeaps.cend())
         return it->second.Get();
+    return nullptr;
+}
+
+TextureDX12* TextureManagerDX12::FindTexture(TextureHandle handle)
+{
+    auto it = m_textures.find(handle);
+    if (it != m_textures.cend())
+        return it->second;
     return nullptr;
 }
 

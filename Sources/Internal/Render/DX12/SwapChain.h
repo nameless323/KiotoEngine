@@ -7,6 +7,7 @@
 
 #include "Render/DX12/Buffers/ResourceDX12.h"
 #include "Render/DX12/StateDX.h"
+#include "Render/Texture/TextureDX12.h"
 
 namespace Kioto::Renderer
 {
@@ -30,9 +31,9 @@ public:
     UINT GetCurrentFrameIndex() const;
     DXGI_FORMAT GetBackBufferFormat() const;
     DXGI_FORMAT GetDepthStencilFormat() const;
-    ResourceDX12* GetBackBuffer(uint8 index);
-    ResourceDX12* GetDepthStencil();
-    ResourceDX12* GetCurrentBackBuffer();
+    TextureDX12* GetBackBuffer(uint8 index);
+    TextureDX12* GetDepthStencil();
+    TextureDX12* GetCurrentBackBuffer();
 
     void Present(); // proceed to nex.
     void ProceedToNextFrame();
@@ -51,18 +52,18 @@ private:
     Microsoft::WRL::ComPtr<IDXGISwapChain3> m_swapChain;
     Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_rtvHeap;
     Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_dsvHeap;
-    ResourceDX12 m_backBuffers[StateDX::FrameCount];
-    ResourceDX12 m_depthStencil;
+    TextureDX12 m_backBuffers[StateDX::FrameCount];
+    TextureDX12 m_depthStencil;
 };
 
 inline TextureHandle SwapChain::GetCurrentBackBufferHandle() const
 {
-    return m_backBuffers[m_currentFrameIndex].Handle.GetHandle();
+    return m_backBuffers[m_currentFrameIndex].GetHandle();
 }
 
 inline TextureHandle SwapChain::GetDepthStencilHandle() const
 {
-    return m_depthStencil.Handle.GetHandle();
+    return m_depthStencil.GetHandle();
 }
 
 inline UINT SwapChain::GetCurrentBackBufferIndex() const
@@ -90,17 +91,17 @@ inline DXGI_FORMAT SwapChain::GetDepthStencilFormat() const
     return m_depthStencilFormat;
 }
 
-inline ResourceDX12* SwapChain::GetBackBuffer(uint8 index)
+inline TextureDX12* SwapChain::GetBackBuffer(uint8 index)
 {
     return &m_backBuffers[index];
 }
 
-inline ResourceDX12* SwapChain::GetDepthStencil()
+inline TextureDX12* SwapChain::GetDepthStencil()
 {
     return &m_depthStencil;
 }
 
-inline ResourceDX12* SwapChain::GetCurrentBackBuffer()
+inline TextureDX12* SwapChain::GetCurrentBackBuffer()
 {
     return &m_backBuffers[m_swapChain->GetCurrentBackBufferIndex()];
 }

@@ -29,6 +29,7 @@ public:
     void UpdateTextureSetHeap(const StateDX& state, const TextureSet& texSet);
 
     ID3D12DescriptorHeap* GetTextureHeap(TextureSetHandle handle) const;
+    TextureDX12* FindTexture(TextureHandle handle);
 
 private:
     std::map<TextureSetHandle, Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>> m_textureHeaps; // [a_vorontsov] One tex heap for all textures?

@@ -358,16 +358,17 @@ void RendererDX12::Present()
     std::vector<RenderPass> thisFramePasses = m_renderPasses[m_swapChain.GetCurrentFrameIndex()];
     for (auto& renderPass : thisFramePasses)
     {
-        ResourceDX12* currentRenderTarget = nullptr;
+        TextureDX12* currentRenderTarget = nullptr;
         if (renderPass.GetRenderTarget(0).GetHandle() == InvalidHandle)
             currentRenderTarget = m_swapChain.GetCurrentBackBuffer();
         else
-            currentRenderTarget = FindDxResource(renderPass.GetRenderTarget(0).GetHandle());
-        ResourceDX12* currentDS = nullptr;
+            currentRenderTarget = m_textureManager.FindTexture(renderPass.GetRenderTarget(0).GetHandle());
+
+        TextureDX12* currentDS = nullptr;
         if (renderPass.GetDepthStencil().GetHandle() == InvalidHandle)
             currentDS = m_swapChain.GetDepthStencil();
         else
-            currentDS = FindDxResource(renderPass.GetDepthStencil().GetHandle());
+            currentDS = m_textureManager.FindTexture(renderPass.GetDepthStencil().GetHandle());
         
         if (currentRenderTarget == nullptr || currentDS == nullptr)
             return;
@@ -377,10 +378,10 @@ void RendererDX12::Present()
 
         m_state.CommandList->RSSetScissorRects(1, &DXRectFromKioto(renderPass.GetScissor()));
         m_state.CommandList->RSSetViewports(1, &DXViewportFromKioto(renderPass.GetViewport()));
-        m_state.CommandList->ClearRenderTargetView(currentRenderTarget->CPUdescriptorHandle, DirectX::Colors::Aqua, 0, nullptr);
-        m_state.CommandList->ClearDepthStencilView(currentDS->CPUdescriptorHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+        m_state.CommandList->ClearRenderTargetView(currentRenderTarget->GetCPUHandle(), DirectX::Colors::Aqua, 0, nullptr);
+        m_state.CommandList->ClearDepthStencilView(currentDS->GetCPUHandle(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
-        m_state.CommandList->OMSetRenderTargets(1, &currentRenderTarget->CPUdescriptorHandle, false, &currentDS->CPUdescriptorHandle);
+        m_state.CommandList->OMSetRenderTargets(1, &currentRenderTarget->GetCPUHandle(), false, &currentDS->GetCPUHandle());
 
         ID3D12RootSignature* rootSig = m_rootSignatureManager.GetRootSignature(m_vs);
         m_state.CommandList->SetGraphicsRootSignature(rootSig);

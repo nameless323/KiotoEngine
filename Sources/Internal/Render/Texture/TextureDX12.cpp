@@ -17,4 +17,3 @@ void TextureDX12::Create(ID3D12Device* device, ID3D12GraphicsCommandList* comman
     ThrowIfFailed(texRes);
 }
 }
-
