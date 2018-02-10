@@ -11,6 +11,7 @@
 
 #include "AssetsSystem/AssetsSystem.h"
 #include "AssetsSystem/RenderStateParamsConverter.h"
+#include "Render/Texture/RenderAssetsManager.h"
 
 namespace Kioto::Renderer
 {
@@ -31,18 +32,22 @@ Material::Material(const std::string& path)
     if (config["shader"] != nullptr)
     {
         m_shaderPath = config["shader"].as<std::string>();
-        std::string shaderPath = WstrToStr(AssetsSystem::GetAssetFullPath(StrToWstr(m_shaderPath)));
+        std::string shaderPath = AssetsSystem::GetAssetFullPath(m_shaderPath);
         m_shader = AssetsSystem::LoadAsset<Shader>(shaderPath);
     }
-    m_pipelineState = PipelineState::FromYaml(config);
+    m_pipelineState = m_shader->m_data.pipelineState;
+    PipelineState::Append(config, m_pipelineState);
     if (config["textures"] != nullptr)
     {
         YAML::Node texNodes = config["textures"];
         auto it = texNodes.begin();
         for (; it != texNodes.end(); ++it)
         {
-            auto f = it->first.as<std::string>();
-            auto g = it->second.as<std::string>();
+            std::string name = it->first.as<std::string>();
+            std::string path = it->second.as<std::string>();
+            std::string fullPath = AssetsSystem::GetAssetFullPath(path);
+            Texture* tex = AssetsSystem::GetRenderAssetsManager<Texture>()->GetOrLoadAsset(fullPath);
+            m_shader->m_data.textureSet.SetTexture(name, tex);
         }
     }
 }

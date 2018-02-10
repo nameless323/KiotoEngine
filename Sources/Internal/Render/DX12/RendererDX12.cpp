@@ -33,7 +33,7 @@
 
 #include "Render/DX12/Buffers/UploadBufferDX12.h"
 #include "Render/Texture/Texture.h"
-#include "Render/MaterialData.h"
+#include "Render/ShaderData.h"
 
 namespace Kioto::Renderer
 {
@@ -149,21 +149,21 @@ void RendererDX12::LoadPipeline()
 #endif
     m_state.CommandList->Reset(m_state.CommandAllocators[0].Get(), nullptr);
 
-    std::string matPath = WstrToStr(AssetsSystem::GetAssetFullPath(L"Materials\\Test.mt"));
+    std::string matPath = AssetsSystem::GetAssetFullPath("Materials\\Test.mt");
     Material* material = AssetsSystem::LoadAsset<Material>(matPath);
     material->SetHandle(GetNewHandle());
 
-    wstring shaderPath = AssetsSystem::GetAssetFullPath(L"Shaders\\Fallback.hlsl");
+    std::string shaderPath = AssetsSystem::GetAssetFullPath("Shaders\\Fallback.hlsl");
     ShaderDX12* vs = new ShaderDX12();
     ShaderDX12* ps = new ShaderDX12();
     vs->SetHandle(GetNewHandle());
     ps->SetHandle(GetNewHandle());
     m_vs = vs->GetHandle();
     m_ps = ps->GetHandle();
-    m_texture = new Texture(WstrToStr(AssetsSystem::GetAssetFullPath(L"Textures\\rick_and_morty.dds")));
+    m_texture = new Texture(AssetsSystem::GetAssetFullPath("Textures\\rick_and_morty.dds"));
     RegisterTexture(m_texture);
 
-    MaterialData parseResult = ShaderParser::ParseShader(WstrToStr(shaderPath), nullptr);
+    ShaderData parseResult = ShaderParser::ParseShader(shaderPath, nullptr);
     parseResult.textureSet.SetHandle(GetNewHandle());
     m_textureSet = parseResult.textureSet;
     m_textureSet.SetTexture("Diffuse", m_texture);

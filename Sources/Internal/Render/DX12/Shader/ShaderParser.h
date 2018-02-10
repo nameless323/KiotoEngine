@@ -8,13 +8,13 @@
 #include <string>
 #include <vector>
 
-#include "Render/MaterialData.h"
+#include "Render/ShaderData.h"
 
 namespace Kioto::Renderer
 {
 namespace ShaderParser
 {
-Renderer::MaterialData ParseShader(const std::string& path, const std::vector<ShaderDefine>* const defines);
-Renderer::MaterialData ParseShaderFromString(std::string source, const std::vector<ShaderDefine>* const defines);
+Renderer::ShaderData ParseShader(const std::string& path, const std::vector<ShaderDefine>* const defines);
+Renderer::ShaderData ParseShaderFromString(std::string source, const std::vector<ShaderDefine>* const defines);
 }
 }

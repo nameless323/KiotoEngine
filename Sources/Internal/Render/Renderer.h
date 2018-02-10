@@ -29,6 +29,9 @@ void Update(float32 dt);
 void Present();
 void ChangeFullScreenMode(bool fullScreen);
 void AddRenderPass(const RenderPass& renderPass);
+
+template <typename T>
+void RegisterRenderAsset(T* asset);
 TextureHandle GetCurrentBackBufferHandle();
 TextureHandle GetDepthStencilHandle();
 KIOTO_API uint16 GetWidth();

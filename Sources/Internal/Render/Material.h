@@ -31,8 +31,6 @@ private:
     std::string m_shaderPath;
     PipelineState m_pipelineState;
     Shader* m_shader = nullptr;
-    TextureSet m_textureSet;
-    std::vector<ConstantBuffer> m_constantBuffers;
     MaterialHandle m_handle;
 };
 

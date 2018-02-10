@@ -13,7 +13,7 @@
 
 namespace Kioto::Renderer
 {
-struct MaterialData
+struct ShaderData
 {
     std::string output;
     VertexLayout vertexLayout;

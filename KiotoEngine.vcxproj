@@ -217,6 +217,7 @@
     <ClInclude Include="Sources\Internal\Render\RenderPass\MainForwardPass.h" />
     <ClInclude Include="Sources\Internal\Render\RenderPass\RenderPass.h" />
     <ClInclude Include="Sources\Internal\Render\Shader.h" />
+    <ClInclude Include="Sources\Internal\Render\Texture\TextureManager.h" />
     <ClInclude Include="Sources\Internal\Render\Texture\TextureManagerDX12.h" />
     <ClInclude Include="Sources\Internal\Render\Texture\TextureSet.h" />
     <ClInclude Include="Sources\Internal\Render\Texture\Texture.h" />

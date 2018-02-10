@@ -59,9 +59,9 @@ std::string UnfoldIncludes(std::string& source, uint16 recursionDepth)
             auto it = std::find(m_preprocessedHeaders.begin(), m_preprocessedHeaders.end(), relativeIncludePath);
             if (it == m_preprocessedHeaders.end())
             {
-                std::wstring shaderPath = AssetsSystem::GetAssetFullPath(StrToWstr(relativeIncludePath));
+                std::string shaderPath = AssetsSystem::GetAssetFullPath(relativeIncludePath);
                 bool isExist = AssetsSystem::CheckIfFileExist(shaderPath);
-                std::string incl = AssetsSystem::ReadFileAsString(std::string(shaderPath.begin(), shaderPath.end()));
+                std::string incl = AssetsSystem::ReadFileAsString(shaderPath);
                 source.insert(includePos, UnfoldIncludes(incl, recursionDepth + 1));
                 m_preprocessedHeaders.push_back(relativeIncludePath);
             }
@@ -542,15 +542,15 @@ std::string DXPreprocess(const std::string& source, const std::vector<ShaderDefi
     return std::string(reinterpret_cast<char*>(rr->GetBufferPointer()));
 }
 
-MaterialData ParseShader(const std::string& path, const std::vector<ShaderDefine>* const defines)
+ShaderData ParseShader(const std::string& path, const std::vector<ShaderDefine>* const defines)
 {
     std::string shaderStr = AssetsSystem::ReadFileAsString(path);
     return ParseShaderFromString(shaderStr, defines);
 }
 
-MaterialData ParseShaderFromString(std::string source, const std::vector<ShaderDefine>* const defines)
+ShaderData ParseShaderFromString(std::string source, const std::vector<ShaderDefine>* const defines)
 {
-    MaterialData res;
+    ShaderData res;
     m_preprocessedHeaders.clear();
     source = UnfoldIncludes(source, 0);
     GetPipelineState(source);

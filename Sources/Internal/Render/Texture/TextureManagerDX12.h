@@ -18,7 +18,7 @@ class TextureDX12;
 struct StateDX;
 namespace ShaderParser
 {
-struct MaterialData;
+struct ShaderData;
 }
 
 class TextureManagerDX12
