@@ -119,6 +119,7 @@ inline T* RenderAssetsManager<T>::GetOrLoadAsset(const std::string path)
 //////////////////////////////////////////////////////////////////////////
 
 static RenderAssetsManager<Renderer::Texture> m_textureManager;
+static RenderAssetsManager<Renderer::Shader> m_shaderManager;
 
 template <typename T>
 inline RenderAssetsManager<T>* GetRenderAssetsManager()
@@ -130,5 +131,11 @@ template <>
 inline RenderAssetsManager<Renderer::Texture>* GetRenderAssetsManager()
 {
     return &m_textureManager;
+}
+
+template <>
+inline RenderAssetsManager<Renderer::Shader>* GetRenderAssetsManager()
+{
+    return &m_shaderManager;
 }
 }

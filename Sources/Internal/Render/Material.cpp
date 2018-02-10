@@ -33,10 +33,14 @@ Material::Material(const std::string& path)
     {
         m_shaderPath = config["shader"].as<std::string>();
         std::string shaderPath = AssetsSystem::GetAssetFullPath(m_shaderPath);
-        m_shader = AssetsSystem::LoadAsset<Shader>(shaderPath);
+        m_shader = AssetsSystem::GetRenderAssetsManager<Shader>()->GetOrLoadAsset(shaderPath);
     }
-    m_pipelineState = m_shader->m_data.pipelineState;
-    PipelineState::Append(config, m_pipelineState);
+    else
+    {
+        throw "Wtf";
+    }
+    m_shaderData = m_shader->m_data;
+    PipelineState::Append(config, m_shaderData.pipelineState);
     if (config["textures"] != nullptr)
     {
         YAML::Node texNodes = config["textures"];

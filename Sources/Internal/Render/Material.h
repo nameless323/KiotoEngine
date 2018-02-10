@@ -29,8 +29,8 @@ public:
 
 private:
     std::string m_shaderPath;
-    PipelineState m_pipelineState;
     Shader* m_shader = nullptr;
+    ShaderData m_shaderData;
     MaterialHandle m_handle;
 };
 

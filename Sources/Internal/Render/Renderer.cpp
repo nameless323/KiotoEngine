@@ -124,5 +124,19 @@ void RegisterRenderAsset(Texture* asset)
     GameRenderer->RegisterTexture(asset);
 }
 
+template <>
+void RegisterRenderAsset(Shader* asset)
+{
+    //throw "TODO";
+}
+
+//template <>
+//void RegisterRenderAsset(Material* asset)
+//{
+//    //throw "TODO";
+//}
+
 template void RegisterRenderAsset<Texture>(Texture* asset);
+template void RegisterRenderAsset<Shader>(Shader* asset);
+//template void RegisterRenderAsset<Material>(Material* asset);
 }
