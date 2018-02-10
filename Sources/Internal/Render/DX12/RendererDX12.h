@@ -35,7 +35,7 @@ class VertexLayout;
 class UploadBufferDX12;
 namespace ShaderParser
 {
-struct ParseResult;
+struct MaterialData;
 }
 
 class RendererDX12 final

@@ -8,6 +8,9 @@
 #include "Render/DX12/PsoManager.h"
 #include "Render/PipelineState.h"
 #include "Render/Texture/TextureManagerDX12.h"
+#include "Render/RenderPass/RenderPass.h"
+#include "Render/Texture/TextureManagerDX12.h"
+#include "Render/Texture/TextureDX12.h"
 
 namespace Kioto::Renderer
 {
@@ -77,7 +80,7 @@ D3D12_BLEND_DESC ParseBlendState(const PipelineState& state)
     return desc;
 }
 
-D3D12_DEPTH_STENCIL_DESC ParseDepthStencil(const PipelineState& state, const RenderPass& pass)
+D3D12_DEPTH_STENCIL_DESC ParseDepthStencil(const PipelineState& state)
 {
     static std::map<eStencilOp, D3D12_STENCIL_OP> stencilOps
     {
@@ -132,7 +135,7 @@ D3D12_DEPTH_STENCIL_DESC ParseDepthStencil(const PipelineState& state, const Ren
     return desc;
 }
 
-D3D12_GRAPHICS_PIPELINE_STATE_DESC ParsePipelineState(const PipelineState& state, const RenderPass& pass, ID3D12RootSignature* sig)
+D3D12_GRAPHICS_PIPELINE_STATE_DESC ParsePipelineState(const PipelineState& state, const RenderPass& pass, ID3D12RootSignature* sig, TextureManagerDX12* textureManager)
 {
     D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};
     //desc.InputLayout
@@ -141,7 +144,16 @@ D3D12_GRAPHICS_PIPELINE_STATE_DESC ParsePipelineState(const PipelineState& state
     //desc.PS
     desc.RasterizerState = ParseRasterizerDesc(state);
     desc.BlendState = ParseBlendState(state);
-    desc.DepthStencilState = ParseDepthStencil(state, pass);
+    desc.DepthStencilState = ParseDepthStencil(state);
+    desc.DSVFormat = textureManager->FindTexture(pass.GetDepthStencil().GetHandle())->GetFormat();
+    desc.SampleMask = UINT_MAX;
+    desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+    desc.NumRenderTargets = pass.GetRenderTargetCount();
+    for (uint32 i = 0; i < pass.GetRenderTargetCount(); ++i)
+    {
+        desc.RTVFormats[i] = textureManager->FindTexture(pass.GetRenderTarget(i).GetHandle())->GetFormat();
+    }
+    desc.SampleDesc.Count = 1;
 
     return desc;
 }
@@ -150,6 +162,7 @@ D3D12_GRAPHICS_PIPELINE_STATE_DESC ParsePipelineState(const PipelineState& state
 
 void PsoManager::BuildPipelineState(const Material* mat, const RenderPass& pass, ID3D12RootSignature* sig, TextureManagerDX12* textureManager)
 {
+    //ParsePipelineState(state)
     //uint64 key = mat->Hadle | pass.GetHandle() << 32;
 }
 

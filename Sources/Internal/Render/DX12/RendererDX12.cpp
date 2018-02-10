@@ -24,6 +24,7 @@
 #include "Render/VertexLayout.h"
 #include "Render/DX12/VertexLayoutDX12.h"
 #include "Render/DX12/Shader/ShaderParser.h"
+#include "Render/Material.h"
 
 #include "Component/CameraComponent.h"
 #include "Systems/CameraSystem.h"
@@ -32,6 +33,7 @@
 
 #include "Render/DX12/Buffers/UploadBufferDX12.h"
 #include "Render/Texture/Texture.h"
+#include "Render/MaterialData.h"
 
 namespace Kioto::Renderer
 {
@@ -145,8 +147,12 @@ void RendererDX12::LoadPipeline()
 #else
     UINT shaderFlags = 0;
 #endif
-
     m_state.CommandList->Reset(m_state.CommandAllocators[0].Get(), nullptr);
+
+    std::string matPath = WstrToStr(AssetsSystem::GetAssetFullPath(L"Materials\\Test.mt"));
+    Material* material = AssetsSystem::LoadAsset<Material>(matPath);
+    material->SetHandle(GetNewHandle());
+
     wstring shaderPath = AssetsSystem::GetAssetFullPath(L"Shaders\\Fallback.hlsl");
     ShaderDX12* vs = new ShaderDX12();
     ShaderDX12* ps = new ShaderDX12();
@@ -157,7 +163,7 @@ void RendererDX12::LoadPipeline()
     m_texture = new Texture(WstrToStr(AssetsSystem::GetAssetFullPath(L"Textures\\rick_and_morty.dds")));
     RegisterTexture(m_texture);
 
-    ShaderParser::ParseResult parseResult = ShaderParser::ParseShader(WstrToStr(shaderPath), nullptr);
+    MaterialData parseResult = ShaderParser::ParseShader(WstrToStr(shaderPath), nullptr);
     parseResult.textureSet.SetHandle(GetNewHandle());
     m_textureSet = parseResult.textureSet;
     m_textureSet.SetTexture("Diffuse", m_texture);

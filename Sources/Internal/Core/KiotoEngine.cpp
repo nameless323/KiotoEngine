@@ -72,11 +72,6 @@ void Init()
     if (InitEngineCallback != nullptr)
         InitEngineCallback();
 
-
-    std::string matPath = WstrToStr(AssetsSystem::GetAssetFullPath(L"Materials\\Test.mt"));
-    Material* m = AssetsSystem::LoadAsset<Material>(matPath);
-    Material* p = AssetsSystem::LoadAsset<Material>(matPath);
-
     WindowsApplication::Run();
 }
 

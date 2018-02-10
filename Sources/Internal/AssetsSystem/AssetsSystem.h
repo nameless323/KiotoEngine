@@ -42,7 +42,10 @@ T* Kioto::AssetsSystem::LoadAsset(std::string assetPath)
         return static_cast<T*>(it->second);
 
     if (!CheckIfFileExist(assetPath))
+    {
+        throw "File not exist";
         return nullptr;
+    }
 
     Asset* newAsset = new T(assetPath);
     m_assets[assetPath] = newAsset;

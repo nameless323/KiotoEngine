@@ -542,19 +542,24 @@ std::string DXPreprocess(const std::string& source, const std::vector<ShaderDefi
     return std::string(reinterpret_cast<char*>(rr->GetBufferPointer()));
 }
 
-ParseResult ParseShader(const std::string& path, const std::vector<ShaderDefine>* const defines)
+MaterialData ParseShader(const std::string& path, const std::vector<ShaderDefine>* const defines)
 {
-    ParseResult res;
-    m_preprocessedHeaders.clear();
     std::string shaderStr = AssetsSystem::ReadFileAsString(path);
-    shaderStr = UnfoldIncludes(shaderStr, 0);
-    GetPipelineState(shaderStr);
-    res.textureSet = ParseTextures(shaderStr);
-    shaderStr = DXPreprocess(shaderStr, defines);
-    OutputDebugStringA(shaderStr.c_str());
-    res.vertexLayout = GetVertexLayout(shaderStr);
-    res.constantBuffers = GetConstantBuffers(shaderStr);
-    res.output = shaderStr;
+    return ParseShaderFromString(shaderStr, defines);
+}
+
+MaterialData ParseShaderFromString(std::string source, const std::vector<ShaderDefine>* const defines)
+{
+    MaterialData res;
+    m_preprocessedHeaders.clear();
+    source = UnfoldIncludes(source, 0);
+    GetPipelineState(source);
+    res.textureSet = ParseTextures(source);
+    source = DXPreprocess(source, defines);
+    OutputDebugStringA(source.c_str());
+    res.vertexLayout = GetVertexLayout(source);
+    res.constantBuffers = GetConstantBuffers(source);
+    res.output = source;
     return res;
 }
 

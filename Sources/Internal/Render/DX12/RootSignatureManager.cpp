@@ -13,7 +13,7 @@
 namespace Kioto::Renderer
 {
 
-void RootSignatureManager::CreateRootSignature(const StateDX& state, const ShaderParser::ParseResult& parseResult, ShaderHandle handle)
+void RootSignatureManager::CreateRootSignature(const StateDX& state, const MaterialData& parseResult, ShaderHandle handle)
 {
     using Microsoft::WRL::ComPtr;
 

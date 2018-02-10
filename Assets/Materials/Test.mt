@@ -1,5 +1,5 @@
 version: 0.01
-shader: "Shaders\\Fallback"
+shader: "Shaders\\Fallback.hlsl"
 renderLayer: Opaque
 fill: Solid
 cull: Back
@@ -25,3 +25,5 @@ blending:
     srcBlend: SrcAlpha
     dstBlend: OneMinusSrcAlpha
 colorMask: All
+textures:
+    Diffuse : "Textures\\rick_and_morty.dds"
