@@ -31,8 +31,6 @@ void RenderSystem::Update(float32 dt)
         m_renderPass.SetRenderTarget(i, Renderer::InvalidHandle);
     m_renderPass.SetDepthStencil(Renderer::InvalidHandle);
 
-    m_renderPass.SetRenderTarget(0, Renderer::GetCurrentBackBufferHandle());
-    m_renderPass.SetDepthStencil(Renderer::GetDepthStencilHandle());
     m_renderPass.SetViewport({ 0, 0, Renderer::GetWidth(), Renderer::GetHeight() });
     m_renderPass.SetScissor({ 0, 0, Renderer::GetWidth(), Renderer::GetHeight() });
     m_renderPass.SetClearDepth(true);

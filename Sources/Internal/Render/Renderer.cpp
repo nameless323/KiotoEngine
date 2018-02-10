@@ -107,4 +107,22 @@ TextureHandle GetDepthStencilHandle()
     return GameRenderer->GetDepthStencilHandle();
 }
 
+void RegisterTexture(Texture* texture)
+{
+    GameRenderer->RegisterTexture(texture);
+}
+
+template <typename T>
+void RegisterRenderAsset(T* asset)
+{
+    throw "Not implemented";
+}
+
+template <>
+void RegisterRenderAsset(Texture* asset)
+{
+    GameRenderer->RegisterTexture(asset);
+}
+
+template void RegisterRenderAsset<Texture>(Texture* asset);
 }

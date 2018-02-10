@@ -19,7 +19,7 @@ using std::string;
 
 namespace
 {
-wstring AssetsPath;
+string AssetsPath;
 }
 
 void GetAssetsPath()
@@ -37,21 +37,21 @@ void GetAssetsPath()
     {
         *(lastSlash + 1) = L'\0';
     }
-    AssetsPath = path;
-    AssetsPath += L"Assets\\";
+    AssetsPath = WstrToStr(path);
+    AssetsPath += "Assets\\";
 }
 
-wstring GetAssetFullPath(const wstring& relativePath)
+std::string GetAssetFullPath(const std::string& assetName)
 {
     if (AssetsPath.empty())
         GetAssetsPath();
-    return AssetsPath + relativePath;
+    return AssetsPath + assetName;
 }
 
 void Init()
 {
 #if _DEBUG
-    string configPath = WstrToStr(GetAssetFullPath(L"AssetsConfig.yaml"));
+    string configPath = GetAssetFullPath("AssetsConfig.yaml");
     if (!CheckIfFileExist(configPath))
         throw "Assets Config not found. Please read the Readme file.";
 
@@ -59,9 +59,8 @@ void Init()
     if (config["enginePath"] != nullptr)
     {
         std::string path = config["enginePath"].as<std::string>();
-        std::wstring tmp(path.begin(), path.end());
-        tmp += L"\\Assets\\";
-        AssetsPath = tmp;
+        path += "\\Assets\\";
+        AssetsPath = path;
     }
     else
     {
@@ -70,11 +69,13 @@ void Init()
 #else
     GetAssetsPath();
 #endif
+    m_textureManager.Init();
 }
 
 void Shutdown()
 {
     CleanAssets();
+    m_textureManager.Shutdown();
 }
 
 bool CheckIfFileExist(const std::wstring& path)

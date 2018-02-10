@@ -22,6 +22,10 @@
 #include "Render/RendererPublic.h"
 #include "Render/RenderPass/RenderPass.h"
 #include "Render/Texture/TextureSet.h"
+#include "Render/Texture/TextureManagerDX12.h"
+#include "Render/DX12/StateDX.h"
+#include "Render/DX12/SwapChain.h"
+#include "Render/DX12/RootSignatureManager.h"
 
 namespace Kioto::Renderer
 {
@@ -31,7 +35,7 @@ class VertexLayout;
 class UploadBufferDX12;
 namespace ShaderParser
 {
-struct ParseResult;
+struct ShaderData;
 }
 
 class RendererDX12 final
@@ -45,7 +49,7 @@ public:
     ~RendererDX12() = default;
 
     void Init(uint16 width, uint16 height);
-    void Resize(uint16 width, uint16 heigth);
+    void Resize(uint16 width, uint16 height);
     void ChangeFullScreenMode(bool fullScreen);
     void Shutdown();
     void Present();
@@ -53,18 +57,21 @@ public:
 
     void AddRenderPass(const RenderPass& renderPass);
 
-    TextureHandle GetCurrentBackBufferHandle() const;
-    TextureHandle GetDepthStencilHandle() const;
-
     void RegisterTexture(Texture* texture);
 
     VertexLayoutHandle GenerateVertexLayout(const VertexLayout& layout);
 
+    TextureHandle GetCurrentBackBufferHandle() const;
+    TextureHandle GetDepthStencilHandle() const;
+
 private:
-    static constexpr UINT FrameCount = 3;
+    TextureManagerDX12 m_textureManager;
+    StateDX m_state;
+    SwapChain m_swapChain;
+    RootSignatureManager m_rootSignatureManager;
 
     std::unordered_map<uint32, ResourceDX12> m_resources;
-    std::array<std::vector<RenderPass>, FrameCount> m_renderPasses;
+    std::array<std::vector<RenderPass>, StateDX::FrameCount> m_renderPasses;
 
     ResourceDX12* FindDxResource(uint32 handle);
     const CD3DX12_SHADER_BYTECODE* GetShaderBytecode(ShaderHandle handle) const;
@@ -81,52 +88,21 @@ private:
     void UpdateRenderObjectCB();
     void UpdatePassCB();
 
-    void CreateRootSignature(const ShaderParser::ParseResult& parseResult, ShaderHandle handle);
-    void UpdateTextureSetHeap(const TextureSet& texSet);
-    ID3D12DescriptorHeap* GetTextureHeap(TextureSetHandle handle) const;
-
     bool m_isTearingSupported = false; // [a_vorontsov] TODO: Properly handle when tearing is not supported.
-    UINT m_currentFrameIndex = -1;
-    UINT m_cbvSrvUavDescriptorSize = -1;
-    UINT m_rtvDescriptorSize = -1;
-    UINT m_dsvDescriptorSize = -1;
-    UINT m_samplerDescriptorSize = -1;
-    std::array<UINT64, FrameCount> m_fenceValues;
-    UINT64 m_currentFence = 0;
-    DXGI_FORMAT m_backBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
-    DXGI_FORMAT m_depthStencilFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
     UINT m_width = -1;
     UINT m_height = -1;
     bool m_isFullScreen = false;
-    bool m_isSwapChainChainInFullScreen = false;
 
-    Microsoft::WRL::ComPtr<IDXGIFactory4> m_factory;
-    Microsoft::WRL::ComPtr<ID3D12Device> m_device;
-    Microsoft::WRL::ComPtr<ID3D12CommandQueue> m_commandQueue;
-    Microsoft::WRL::ComPtr<IDXGISwapChain3> m_swapChain;
-    Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_rtvHeap;
-    Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_dsvHeap;
-    Microsoft::WRL::ComPtr<ID3D12Fence> m_fence;
-    ResourceDX12 m_backBuffers[FrameCount];
-    ResourceDX12 m_depthStencil;
-    std::array<Microsoft::WRL::ComPtr<ID3D12CommandAllocator>, FrameCount> m_commandAllocators; // [a_vorontsov] For each render thread?
-    Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_commandList;
-
-    std::map<ShaderHandle, Microsoft::WRL::ComPtr<ID3D12RootSignature>> m_rootSignature;
 
     Microsoft::WRL::ComPtr<ID3D12PipelineState> m_fallbackPSO;
     ShaderHandle m_vs;
     ShaderHandle m_ps;
     std::vector<ShaderDX12*> m_shaders; // [a_vorontsov] To map or set.
-    std::vector<TextureDX12*> m_textures;
-    std::map<TextureSetHandle, Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>> m_textureHeaps; // [a_vorontsov] One tex heap for all textures?
-
+    
     std::unique_ptr<VertexBufferDX12> m_vertexBuffer;
     std::unique_ptr<IndexBufferDX12> m_indexBuffer;
 
     Mesh* m_box;
-    //std::unique_ptr<TextureDX12> m_textureDX;
-    //Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_textureHeap;
 
     std::vector<VertexLayoutDX12> m_inputLayouts;
 
@@ -141,11 +117,11 @@ private:
 
 inline TextureHandle RendererDX12::GetCurrentBackBufferHandle() const
 {
-    return m_backBuffers[m_currentFrameIndex].Handle.GetHandle();
+    return m_swapChain.GetCurrentBackBufferHandle();
 }
 
 inline TextureHandle RendererDX12::GetDepthStencilHandle() const
 {
-    return m_depthStencil.Handle.GetHandle();
+    return m_swapChain.GetDepthStencilHandle();
 }
 }

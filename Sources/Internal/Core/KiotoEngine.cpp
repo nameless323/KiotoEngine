@@ -15,6 +15,7 @@
 #include "Core/WindowsApplication.h"
 #include "Render/Geometry/GeometryGenerator.h"
 #include "Render/Renderer.h"
+#include "Render/Texture/RenderAssetsManager.h"
 
 #include "Render/Material.h"
 
@@ -71,11 +72,6 @@ void Init()
 
     if (InitEngineCallback != nullptr)
         InitEngineCallback();
-
-
-    std::string matPath = WstrToStr(AssetsSystem::GetAssetFullPath(L"Materials\\Test.mt"));
-    Material* m = AssetsSystem::LoadAsset<Material>(matPath);
-    Material* p = AssetsSystem::LoadAsset<Material>(matPath);
 
     WindowsApplication::Run();
 }

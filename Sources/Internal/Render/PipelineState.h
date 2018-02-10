@@ -14,7 +14,7 @@ namespace YAML
 class Node;
 }
 
-namespace Kioto
+namespace Kioto::Renderer
 {
 struct PipelineState
 {

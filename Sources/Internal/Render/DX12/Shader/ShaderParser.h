@@ -8,25 +8,13 @@
 #include <string>
 #include <vector>
 
-#include "Render/ConstantBuffer.h"
-#include "Render/VertexLayout.h"
-#include "Render/PipelineState.h"
-#include "Render/RendererPublic.h"
-#include "Render/Texture/TextureSet.h"
+#include "Render/ShaderData.h"
 
 namespace Kioto::Renderer
 {
 namespace ShaderParser
 {
-struct ParseResult
-{
-    std::string output;
-    VertexLayout vertexLayout;
-    PipelineState pipelineState;
-    TextureSet textureSet;
-    std::vector<ConstantBuffer> constantBuffers;
-};
-
-ParseResult ParseShader(const std::string& path, const std::vector<ShaderDefine>* const defines);
+Renderer::ShaderData ParseShader(const std::string& path, const std::vector<ShaderDefine>* const defines);
+Renderer::ShaderData ParseShaderFromString(std::string source, const std::vector<ShaderDefine>* const defines);
 }
 }

@@ -141,19 +141,19 @@ public:
     Texture() : Asset("") {}
     Texture(const std::string& path) : Asset(path) {}
 
-    TextureHandle GetTextureHandle() const;
-    void SetTextureHandle(TextureHandle handle);
+    TextureHandle GetHandle() const;
+    void SetHandle(TextureHandle handle);
 
 private:
     TextureHandle m_handle;
 };
 
-inline TextureHandle Texture::GetTextureHandle() const
+inline TextureHandle Texture::GetHandle() const
 {
     return m_handle;
 }
 
-inline void Texture::SetTextureHandle(TextureHandle handle)
+inline void Texture::SetHandle(TextureHandle handle)
 {
     m_handle = handle;
 }
