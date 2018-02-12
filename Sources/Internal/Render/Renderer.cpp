@@ -127,7 +127,7 @@ void RegisterRenderAsset(Texture* asset)
 template <>
 void RegisterRenderAsset(Shader* asset)
 {
-    //throw "TODO";
+    GameRenderer->RegisterShader(asset);
 }
 
 //template <>

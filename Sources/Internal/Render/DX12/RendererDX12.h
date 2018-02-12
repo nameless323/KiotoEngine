@@ -18,6 +18,7 @@
 #include "Render/DX12/Buffers/ResourceDX12.h"
 #include "Render/DX12/VertexLayoutDX12.h"
 #include "Render/DX12/ShaderDX12.h"
+#include "Render/DX12/ShaderManagerDX12.h"
 #include "Render/Texture/TextureDX12.h"
 #include "Render/RendererPublic.h"
 #include "Render/RenderPass/RenderPass.h"
@@ -58,6 +59,7 @@ public:
     void AddRenderPass(const RenderPass& renderPass);
 
     void RegisterTexture(Texture* texture);
+    void RegisterShader(Shader* shader);
 
     VertexLayoutHandle GenerateVertexLayout(const VertexLayout& layout);
 
@@ -69,12 +71,13 @@ private:
     StateDX m_state;
     SwapChain m_swapChain;
     RootSignatureManager m_rootSignatureManager;
+    ShaderManagerDX12 m_shaderManager;
 
     std::unordered_map<uint32, ResourceDX12> m_resources;
     std::array<std::vector<RenderPass>, StateDX::FrameCount> m_renderPasses;
 
     ResourceDX12* FindDxResource(uint32 handle);
-    const CD3DX12_SHADER_BYTECODE* GetShaderBytecode(ShaderHandle handle) const;
+    const CD3DX12_SHADER_BYTECODE* GetShaderBytecode(ShaderProgramHandle handle) const;
     const std::vector<D3D12_INPUT_ELEMENT_DESC>* FindVertexLayout(VertexLayoutHandle handle) const;
 
     void GetHardwareAdapter(IDXGIFactory4* factory, IDXGIAdapter1** adapter);
@@ -95,8 +98,8 @@ private:
 
 
     Microsoft::WRL::ComPtr<ID3D12PipelineState> m_fallbackPSO;
-    ShaderHandle m_vs;
-    ShaderHandle m_ps;
+    ShaderProgramHandle m_vs;
+    ShaderProgramHandle m_ps;
     std::vector<ShaderDX12*> m_shaders; // [a_vorontsov] To map or set.
     
     std::unique_ptr<VertexBufferDX12> m_vertexBuffer;

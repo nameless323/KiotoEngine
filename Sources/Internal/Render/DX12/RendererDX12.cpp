@@ -574,7 +574,7 @@ ResourceDX12* RendererDX12::FindDxResource(uint32 handle)
     return nullptr;
 }
 
-const CD3DX12_SHADER_BYTECODE* RendererDX12::GetShaderBytecode(ShaderHandle handle) const
+const CD3DX12_SHADER_BYTECODE* RendererDX12::GetShaderBytecode(ShaderProgramHandle handle) const
 {
     auto it = std::find_if(m_shaders.cbegin(), m_shaders.cend(), [&handle](const ShaderDX12* s) { return s->GetHandle() == handle; });
     if (it != m_shaders.cend() && (*it)->GetIsCompiled())
@@ -595,6 +595,11 @@ const std::vector<D3D12_INPUT_ELEMENT_DESC>* RendererDX12::FindVertexLayout(Vert
 void RendererDX12::RegisterTexture(Texture* texture)
 {
     m_textureManager.RegisterTexture(m_state, texture);
+}
+
+void RendererDX12::RegisterShader(Shader* shader)
+{
+
 }
 
 }

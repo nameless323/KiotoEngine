@@ -11,6 +11,8 @@
 #include <d3d12.h>
 #include <wrl.h>
 
+#include "Render/ShaderData.h"
+
 namespace Kioto::Renderer
 {
 class ShaderDX12
@@ -23,13 +25,15 @@ public:
     HRESULT Compile(LPCVOID shaderStr, SIZE_T size, LPCSTR entry, LPCSTR target, UINT flags);
 
     void SetHandle(uint32 handle);
-    ShaderHandle GetHandle() const;
+    ShaderProgramHandle GetHandle() const;
     const CD3DX12_SHADER_BYTECODE& GetBytecode() const;
     char* GetErrorMsg() const;
     bool GetIsCompiled() const;
+    ShaderProgramType GetType() const;
 
 private:
-    ShaderHandle m_handle;
+    ShaderProgramHandle m_handle;
+    ShaderProgramType m_type;
     CD3DX12_SHADER_BYTECODE m_bytecode;
     Microsoft::WRL::ComPtr<ID3DBlob> m_shaderBlob;
     Microsoft::WRL::ComPtr<ID3DBlob> m_error;
@@ -49,6 +53,11 @@ inline bool ShaderDX12::operator!= (const ShaderDX12& other) const
 inline HRESULT ShaderDX12::Compile(LPCVOID shaderStr, SIZE_T size, LPCSTR sourceName, const D3D_SHADER_MACRO* defines, ID3DInclude* includes, LPCSTR entry, LPCSTR target, UINT flags1, UINT flags2)
 {
     m_compiled = false;
+    if (entry == "vs")
+        m_type = ShaderProgramType::Vertex;
+    else if (entry == "ps")
+        m_type = ShaderProgramType::Fragment;
+
     HRESULT hr = D3DCompile(shaderStr, size, sourceName, defines, D3D_COMPILE_STANDARD_FILE_INCLUDE, entry, target, flags1, flags2, &m_shaderBlob, &m_error);
     if (SUCCEEDED(hr))
     {
@@ -68,7 +77,7 @@ inline void ShaderDX12::SetHandle(uint32 handle)
     m_handle = handle;
 }
 
-inline ShaderHandle ShaderDX12::GetHandle() const
+inline ShaderProgramHandle ShaderDX12::GetHandle() const
 {
     return m_handle;
 }
@@ -86,5 +95,10 @@ inline char* ShaderDX12::GetErrorMsg() const
 inline bool ShaderDX12::GetIsCompiled() const
 {
     return m_compiled;
+}
+
+inline ShaderProgramType ShaderDX12::GetType() const
+{
+    return m_type;
 }
 }

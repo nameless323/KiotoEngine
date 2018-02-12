@@ -12,8 +12,8 @@ namespace Kioto::Renderer
 class RenderPacket
 {
 public:
-    ShaderHandle VertexShader;
-    ShaderHandle FragmentShader;
+    ShaderProgramHandle VertexShader;
+    ShaderProgramHandle FragmentShader;
     VertexLayoutHandle VertexLayout;
 };
 }

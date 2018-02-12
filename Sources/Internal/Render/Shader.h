@@ -21,16 +21,47 @@ public:
     Shader(const std::string& path) : Asset(path) 
     {
         m_shader = AssetsSystem::ReadFileAsString(path);
-        m_data = ShaderParser::ParseShaderFromString(m_shader, nullptr);
     }
+
+    void SetHandle(ShaderHandle handle);
+    ShaderHandle GetHandle() const;
+    const ShaderData& GetShaderData() const;
+    void SetShaderData(const ShaderData& data);
+    const std::string& GetShaderString() const;
 
 private:
     std::string m_shader;
-    ShaderHandle m_vsHandle;
-    ShaderHandle m_psHandle;
+    ShaderProgramHandle m_vsHandle;
+    ShaderProgramHandle m_psHandle;
     VertexLayoutHandle m_vertexLayout;
     ShaderData m_data;
+    ShaderHandle m_handle; // [a_vorontsov] Separate handles for each define set?
 
     friend class Material;
 };
+
+inline void Shader::SetHandle(ShaderHandle handle)
+{
+    m_handle = handle;
+}
+
+inline ShaderHandle Shader::GetHandle() const
+{
+    return m_handle;
+}
+
+inline void Shader::SetShaderData(const ShaderData& data)
+{
+    m_data = data;
+}
+
+inline const ShaderData& Shader::GetShaderData() const
+{
+    return m_data;
+}
+
+inline const std::string& Shader::GetShaderString() const
+{
+    return m_shader;
+}
 }

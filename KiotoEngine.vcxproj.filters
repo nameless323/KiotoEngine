@@ -237,6 +237,9 @@
     <ClInclude Include="Sources\Internal\Render\Texture\TextureManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Sources\Internal\Render\DX12\ShaderManagerDX12.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -357,6 +360,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Sources\Internal\Render\DX12\PsoManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Internal\Render\DX12\ShaderManagerDX12.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

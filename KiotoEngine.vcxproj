@@ -201,6 +201,7 @@
     <ClInclude Include="Sources\Internal\Render\DX12\RenderPacket.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\RootSignatureManager.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\ShaderDX12.h" />
+    <ClInclude Include="Sources\Internal\Render\DX12\ShaderManagerDX12.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\Shader\ShaderParser.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\StateDX.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\SwapChain.h" />
@@ -255,6 +256,7 @@
     <ClCompile Include="Sources\Internal\Render\DX12\PsoManager.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\RendererDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\RootSignatureManager.cpp" />
+    <ClCompile Include="Sources\Internal\Render\DX12\ShaderManagerDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\Shader\ShaderParser.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\SwapChain.cpp" />
     <ClCompile Include="Sources\Internal\Render\Geometry\GeometryGenerator.cpp" />
