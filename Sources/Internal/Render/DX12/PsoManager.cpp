@@ -135,13 +135,18 @@ D3D12_DEPTH_STENCIL_DESC ParseDepthStencil(const PipelineState& state)
     return desc;
 }
 
-D3D12_GRAPHICS_PIPELINE_STATE_DESC ParsePipelineState(const PipelineState& state, const RenderPass& pass, ID3D12RootSignature* sig, TextureManagerDX12* textureManager)
+D3D12_GRAPHICS_PIPELINE_STATE_DESC ParsePipelineState(const PipelineState& state, const RenderPass& pass, ID3D12RootSignature* sig, TextureManagerDX12* textureManager, const std::vector<ShaderDX12>* shaders)
 {
     D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};
     //desc.InputLayout
     desc.pRootSignature = sig;
-    //desc.VS
-    //desc.PS
+    for (const auto& shader : *shaders)
+    {
+        if (shader.GetType() == ShaderProgramType::Fragment)
+            desc.PS = shader.GetBytecode();
+        else if (shader.GetType() == ShaderProgramType::Vertex)
+            desc.VS = shader.GetBytecode();
+    }
     desc.RasterizerState = ParseRasterizerDesc(state);
     desc.BlendState = ParseBlendState(state);
     desc.DepthStencilState = ParseDepthStencil(state);
@@ -160,7 +165,7 @@ D3D12_GRAPHICS_PIPELINE_STATE_DESC ParsePipelineState(const PipelineState& state
 }
 
 
-void PsoManager::BuildPipelineState(const Material* mat, const RenderPass& pass, ID3D12RootSignature* sig, TextureManagerDX12* textureManager)
+void PsoManager::BuildPipelineState(const Material* mat, const RenderPass& pass, ID3D12RootSignature* sig, TextureManagerDX12* textureManager, const std::vector<ShaderDX12>* shaders)
 {
     //ParsePipelineState(state)
     //uint64 key = mat->Hadle | pass.GetHandle() << 32;

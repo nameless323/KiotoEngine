@@ -142,11 +142,6 @@ void RendererDX12::Init(uint16 width, uint16 height)
 
 void RendererDX12::LoadPipeline()
 {
-#ifdef _DEBUG
-    UINT shaderFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
-#else
-    UINT shaderFlags = 0;
-#endif
     m_state.CommandList->Reset(m_state.CommandAllocators[0].Get(), nullptr);
 
     std::string matPath = AssetsSystem::GetAssetFullPath("Materials\\Test.mt");
@@ -574,13 +569,6 @@ ResourceDX12* RendererDX12::FindDxResource(uint32 handle)
     return nullptr;
 }
 
-const CD3DX12_SHADER_BYTECODE* RendererDX12::GetShaderBytecode(ShaderProgramHandle handle) const
-{
-    auto it = std::find_if(m_shaders.cbegin(), m_shaders.cend(), [&handle](const ShaderDX12* s) { return s->GetHandle() == handle; });
-    if (it != m_shaders.cend() && (*it)->GetIsCompiled())
-        return &(*it)->GetBytecode();
-    return nullptr;
-}
 
 const std::vector<D3D12_INPUT_ELEMENT_DESC>* RendererDX12::FindVertexLayout(VertexLayoutHandle handle) const
 {
@@ -599,7 +587,9 @@ void RendererDX12::RegisterTexture(Texture* texture)
 
 void RendererDX12::RegisterShader(Shader* shader)
 {
-
+    m_shaderManager.RegisterShader(shader);
+    m_rootSignatureManager.CreateRootSignature(m_state, shader->GetShaderData(), shader->GetHandle());
+   
 }
 
 }
