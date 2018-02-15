@@ -17,11 +17,13 @@ namespace Kioto::Renderer
 class Material;
 class RenderPass;
 class TextureManagerDX12;
+class ShaderManagerDX12;
+class VertexLayoutManagerDX12;
 
 class PsoManager
 {
 public:
-    void BuildPipelineState(const Material* mat, const RenderPass& pass, ID3D12RootSignature* sig, TextureManagerDX12* textureManager, const std::vector<ShaderDX12>* shaders);
+    void BuildPipelineState(const Material* mat, const RenderPass& pass, ID3D12RootSignature* sig, TextureManagerDX12* textureManager, ShaderManagerDX12* shaderManager, VertexLayoutManagerDX12* vertexLayoutManager);
 
 private:
     std::map<uint64, Microsoft::WRL::ComPtr<ID3D12PipelineState>> m_psos;

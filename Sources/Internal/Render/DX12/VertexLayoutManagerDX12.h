@@ -19,9 +19,7 @@ public:
     void GenerateVertexLayout(const Shader* shader);
     const std::vector<D3D12_INPUT_ELEMENT_DESC>* FindVertexLayout(ShaderHandle handle) const;
 
-
 private:
-
     std::map<ShaderHandle, VertexLayoutDX12> m_inputLayouts;
 };
 }

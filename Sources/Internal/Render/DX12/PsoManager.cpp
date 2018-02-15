@@ -11,6 +11,7 @@
 #include "Render/RenderPass/RenderPass.h"
 #include "Render/Texture/TextureManagerDX12.h"
 #include "Render/Texture/TextureDX12.h"
+#include "Render/Material.h"
 
 namespace Kioto::Renderer
 {
@@ -165,10 +166,10 @@ D3D12_GRAPHICS_PIPELINE_STATE_DESC ParsePipelineState(const PipelineState& state
 }
 
 
-void PsoManager::BuildPipelineState(const Material* mat, const RenderPass& pass, ID3D12RootSignature* sig, TextureManagerDX12* textureManager, const std::vector<ShaderDX12>* shaders)
+void PsoManager::BuildPipelineState(const Material* mat, const RenderPass& pass, ID3D12RootSignature* sig, TextureManagerDX12* textureManager, ShaderManagerDX12* shaderManager, VertexLayoutManagerDX12* vertexLayoutManager)
 {
     //ParsePipelineState(state)
-    //uint64 key = mat->Hadle | pass.GetHandle() << 32;
+    uint64 key = mat->GetHandle().GetHandle() | pass.GetHandle().GetHandle() << 32;
 }
 
 }
