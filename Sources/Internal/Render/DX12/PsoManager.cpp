@@ -12,6 +12,7 @@
 #include "Render/Texture/TextureManagerDX12.h"
 #include "Render/Texture/TextureDX12.h"
 #include "Render/Material.h"
+#include "Render/DX12/ShaderManagerDX12.h"
 
 namespace Kioto::Renderer
 {
@@ -136,11 +137,11 @@ D3D12_DEPTH_STENCIL_DESC ParseDepthStencil(const PipelineState& state)
     return desc;
 }
 
-D3D12_GRAPHICS_PIPELINE_STATE_DESC ParsePipelineState(const PipelineState& state, const RenderPass& pass, ID3D12RootSignature* sig, TextureManagerDX12* textureManager, const std::vector<ShaderDX12>* shaders)
+D3D12_GRAPHICS_PIPELINE_STATE_DESC ParsePipelineState(const Material* mat, const RenderPass& pass, ID3D12RootSignature* sig, TextureManagerDX12* textureManager, ShaderManagerDX12* shaderManager, VertexLayoutManagerDX12* vertexLayoutManager)
 {
     D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};
-    //desc.InputLayout
     desc.pRootSignature = sig;
+    const auto& shaders = shaderManager->GetDxShaders(mat->GetShader()->GetHandle());
     for (const auto& shader : *shaders)
     {
         if (shader.GetType() == ShaderProgramType::Fragment)
@@ -148,6 +149,7 @@ D3D12_GRAPHICS_PIPELINE_STATE_DESC ParsePipelineState(const PipelineState& state
         else if (shader.GetType() == ShaderProgramType::Vertex)
             desc.VS = shader.GetBytecode();
     }
+    const PipelineState& state = mat->GetShaderData().pipelineState;
     desc.RasterizerState = ParseRasterizerDesc(state);
     desc.BlendState = ParseBlendState(state);
     desc.DepthStencilState = ParseDepthStencil(state);
@@ -169,7 +171,20 @@ D3D12_GRAPHICS_PIPELINE_STATE_DESC ParsePipelineState(const PipelineState& state
 void PsoManager::BuildPipelineState(const Material* mat, const RenderPass& pass, ID3D12RootSignature* sig, TextureManagerDX12* textureManager, ShaderManagerDX12* shaderManager, VertexLayoutManagerDX12* vertexLayoutManager)
 {
     //ParsePipelineState(state)
-    uint64 key = mat->GetHandle().GetHandle() | pass.GetHandle().GetHandle() << 32;
+}
+
+ID3D12PipelineState* PsoManager::GetPipelineState(MaterialHandle matHandle, RenderPassHandle renderPassHandle)
+{
+    uint64 key = GetKey(matHandle, renderPassHandle);
+    auto it = m_psos.find(key);
+    if (it == m_psos.end())
+        return nullptr;
+    return it->second.Get();
+}
+
+uint64 PsoManager::GetKey(MaterialHandle matHandle, RenderPassHandle renderPassHandle) const
+{
+    return matHandle.GetHandle() | renderPassHandle.GetHandle() << 32;
 }
 
 }

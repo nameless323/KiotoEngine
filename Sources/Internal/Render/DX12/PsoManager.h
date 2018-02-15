@@ -24,6 +24,7 @@ class PsoManager
 {
 public:
     void BuildPipelineState(const Material* mat, const RenderPass& pass, ID3D12RootSignature* sig, TextureManagerDX12* textureManager, ShaderManagerDX12* shaderManager, VertexLayoutManagerDX12* vertexLayoutManager);
+    ID3D12PipelineState* GetPipelineState(MaterialHandle matHandle, RenderPassHandle renderPassHandle);
 
 private:
     std::map<uint64, Microsoft::WRL::ComPtr<ID3D12PipelineState>> m_psos;

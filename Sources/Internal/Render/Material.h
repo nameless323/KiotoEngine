@@ -27,6 +27,9 @@ public:
     void SetHandle(MaterialHandle handle);
     MaterialHandle GetHandle() const;
 
+    Shader* GetShader() const;
+    const ShaderData& GetShaderData() const;
+
 private:
     std::string m_shaderPath;
     Shader* m_shader = nullptr;
@@ -42,5 +45,15 @@ inline void Material::SetHandle(MaterialHandle handle)
 inline MaterialHandle Material::GetHandle() const
 {
     return m_handle;
+}
+
+inline Shader* Material::GetShader() const
+{
+    return m_shader;
+}
+
+inline const ShaderData& Material::GetShaderData() const
+{
+    return m_shaderData;
 }
 }
