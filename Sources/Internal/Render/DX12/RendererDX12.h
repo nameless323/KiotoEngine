@@ -28,6 +28,7 @@
 #include "Render/DX12/SwapChain.h"
 #include "Render/DX12/RootSignatureManager.h"
 #include "Render/DX12/PsoManager.h"
+#include "Render/DX12/VertexLayoutManagerDX12.h"
 
 namespace Kioto::Renderer
 {
@@ -61,6 +62,7 @@ public:
 
     void RegisterTexture(Texture* texture);
     void RegisterShader(Shader* shader);
+    void BuildMaterialForPass(const Material& mat, const RenderPass& pass);
 
     TextureHandle GetCurrentBackBufferHandle() const;
     TextureHandle GetDepthStencilHandle() const;
@@ -72,6 +74,7 @@ private:
     RootSignatureManager m_rootSignatureManager;
     ShaderManagerDX12 m_shaderManager;
     PsoManager m_piplineStateManager;
+    VertexLayoutManagerDX12 m_vertexLayoutManager;
 
     std::unordered_map<uint32, ResourceDX12> m_resources;
     std::array<std::vector<RenderPass>, StateDX::FrameCount> m_renderPasses;
@@ -94,17 +97,10 @@ private:
     UINT m_height = -1;
     bool m_isFullScreen = false;
 
-
-    Microsoft::WRL::ComPtr<ID3D12PipelineState> m_fallbackPSO;
-    ShaderProgramHandle m_vs;
-    ShaderProgramHandle m_ps;
-    std::vector<ShaderDX12*> m_shaders; // [a_vorontsov] To map or set.
-    
     std::unique_ptr<VertexBufferDX12> m_vertexBuffer;
     std::unique_ptr<IndexBufferDX12> m_indexBuffer;
 
     Mesh* m_box;
-
 
     EngineBuffers engineBuffers;
     UploadBufferDX12* m_timeBuffer = nullptr;

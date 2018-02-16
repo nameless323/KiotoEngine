@@ -13,6 +13,9 @@
 #include "Render/Texture/TextureDX12.h"
 #include "Render/Material.h"
 #include "Render/DX12/ShaderManagerDX12.h"
+#include "Render/DX12/VertexLayoutManagerDX12.h"
+#include "Render/DX12/StateDX.h"
+#include "Render/DX12/RootSignatureManager.h"
 
 namespace Kioto::Renderer
 {
@@ -137,10 +140,10 @@ D3D12_DEPTH_STENCIL_DESC ParseDepthStencil(const PipelineState& state)
     return desc;
 }
 
-D3D12_GRAPHICS_PIPELINE_STATE_DESC ParsePipelineState(const Material* mat, const RenderPass& pass, ID3D12RootSignature* sig, TextureManagerDX12* textureManager, ShaderManagerDX12* shaderManager, VertexLayoutManagerDX12* vertexLayoutManager)
+D3D12_GRAPHICS_PIPELINE_STATE_DESC ParsePipelineState(const Material* mat, const RenderPass& pass, const RootSignatureManager& sigManager, TextureManagerDX12* textureManager, ShaderManagerDX12* shaderManager, VertexLayoutManagerDX12* vertexLayoutManager)
 {
     D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};
-    desc.pRootSignature = sig;
+    desc.pRootSignature = sigManager.GetRootSignature(mat->GetShader()->GetHandle());
     const auto& shaders = shaderManager->GetDxShaders(mat->GetShader()->GetHandle());
     for (const auto& shader : *shaders)
     {
@@ -149,6 +152,8 @@ D3D12_GRAPHICS_PIPELINE_STATE_DESC ParsePipelineState(const Material* mat, const
         else if (shader.GetType() == ShaderProgramType::Vertex)
             desc.VS = shader.GetBytecode();
     }
+    auto currentLayout = vertexLayoutManager->FindVertexLayout(mat->GetShader()->GetHandle());
+    desc.InputLayout = { currentLayout->data(), static_cast<UINT>(currentLayout->size()) };
     const PipelineState& state = mat->GetShaderData().pipelineState;
     desc.RasterizerState = ParseRasterizerDesc(state);
     desc.BlendState = ParseBlendState(state);
@@ -167,10 +172,13 @@ D3D12_GRAPHICS_PIPELINE_STATE_DESC ParsePipelineState(const Material* mat, const
 }
 }
 
-
-void PsoManager::BuildPipelineState(const Material* mat, const RenderPass& pass, ID3D12RootSignature* sig, TextureManagerDX12* textureManager, ShaderManagerDX12* shaderManager, VertexLayoutManagerDX12* vertexLayoutManager)
+void PsoManager::BuildPipelineState(const StateDX& state, const Material* mat, const RenderPass& pass, const RootSignatureManager& sigManager, TextureManagerDX12* textureManager, ShaderManagerDX12* shaderManager, VertexLayoutManagerDX12* vertexLayoutManager)
 {
-    //ParsePipelineState(state)
+    uint64 key = GetKey(mat->GetHandle(), pass.GetHandle());
+    if (m_psos.find(key) != m_psos.end())
+        return;
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC stateDesc = ParsePipelineState(mat, pass, sigManager, textureManager, shaderManager, vertexLayoutManager);
+    ThrowIfFailed(state.Device->CreateGraphicsPipelineState(&stateDesc, IID_PPV_ARGS(&m_psos[key])));
 }
 
 ID3D12PipelineState* PsoManager::GetPipelineState(MaterialHandle matHandle, RenderPassHandle renderPassHandle)

@@ -29,12 +29,15 @@ public:
 
     Shader* GetShader() const;
     const ShaderData& GetShaderData() const;
+    void BuildMaterialForPass(const RenderPass& pass);
 
 private:
     std::string m_shaderPath;
     Shader* m_shader = nullptr;
     ShaderData m_shaderData;
     MaterialHandle m_handle;
+
+    std::vector<RenderPassHandle> m_buildedPassesHandles;
 };
 
 inline void Material::SetHandle(MaterialHandle handle)

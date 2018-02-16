@@ -20,6 +20,8 @@ static const float32 CurrentVersion = 0.01f;
 Material::Material(const std::string& path)
     : Asset(path)
 {
+    m_buildedPassesHandles.reserve(32);
+
     using namespace RenderParamsConverter;
     if (!AssetsSystem::CheckIfFileExist(path))
         throw "Material not exist";
@@ -58,6 +60,15 @@ Material::Material(const std::string& path)
 
 Material::~Material()
 {
+}
+
+void Material::BuildMaterialForPass(const RenderPass& pass)
+{
+    auto it = std::find(m_buildedPassesHandles.cbegin(), m_buildedPassesHandles.cend(), pass.GetHandle());
+    if (it == m_buildedPassesHandles.cend())
+        return;
+    Renderer::BuildMaterialForPass(*this, pass);
+    m_buildedPassesHandles.push_back(pass.GetHandle());
 }
 
 }

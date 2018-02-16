@@ -24,6 +24,7 @@ struct ShaderData;
 class TextureManagerDX12
 {
 public:
+    TextureManagerDX12() = default;
     ~TextureManagerDX12();
     void RegisterTexture(const StateDX& state, Texture* texture);
     void RegisterTextureWithoutOwnership(TextureDX12* texture);

@@ -130,6 +130,11 @@ void RegisterRenderAsset(Shader* asset)
     GameRenderer->RegisterShader(asset);
 }
 
+void BuildMaterialForPass(const Material& mat, const RenderPass& pass)
+{
+    GameRenderer->BuildMaterialForPass(const Material& mat, const RenderPass& pass);
+}
+
 //template <>
 //void RegisterRenderAsset(Material* asset)
 //{

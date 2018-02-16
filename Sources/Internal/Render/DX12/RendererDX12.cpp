@@ -63,7 +63,6 @@ D3D12_VIEWPORT DXViewportFromKioto(const RectI& source)
 
 RendererDX12::RendererDX12()
 {
-    m_inputLayouts.reserve(256);
 }
 
 void RendererDX12::Init(uint16 width, uint16 height)
@@ -540,24 +539,6 @@ void RendererDX12::UpdatePassCB()
     engineBuffers.PassCB.Set("ViewProjection", cc->GetVP().Tranposed());
 }
 
-VertexLayoutHandle RendererDX12::GenerateVertexLayout(const VertexLayout& layout)
-{
-    for (auto& l : m_inputLayouts)
-    {
-        if (layout == l.LayoutKioto)
-            return l.Handle;
-    }
-    VertexLayoutDX12 res;
-    res.Handle = GetNewHandle();
-    res.LayoutDX.reserve(layout.GetElements().size());
-    res.LayoutKioto = layout;
-    for (const auto& e : layout.GetElements())
-    {
-        res.LayoutDX.push_back(D3D12_INPUT_ELEMENT_DESC{ SemanticNames[e.Semantic].c_str(), e.SemanticIndex, VertexDataFormats[e.Format], 0, e.Offset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
-    }
-    m_inputLayouts.push_back(res);
-    return res.Handle;
-}
 
 void RendererDX12::AddRenderPass(const RenderPass& renderPass)
 {
@@ -566,17 +547,6 @@ void RendererDX12::AddRenderPass(const RenderPass& renderPass)
 
 ResourceDX12* RendererDX12::FindDxResource(uint32 handle)
 {
-    return nullptr;
-}
-
-
-const std::vector<D3D12_INPUT_ELEMENT_DESC>* RendererDX12::FindVertexLayout(VertexLayoutHandle handle) const
-{
-    for (const auto& l : m_inputLayouts)
-    {
-        if (l.Handle == handle)
-            return &l.LayoutDX;
-    }
     return nullptr;
 }
 
@@ -589,7 +559,14 @@ void RendererDX12::RegisterShader(Shader* shader)
 {
     m_shaderManager.RegisterShader(shader);
     m_rootSignatureManager.CreateRootSignature(m_state, shader->GetShaderData(), shader->GetHandle());
-   
+    m_vertexLayoutManager.GenerateVertexLayout(shader);
+}
+
+void RendererDX12::BuildMaterialForPass(const Material& mat, const RenderPass& pass)
+{
+    ID3D12PipelineState* ps = m_piplineStateManager.GetPipelineState(mat.GetHandle(), pass.GetHandle());
+    if (ps == nullptr)
+        m_piplineStateManager.BuildPipelineState(m_state, &mat, pass, m_rootSignatureManager, &m_textureManager, &m_shaderManager, &m_vertexLayoutManager);
 }
 
 }
