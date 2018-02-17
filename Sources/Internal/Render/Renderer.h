@@ -9,6 +9,7 @@
 #include "Core/CoreTypes.h"
 #include "Render/RendererPublic.h"
 #include "Render/RenderPass/RenderPass.h"
+#include "Render/DX12/RenderPacket.h"
 
 namespace Kioto
 {
@@ -29,6 +30,9 @@ void Update(float32 dt);
 void Present();
 void ChangeFullScreenMode(bool fullScreen);
 void AddRenderPass(const RenderPass& renderPass);
+
+void AllocateRenderPacketList(RenderPassHandle handle);
+void AddRenderPacket(RenderPassHandle handle, RenderPacket packet);
 
 template <typename T>
 void RegisterRenderAsset(T* asset);

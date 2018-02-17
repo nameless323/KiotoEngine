@@ -27,7 +27,7 @@ void RenderSystem::OnEntityRemove(Entity* entity)
 
 void RenderSystem::Update(float32 dt)
 {
-    for (int32 i = 0; i < 4; ++i)
+    for (int32 i = 0; i < Renderer::MaxRenderTargetsCount; ++i)
         m_renderPass.SetRenderTarget(i, Renderer::InvalidHandle);
     m_renderPass.SetDepthStencil(Renderer::InvalidHandle);
 

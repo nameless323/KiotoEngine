@@ -69,6 +69,13 @@ void RendererDX12::Init(uint16 width, uint16 height)
 {
     engineBuffers.Init();
 
+    m_renderPacketListPool.resize(PacketListPoolSize);
+    for (uint32 i = 0; i < PacketListPoolSize; ++i)
+    {
+        m_renderPacketListPool.emplace_back();
+        m_renderPacketListPool.back().reserve(PacketListSize);
+    }
+
     UINT dxgiFactoryFlags = 0;
 #ifdef _DEBUG
     {
@@ -418,6 +425,11 @@ void RendererDX12::Present()
     m_renderPasses[m_swapChain.GetCurrentFrameIndex()].clear();
     // [a_vorontsov] Check if we can move to next frame.
     m_swapChain.ProceedToNextFrame();
+    for (uint32 i = 0; i < m_packetListPoolIndex; ++i)
+        m_renderPacketListPool[i].clear();
+
+    m_packetListPoolIndex = 0;
+    m_FrameRenderPackets.clear();
     if (m_state.FenceValues[m_swapChain.GetCurrentFrameIndex()] != 0 && m_state.Fence->GetCompletedValue() < m_state.FenceValues[m_swapChain.GetCurrentFrameIndex()])
     {
         HANDLE fenceEventHandle = CreateEvent(nullptr, FALSE, FALSE, nullptr);
@@ -567,6 +579,19 @@ void RendererDX12::BuildMaterialForPass(const Material& mat, const RenderPass& p
     ID3D12PipelineState* ps = m_piplineStateManager.GetPipelineState(mat.GetHandle(), pass.GetHandle());
     if (ps == nullptr)
         m_piplineStateManager.BuildPipelineState(m_state, &mat, pass, m_rootSignatureManager, &m_textureManager, &m_shaderManager, &m_vertexLayoutManager);
+}
+
+void RendererDX12::AllocateRenderPacketList(RenderPassHandle handle)
+{
+    m_FrameRenderPackets[handle] = &m_renderPacketListPool[m_packetListPoolIndex++];
+}
+
+void RendererDX12::AddRenderPacket(RenderPassHandle handle, RenderPacket packet)
+{
+    auto it = m_FrameRenderPackets.find(handle);
+    if (it == m_FrameRenderPackets.cend())
+        throw "No render packet list were allocated.";
+    m_FrameRenderPackets[handle]->push_back(packet);
 }
 
 }

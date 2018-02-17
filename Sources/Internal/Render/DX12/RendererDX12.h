@@ -29,6 +29,7 @@
 #include "Render/DX12/RootSignatureManager.h"
 #include "Render/DX12/PsoManager.h"
 #include "Render/DX12/VertexLayoutManagerDX12.h"
+#include "Render/DX12/RenderPacket.h"
 
 namespace Kioto::Renderer
 {
@@ -64,10 +65,16 @@ public:
     void RegisterShader(Shader* shader);
     void BuildMaterialForPass(const Material& mat, const RenderPass& pass);
 
+    void AllocateRenderPacketList(RenderPassHandle handle);
+    void AddRenderPacket(RenderPassHandle handle, RenderPacket packet);
+
     TextureHandle GetCurrentBackBufferHandle() const;
     TextureHandle GetDepthStencilHandle() const;
 
 private:
+    static constexpr uint32 PacketListPoolSize = 64;
+    static constexpr uint32 PacketListSize = 64;
+
     TextureManagerDX12 m_textureManager;
     StateDX m_state;
     SwapChain m_swapChain;
@@ -109,6 +116,10 @@ private:
 
     Texture* m_texture = nullptr;
     TextureSet m_textureSet;
+
+    std::vector<RenderPacketList> m_renderPacketListPool;
+    std::map<RenderPassHandle, RenderPacketList*> m_FrameRenderPackets;
+    uint32 m_packetListPoolIndex = 0;
 };
 
 inline TextureHandle RendererDX12::GetCurrentBackBufferHandle() const

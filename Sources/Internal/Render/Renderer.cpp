@@ -89,7 +89,10 @@ float32 GetAspect()
 
 VertexLayoutHandle GenerateVertexLayout(const VertexLayout& layout)
 {
-    return GameRenderer->GenerateVertexLayout(layout);
+    return VertexLayoutHandle(InvalidHandle);
+
+    // [a_vorontsov] TODO;
+    //return GameRenderer->GenerateVertexLayout(layout);
 }
 
 void AddRenderPass(const RenderPass& renderPass)
@@ -132,7 +135,17 @@ void RegisterRenderAsset(Shader* asset)
 
 void BuildMaterialForPass(const Material& mat, const RenderPass& pass)
 {
-    GameRenderer->BuildMaterialForPass(const Material& mat, const RenderPass& pass);
+    GameRenderer->BuildMaterialForPass(mat, pass);
+}
+
+void AllocateRenderPacketList(RenderPassHandle handle)
+{
+    GameRenderer->AllocateRenderPacketList(handle);
+}
+
+void AddRenderPacket(RenderPassHandle handle, RenderPacket packet)
+{
+    GameRenderer->AddRenderPacket(handle, packet);
 }
 
 //template <>

@@ -7,13 +7,17 @@
 
 #include "Render/RendererPublic.h"
 
+#include <vector>
+
 namespace Kioto::Renderer
 {
 class RenderPacket
 {
 public:
-    ShaderProgramHandle VertexShader;
-    ShaderProgramHandle FragmentShader;
+    MaterialHandle Material;
+    ShaderHandle Shader;
     VertexLayoutHandle VertexLayout;
 };
+
+using RenderPacketList = std::vector<RenderPacket>;
 }
