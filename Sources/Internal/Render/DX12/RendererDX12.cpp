@@ -525,7 +525,7 @@ void RendererDX12::BuildMaterialForPass(const Material& mat, const RenderPass& p
 {
     ID3D12PipelineState* ps = m_piplineStateManager.GetPipelineState(mat.GetHandle(), pass.GetHandle());
     if (ps == nullptr)
-        m_piplineStateManager.BuildPipelineState(m_state, &mat, pass, m_rootSignatureManager, &m_textureManager, &m_shaderManager, &m_vertexLayoutManager, m_swapChain.GetCurrentBackBufferHandle(), m_swapChain.GetDepthStencilHandle());
+        m_piplineStateManager.BuildPipelineState(m_state, &mat, pass, m_rootSignatureManager, &m_textureManager, &m_shaderManager, &m_vertexLayoutManager, m_swapChain.GetBackBufferFormat(), m_swapChain.GetDepthStencilFormat());
 }
 
 void RendererDX12::AllocateRenderPacketList(RenderPassHandle handle)
