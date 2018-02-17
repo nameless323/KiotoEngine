@@ -11,7 +11,7 @@
 
 #include "AssetsSystem/AssetsSystem.h"
 #include "AssetsSystem/RenderStateParamsConverter.h"
-#include "Render/Texture/RenderAssetsManager.h"
+#include "Render/Renderer.h"
 
 namespace Kioto::Renderer
 {
@@ -20,6 +20,8 @@ static const float32 CurrentVersion = 0.01f;
 Material::Material(const std::string& path)
     : Asset(path)
 {
+    m_buildedPassesHandles.reserve(32);
+
     using namespace RenderParamsConverter;
     if (!AssetsSystem::CheckIfFileExist(path))
         throw "Material not exist";
@@ -33,10 +35,17 @@ Material::Material(const std::string& path)
     {
         m_shaderPath = config["shader"].as<std::string>();
         std::string shaderPath = AssetsSystem::GetAssetFullPath(m_shaderPath);
-        m_shader = AssetsSystem::LoadAsset<Shader>(shaderPath);
+        m_shader = AssetsSystem::GetRenderAssetsManager<Shader>()->GetOrLoadAsset(shaderPath);
     }
-    m_pipelineState = m_shader->m_data.pipelineState;
-    PipelineState::Append(config, m_pipelineState);
+    else
+    {
+        throw "Wtf";
+    }
+    m_shaderData = m_shader->m_data;
+    if (m_shaderData.textureSet.GetTexturesCount() > 0)
+        Renderer::RegisterTextureSet(m_shaderData.textureSet);
+
+    PipelineState::Append(config, m_shaderData.pipelineState);
     if (config["textures"] != nullptr)
     {
         YAML::Node texNodes = config["textures"];
@@ -47,13 +56,22 @@ Material::Material(const std::string& path)
             std::string path = it->second.as<std::string>();
             std::string fullPath = AssetsSystem::GetAssetFullPath(path);
             Texture* tex = AssetsSystem::GetRenderAssetsManager<Texture>()->GetOrLoadAsset(fullPath);
-            m_shader->m_data.textureSet.SetTexture(name, tex);
+            m_shaderData.textureSet.SetTexture(name, tex);
         }
     }
 }
 
 Material::~Material()
 {
+}
+
+void Material::BuildMaterialForPass(const RenderPass& pass)
+{
+    auto it = std::find(m_buildedPassesHandles.cbegin(), m_buildedPassesHandles.cend(), pass.GetHandle());
+    if (it != m_buildedPassesHandles.cend())
+        return;
+    Renderer::BuildMaterialForPass(*this, pass);
+    m_buildedPassesHandles.push_back(pass.GetHandle());
 }
 
 }

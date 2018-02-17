@@ -3,11 +3,11 @@
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
+#pragma once
+
 #include "Core/CoreTypes.h"
 
 #include <string>
-
-#pragma once
 
 namespace Kioto::Renderer
 {
@@ -17,6 +17,7 @@ class Texture;
 class TextureSet;
 class Material;
 class RenderPass;
+class ShaderProgram;
 
 struct ShaderDefine
 {
@@ -94,4 +95,5 @@ using TextureHandle = SafeHandle<Texture>;
 using TextureSetHandle = SafeHandle<TextureSet>;
 using MaterialHandle = SafeHandle<Material>;
 using RenderPassHandle = SafeHandle<RenderPass>;
+using ShaderProgramHandle = SafeHandle<ShaderProgram>;
 }

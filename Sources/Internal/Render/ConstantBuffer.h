@@ -31,10 +31,11 @@ public:
 
     ConstantBuffer() {}
     ConstantBuffer(uint16 index, uint16 space);
-    ConstantBuffer(const ConstantBuffer&) {} // [a_vorontsov] TODO
+    ConstantBuffer(const ConstantBuffer& other);
+    ConstantBuffer(ConstantBuffer&& other);
     ~ConstantBuffer();
 
-    ConstantBuffer& operator= (const ConstantBuffer&) = delete;
+    ConstantBuffer& operator= (ConstantBuffer other);
 
     eReturnCode Add(const std::string& name, float32 data);
     eReturnCode Add(const std::string& name, const Vector2& data);
@@ -88,6 +89,19 @@ private:
     float32* m_memData = nullptr;
     uint32 m_dataSize = 0;
     uint32 m_dataSize4ByteElem = 0;
+
+    friend void swap(ConstantBuffer& l, ConstantBuffer& r)
+    {
+        std::swap(l.m_index, r.m_index);
+        std::swap(l.m_space, r.m_space);
+        std::swap(l.m_key, r.m_key);
+        std::swap(l.m_isDirty, r.m_isDirty);
+        std::swap(l.m_regenerateMemLayout, r.m_regenerateMemLayout);
+        std::swap(l.m_memData, r.m_memData);
+        std::swap(l.m_dataSize, r.m_dataSize);
+        std::swap(l.m_dataSize4ByteElem, r.m_dataSize4ByteElem);
+        l.m_params.swap(r.m_params);
+    }
 };
 
 inline uint16 ConstantBuffer::GetIndex() const

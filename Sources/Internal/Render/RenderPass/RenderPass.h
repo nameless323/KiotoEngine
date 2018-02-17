@@ -25,8 +25,9 @@ class RenderPass // [a_vorontsov] Add render target and depth stencil resource s
 {
 public:
     RenderPass() = default;
+    RenderPass(RenderPass&& other);
     RenderPass(const RenderPass& other);
-    RenderPass& operator= (const RenderPass& other);
+    RenderPass& operator= (RenderPass other);
 
     void SetScissor(const RectI& scissor);
     void SetViewport(const RectI& viewport);
@@ -53,6 +54,22 @@ public:
     uint32 GetPriority() const;
     uint8 GetRenderTargetCount() const;
     RenderPassHandle GetHandle() const;
+
+    friend void swap(RenderPass& l, RenderPass& r)
+    {
+        std::swap(l.m_scissor, r.m_scissor);
+        std::swap(l.m_viewport, r.m_viewport);
+        std::swap(l.m_clearColor, r.m_clearColor);
+        std::swap(l.m_clearDepth, r.m_clearDepth);
+        std::swap(l.m_clearDepthValue, r.m_clearDepthValue);
+        std::swap(l.m_clearStencil, r.m_clearStencil);
+        std::swap(l.m_clearStencilValue, r.m_clearStencilValue);
+        std::swap(l.m_renderTargetCount, r.m_renderTargetCount);
+        std::swap(l.m_handle, r.m_handle);
+        l.m_renderTargets.swap(r.m_renderTargets);
+        std::swap(l.m_depthStencil, r.m_depthStencil);
+        std::swap(l.m_priority, r.m_priority);
+    }
 
 private:
     RectI m_scissor;

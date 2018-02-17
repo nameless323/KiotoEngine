@@ -15,6 +15,24 @@ ConstantBuffer::ConstantBuffer(uint16 index, uint16 space)
 {
 }
 
+ConstantBuffer::ConstantBuffer(const ConstantBuffer& other)
+    : m_index(other.m_index)
+    , m_space(other.m_space)
+    , m_key(other.m_key)
+    , m_isDirty(other.m_isDirty)
+    , m_regenerateMemLayout(other.m_regenerateMemLayout)
+    , m_dataSize(other.m_dataSize)
+    , m_dataSize4ByteElem(other.m_dataSize4ByteElem)
+    , m_params(other.m_params)
+{
+    memcpy(m_memData, other.m_memData, m_dataSize);
+}
+
+ConstantBuffer::ConstantBuffer(ConstantBuffer&& other)
+{
+    swap(*this, other);
+}
+
 ConstantBuffer::eReturnCode ConstantBuffer::Add(const std::string& name, float32 data)
 {
     uint32 offset = 0;
@@ -295,6 +313,12 @@ bool ConstantBuffer::Find(const std::string& name, uint32& offsetInData, Param*&
         offsetInData += static_cast<byte>(m_params[i].Type);
     }
     return false;
+}
+
+ConstantBuffer& ConstantBuffer::operator=(ConstantBuffer other)
+{
+    swap(*this, other);
+    return *this;
 }
 
 }

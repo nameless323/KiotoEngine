@@ -7,6 +7,7 @@
 
 #include <d3d12.h>
 #include <map>
+#include <vector>
 #include <wrl/client.h>
 
 #include "Render/RendererPublic.h"
@@ -24,16 +25,22 @@ struct ShaderData;
 class TextureManagerDX12
 {
 public:
+    TextureManagerDX12();
     ~TextureManagerDX12();
-    void RegisterTexture(const StateDX& state, Texture* texture);
+    void RegisterTexture(Texture* texture);
     void RegisterTextureWithoutOwnership(TextureDX12* texture);
+    void ProcessRegistationQueue(const StateDX& state);
     void UpdateTextureSetHeap(const StateDX& state, const TextureSet& texSet);
+    void QueueTextureSetForUpdate(const TextureSet& texSet);
+    void ProcessTextureSetUpdates(const StateDX& state);
 
     ID3D12DescriptorHeap* GetTextureHeap(TextureSetHandle handle) const;
     TextureDX12* FindTexture(TextureHandle handle);
 
 private:
     std::map<TextureSetHandle, Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>> m_textureHeaps; // [a_vorontsov] One tex heap for all textures?
+    std::vector<TextureDX12*> m_textureQueue;
+    std::vector<const TextureSet*> m_textureSetUpdateQueue;
     std::map<TextureHandle, TextureDX12*> m_textures;
     std::map<TextureHandle, TextureDX12*> m_notOwningTextures;
 };

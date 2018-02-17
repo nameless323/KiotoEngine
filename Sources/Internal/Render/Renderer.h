@@ -9,6 +9,7 @@
 #include "Core/CoreTypes.h"
 #include "Render/RendererPublic.h"
 #include "Render/RenderPass/RenderPass.h"
+#include "Render/DX12/RenderPacket.h"
 
 namespace Kioto
 {
@@ -30,8 +31,15 @@ void Present();
 void ChangeFullScreenMode(bool fullScreen);
 void AddRenderPass(const RenderPass& renderPass);
 
+void AllocateRenderPacketList(RenderPassHandle handle);
+void AddRenderPacket(RenderPassHandle handle, RenderPacket packet);
+
+void QueueTextureSetForUpdate(const TextureSet& set);
+
 template <typename T>
 void RegisterRenderAsset(T* asset);
+void RegisterRenderPass(RenderPass* renderPass); // [a_vorontsov] TODO: allocate passes and all packet lists in renderer and give them by request.
+void RegisterTextureSet(TextureSet& set);
 TextureHandle GetCurrentBackBufferHandle();
 TextureHandle GetDepthStencilHandle();
 KIOTO_API uint16 GetWidth();
@@ -39,6 +47,7 @@ KIOTO_API uint16 GetHeight();
 KIOTO_API float32 GetAspect();
 
 VertexLayoutHandle GenerateVertexLayout(const VertexLayout& layout);
+void BuildMaterialForPass(const Material& mat, const RenderPass& pass);
 
 }
 }

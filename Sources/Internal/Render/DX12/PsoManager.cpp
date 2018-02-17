@@ -11,6 +11,11 @@
 #include "Render/RenderPass/RenderPass.h"
 #include "Render/Texture/TextureManagerDX12.h"
 #include "Render/Texture/TextureDX12.h"
+#include "Render/Material.h"
+#include "Render/DX12/ShaderManagerDX12.h"
+#include "Render/DX12/VertexLayoutManagerDX12.h"
+#include "Render/DX12/StateDX.h"
+#include "Render/DX12/RootSignatureManager.h"
 
 namespace Kioto::Renderer
 {
@@ -135,23 +140,40 @@ D3D12_DEPTH_STENCIL_DESC ParseDepthStencil(const PipelineState& state)
     return desc;
 }
 
-D3D12_GRAPHICS_PIPELINE_STATE_DESC ParsePipelineState(const PipelineState& state, const RenderPass& pass, ID3D12RootSignature* sig, TextureManagerDX12* textureManager)
+D3D12_GRAPHICS_PIPELINE_STATE_DESC ParsePipelineState(const Material* mat, const RenderPass& pass, const RootSignatureManager& sigManager, TextureManagerDX12* textureManager, ShaderManagerDX12* shaderManager, VertexLayoutManagerDX12* vertexLayoutManager, DXGI_FORMAT backBufferFromat, DXGI_FORMAT defaultDepthStencilFormat)
 {
     D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};
-    //desc.InputLayout
-    desc.pRootSignature = sig;
-    //desc.VS
-    //desc.PS
+    desc.pRootSignature = sigManager.GetRootSignature(mat->GetShader()->GetHandle());
+    const auto& shaders = shaderManager->GetDxShaders(mat->GetShader()->GetHandle());
+    for (const auto& shader : *shaders)
+    {
+        if (shader.GetType() == ShaderProgramType::Fragment)
+            desc.PS = shader.GetBytecode();
+        else if (shader.GetType() == ShaderProgramType::Vertex)
+            desc.VS = shader.GetBytecode();
+    }
+    auto currentLayout = vertexLayoutManager->FindVertexLayout(mat->GetShader()->GetHandle());
+    desc.InputLayout = { currentLayout->data(), static_cast<UINT>(currentLayout->size()) };
+    const PipelineState& state = mat->GetShaderData().pipelineState;
     desc.RasterizerState = ParseRasterizerDesc(state);
     desc.BlendState = ParseBlendState(state);
     desc.DepthStencilState = ParseDepthStencil(state);
-    desc.DSVFormat = textureManager->FindTexture(pass.GetDepthStencil().GetHandle())->GetFormat();
+
+    DXGI_FORMAT dsvFormat = defaultDepthStencilFormat;
+    if (pass.GetDepthStencil().GetHandle() != InvalidHandle)
+        dsvFormat = textureManager->FindTexture(pass.GetDepthStencil().GetHandle())->GetFormat();
+ 
+    desc.DSVFormat = dsvFormat;
     desc.SampleMask = UINT_MAX;
     desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
     desc.NumRenderTargets = pass.GetRenderTargetCount();
     for (uint32 i = 0; i < pass.GetRenderTargetCount(); ++i)
     {
-        desc.RTVFormats[i] = textureManager->FindTexture(pass.GetRenderTarget(i).GetHandle())->GetFormat();
+        DXGI_FORMAT rtvFormat = backBufferFromat;
+        if (pass.GetRenderTarget(i).GetHandle() != InvalidHandle)
+            rtvFormat = textureManager->FindTexture(pass.GetRenderTarget(i).GetHandle())->GetFormat();
+
+        desc.RTVFormats[i] = rtvFormat;
     }
     desc.SampleDesc.Count = 1;
 
@@ -159,11 +181,29 @@ D3D12_GRAPHICS_PIPELINE_STATE_DESC ParsePipelineState(const PipelineState& state
 }
 }
 
-
-void PsoManager::BuildPipelineState(const Material* mat, const RenderPass& pass, ID3D12RootSignature* sig, TextureManagerDX12* textureManager)
+void PsoManager::BuildPipelineState(const StateDX& state, const Material* mat, const RenderPass& pass, const RootSignatureManager& sigManager, TextureManagerDX12* textureManager, ShaderManagerDX12* shaderManager, VertexLayoutManagerDX12* vertexLayoutManager, DXGI_FORMAT backBufferFromat, DXGI_FORMAT defaultDepthStencilFormat)
 {
-    //ParsePipelineState(state)
-    //uint64 key = mat->Hadle | pass.GetHandle() << 32;
+    uint64 key = GetKey(mat->GetHandle(), pass.GetHandle());
+    if (m_psos.find(key) != m_psos.end())
+        return;
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC stateDesc = ParsePipelineState(mat, pass, sigManager, textureManager, shaderManager, vertexLayoutManager, backBufferFromat, defaultDepthStencilFormat);
+    ID3D12PipelineState** pipeState = m_psos[key].GetAddressOf();
+    ThrowIfFailed(state.Device->CreateGraphicsPipelineState(&stateDesc, IID_PPV_ARGS(pipeState)));
+}
+
+ID3D12PipelineState* PsoManager::GetPipelineState(MaterialHandle matHandle, RenderPassHandle renderPassHandle)
+{
+    uint64 key = GetKey(matHandle, renderPassHandle);
+    auto it = m_psos.find(key);
+    if (it == m_psos.end())
+        return nullptr;
+    return it->second.Get();
+}
+
+uint64 PsoManager::GetKey(MaterialHandle matHandle, RenderPassHandle renderPassHandle)
+{
+    uint64 tmp = renderPassHandle.GetHandle();
+    return matHandle.GetHandle() | tmp << 32;
 }
 
 }

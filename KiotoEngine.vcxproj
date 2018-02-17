@@ -201,10 +201,12 @@
     <ClInclude Include="Sources\Internal\Render\DX12\RenderPacket.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\RootSignatureManager.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\ShaderDX12.h" />
+    <ClInclude Include="Sources\Internal\Render\DX12\ShaderManagerDX12.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\Shader\ShaderParser.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\StateDX.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\SwapChain.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\VertexLayoutDX12.h" />
+    <ClInclude Include="Sources\Internal\Render\DX12\VertexLayoutManagerDX12.h" />
     <ClInclude Include="Sources\Internal\Render\Geometry\GeometryGenerator.h" />
     <ClInclude Include="Sources\Internal\Render\Geometry\Mesh.h" />
     <ClInclude Include="Sources\Internal\Render\Material.h" />
@@ -217,6 +219,7 @@
     <ClInclude Include="Sources\Internal\Render\RenderPass\MainForwardPass.h" />
     <ClInclude Include="Sources\Internal\Render\RenderPass\RenderPass.h" />
     <ClInclude Include="Sources\Internal\Render\Shader.h" />
+    <ClInclude Include="Sources\Internal\Render\ShaderData.h" />
     <ClInclude Include="Sources\Internal\Render\Texture\TextureManager.h" />
     <ClInclude Include="Sources\Internal\Render\Texture\TextureManagerDX12.h" />
     <ClInclude Include="Sources\Internal\Render\Texture\TextureSet.h" />
@@ -255,8 +258,10 @@
     <ClCompile Include="Sources\Internal\Render\DX12\PsoManager.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\RendererDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\RootSignatureManager.cpp" />
+    <ClCompile Include="Sources\Internal\Render\DX12\ShaderManagerDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\Shader\ShaderParser.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\SwapChain.cpp" />
+    <ClCompile Include="Sources\Internal\Render\DX12\VertexLayoutManagerDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\Geometry\GeometryGenerator.cpp" />
     <ClCompile Include="Sources\Internal\Render\Geometry\Mesh.cpp" />
     <ClCompile Include="Sources\Internal\Render\Material.cpp" />

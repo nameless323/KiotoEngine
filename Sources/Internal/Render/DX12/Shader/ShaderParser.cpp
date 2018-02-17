@@ -108,6 +108,18 @@ void TrimMultilineComments(std::string& source)
     }
 }
 
+uint8 GetAvaliableShaderProgTypes(const std::string& source)
+{
+    uint8 res = 0;
+    size_t ps = source.find(" ps (");
+    if (ps != std::string::npos)
+        res |= uint8(ShaderProgramType::Fragment);
+    size_t vs = source.find(" vs (");
+    if (vs != std::string::npos)
+        res |= uint8(ShaderProgramType::Vertex);
+    return res;
+}
+
 bool IsEmptyChar(char c)
 {
     return c == '\n' || c == ' ' || c == '\r\n';
@@ -556,6 +568,7 @@ ShaderData ParseShaderFromString(std::string source, const std::vector<ShaderDef
     GetPipelineState(source);
     res.textureSet = ParseTextures(source);
     source = DXPreprocess(source, defines);
+    res.shaderPrograms = GetAvaliableShaderProgTypes(source);
     OutputDebugStringA(source.c_str());
     res.vertexLayout = GetVertexLayout(source);
     res.constantBuffers = GetConstantBuffers(source);

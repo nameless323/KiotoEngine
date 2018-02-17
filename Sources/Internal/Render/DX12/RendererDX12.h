@@ -18,6 +18,7 @@
 #include "Render/DX12/Buffers/ResourceDX12.h"
 #include "Render/DX12/VertexLayoutDX12.h"
 #include "Render/DX12/ShaderDX12.h"
+#include "Render/DX12/ShaderManagerDX12.h"
 #include "Render/Texture/TextureDX12.h"
 #include "Render/RendererPublic.h"
 #include "Render/RenderPass/RenderPass.h"
@@ -26,6 +27,9 @@
 #include "Render/DX12/StateDX.h"
 #include "Render/DX12/SwapChain.h"
 #include "Render/DX12/RootSignatureManager.h"
+#include "Render/DX12/PsoManager.h"
+#include "Render/DX12/VertexLayoutManagerDX12.h"
+#include "Render/DX12/RenderPacket.h"
 
 namespace Kioto::Renderer
 {
@@ -58,25 +62,38 @@ public:
     void AddRenderPass(const RenderPass& renderPass);
 
     void RegisterTexture(Texture* texture);
+    void RegisterShader(Shader* shader);
+    void RegisterMaterial(Material* material);
+    void BuildMaterialForPass(const Material& mat, const RenderPass& pass);
 
-    VertexLayoutHandle GenerateVertexLayout(const VertexLayout& layout);
+    void RegisterRenderPass(RenderPass* renderPass);
+    void RegisterTextureSet(TextureSet& set);
+
+    void QueueTextureSetForUpdate(const TextureSet& set);
+
+    void AllocateRenderPacketList(RenderPassHandle handle);
+    void AddRenderPacket(RenderPassHandle handle, RenderPacket packet);
 
     TextureHandle GetCurrentBackBufferHandle() const;
     TextureHandle GetDepthStencilHandle() const;
 
 private:
+    static constexpr uint32 PacketListPoolSize = 64;
+    static constexpr uint32 PacketListSize = 64;
+
     TextureManagerDX12 m_textureManager;
     StateDX m_state;
     SwapChain m_swapChain;
     RootSignatureManager m_rootSignatureManager;
+    ShaderManagerDX12 m_shaderManager;
+    PsoManager m_piplineStateManager;
+    VertexLayoutManagerDX12 m_vertexLayoutManager;
 
     std::unordered_map<uint32, ResourceDX12> m_resources;
     std::array<std::vector<RenderPass>, StateDX::FrameCount> m_renderPasses;
 
     ResourceDX12* FindDxResource(uint32 handle);
-    const CD3DX12_SHADER_BYTECODE* GetShaderBytecode(ShaderHandle handle) const;
-    const std::vector<D3D12_INPUT_ELEMENT_DESC>* FindVertexLayout(VertexLayoutHandle handle) const;
-
+    
     void GetHardwareAdapter(IDXGIFactory4* factory, IDXGIAdapter1** adapter);
     void WaitForGPU();
     void LogAdapters();
@@ -93,26 +110,19 @@ private:
     UINT m_height = -1;
     bool m_isFullScreen = false;
 
-
-    Microsoft::WRL::ComPtr<ID3D12PipelineState> m_fallbackPSO;
-    ShaderHandle m_vs;
-    ShaderHandle m_ps;
-    std::vector<ShaderDX12*> m_shaders; // [a_vorontsov] To map or set.
-    
     std::unique_ptr<VertexBufferDX12> m_vertexBuffer;
     std::unique_ptr<IndexBufferDX12> m_indexBuffer;
 
     Mesh* m_box;
-
-    std::vector<VertexLayoutDX12> m_inputLayouts;
 
     EngineBuffers engineBuffers;
     UploadBufferDX12* m_timeBuffer = nullptr;
     UploadBufferDX12* m_passBuffer = nullptr;
     UploadBufferDX12* m_renderObjectBuffer = nullptr;
 
-    Texture* m_texture = nullptr;
-    TextureSet m_textureSet;
+    std::vector<RenderPacketList> m_renderPacketListPool;
+    std::map<RenderPassHandle, RenderPacketList*> m_passesRenderPackets;
+    uint32 m_packetListPoolIndex = 0;
 };
 
 inline TextureHandle RendererDX12::GetCurrentBackBufferHandle() const

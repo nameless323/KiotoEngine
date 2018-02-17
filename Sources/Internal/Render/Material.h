@@ -27,11 +27,17 @@ public:
     void SetHandle(MaterialHandle handle);
     MaterialHandle GetHandle() const;
 
+    Shader* GetShader() const;
+    const ShaderData& GetShaderData() const;
+    void BuildMaterialForPass(const RenderPass& pass);
+
 private:
     std::string m_shaderPath;
-    PipelineState m_pipelineState;
     Shader* m_shader = nullptr;
+    ShaderData m_shaderData;
     MaterialHandle m_handle;
+
+    std::vector<RenderPassHandle> m_buildedPassesHandles;
 };
 
 inline void Material::SetHandle(MaterialHandle handle)
@@ -42,5 +48,15 @@ inline void Material::SetHandle(MaterialHandle handle)
 inline MaterialHandle Material::GetHandle() const
 {
     return m_handle;
+}
+
+inline Shader* Material::GetShader() const
+{
+    return m_shader;
+}
+
+inline const ShaderData& Material::GetShaderData() const
+{
+    return m_shaderData;
 }
 }

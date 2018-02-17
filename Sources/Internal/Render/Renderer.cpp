@@ -89,7 +89,10 @@ float32 GetAspect()
 
 VertexLayoutHandle GenerateVertexLayout(const VertexLayout& layout)
 {
-    return GameRenderer->GenerateVertexLayout(layout);
+    return VertexLayoutHandle(InvalidHandle);
+
+    // [a_vorontsov] TODO;
+    //return GameRenderer->GenerateVertexLayout(layout);
 }
 
 void AddRenderPass(const RenderPass& renderPass)
@@ -124,5 +127,49 @@ void RegisterRenderAsset(Texture* asset)
     GameRenderer->RegisterTexture(asset);
 }
 
+template <>
+void RegisterRenderAsset(Shader* asset)
+{
+    GameRenderer->RegisterShader(asset);
+}
+
+void BuildMaterialForPass(const Material& mat, const RenderPass& pass)
+{
+    GameRenderer->BuildMaterialForPass(mat, pass);
+}
+
+void AllocateRenderPacketList(RenderPassHandle handle)
+{
+    GameRenderer->AllocateRenderPacketList(handle);
+}
+
+void AddRenderPacket(RenderPassHandle handle, RenderPacket packet)
+{
+    GameRenderer->AddRenderPacket(handle, packet);
+}
+
+template <>
+void RegisterRenderAsset(Material* asset)
+{
+    GameRenderer->RegisterMaterial(asset);
+}
+
+void RegisterRenderPass(RenderPass* renderPass)
+{
+    GameRenderer->RegisterRenderPass(renderPass);
+}
+
+void RegisterTextureSet(TextureSet& set)
+{
+    GameRenderer->RegisterTextureSet(set);
+}
+
+void QueueTextureSetForUpdate(const TextureSet& set)
+{
+    GameRenderer->QueueTextureSetForUpdate(set);
+}
+
 template void RegisterRenderAsset<Texture>(Texture* asset);
+template void RegisterRenderAsset<Shader>(Shader* asset);
+template void RegisterRenderAsset<Material>(Material* asset);
 }

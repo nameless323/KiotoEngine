@@ -67,7 +67,7 @@ void RootSignatureManager::CreateRootSignature(const StateDX& state, const Shade
     NAME_D3D12_OBJECT(m_rootSignatures[handle]);
 }
 
-ID3D12RootSignature* RootSignatureManager::GetRootSignature(ShaderHandle handle)
+ID3D12RootSignature* RootSignatureManager::GetRootSignature(ShaderHandle handle) const
 {
     auto it = m_rootSignatures.find(handle);
     if (it != m_rootSignatures.cend())

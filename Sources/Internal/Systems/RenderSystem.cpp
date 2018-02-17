@@ -6,13 +6,17 @@
 #include "stdafx.h"
 
 #include "Systems/RenderSystem.h"
+#include "Render/Material.h"
 
 namespace Kioto
 {
 
 void RenderSystem::Init()
 {
-
+    m_material = AssetsSystem::GetRenderAssetsManager<Renderer::Material>()->GetOrLoadAsset(m_matPath);
+    Renderer::RegisterRenderPass(&m_renderPass);
+    m_renderPass.SetRenderTargetCount(1);
+    m_material->BuildMaterialForPass(m_renderPass);
 }
 
 void RenderSystem::OnEntityAdd(Entity* entity)
@@ -27,7 +31,7 @@ void RenderSystem::OnEntityRemove(Entity* entity)
 
 void RenderSystem::Update(float32 dt)
 {
-    for (int32 i = 0; i < 4; ++i)
+    for (int32 i = 0; i < m_renderPass.GetRenderTargetCount(); ++i)
         m_renderPass.SetRenderTarget(i, Renderer::InvalidHandle);
     m_renderPass.SetDepthStencil(Renderer::InvalidHandle);
 
@@ -40,6 +44,13 @@ void RenderSystem::Update(float32 dt)
     m_renderPass.SetClearStencilValue(0);
 
     Renderer::AddRenderPass(m_renderPass);
+
+    Renderer::AllocateRenderPacketList(m_renderPass.GetHandle());
+    Renderer::RenderPacket currPacket;
+    currPacket.Material = m_material->GetHandle();
+    currPacket.Shader = m_material->GetShader()->GetHandle();
+    currPacket.TextureSet = m_material->GetShaderData().textureSet.GetHandle();
+    Renderer::AddRenderPacket(m_renderPass.GetHandle(), currPacket);
 }
 
 void RenderSystem::Shutdown()

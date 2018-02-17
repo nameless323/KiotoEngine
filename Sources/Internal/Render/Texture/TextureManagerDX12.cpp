@@ -15,7 +15,13 @@
 namespace Kioto::Renderer
 {
 
-void TextureManagerDX12::RegisterTexture(const StateDX& state, Texture* texture)
+TextureManagerDX12::TextureManagerDX12()
+{
+    m_textureQueue.reserve(64);
+    m_textureSetUpdateQueue.reserve(256);
+}
+
+void TextureManagerDX12::RegisterTexture(Texture* texture)
 {
     auto it = m_textures.find(texture->GetHandle());
     if (it != m_textures.end())
@@ -26,8 +32,8 @@ void TextureManagerDX12::RegisterTexture(const StateDX& state, Texture* texture)
 
     TextureDX12* tex = new TextureDX12();
     tex->Path = StrToWstr(texture->GetAssetPath());
-    tex->Create(state.Device.Get(), state.CommandList.Get());
     tex->SetHandle(GetNewHandle());
+    m_textureQueue.push_back(tex);
     texture->SetHandle(tex->GetHandle());
 
     m_textures[tex->GetHandle()] = tex;
@@ -101,6 +107,32 @@ void TextureManagerDX12::RegisterTextureWithoutOwnership(TextureDX12* texture)
         return;
     }
     m_notOwningTextures[texture->GetHandle()] = texture;
+}
+
+void TextureManagerDX12::ProcessRegistationQueue(const StateDX& state)
+{
+    for (auto& tex : m_textureQueue)
+        tex->Create(state.Device.Get(), state.CommandList.Get());
+    m_textureQueue.clear();
+}
+
+void TextureManagerDX12::QueueTextureSetForUpdate(const TextureSet& texSet)
+{
+    if (texSet.GetHandle() == InvalidHandle)
+        throw "Invalid handle";
+
+    auto it = std::find(m_textureSetUpdateQueue.cbegin(), m_textureSetUpdateQueue.cend(), &texSet);
+    if (it != m_textureSetUpdateQueue.cend())
+        return;
+
+    m_textureSetUpdateQueue.push_back(&texSet);
+}
+
+void TextureManagerDX12::ProcessTextureSetUpdates(const StateDX& state)
+{
+    for (auto& texSet : m_textureSetUpdateQueue)
+        UpdateTextureSetHeap(state, *texSet);
+    m_textureSetUpdateQueue.clear();
 }
 
 }

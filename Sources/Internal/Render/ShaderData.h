@@ -13,6 +13,12 @@
 
 namespace Kioto::Renderer
 {
+enum class ShaderProgramType
+{
+    Vertex = 1 << 0,
+    Fragment = 1 << 1
+};
+
 struct ShaderData
 {
     std::string output;
@@ -20,5 +26,6 @@ struct ShaderData
     PipelineState pipelineState;
     TextureSet textureSet;
     std::vector<ConstantBuffer> constantBuffers;
+    uint8 shaderPrograms = 0;
 };
 }
