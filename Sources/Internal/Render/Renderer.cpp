@@ -148,13 +148,18 @@ void AddRenderPacket(RenderPassHandle handle, RenderPacket packet)
     GameRenderer->AddRenderPacket(handle, packet);
 }
 
-//template <>
-//void RegisterRenderAsset(Material* asset)
-//{
-//    //throw "TODO";
-//}
+template <>
+void RegisterRenderAsset(Material* asset)
+{
+    GameRenderer->RegisterMaterial(asset);
+}
+
+void RegisterRenderPass(RenderPass* renderPass)
+{
+
+}
 
 template void RegisterRenderAsset<Texture>(Texture* asset);
 template void RegisterRenderAsset<Shader>(Shader* asset);
-//template void RegisterRenderAsset<Material>(Material* asset);
+template void RegisterRenderAsset<Material>(Material* asset);
 }

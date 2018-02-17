@@ -10,7 +10,7 @@
 #include <wrl/client.h>
 
 #include "Render/RendererPublic.h"
-#include "Render/DX12/ShaderDX12.h"
+#include "Core/CoreTypes.h"
 
 namespace Kioto::Renderer
 {
@@ -20,15 +20,18 @@ class TextureManagerDX12;
 class ShaderManagerDX12;
 class RootSignatureManager;
 class VertexLayoutManagerDX12;
+struct StateDX;
 
 class PsoManager
 {
 public:
+    PsoManager() = default;
+
     void BuildPipelineState(const StateDX& state, const Material* mat, const RenderPass& pass, const RootSignatureManager& sigManager, TextureManagerDX12* textureManager, ShaderManagerDX12* shaderManager, VertexLayoutManagerDX12* vertexLayoutManager);
     ID3D12PipelineState* GetPipelineState(MaterialHandle matHandle, RenderPassHandle renderPassHandle);
 
 private:
-    uint64 GetKey(MaterialHandle matHandle, RenderPassHandle renderPassHandle) const;
+    static uint64 GetKey(MaterialHandle matHandle, RenderPassHandle renderPassHandle);
 
     std::map<uint64, Microsoft::WRL::ComPtr<ID3D12PipelineState>> m_psos;
 };

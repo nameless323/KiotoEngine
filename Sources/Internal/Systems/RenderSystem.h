@@ -10,6 +10,7 @@
 #include "Core/ECS/SceneSystem.h"
 #include "Render/Renderer.h"
 #include "Render/RenderPass/MainForwardPass.h"
+#include "AssetsSystem/AssetsSystem.h"
 
 namespace Kioto
 {
@@ -27,5 +28,7 @@ public:
 
 private:
     Renderer::MainForwardRenderPass m_renderPass;
+    std::string m_matPath = AssetsSystem::GetAssetFullPath("Materials\\Test.mt");
+    Renderer::Material* m_material = nullptr;
 };
 }

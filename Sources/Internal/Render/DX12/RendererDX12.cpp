@@ -150,66 +150,6 @@ void RendererDX12::LoadPipeline()
 {
     m_state.CommandList->Reset(m_state.CommandAllocators[0].Get(), nullptr);
 
-    std::string matPath = AssetsSystem::GetAssetFullPath("Materials\\Test.mt");
-    Material* material = AssetsSystem::LoadAsset<Material>(matPath);
-    material->SetHandle(GetNewHandle());
-
-    std::string shaderPath = AssetsSystem::GetAssetFullPath("Shaders\\Fallback.hlsl");
-    ShaderDX12* vs = new ShaderDX12();
-    ShaderDX12* ps = new ShaderDX12();
-    vs->SetHandle(GetNewHandle());
-    ps->SetHandle(GetNewHandle());
-    m_vs = vs->GetHandle();
-    m_ps = ps->GetHandle();
-    m_texture = new Texture(AssetsSystem::GetAssetFullPath("Textures\\rick_and_morty.dds"));
-    RegisterTexture(m_texture);
-
-    ShaderData parseResult = ShaderParser::ParseShader(shaderPath, nullptr);
-    parseResult.textureSet.SetHandle(GetNewHandle());
-    m_textureSet = parseResult.textureSet;
-    m_textureSet.SetTexture("Diffuse", m_texture);
-    m_textureManager.UpdateTextureSetHeap(m_state, m_textureSet);
-
-    std::string shaderStr = parseResult.output;
-    OutputDebugStringA(shaderStr.c_str());
-    HRESULT hr = vs->Compile(shaderStr.c_str(), shaderStr.length() * sizeof(char), "vs", "vs_5_1", shaderFlags);
-
-    if (!vs->GetIsCompiled())
-        OutputDebugStringA(vs->GetErrorMsg());
-    ThrowIfFailed(hr);
-    m_shaders.push_back(vs);
-
-    hr = ps->Compile(shaderStr.c_str(), shaderStr.length() * sizeof(char), "ps", "ps_5_1", shaderFlags);
-    if (!ps->GetIsCompiled())
-        OutputDebugStringA(ps->GetErrorMsg());
-    ThrowIfFailed(hr);
-    m_shaders.push_back(ps);
-
-    m_rootSignatureManager.CreateRootSignature(m_state, parseResult, m_vs);
-
-    VertexLayoutHandle vertexLayoutHandle = GenerateVertexLayout(parseResult.vertexLayout);
-
-    D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};
-
-    auto currentLayout = FindVertexLayout(vertexLayoutHandle);
-
-    desc.InputLayout = { currentLayout->data(), static_cast<UINT>(currentLayout->size()) };
-    desc.pRootSignature = m_rootSignatureManager.GetRootSignature(m_vs);
-    desc.VS = *GetShaderBytecode(m_vs);
-    desc.PS = *GetShaderBytecode(m_ps);
-    desc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-
-    desc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
-    desc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
-    desc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
-    desc.SampleMask = UINT_MAX;
-    desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-    desc.NumRenderTargets = 1;
-    desc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
-    desc.SampleDesc.Count = 1;
-
-    ThrowIfFailed(m_state.Device->CreateGraphicsPipelineState(&desc, IID_PPV_ARGS(&m_fallbackPSO)));
-
     m_box = GeometryGenerator::GetUnitCube();
     m_vertexBuffer = std::make_unique<VertexBufferDX12>(m_box->GetVertexData(), m_box->GetVertexDataSize(), m_box->GetVertexDataStride(), m_state.CommandList.Get(), m_state.Device.Get());
     m_indexBuffer = std::make_unique<IndexBufferDX12>(m_box->GetIndexData(), m_box->GetIndexDataSize(), m_state.CommandList.Get(), m_state.Device.Get(), IndexFormatToDXGI(m_box->GetIndexFormat()));
@@ -246,14 +186,7 @@ void RendererDX12::Shutdown()
         WaitForGPU();
 
     if (!m_isTearingSupported)
-    {
         ThrowIfFailed(m_swapChain.SetFullscreenState(false, nullptr));
-    }
-    for (auto& shader : m_shaders)
-    {
-        delete shader;
-    }
-    m_shaders.clear();
 
     SafeDelete(m_texture);
     SafeDelete(m_timeBuffer);
@@ -363,10 +296,15 @@ void RendererDX12::Update(float32 dt)
 void RendererDX12::Present()
 {
     m_state.CommandAllocators[m_swapChain.GetCurrentFrameIndex()]->Reset();
-    m_state.CommandList->Reset(m_state.CommandAllocators[m_swapChain.GetCurrentFrameIndex()].Get(), m_fallbackPSO.Get());
+    m_state.CommandList->Reset(m_state.CommandAllocators[m_swapChain.GetCurrentFrameIndex()].Get(), nullptr);
     std::vector<RenderPass> thisFramePasses = m_renderPasses[m_swapChain.GetCurrentFrameIndex()];
     for (auto& renderPass : thisFramePasses)
     {
+        auto passPacketsIt = m_passesRenderPackets.find(renderPass.GetHandle());
+        if (passPacketsIt == m_passesRenderPackets.cend())
+            continue;
+        std::vector<RenderPacket>* passPackets = passPacketsIt->second;
+
         TextureDX12* currentRenderTarget = nullptr;
         if (renderPass.GetRenderTarget(0).GetHandle() == InvalidHandle)
             currentRenderTarget = m_swapChain.GetCurrentBackBuffer();
@@ -392,24 +330,30 @@ void RendererDX12::Present()
 
         m_state.CommandList->OMSetRenderTargets(1, &currentRenderTarget->GetCPUHandle(), false, &currentDS->GetCPUHandle());
 
-        ID3D12RootSignature* rootSig = m_rootSignatureManager.GetRootSignature(m_vs);
-        m_state.CommandList->SetGraphicsRootSignature(rootSig);
-        m_state.CommandList->SetGraphicsRootConstantBufferView(0, m_timeBuffer->GetFrameDataGpuAddress(m_swapChain.GetCurrentFrameIndex()));
-        m_state.CommandList->SetGraphicsRootConstantBufferView(1, m_passBuffer->GetFrameDataGpuAddress(m_swapChain.GetCurrentFrameIndex()));
-        m_state.CommandList->SetGraphicsRootConstantBufferView(2, m_renderObjectBuffer->GetFrameDataGpuAddress(m_swapChain.GetCurrentFrameIndex()));
+        for (const RenderPacket& packet : *passPackets)
+        {
+            ID3D12PipelineState* pipelineState = m_piplineStateManager.GetPipelineState(packet.Material.GetHandle(), renderPass.GetHandle());
+            m_state.CommandList->SetPipelineState(pipelineState);
 
-        ID3D12DescriptorHeap* currHeap = m_textureManager.GetTextureHeap(m_textureSet.GetHandle());
-        ID3D12DescriptorHeap* descHeap[] = { currHeap };
-        m_state.CommandList->SetDescriptorHeaps(_countof(descHeap), descHeap);
+            ID3D12RootSignature* rootSig = m_rootSignatureManager.GetRootSignature(packet.Shader);
+            m_state.CommandList->SetGraphicsRootSignature(rootSig);
+            m_state.CommandList->SetGraphicsRootConstantBufferView(0, m_timeBuffer->GetFrameDataGpuAddress(m_swapChain.GetCurrentFrameIndex()));
+            m_state.CommandList->SetGraphicsRootConstantBufferView(1, m_passBuffer->GetFrameDataGpuAddress(m_swapChain.GetCurrentFrameIndex()));
+            m_state.CommandList->SetGraphicsRootConstantBufferView(2, m_renderObjectBuffer->GetFrameDataGpuAddress(m_swapChain.GetCurrentFrameIndex()));
 
-        m_state.CommandList->SetGraphicsRootDescriptorTable(3, currHeap->GetGPUDescriptorHandleForHeapStart());
+            ID3D12DescriptorHeap* currHeap = m_textureManager.GetTextureHeap(m_textureSet.GetHandle());
+            ID3D12DescriptorHeap* descHeap[] = { currHeap };
+            m_state.CommandList->SetDescriptorHeaps(_countof(descHeap), descHeap);
 
-        m_state.CommandList->IASetVertexBuffers(0, 1, &m_vertexBuffer->GetVertexBufferView());
-        m_state.CommandList->IASetIndexBuffer(&m_indexBuffer->GetIndexBufferView());
-        m_state.CommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+            m_state.CommandList->SetGraphicsRootDescriptorTable(3, currHeap->GetGPUDescriptorHandleForHeapStart());
 
-        m_state.CommandList->DrawIndexedInstanced(m_box->GetIndexCount(), 1, 0, 0, 0);
+            m_state.CommandList->IASetVertexBuffers(0, 1, &m_vertexBuffer->GetVertexBufferView());
+            m_state.CommandList->IASetIndexBuffer(&m_indexBuffer->GetIndexBufferView());
+            m_state.CommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+            m_state.CommandList->DrawIndexedInstanced(m_box->GetIndexCount(), 1, 0, 0, 0);
+
+        }
         auto toPresent = CD3DX12_RESOURCE_BARRIER::Transition(currentRenderTarget->Resource.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
         m_state.CommandList->ResourceBarrier(1, &toPresent);
     }
@@ -429,7 +373,7 @@ void RendererDX12::Present()
         m_renderPacketListPool[i].clear();
 
     m_packetListPoolIndex = 0;
-    m_FrameRenderPackets.clear();
+    m_passesRenderPackets.clear();
     if (m_state.FenceValues[m_swapChain.GetCurrentFrameIndex()] != 0 && m_state.Fence->GetCompletedValue() < m_state.FenceValues[m_swapChain.GetCurrentFrameIndex()])
     {
         HANDLE fenceEventHandle = CreateEvent(nullptr, FALSE, FALSE, nullptr);
@@ -583,15 +527,25 @@ void RendererDX12::BuildMaterialForPass(const Material& mat, const RenderPass& p
 
 void RendererDX12::AllocateRenderPacketList(RenderPassHandle handle)
 {
-    m_FrameRenderPackets[handle] = &m_renderPacketListPool[m_packetListPoolIndex++];
+    m_passesRenderPackets[handle] = &m_renderPacketListPool[m_packetListPoolIndex++];
 }
 
 void RendererDX12::AddRenderPacket(RenderPassHandle handle, RenderPacket packet)
 {
-    auto it = m_FrameRenderPackets.find(handle);
-    if (it == m_FrameRenderPackets.cend())
+    auto it = m_passesRenderPackets.find(handle);
+    if (it == m_passesRenderPackets.cend())
         throw "No render packet list were allocated.";
-    m_FrameRenderPackets[handle]->push_back(packet);
+    m_passesRenderPackets[handle]->push_back(packet);
+}
+
+void RendererDX12::RegisterMaterial(Material* material)
+{
+    material->SetHandle(GetNewHandle());
+}
+
+void RendererDX12::RegisterRenderPass(RenderPass* renderPass)
+{
+    renderPass->SetHandle(GetNewHandle());
 }
 
 }

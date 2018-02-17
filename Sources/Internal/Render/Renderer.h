@@ -36,6 +36,7 @@ void AddRenderPacket(RenderPassHandle handle, RenderPacket packet);
 
 template <typename T>
 void RegisterRenderAsset(T* asset);
+void RegisterRenderPass(RenderPass* renderPass); // [a_vorontsov] TODO: allocate passes and all packet lists in renderer and give them by request.
 TextureHandle GetCurrentBackBufferHandle();
 TextureHandle GetDepthStencilHandle();
 KIOTO_API uint16 GetWidth();

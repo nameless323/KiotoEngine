@@ -178,7 +178,8 @@ void PsoManager::BuildPipelineState(const StateDX& state, const Material* mat, c
     if (m_psos.find(key) != m_psos.end())
         return;
     D3D12_GRAPHICS_PIPELINE_STATE_DESC stateDesc = ParsePipelineState(mat, pass, sigManager, textureManager, shaderManager, vertexLayoutManager);
-    ThrowIfFailed(state.Device->CreateGraphicsPipelineState(&stateDesc, IID_PPV_ARGS(&m_psos[key])));
+    ID3D12PipelineState** pipeState = m_psos[key].GetAddressOf();
+    ThrowIfFailed(state.Device->CreateGraphicsPipelineState(&stateDesc, IID_PPV_ARGS(pipeState)));
 }
 
 ID3D12PipelineState* PsoManager::GetPipelineState(MaterialHandle matHandle, RenderPassHandle renderPassHandle)
@@ -190,9 +191,10 @@ ID3D12PipelineState* PsoManager::GetPipelineState(MaterialHandle matHandle, Rend
     return it->second.Get();
 }
 
-uint64 PsoManager::GetKey(MaterialHandle matHandle, RenderPassHandle renderPassHandle) const
+uint64 PsoManager::GetKey(MaterialHandle matHandle, RenderPassHandle renderPassHandle)
 {
-    return matHandle.GetHandle() | renderPassHandle.GetHandle() << 32;
+    uint64 tmp = renderPassHandle.GetHandle();
+    return matHandle.GetHandle() | tmp << 32;
 }
 
 }

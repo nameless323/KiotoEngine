@@ -63,7 +63,9 @@ public:
 
     void RegisterTexture(Texture* texture);
     void RegisterShader(Shader* shader);
+    void RegisterMaterial(Material* material);
     void BuildMaterialForPass(const Material& mat, const RenderPass& pass);
+    void RegisterRenderPass(RenderPass* renderPass);
 
     void AllocateRenderPacketList(RenderPassHandle handle);
     void AddRenderPacket(RenderPassHandle handle, RenderPacket packet);
@@ -118,7 +120,7 @@ private:
     TextureSet m_textureSet;
 
     std::vector<RenderPacketList> m_renderPacketListPool;
-    std::map<RenderPassHandle, RenderPacketList*> m_FrameRenderPackets;
+    std::map<RenderPassHandle, RenderPacketList*> m_passesRenderPackets;
     uint32 m_packetListPoolIndex = 0;
 };
 
