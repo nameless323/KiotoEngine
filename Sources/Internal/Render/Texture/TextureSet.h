@@ -25,8 +25,15 @@ public:
     };
 
     TextureSet() = default;
+    TextureSet(const TextureSet& other);
+    TextureSet(TextureSet&& other);
     ~TextureSet() = default;
  
+    TextureSet& operator= (TextureSet other);
+
+    bool operator==(const TextureSet& other) const;
+    bool operator!=(const TextureSet& other) const;
+
     eReturnCode AddTexture(const std::string& name, uint16 offset, Texture* texture);
     eReturnCode SetTexture(const std::string& name, Texture* texture);
 
@@ -40,6 +47,14 @@ public:
     TextureSetHandle GetHandle() const;
 
     const Texture* GetTexture(uint32 index) const;
+
+    friend void swap(TextureSet& l, TextureSet& r)
+    {
+        l.m_data.swap(r.m_data);
+        std::swap(l.m_maxOffset, r.m_maxOffset);
+        std::swap(l.m_needRebuild, r.m_needRebuild);
+        std::swap(l.m_handle, r.m_handle);
+    }
 
 private:
     struct TextureSetData
@@ -91,5 +106,15 @@ inline TextureSetHandle TextureSet::GetHandle() const
 inline const Texture* TextureSet::GetTexture(uint32 index) const
 {
     return m_data[index].Texture;
+}
+
+inline bool TextureSet::operator==(const TextureSet& other) const
+{
+    return m_handle == other.GetHandle();
+}
+
+inline bool TextureSet::operator!=(const TextureSet& other) const
+{
+    return !(*this == other);
 }
 }

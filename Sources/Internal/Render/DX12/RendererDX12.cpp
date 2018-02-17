@@ -188,7 +188,6 @@ void RendererDX12::Shutdown()
     if (!m_isTearingSupported)
         ThrowIfFailed(m_swapChain.SetFullscreenState(false, nullptr));
 
-    SafeDelete(m_texture);
     SafeDelete(m_timeBuffer);
 
 #ifdef _DEBUG
@@ -297,6 +296,10 @@ void RendererDX12::Present()
 {
     m_state.CommandAllocators[m_swapChain.GetCurrentFrameIndex()]->Reset();
     m_state.CommandList->Reset(m_state.CommandAllocators[m_swapChain.GetCurrentFrameIndex()].Get(), nullptr);
+
+    m_textureManager.ProcessRegistationQueue(m_state);
+    m_textureManager.ProcessTextureSetUpdates(m_state);
+
     std::vector<RenderPass> thisFramePasses = m_renderPasses[m_swapChain.GetCurrentFrameIndex()];
     for (auto& renderPass : thisFramePasses)
     {
@@ -341,7 +344,7 @@ void RendererDX12::Present()
             m_state.CommandList->SetGraphicsRootConstantBufferView(1, m_passBuffer->GetFrameDataGpuAddress(m_swapChain.GetCurrentFrameIndex()));
             m_state.CommandList->SetGraphicsRootConstantBufferView(2, m_renderObjectBuffer->GetFrameDataGpuAddress(m_swapChain.GetCurrentFrameIndex()));
 
-            ID3D12DescriptorHeap* currHeap = m_textureManager.GetTextureHeap(m_textureSet.GetHandle());
+            ID3D12DescriptorHeap* currHeap = m_textureManager.GetTextureHeap(packet.TextureSet);
             ID3D12DescriptorHeap* descHeap[] = { currHeap };
             m_state.CommandList->SetDescriptorHeaps(_countof(descHeap), descHeap);
 
@@ -498,7 +501,7 @@ void RendererDX12::UpdatePassCB()
 
 void RendererDX12::AddRenderPass(const RenderPass& renderPass)
 {
-    m_renderPasses[m_swapChain.GetCurrentFrameIndex()].emplace_back(renderPass);
+    m_renderPasses[m_swapChain.GetCurrentFrameIndex()].push_back(renderPass);
 }
 
 ResourceDX12* RendererDX12::FindDxResource(uint32 handle)
@@ -508,7 +511,7 @@ ResourceDX12* RendererDX12::FindDxResource(uint32 handle)
 
 void RendererDX12::RegisterTexture(Texture* texture)
 {
-    m_textureManager.RegisterTexture(m_state, texture);
+    m_textureManager.RegisterTexture(texture);
 }
 
 void RendererDX12::RegisterShader(Shader* shader)
@@ -522,7 +525,7 @@ void RendererDX12::BuildMaterialForPass(const Material& mat, const RenderPass& p
 {
     ID3D12PipelineState* ps = m_piplineStateManager.GetPipelineState(mat.GetHandle(), pass.GetHandle());
     if (ps == nullptr)
-        m_piplineStateManager.BuildPipelineState(m_state, &mat, pass, m_rootSignatureManager, &m_textureManager, &m_shaderManager, &m_vertexLayoutManager);
+        m_piplineStateManager.BuildPipelineState(m_state, &mat, pass, m_rootSignatureManager, &m_textureManager, &m_shaderManager, &m_vertexLayoutManager, m_swapChain.GetCurrentBackBufferHandle(), m_swapChain.GetDepthStencilHandle());
 }
 
 void RendererDX12::AllocateRenderPacketList(RenderPassHandle handle)
@@ -546,6 +549,16 @@ void RendererDX12::RegisterMaterial(Material* material)
 void RendererDX12::RegisterRenderPass(RenderPass* renderPass)
 {
     renderPass->SetHandle(GetNewHandle());
+}
+
+void RendererDX12::RegisterTextureSet(TextureSet& set)
+{
+    set.SetHandle(GetNewHandle());
+}
+
+void RendererDX12::QueueTextureSetForUpdate(const TextureSet& set)
+{
+    m_textureManager.QueueTextureSetForUpdate(set);
 }
 
 }

@@ -15,7 +15,6 @@
 #include "Core/WindowsApplication.h"
 #include "Render/Geometry/GeometryGenerator.h"
 #include "Render/Renderer.h"
-#include "Render/Texture/RenderAssetsManager.h"
 
 #include "Render/Material.h"
 

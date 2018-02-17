@@ -17,6 +17,7 @@ public:
     MaterialHandle Material;
     ShaderHandle Shader;
     VertexLayoutHandle VertexLayout;
+    TextureSetHandle TextureSet;
 };
 
 using RenderPacketList = std::vector<RenderPacket>;

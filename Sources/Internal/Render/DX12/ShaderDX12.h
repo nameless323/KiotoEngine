@@ -53,10 +53,12 @@ inline bool ShaderDX12::operator!= (const ShaderDX12& other) const
 inline HRESULT ShaderDX12::Compile(LPCVOID shaderStr, SIZE_T size, LPCSTR sourceName, const D3D_SHADER_MACRO* defines, ID3DInclude* includes, LPCSTR entry, LPCSTR target, UINT flags1, UINT flags2)
 {
     m_compiled = false;
-    if (entry == "vs")
+    if (std::string(entry) == "vs")
         m_type = ShaderProgramType::Vertex;
-    else if (entry == "ps")
+    else if (std::string(entry) == "ps")
         m_type = ShaderProgramType::Fragment;
+    else
+        throw "NOT IMPLEMENTED";
 
     HRESULT hr = D3DCompile(shaderStr, size, sourceName, defines, D3D_COMPILE_STANDARD_FILE_INCLUDE, entry, target, flags1, flags2, &m_shaderBlob, &m_error);
     if (SUCCEEDED(hr))

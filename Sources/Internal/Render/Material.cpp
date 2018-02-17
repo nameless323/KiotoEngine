@@ -11,7 +11,7 @@
 
 #include "AssetsSystem/AssetsSystem.h"
 #include "AssetsSystem/RenderStateParamsConverter.h"
-#include "Render/Texture/RenderAssetsManager.h"
+#include "Render/Renderer.h"
 
 namespace Kioto::Renderer
 {
@@ -42,6 +42,9 @@ Material::Material(const std::string& path)
         throw "Wtf";
     }
     m_shaderData = m_shader->m_data;
+    if (m_shaderData.textureSet.GetTexturesCount() > 0)
+        Renderer::RegisterTextureSet(m_shaderData.textureSet);
+
     PipelineState::Append(config, m_shaderData.pipelineState);
     if (config["textures"] != nullptr)
     {
@@ -53,7 +56,7 @@ Material::Material(const std::string& path)
             std::string path = it->second.as<std::string>();
             std::string fullPath = AssetsSystem::GetAssetFullPath(path);
             Texture* tex = AssetsSystem::GetRenderAssetsManager<Texture>()->GetOrLoadAsset(fullPath);
-            m_shader->m_data.textureSet.SetTexture(name, tex);
+            m_shaderData.textureSet.SetTexture(name, tex);
         }
     }
 }
@@ -65,7 +68,7 @@ Material::~Material()
 void Material::BuildMaterialForPass(const RenderPass& pass)
 {
     auto it = std::find(m_buildedPassesHandles.cbegin(), m_buildedPassesHandles.cend(), pass.GetHandle());
-    if (it == m_buildedPassesHandles.cend())
+    if (it != m_buildedPassesHandles.cend())
         return;
     Renderer::BuildMaterialForPass(*this, pass);
     m_buildedPassesHandles.push_back(pass.GetHandle());

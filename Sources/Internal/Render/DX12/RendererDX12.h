@@ -65,7 +65,11 @@ public:
     void RegisterShader(Shader* shader);
     void RegisterMaterial(Material* material);
     void BuildMaterialForPass(const Material& mat, const RenderPass& pass);
+
     void RegisterRenderPass(RenderPass* renderPass);
+    void RegisterTextureSet(TextureSet& set);
+
+    void QueueTextureSetForUpdate(const TextureSet& set);
 
     void AllocateRenderPacketList(RenderPassHandle handle);
     void AddRenderPacket(RenderPassHandle handle, RenderPacket packet);
@@ -115,9 +119,6 @@ private:
     UploadBufferDX12* m_timeBuffer = nullptr;
     UploadBufferDX12* m_passBuffer = nullptr;
     UploadBufferDX12* m_renderObjectBuffer = nullptr;
-
-    Texture* m_texture = nullptr;
-    TextureSet m_textureSet;
 
     std::vector<RenderPacketList> m_renderPacketListPool;
     std::map<RenderPassHandle, RenderPacketList*> m_passesRenderPackets;

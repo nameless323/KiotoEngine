@@ -156,7 +156,17 @@ void RegisterRenderAsset(Material* asset)
 
 void RegisterRenderPass(RenderPass* renderPass)
 {
+    GameRenderer->RegisterRenderPass(renderPass);
+}
 
+void RegisterTextureSet(TextureSet& set)
+{
+    GameRenderer->RegisterTextureSet(set);
+}
+
+void QueueTextureSetForUpdate(const TextureSet& set)
+{
+    GameRenderer->QueueTextureSetForUpdate(set);
 }
 
 template void RegisterRenderAsset<Texture>(Texture* asset);

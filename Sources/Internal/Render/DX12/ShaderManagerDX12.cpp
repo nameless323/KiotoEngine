@@ -15,7 +15,7 @@ namespace Kioto::Renderer
 void ShaderManagerDX12::RegisterShader(Shader* shader)
 {
     auto it = m_shaders.find(shader->GetHandle());
-    if (it == m_shaders.cend())
+    if (it != m_shaders.cend())
         return;
     shader->SetHandle(GetNewHandle());
     shader->SetShaderData(ShaderParser::ParseShaderFromString(shader->GetShaderString(), nullptr));
