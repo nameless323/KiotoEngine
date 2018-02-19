@@ -18,6 +18,9 @@
 
 #include "Render/Material.h"
 
+
+#include "Render/Geometry/ParserFBX.h"
+
 namespace Kioto
 {
 Scene* m_scene = nullptr;
@@ -63,11 +66,20 @@ namespace KiotoCore
 {
 void Init()
 {
+
     GlobalTimer::Init();
     AssetsSystem::Init();
     GeometryGenerator::Init();
     WindowsApplication::Init(ApplicationInfo.HInstance, ApplicationInfo.NCmdShow, ApplicationInfo.WindowCapture);
     Renderer::Init(Renderer::eRenderApi::DirectX12, 1024, 768);
+    
+    
+    std::string path = AssetsSystem::GetAssetFullPath(R"(Models\box.fbx)");
+    
+    ParserFBX* p = new ParserFBX();
+    p->Initialize(path);
+    p->Shutdown();
+    delete p;
 
     if (InitEngineCallback != nullptr)
         InitEngineCallback();
