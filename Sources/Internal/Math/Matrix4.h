@@ -50,6 +50,7 @@ public:
         T m_20, T m_21, T m_22, T m_23,
         T m_30, T m_31, T m_32, T m_33
         );
+    Matrix4_(T* otherData);
 
     Matrix4_<T>& operator= (const Matrix4_<T>& other);
 
@@ -164,6 +165,12 @@ Matrix4_<T>::Matrix4_(const Matrix4_<T>& other)
       _20(other._20), _21(other._21), _22(other._22), _23(other._23),
       _30(other._30), _31(other._31), _32(other._32), _33(other._33)
 {
+}
+
+template <typename T>
+Matrix4_<T>::Matrix4_(T* otherData)
+{
+    memcpy(data, otherData, 16 * sizeof(T));
 }
 
 template <typename T>

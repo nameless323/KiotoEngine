@@ -10,6 +10,14 @@
 namespace Kioto
 {
 
+namespace
+{
+Vector4 FbxVector4ToKioto(const FbxVector4& vec)
+{
+    return { static_cast<float32>(vec.mData[0]), static_cast<float32>(vec.mData[1]), static_cast<float32>(vec.mData[2]), static_cast<float32>(vec.mData[3]) };
+}
+}
+
 void ParserFBX::Initialize(std::string path)
 {
     bool result = false;
@@ -70,7 +78,7 @@ bool ParserFBX::LoadScene(FbxManager* manager, FbxDocument* scene, const char* f
         }
         return false;
     }
-
+    FbxSystemUnit::m.ConvertScene(m_scene);
     if (importer->IsFBX())
     {
         animStackCount = importer->GetAnimStackCount();
@@ -111,10 +119,32 @@ void ParserFBX::TraverseHiererchy(FbxNode* node, int32 depth)
     else
     {
         attribType = node->GetNodeAttribute()->GetAttributeType();
+        auto unit = m_scene->GetGlobalSettings().GetSystemUnit();
+        int p = 0;
+        if (unit == FbxSystemUnit::cm)
+        {
+            ++p;
+        }
+        else if (unit == FbxSystemUnit::m)
+        {
+            ++p;
+        }
+        else if (unit == FbxSystemUnit::Inch)
+        {
+            ++p;
+        }
+        else if (unit == FbxSystemUnit::Foot)
+        {
+            ++p;
+        }
+
+
         if (attribType == FbxNodeAttribute::eMesh)
         {
-            FbxMesh* mesh = reinterpret_cast<FbxMesh*>(node->GetNodeAttribute());
+            FbxVector4 mat = node->EvaluateLocalRotation(0);
+            //Matrix4 loclaTransform(reinterpret_cast<float32>(mat.mData));
 
+            FbxMesh* mesh = reinterpret_cast<FbxMesh*>(node->GetNodeAttribute());
 
             int32 polygonCount = mesh->GetPolygonCount();
             FbxVector4* controlPoints = mesh->GetControlPoints();
@@ -131,7 +161,7 @@ void ParserFBX::TraverseHiererchy(FbxNode* node, int32 depth)
                 {
                     int32 controlPointIndex = mesh->GetPolygonVertex(i, j);
                     FbxVector4 coord = controlPoints[controlPointIndex];
-                    Vector4 v4c(float32(coord.mData[0]), float32(coord.mData[1]), float32(coord.mData[2]), float32(coord.mData[3]));
+                    Vector4 v4c = FbxVector4ToKioto(coord);
                 }
 
 
