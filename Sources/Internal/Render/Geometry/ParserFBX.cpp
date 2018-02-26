@@ -130,23 +130,8 @@ void ParserFBX::TraverseHiererchy(FbxNode* node, int32 depth)
     {
         attribType = node->GetNodeAttribute()->GetAttributeType();
         auto unit = m_scene->GetGlobalSettings().GetSystemUnit();
-        int p = 0;
-        if (unit == FbxSystemUnit::cm)
-        {
-            ++p;
-        }
-        else if (unit == FbxSystemUnit::m)
-        {
-            ++p;
-        }
-        else if (unit == FbxSystemUnit::Inch)
-        {
-            ++p;
-        }
-        else if (unit == FbxSystemUnit::Foot)
-        {
-            ++p;
-        }
+        if (unit != FbxSystemUnit::m)
+            assert(false);
 
 
         if (attribType == FbxNodeAttribute::eMesh)
