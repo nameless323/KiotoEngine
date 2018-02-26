@@ -16,6 +16,16 @@ Vector4 FbxVector4ToKioto(const FbxVector4& vec)
 {
     return { static_cast<float32>(vec.mData[0]), static_cast<float32>(vec.mData[1]), static_cast<float32>(vec.mData[2]), static_cast<float32>(vec.mData[3]) };
 }
+
+Vector4 FbxColorToKioto(const FbxColor& color)
+{
+    return { static_cast<float32>(color.mRed), static_cast<float32>(color.mGreen), static_cast<float32>(color.mBlue), static_cast<float32>(color.mAlpha) };
+}
+
+Vector2 FbxVector2ToKioto(const FbxVector2& vec)
+{
+    return { static_cast<float32>(vec.mData[0]), static_cast<float32>(vec.mData[1]) };
+}
 }
 
 void ParserFBX::Initialize(std::string path)
@@ -156,12 +166,181 @@ void ParserFBX::TraverseHiererchy(FbxNode* node, int32 depth)
                     FbxGeometryElementPolygonGroup* polGroup = mesh->GetElementPolygonGroup(i);
                 }
                 int32 polygonSize = mesh->GetPolygonSize(i);
+                assert(polygonSize == 3);
 
                 for (int32 j = 0; j < polygonSize; ++j)
                 {
                     int32 controlPointIndex = mesh->GetPolygonVertex(i, j);
                     FbxVector4 coord = controlPoints[controlPointIndex];
-                    Vector4 v4c = FbxVector4ToKioto(coord);
+                    Vector4 vectorCoord = FbxVector4ToKioto(coord);
+
+                    for (int32 l = 0; l < mesh->GetElementVertexColorCount(); ++l)
+                    {
+                        FbxGeometryElementVertexColor* vertexColorElement = mesh->GetElementVertexColor(l);
+                        Vector4 color;
+                        if (vertexColorElement->GetMappingMode() == FbxLayerElement::eByControlPoint)
+                        {
+                            switch (vertexColorElement->GetReferenceMode())
+                            {
+                            case FbxGeometryElement::eDirect:
+                                color = FbxColorToKioto(vertexColorElement->GetDirectArray().GetAt(controlPointIndex));
+                                break;
+                            case FbxGeometryElement::eIndexToDirect:
+                            {
+                                int id = vertexColorElement->GetIndexArray().GetAt(controlPointIndex);
+                                color = FbxColorToKioto(vertexColorElement->GetDirectArray().GetAt(id));
+                            }
+                            break;
+                            default:
+                                assert(false);
+                            }
+                        }
+                        else if (vertexColorElement->GetMappingMode() == FbxGeometryElement::eByPolygonVertex)
+                        {
+                            switch (vertexColorElement->GetReferenceMode())
+                            {
+                            case FbxGeometryElement::eDirect:
+                                color = FbxColorToKioto(vertexColorElement->GetDirectArray().GetAt(vertexId));
+                                break;
+                            case FbxGeometryElement::eIndexToDirect:
+                            {
+                                int id = vertexColorElement->GetIndexArray().GetAt(vertexId);
+                                color = FbxColorToKioto(vertexColorElement->GetDirectArray().GetAt(id));
+                            }
+                            break;
+                            default:
+                                assert(false);;
+                            }
+                        }
+                        else
+                        {
+                            assert(false);
+                        }
+                    }
+
+
+                    //************************** UV
+                    for (uint32 l = 0; l < mesh->GetElementUVCount(); ++l)
+                    {
+                        Vector2 uvCoord;
+                        FbxGeometryElementUV* uv = mesh->GetElementUV(l);
+                        if (uv->GetMappingMode() == FbxLayerElement::eByControlPoint)
+                        {
+                            switch (uv->GetReferenceMode())
+                            {
+                            case FbxGeometryElement::eDirect:
+                                uvCoord = FbxVector2ToKioto(uv->GetDirectArray().GetAt(controlPointIndex));
+                                break;
+                            case FbxGeometryElement::eIndexToDirect:
+                            {
+                                int id = uv->GetIndexArray().GetAt(controlPointIndex);
+                                uvCoord = FbxVector2ToKioto(uv->GetDirectArray().GetAt(id));
+                            }
+                            break;
+                            default:
+                                assert(false);;
+                            }
+                        }
+                        else if (uv->GetMappingMode() == FbxLayerElement::eByPolygonVertex)
+                        {
+                            int textureUVIndex = mesh->GetTextureUVIndex(i, j);
+                            uvCoord = FbxVector2ToKioto(uv->GetDirectArray().GetAt(textureUVIndex));
+                        }
+                        else
+                        {
+                            assert(false);
+                        }
+                    }
+
+                    // normals////////////////////////////////////////
+
+                    for (int32 l = 0; l < mesh->GetElementNormalCount(); ++l)
+                    {
+                        Vector4 normal;
+                        FbxGeometryElementNormal* normals = mesh->GetElementNormal(l);
+                        if (normals->GetMappingMode() == FbxLayerElement::eByPolygonVertex)
+                        {
+                            switch (normals->GetReferenceMode())
+                            {
+                            case FbxGeometryElement::eDirect:
+                                normal = FbxVector4ToKioto(normals->GetDirectArray().GetAt(vertexId));
+                                break;
+                            case FbxGeometryElement::eIndexToDirect:
+                            {
+                                int id = normals->GetIndexArray().GetAt(vertexId);
+                                normal = FbxVector4ToKioto(normals->GetDirectArray().GetAt(id));
+                            }
+                            break;
+                            default:
+                                assert(false);
+                            }
+                        }
+                        else
+                        {
+                            assert(false);
+                        }
+                    }
+
+                    // tangent////////////////////////////////////////
+
+                    for (int32 l = 0; l < mesh->GetElementTangentCount(); ++l)
+                    {
+                        Vector4 tangent;
+                        FbxGeometryElementTangent* tangents = mesh->GetElementTangent(l);
+                        if (tangents->GetMappingMode() == FbxLayerElement::eByPolygonVertex)
+                        {
+                            switch (tangents->GetReferenceMode())
+                            {
+                            case FbxGeometryElement::eDirect:
+                                tangent = FbxVector4ToKioto(tangents->GetDirectArray().GetAt(vertexId));
+                                break;
+                            case FbxGeometryElement::eIndexToDirect:
+                            {
+                                int id = tangents->GetIndexArray().GetAt(vertexId);
+                                tangent = FbxVector4ToKioto(tangents->GetDirectArray().GetAt(id));
+                            }
+                            break;
+                            default:
+                                assert(false);
+                            }
+                        }
+                        else
+                        {
+                            assert(false);
+                        }
+                    }
+
+
+                    // binormal////////////////////////////////////////
+
+                    for (int32 l = 0; l < mesh->GetElementBinormalCount(); ++l)
+                    {
+                        Vector4 binormal;
+                        FbxGeometryElementBinormal* binormals = mesh->GetElementBinormal(l);
+                        if (binormals->GetMappingMode() == FbxLayerElement::eByPolygonVertex)
+                        {
+                            switch (binormals->GetReferenceMode())
+                            {
+                            case FbxGeometryElement::eDirect:
+                                binormal = FbxVector4ToKioto(binormals->GetDirectArray().GetAt(vertexId));
+                                break;
+                            case FbxGeometryElement::eIndexToDirect:
+                            {
+                                int id = binormals->GetIndexArray().GetAt(vertexId);
+                                binormal = FbxVector4ToKioto(binormals->GetDirectArray().GetAt(id));
+                            }
+                            break;
+                            default:
+                                assert(false);
+                            }
+                        }
+                        else
+                        {
+                            assert(false);
+                        }
+                    }
+
+                    ++vertexId;
                 }
 
 
