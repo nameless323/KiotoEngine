@@ -277,7 +277,7 @@ void ParserFBX::ParseUVs(IntermediateMesh::Vertex* vertex, FbxMesh* src, int32 v
 
 void ParserFBX::ParseNormal(IntermediateMesh::Vertex* vertex, FbxMesh* src, int32 vertexId, int32 controlPointIndex)
 {
-    assert(src->GetElementNormalCount() == 1);
+    assert(src->GetElementNormalCount() <= 1);
     for (int32 l = 0; l < src->GetElementNormalCount(); ++l)
     {
         Vector4 normal;
@@ -309,7 +309,7 @@ void ParserFBX::ParseNormal(IntermediateMesh::Vertex* vertex, FbxMesh* src, int3
 
 void ParserFBX::ParseTangent(IntermediateMesh::Vertex* vertex, FbxMesh* src, int32 vertexId, int32 controlPointIndex)
 {
-    assert(src->GetElementTangentCount() == 1);
+    assert(src->GetElementTangentCount() <= 1);
     for (int32 l = 0; l < src->GetElementTangentCount(); ++l)
     {
         Vector4 tangent;
@@ -341,7 +341,7 @@ void ParserFBX::ParseTangent(IntermediateMesh::Vertex* vertex, FbxMesh* src, int
 
 void ParserFBX::ParseBinormal(IntermediateMesh::Vertex* vertex, FbxMesh* src, int32 vertexId, int32 controlPointIndex)
 {
-    assert(src->GetElementBinormalCount() == 1);
+    assert(src->GetElementBinormalCount() <= 1);
     for (int32 l = 0; l < src->GetElementBinormalCount(); ++l)
     {
         Vector4 binormal;
