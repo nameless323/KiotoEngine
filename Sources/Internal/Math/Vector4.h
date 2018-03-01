@@ -35,8 +35,8 @@ public:
 
     Vector4_<T> operator-() const;
 
-    bool operator== (const Vector4_<T> other) const;
-    bool operator!= (const Vector4_<T> other) const;
+    bool operator== (const Vector4_<T>& other) const;
+    bool operator!= (const Vector4_<T>& other) const;
 
 #if _WIN32 || _WIN64
     explicit Vector4_(const DirectX::XMFLOAT4& vec);
@@ -88,26 +88,26 @@ Vector4_<T> Vector4_<T>::operator-() const
 }
 
 template <typename T>
-bool Vector4_<T>::operator==(const Vector4_<T> other) const
+bool Vector4_<T>::operator==(const Vector4_<T>& other) const
 {
     return Math::IsFloatEqual(x, other.x) && Math::IsFloatEqual(y, other.y)
         && Math::IsFloatEqual(z, other.z) && Math::IsFloatEqual(w, other.w);
 }
 
 template <>
-bool Vector4_<int32>::operator ==(const Vector4_<int32> other) const
+bool Vector4_<int32>::operator ==(const Vector4_<int32>& other) const
 {
     return x == other.x && y == other.y && z == other.z && w == other.w;
 }
 
 template <>
-bool Vector4_<int64>::operator ==(const Vector4_<int64> other) const
+bool Vector4_<int64>::operator ==(const Vector4_<int64>& other) const
 {
     return x == other.x && y == other.y && z == other.z && w == other.w;
 }
 
 template <typename T>
-bool Vector4_<T>::operator!=(const Vector4_<T> other) const
+bool Vector4_<T>::operator!=(const Vector4_<T>& other) const
 {
     return !(*this == other);
 }

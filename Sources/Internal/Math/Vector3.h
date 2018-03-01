@@ -31,7 +31,9 @@ public:
     Vector3_(T x_, T y_, T z_);
     Vector3_(const Vector3_<T>& v);
 
-    // TODO:: operator== via memcmp data.
+    bool operator== (const Vector3_<T>& other) const;
+    bool operator!= (const Vector3_<T>& other) const;
+
     Vector3_<T>& operator=(const Vector3_<T>& v);
 
     Vector3_<T>& operator+=(const Vector3_<T>& v);
@@ -124,6 +126,31 @@ template <typename T>
 Vector3_<T>::Vector3_(const Vector3_<T>& v)
     : x(v.x), y(v.y), z(v.z)
 {}
+
+template <typename T>
+bool Vector3_<T>::operator==(const Vector3_<T>& other) const
+{
+    return Math::IsFloatEqual(x, other.x) && Math::IsFloatEqual(y, other.y)
+        && Math::IsFloatEqual(z, other.z);
+}
+
+template <>
+bool Vector3_<int32>::operator==(const Vector3_<int32>& other) const
+{
+    return x == other.x && y == other.y && z == other.z;
+}
+
+template <>
+bool Vector3_<int64>::operator==(const Vector3_<int64>& other) const
+{
+    return x == other.x && y == other.y && z == other.z;
+}
+
+template <typename T>
+bool Vector3_<T>::operator!=(const Vector3_<T>& other) const
+{
+    return !(*this == other);
+}
 
 template <typename T>
 inline Vector3_<T>& Vector3_<T>::operator=(const Vector3_<T>& v)

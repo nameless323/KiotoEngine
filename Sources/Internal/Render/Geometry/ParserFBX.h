@@ -44,7 +44,18 @@ private:
 
         void Indexate()
         {
+            Indices.reserve(Vertices.size());
+            for (uint32 i = 0; i < Vertices.size(); ++i)
+                Indices.push_back(i);
 
+            uint32 currIndex = 0;
+            for (auto i = Vertices.begin(); i != Vertices.end(); ++i)
+            {
+                for (auto j = i + 1; j != Vertices.end(); ++j)
+                {
+
+                }
+            }
         }
 
     };

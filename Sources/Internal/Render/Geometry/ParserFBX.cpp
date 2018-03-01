@@ -179,15 +179,9 @@ void ParserFBX::ParseMesh(FbxNode* node)
             ParseNormal(vert, mesh, vertexId, controlPointIndex);
             ParseTangent(vert, mesh, vertexId, controlPointIndex);
             ParseBinormal(vert, mesh, vertexId, controlPointIndex);
-            // tangent////////////////////////////////////////
-
-
-            // binormal////////////////////////////////////////
 
             ++vertexId;
         }
-
-
     }
 }
 
