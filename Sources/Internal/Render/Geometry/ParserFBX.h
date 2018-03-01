@@ -53,8 +53,8 @@ private:
                     if (Uv[i] != other.Uv[i])
                         return false;
                 }
-                bool t = Tangent != other.Tangent;
-                bool b = Binormal != other.Binormal;
+                bool t = Tangent == other.Tangent;
+                bool b = Binormal == other.Binormal;
                 return p && n && t && b;
             }
 
@@ -90,6 +90,7 @@ private:
                         Vertices[j].marked = true;
                     }
                 }
+                Indices[i] -= markedBefore;
             }
             Vertices.erase(std::remove_if(Vertices.begin(), Vertices.end(), [](const Vertex& v) { return v.marked; }), Vertices.end());
         }
