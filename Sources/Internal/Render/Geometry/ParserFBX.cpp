@@ -149,9 +149,8 @@ void ParserFBX::ParseMesh(FbxNode* node)
     //Matrix4 loclaTransform(reinterpret_cast<float32>(mat.mData));
 
     FbxMesh* mesh = reinterpret_cast<FbxMesh*>(node->GetNodeAttribute());
-    
+ 
     IntermediateMesh resMesh;
-
 
     int32 polygonCount = mesh->GetPolygonCount();
     FbxVector4* controlPoints = mesh->GetControlPoints();
@@ -183,6 +182,7 @@ void ParserFBX::ParseMesh(FbxNode* node)
             ++vertexId;
         }
     }
+    resMesh.Indexate();
 }
 
 void ParserFBX::ParseColors(IntermediateMesh::Vertex* vertex, FbxMesh* src, int32 vertexId, int32 controlPointIndex)
