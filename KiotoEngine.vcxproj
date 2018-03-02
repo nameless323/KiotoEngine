@@ -209,6 +209,8 @@
     <ClInclude Include="Sources\Internal\Render\DX12\VertexLayoutManagerDX12.h" />
     <ClInclude Include="Sources\Internal\Render\Geometry\GeometryGenerator.h" />
     <ClInclude Include="Sources\Internal\Render\Geometry\Mesh.h" />
+    <ClInclude Include="Sources\Internal\Render\Geometry\MeshLoader.h" />
+    <ClInclude Include="Sources\Internal\Render\Geometry\MeshParser.h" />
     <ClInclude Include="Sources\Internal\Render\Geometry\ParserFBX.h" />
     <ClInclude Include="Sources\Internal\Render\Material.h" />
     <ClInclude Include="Sources\Internal\Render\MaterialData.h" />
@@ -265,6 +267,7 @@
     <ClCompile Include="Sources\Internal\Render\DX12\VertexLayoutManagerDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\Geometry\GeometryGenerator.cpp" />
     <ClCompile Include="Sources\Internal\Render\Geometry\Mesh.cpp" />
+    <ClCompile Include="Sources\Internal\Render\Geometry\MeshLoader.cpp" />
     <ClCompile Include="Sources\Internal\Render\Geometry\ParserFBX.cpp" />
     <ClCompile Include="Sources\Internal\Render\Material.cpp" />
     <ClCompile Include="Sources\Internal\Render\PipelineState.cpp" />

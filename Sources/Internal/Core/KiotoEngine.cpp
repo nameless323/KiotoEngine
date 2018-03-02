@@ -14,6 +14,7 @@
 #include "Core/Timer/GlobalTimer.h"
 #include "Core/WindowsApplication.h"
 #include "Render/Geometry/GeometryGenerator.h"
+#include "Render/Geometry/MeshLoader.h"
 #include "Render/Renderer.h"
 
 #include "Render/Material.h"
@@ -69,17 +70,15 @@ void Init()
 
     GlobalTimer::Init();
     AssetsSystem::Init();
+    MeshLoader::Init();
     GeometryGenerator::Init();
     WindowsApplication::Init(ApplicationInfo.HInstance, ApplicationInfo.NCmdShow, ApplicationInfo.WindowCapture);
     Renderer::Init(Renderer::eRenderApi::DirectX12, 1024, 768);
-    
-    
-    std::string path = AssetsSystem::GetAssetFullPath(R"(Models\box.fbx)");
-    
-    ParserFBX* p = new ParserFBX();
-    p->Initialize(path);
-    p->Shutdown();
-    delete p;
+
+    std::string path = AssetsSystem::GetAssetFullPath(R"(Models\Plane.fbx)");
+
+    Mesh* mesh = new Mesh(path);
+    delete mesh;
 
     if (InitEngineCallback != nullptr)
         InitEngineCallback();
@@ -105,6 +104,7 @@ void Shutdown()
     Renderer::Shutdown();
     SafeDelete(m_scene);
     GeometryGenerator::Shutdown();
+    MeshLoader::Shutdown();
     AssetsSystem::Shutdown();
 }
 

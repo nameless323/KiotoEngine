@@ -249,6 +249,12 @@
     <ClInclude Include="Sources\Internal\Render\Geometry\ParserFBX.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Sources\Internal\Render\Geometry\MeshLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Internal\Render\Geometry\MeshParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -378,6 +384,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Sources\Internal\Render\Geometry\ParserFBX.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Internal\Render\Geometry\MeshLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

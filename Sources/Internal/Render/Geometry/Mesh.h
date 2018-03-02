@@ -40,6 +40,7 @@ class Mesh : public Asset // [a_vorontsov] TODO:: template for index type.
 {
 public:
     Mesh();
+    Mesh(const std::string& path);
     ///
     /// Mesh will steal data pointer and will handle it lifetime by himself.
     ///

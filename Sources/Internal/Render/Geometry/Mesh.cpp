@@ -8,6 +8,7 @@
 #include "Render/Geometry/Mesh.h"
 
 #include "Render/Renderer.h"
+#include "Render/Geometry/MeshLoader.h"
 
 namespace Kioto
 {
@@ -79,6 +80,12 @@ Mesh::Mesh(Mesh&& other)
 
 Mesh::Mesh() : Asset("")
 {
+}
+
+Mesh::Mesh(const std::string& path)
+    : Asset(path)
+{
+    MeshLoader::LoadMesh(this);
 }
 
 Mesh::~Mesh()

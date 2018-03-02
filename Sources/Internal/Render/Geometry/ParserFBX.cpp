@@ -30,7 +30,7 @@ Vector2 FbxVector2ToKioto(const FbxVector2& vec)
 }
 }
 
-void ParserFBX::Initialize(std::string path)
+void ParserFBX::Init()
 {
     bool result = false;
     m_fbxManager = FbxManager::Create();
@@ -41,16 +41,6 @@ void ParserFBX::Initialize(std::string path)
 
     FbxIOSettings* ios = FbxIOSettings::Create(m_fbxManager, IOSROOT);
     m_fbxManager->SetIOSettings(ios);
-
-    m_scene = FbxScene::Create(m_fbxManager, "ImportFbxScene");
-    if (m_scene == nullptr)
-    {
-        throw "cant create fbx scene";
-    }
-
-    bool res = LoadScene(m_fbxManager, m_scene, path.c_str());
-    FbxDocumentInfo* sceneInfo = m_scene->GetSceneInfo();
-    TraverseHiererchy(m_scene);
 }
 
 void ParserFBX::Shutdown()
@@ -58,7 +48,27 @@ void ParserFBX::Shutdown()
     m_fbxManager->Destroy();
 }
 
-bool ParserFBX::LoadScene(FbxManager* manager, FbxDocument* scene, const char* filename)
+Mesh* ParserFBX::ParseMesh(const std::string& path)
+{
+    Mesh* mesh = new Mesh();
+    mesh->SetAssetPath(path);
+    ParseMesh(mesh);
+    return mesh;
+}
+
+void ParserFBX::ParseMesh(Mesh* src)
+{
+    FbxScene* scene = FbxScene::Create(m_fbxManager, "ImportFbxScene");
+    if (scene == nullptr)
+        assert(false);
+
+    bool res = LoadScene(m_fbxManager, scene, src->GetAssetPath().c_str());
+    FbxDocumentInfo* sceneInfo = scene->GetSceneInfo();
+    TraverseHiererchy(scene);
+    scene->Destroy(true);
+}
+
+bool ParserFBX::LoadScene(FbxManager* manager, FbxScene* scene, const char* filename)
 {
     int32 fileMajor = 0;
     int32 fileMinor = 0;
@@ -90,7 +100,7 @@ bool ParserFBX::LoadScene(FbxManager* manager, FbxDocument* scene, const char* f
         }
         return false;
     }
-    FbxSystemUnit::m.ConvertScene(m_scene);
+    FbxSystemUnit::m.ConvertScene(scene);
     if (importer->IsFBX())
     {
         animStackCount = importer->GetAnimStackCount();
@@ -104,7 +114,7 @@ bool ParserFBX::LoadScene(FbxManager* manager, FbxDocument* scene, const char* f
         //IOS_REF.SetBoolProp(IMP_FBX_GLOBAL_SETTINGS, true);
     }
 
-    auto unit = m_scene->GetGlobalSettings().GetSystemUnit();
+    auto unit = scene->GetGlobalSettings().GetSystemUnit();
     if (unit != FbxSystemUnit::m)
         assert(false);
 

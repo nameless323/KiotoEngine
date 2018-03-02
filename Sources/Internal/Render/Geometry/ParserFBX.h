@@ -5,18 +5,24 @@
 
 #pragma once
 
+#include "Render/Geometry/MeshParser.h"
+
 #include "fbxsdk.h"
 
 namespace Kioto
 {
-class ParserFBX
+class Mesh;
+
+class ParserFBX : public MeshParser
 {
 public:
-    void Initialize(std::string path);
-    void Shutdown();
+    void Init() override;
+    void Shutdown() override;
+
+    Mesh* ParseMesh(const std::string& path) override;
+    void ParseMesh(Mesh* src) override;
 
 private:
-
     struct IntermediateMesh
     {
         enum Elements
@@ -97,10 +103,9 @@ private:
 
     };
 
-    bool LoadScene(FbxManager* manager, FbxDocument* scene, const char* filename);
+    bool LoadScene(FbxManager* manager, FbxScene* scene, const char* filename);
 
     FbxManager* m_fbxManager = nullptr;
-    FbxScene* m_scene = nullptr;
 
     void TraverseHiererchy(FbxScene* scene);
     void TraverseHiererchy(FbxNode* node, int32 depth);
