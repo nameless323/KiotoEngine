@@ -35,7 +35,6 @@ void Shutdown()
 void LoadMesh(Mesh* src)
 {
     std::string& path = src->GetAssetPath();
-    assert(false);
     size_t lastPeriod = path.find_last_of('.');
     if (lastPeriod == std::string::npos)
         assert(false);
