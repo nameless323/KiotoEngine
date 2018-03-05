@@ -162,6 +162,7 @@ Mesh GeometryGenerator::GeneratePlane(float32 sizeX /*= 1.0f*/, float32 sizeZ /*
 
 Mesh GenerateCube(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/, float32 sizeZ /*= 1.0f*/)
 {
+    Mesh res;
     float32 xHalf = sizeX * 0.5f;
     float32 yHalf = sizeY * 0.5f;
     float32 zHalf = sizeZ * 0.5f;
@@ -184,37 +185,37 @@ Mesh GenerateCube(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/, float32 si
     uint32 stride = sizeof(Vector3) + sizeof(Vector2) + sizeof(Vector3);
     byte* vData = new byte[stride * 24];
     byte* vertBegin = vData;
+    
     // [a_vorontsov] Bottom.
-    *reinterpret_cast<Vector3*>(vData) = p0; vData += stride;
-    *reinterpret_cast<Vector3*>(vData) = p1; vData += stride;
-    *reinterpret_cast<Vector3*>(vData) = p2; vData += stride;
-    *reinterpret_cast<Vector3*>(vData) = p3; vData += stride;
+    res.Position.push_back(p0);
+    res.Position.push_back(p1);
+    res.Position.push_back(p2);
+    res.Position.push_back(p3);
     // [a_vorontsov] Left.
-    *reinterpret_cast<Vector3*>(vData) = p7; vData += stride;
-    *reinterpret_cast<Vector3*>(vData) = p4; vData += stride;
-    *reinterpret_cast<Vector3*>(vData) = p0; vData += stride;
-    *reinterpret_cast<Vector3*>(vData) = p3; vData += stride;
+    res.Position.push_back(p7);
+    res.Position.push_back(p4);
+    res.Position.push_back(p0);
+    res.Position.push_back(p3);
     // [a_vorontsov] Front.
-    *reinterpret_cast<Vector3*>(vData) = p4; vData += stride;
-    *reinterpret_cast<Vector3*>(vData) = p5; vData += stride;
-    *reinterpret_cast<Vector3*>(vData) = p1; vData += stride;
-    *reinterpret_cast<Vector3*>(vData) = p0; vData += stride;
+    res.Position.push_back(p4);
+    res.Position.push_back(p5);
+    res.Position.push_back(p1);
+    res.Position.push_back(p0);
     // [a_vorontsov] Back.
-    *reinterpret_cast<Vector3*>(vData) = p6; vData += stride;
-    *reinterpret_cast<Vector3*>(vData) = p7; vData += stride;
-    *reinterpret_cast<Vector3*>(vData) = p3; vData += stride;
-    *reinterpret_cast<Vector3*>(vData) = p2; vData += stride;
+    res.Position.push_back(p6);
+    res.Position.push_back(p7);
+    res.Position.push_back(p3);
+    res.Position.push_back(p2);
     // [a_vorontsov] Right.
-    *reinterpret_cast<Vector3*>(vData) = p5; vData += stride;
-    *reinterpret_cast<Vector3*>(vData) = p6; vData += stride;
-    *reinterpret_cast<Vector3*>(vData) = p2; vData += stride;
-    *reinterpret_cast<Vector3*>(vData) = p1; vData += stride;
+    res.Position.push_back(p5);
+    res.Position.push_back(p6);
+    res.Position.push_back(p2);
+    res.Position.push_back(p1);
     // [a_vorontsov] Top.
-    *reinterpret_cast<Vector3*>(vData) = p7; vData += stride;
-    *reinterpret_cast<Vector3*>(vData) = p6; vData += stride;
-    *reinterpret_cast<Vector3*>(vData) = p5; vData += stride;
-    *reinterpret_cast<Vector3*>(vData) = p4; vData = vertBegin;
-    vData += sizeof(Vector3);
+    res.Position.push_back(p7);
+    res.Position.push_back(p6);
+    res.Position.push_back(p5);
+    res.Position.push_back(p4);
 
     Vector3 up(0.0f, 1.0f, 0.0f);
     Vector3 down(0.0f, -1.0f, 0.0f);
@@ -224,36 +225,35 @@ Mesh GenerateCube(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/, float32 si
     Vector3 right(-1.0f, 0.0f, 0.0f);
 
     // [a_vorontsov] Normals. Bottom.
-    *reinterpret_cast<Vector3*>(vData) = down; vData += stride;
-    *reinterpret_cast<Vector3*>(vData) = down; vData += stride;
-    *reinterpret_cast<Vector3*>(vData) = down; vData += stride;
-    *reinterpret_cast<Vector3*>(vData) = down; vData += stride;
+    res.Normal.push_back(down);
+    res.Normal.push_back(down);
+    res.Normal.push_back(down);
+    res.Normal.push_back(down);
     // [a_vorontsov] Left.
-    *reinterpret_cast<Vector3*>(vData) = left; vData += stride;
-    *reinterpret_cast<Vector3*>(vData) = left; vData += stride;
-    *reinterpret_cast<Vector3*>(vData) = left; vData += stride;
-    *reinterpret_cast<Vector3*>(vData) = left; vData += stride;
+    res.Normal.push_back(left);
+    res.Normal.push_back(left);
+    res.Normal.push_back(left);
+    res.Normal.push_back(left);
     // [a_vorontsov] Front.
-    *reinterpret_cast<Vector3*>(vData) = front; vData += stride;
-    *reinterpret_cast<Vector3*>(vData) = front; vData += stride;
-    *reinterpret_cast<Vector3*>(vData) = front; vData += stride;
-    *reinterpret_cast<Vector3*>(vData) = front; vData += stride;
+    res.Normal.push_back(front);
+    res.Normal.push_back(front);
+    res.Normal.push_back(front);
+    res.Normal.push_back(front);
     // [a_vorontsov] Back.
-    *reinterpret_cast<Vector3*>(vData) = back; vData += stride;
-    *reinterpret_cast<Vector3*>(vData) = back; vData += stride;
-    *reinterpret_cast<Vector3*>(vData) = back; vData += stride;
-    *reinterpret_cast<Vector3*>(vData) = back; vData += stride;
+    res.Normal.push_back(back);
+    res.Normal.push_back(back);
+    res.Normal.push_back(back);
+    res.Normal.push_back(back);
     // [a_vorontsov] Right.
-    *reinterpret_cast<Vector3*>(vData) = right; vData += stride;
-    *reinterpret_cast<Vector3*>(vData) = right; vData += stride;
-    *reinterpret_cast<Vector3*>(vData) = right; vData += stride;
-    *reinterpret_cast<Vector3*>(vData) = right; vData += stride;
+    res.Normal.push_back(right);
+    res.Normal.push_back(right);
+    res.Normal.push_back(right);
+    res.Normal.push_back(right);
     // [a_vorontsov] Top.
-    *reinterpret_cast<Vector3*>(vData) = up; vData += stride;
-    *reinterpret_cast<Vector3*>(vData) = up; vData += stride;
-    *reinterpret_cast<Vector3*>(vData) = up; vData += stride;
-    *reinterpret_cast<Vector3*>(vData) = up; vData = vertBegin;
-    vData += sizeof(Vector3) + sizeof(Vector3);
+    res.Normal.push_back(up);
+    res.Normal.push_back(up);
+    res.Normal.push_back(up);
+    res.Normal.push_back(up);
 
     Vector2 _00(0.0f, 0.0f);
     Vector2 _10(1.0f, 0.0f);
@@ -261,95 +261,94 @@ Mesh GenerateCube(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/, float32 si
     Vector2 _11(1.0f, 1.0f);
 
     // [a_vorontsov] UV. Bottom.
-    *reinterpret_cast<Vector2*>(vData) = _11; vData += stride;
-    *reinterpret_cast<Vector2*>(vData) = _01; vData += stride;
-    *reinterpret_cast<Vector2*>(vData) = _00; vData += stride;
-    *reinterpret_cast<Vector2*>(vData) = _10; vData += stride;
+    res.SetUVType(eVertexDataType::Type_V2);
+    res.PushBackUV(_11);
+    res.PushBackUV(_01);
+    res.PushBackUV(_00);
+    res.PushBackUV(_10);
     // [a_vorontsov] Left.
-    *reinterpret_cast<Vector2*>(vData) = _11; vData += stride;
-    *reinterpret_cast<Vector2*>(vData) = _01; vData += stride;
-    *reinterpret_cast<Vector2*>(vData) = _00; vData += stride;
-    *reinterpret_cast<Vector2*>(vData) = _10; vData += stride;
+    res.PushBackUV(_11);
+    res.PushBackUV(_01);
+    res.PushBackUV(_00);
+    res.PushBackUV(_10);
     // [a_vorontsov] Front.
-    *reinterpret_cast<Vector2*>(vData) = _11; vData += stride;
-    *reinterpret_cast<Vector2*>(vData) = _01; vData += stride;
-    *reinterpret_cast<Vector2*>(vData) = _00; vData += stride;
-    *reinterpret_cast<Vector2*>(vData) = _10; vData += stride;
+    res.PushBackUV(_11);
+    res.PushBackUV(_01);
+    res.PushBackUV(_00);
+    res.PushBackUV(_10);
     // [a_vorontsov] Back.
-    *reinterpret_cast<Vector2*>(vData) = _11; vData += stride;
-    *reinterpret_cast<Vector2*>(vData) = _01; vData += stride;
-    *reinterpret_cast<Vector2*>(vData) = _00; vData += stride;
-    *reinterpret_cast<Vector2*>(vData) = _10; vData += stride;
+    res.PushBackUV(_11);
+    res.PushBackUV(_01);
+    res.PushBackUV(_00);
+    res.PushBackUV(_10);
     // [a_vorontsov] Right.
-    *reinterpret_cast<Vector2*>(vData) = _11; vData += stride;
-    *reinterpret_cast<Vector2*>(vData) = _01; vData += stride;
-    *reinterpret_cast<Vector2*>(vData) = _00; vData += stride;
-    *reinterpret_cast<Vector2*>(vData) = _10; vData += stride;
+    res.PushBackUV(_11);
+    res.PushBackUV(_01);
+    res.PushBackUV(_00);
+    res.PushBackUV(_10);
     // [a_vorontsov] Top.
-    *reinterpret_cast<Vector2*>(vData) = _11; vData += stride;
-    *reinterpret_cast<Vector2*>(vData) = _01; vData += stride;
-    *reinterpret_cast<Vector2*>(vData) = _00; vData += stride;
-    *reinterpret_cast<Vector2*>(vData) = _10; vData = vertBegin;
+    res.PushBackUV(_11);
+    res.PushBackUV(_01);
+    res.PushBackUV(_00);
+    res.PushBackUV(_10);
 
-    uint32* iData = new uint32[36];
-    uint32* iDataBegin = iData;
     // [a_vorontsov] Bottom.
-    *iData++ = 3;
-    *iData++ = 1;
-    *iData++ = 0;
+    res.Indices.push_back(3);
+    res.Indices.push_back(1);
+    res.Indices.push_back(0);
 
-    *iData++ = 3;
-    *iData++ = 2;
-    *iData++ = 1;
+    res.Indices.push_back(3);
+    res.Indices.push_back(2);
+    res.Indices.push_back(1);
 
     // [a_vorontsov] Left.
-    *iData++ = 7;
-    *iData++ = 5;
-    *iData++ = 4;
+    res.Indices.push_back(7);
+    res.Indices.push_back(5);
+    res.Indices.push_back(4);
 
-    *iData++ = 7;
-    *iData++ = 6;
-    *iData++ = 5;
+    res.Indices.push_back(7);
+    res.Indices.push_back(6);
+    res.Indices.push_back(5);
 
     // [a_vorontsov] Front.
-    *iData++ = 11;
-    *iData++ = 9;
-    *iData++ = 8;
+    res.Indices.push_back(11);
+    res.Indices.push_back(9);
+    res.Indices.push_back(8);
 
-    *iData++ = 11;
-    *iData++ = 10;
-    *iData++ = 9;
+    res.Indices.push_back(11);
+    res.Indices.push_back(10);
+    res.Indices.push_back(9);
 
     // [a_vorontsov] Back.
-    *iData++ = 15;
-    *iData++ = 13;
-    *iData++ = 12;
+    res.Indices.push_back(15);
+    res.Indices.push_back(13);
+    res.Indices.push_back(12);
 
-    *iData++ = 15;
-    *iData++ = 14;
-    *iData++ = 13;
+    res.Indices.push_back(15);
+    res.Indices.push_back(14);
+    res.Indices.push_back(13);
 
     // [a_vorontsov] Right.
-    *iData++ = 19;
-    *iData++ = 17;
-    *iData++ = 16;
+    res.Indices.push_back(19);
+    res.Indices.push_back(17);
+    res.Indices.push_back(16);
 
-    *iData++ = 19;
-    *iData++ = 18;
-    *iData++ = 17;
+    res.Indices.push_back(19);
+    res.Indices.push_back(18);
+    res.Indices.push_back(17);
 
     // [a_vorontsov] Top.
-    *iData++ = 23;
-    *iData++ = 21;
-    *iData++ = 20;
+    res.Indices.push_back(23);
+    res.Indices.push_back(21);
+    res.Indices.push_back(20);
 
-    *iData++ = 23;
-    *iData++ = 22;
-    *iData++ = 21;
+    res.Indices.push_back(23);
+    res.Indices.push_back(22);
+    res.Indices.push_back(21);
 
-    iData = iDataBegin;
+    res.PrepareForUpload();
 
-    return { vData, stride * 24, stride, 24, reinterpret_cast<byte*>(iData), 36 * sizeof(uint32), 36, eIndexFormat::Format32Bit, layout };
+    return res;
 }
 
 Mesh GenerateCone(float32 height /*= 1.0f*/, float32 bottomRadius /*= 0.25f*/, float32 topRadius /*= 0.05f*/)

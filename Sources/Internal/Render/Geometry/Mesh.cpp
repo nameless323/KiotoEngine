@@ -139,9 +139,20 @@ void Mesh::PrepareForUpload()
     uint32 tSize = static_cast<uint32>(Tangent.size());
     uint32 btSize = static_cast<uint32>(Bitangent.size());
 
-    assert(pSize == nSize);
-    assert(pSize == tSize);
-    assert(pSize == btSize);
+#if _DEBUG
+    if (nSize > 0)
+    {
+        assert(pSize == nSize);
+    }
+    if (tSize > 0)
+    {
+        assert(pSize == tSize);
+    }
+    if (btSize > 0)
+    {
+        assert(pSize == btSize);
+    }
+#endif
 
     uint32 cSize = 0;
     for (uint8 i = 0; i < MaxColorCount; ++i)
