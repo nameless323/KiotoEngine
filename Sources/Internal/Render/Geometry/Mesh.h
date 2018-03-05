@@ -101,17 +101,19 @@ public:
     bool GetIsDirty() const;
     bool GetIsDynamic() const;
 
-    void SetUV(uint32 index, VertexDataElementType value, uint8 uvSet = 0);
+    void SetUV(uint32 index, VertexDataElementType value, uint8 uvSet = 0); // [a_vorontsov] Think bout using only *data array wihtout vectors.
     void PushBackUV(VertexDataElementType value, uint8 uvSet = 0);
     VertexDataElementType GetUV(uint32 index, uint8 uvSet = 0) const;
     void SetUVType(eVertexDataType type, uint8 uvSet = 0);
     eVertexDataType GetUVType(uint8 uvSet) const;
+    void ClearUV(uint8 uvSet);
 
     void SetColor(uint32 index, VertexDataElementType value, uint8 colorSet = 0);
     void PushBackColor(VertexDataElementType value, uint8 colorSet = 0);
     VertexDataElementType GetColor(uint32 index, uint8 colorSet = 0) const;
     void SetColorType(eVertexDataType type, uint8 colorSet = 0);
     eVertexDataType GetColorType(uint8 colorSet) const;
+    void ClearColor(uint8 colorSet);
 
 private:
     byte * m_data = nullptr;
@@ -232,6 +234,12 @@ inline void Mesh::SetUVType(eVertexDataType type, uint8 uvSet)
     UV[uvSet].Type = type;
 }
 
+inline void Mesh::ClearUV(uint8 uvSet)
+{
+    assert(uvSet < MaxUVCount);
+    UV[uvSet].Data.clear();
+}
+
 inline void Mesh::SetColor(uint32 index, VertexDataElementType value, uint8 colorSet)
 {
     assert(colorSet < MaxColorCount);
@@ -262,5 +270,11 @@ inline eVertexDataType Mesh::GetColorType(uint8 colorSet) const
 {
     assert(colorSet < MaxColorCount);
     return Color[colorSet].Type;
+}
+
+inline void Mesh::ClearColor(uint8 colorSet)
+{
+    assert(colorSet < MaxColorCount);
+    Color[colorSet].Data.clear();
 }
 }
