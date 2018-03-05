@@ -75,6 +75,8 @@ public:
     // [a_vorontsov] Winding order is CW.
     std::vector<Vector3> Position; // [a_vorontsov] Maybe just byte* position and so on? How to manage memory in that case?
     std::vector<Vector3> Normal;
+    std::vector<Vector3> Tangent;
+    std::vector<Vector3> Bitangent;
     std::vector<uint32> Indices; // [a_vorontsov] Hmmm... 32bits enough for almost everything but we definitely will need 64 later.
 
     void SetData(byte* data, uint32 dataSize, uint32 dataStride, uint32 vertexCount, byte* indexData, uint32 indexDataSize, uint32 indexCount, eIndexFormat indexFormat, Renderer::VertexLayout vertexLayout, bool dynamic = false);
@@ -129,7 +131,8 @@ private:
 
     std::array<VertexDataElement, MaxUVCount> UV;
     std::array<VertexDataElement, MaxColorCount> Color;
-    uint32 GetDataElementSize(const VertexDataElement& data);
+    uint32 GetDataElementSize(const VertexDataElement& data) const;
+    Renderer::eDataFormat GetVertexDataFormat(const VertexDataElement& data) const;
 };
 
 inline void Mesh::SetDynamic(bool isDynamic)

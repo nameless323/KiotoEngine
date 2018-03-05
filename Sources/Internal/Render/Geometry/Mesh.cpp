@@ -60,6 +60,8 @@ Mesh::Mesh(const Mesh& other)
 
     Position = other.Position;
     Normal = other.Normal;
+    Tangent = other.Tangent;
+    Bitangent = other.Bitangent;
     Color = other.Color;
     UV = other.UV;
     Indices = other.Indices;
@@ -84,6 +86,8 @@ Mesh::Mesh(Mesh&& other)
     other.m_indexData = nullptr;
     Position = std::move(other.Position);
     Normal = std::move(other.Normal);
+    Tangent = std::move(other.Tangent);
+    Bitangent = std::move(other.Bitangent);
     Color = std::move(other.Color);
     UV = std::move(other.UV);
     Indices = std::move(other.Indices);
@@ -132,13 +136,22 @@ void Mesh::PrepareForUpload()
 {
     uint32 pSize = static_cast<uint32>(Position.size());
     uint32 nSize = static_cast<uint32>(Normal.size());
+    uint32 tSize = static_cast<uint32>(Tangent.size());
+    uint32 btSize = static_cast<uint32>(Bitangent.size());
+
+    assert(pSize == nSize);
+    assert(pSize == tSize);
+    assert(pSize == btSize);
+
     uint32 cSize = 0;
     for (uint8 i = 0; i < MaxColorCount; ++i)
     {
         if (Color[i].Data.size() > 0)
         {
             assert(Color[i].Type != eVertexDataType::Type_Unknown);
-            cSize += GetDataElementSize(Color[i]) * static_cast<uint32>(Color[i].Data.size());
+            uint32 size = static_cast<uint32>(Color[i].Data.size());
+            assert(pSize == size);
+            cSize += GetDataElementSize(Color[i]) * size;
         }
     }
 
@@ -148,10 +161,12 @@ void Mesh::PrepareForUpload()
         if (UV[i].Data.size() > 0)
         {
             assert(UV[i].Type != eVertexDataType::Type_Unknown);
-            uSize += GetDataElementSize(UV[i]) * static_cast<uint32>(UV[i].Data.size());
+            uint32 size = static_cast<uint32>(UV[i].Data.size());
+            assert(pSize == size);
+            uSize += GetDataElementSize(UV[i]) * size;
         }
     }
-    m_dataSize = pSize * sizeof(Vector3) + nSize * sizeof(Vector3) + cSize + uSize;
+    m_dataSize = pSize * sizeof(Vector3) + nSize * sizeof(Vector3) + cSize + uSize + tSize * sizeof(Vector3) + btSize * sizeof(Vector3);
     SafeDelete(m_data);
     m_data = new byte[m_dataSize];
     SafeDelete(m_indexData);
@@ -173,15 +188,33 @@ void Mesh::PrepareForUpload()
         m_dataStride += sizeof(Vector3);
         m_vertexLayout.AddElement(Renderer::eVertexSemantic::Normal, 0, Renderer::eDataFormat::R32_G32_B32);
     }
-    if (!Color.empty())
+    if (!Tangent.empty())
     {
-        m_dataStride += sizeof(Vector4);
-        m_vertexLayout.AddElement(Renderer::eVertexSemantic::Color, 0, Renderer::eDataFormat::R32_G32_B32_A32);
+        m_dataStride += sizeof(Vector3);
+        m_vertexLayout.AddElement(Renderer::eVertexSemantic::Tangent, 0, Renderer::eDataFormat::R32_G32_B32);
     }
-    if (!UV.empty())
+    if (!Bitangent.empty())
     {
-        m_dataStride += sizeof(Vector2);
-        m_vertexLayout.AddElement(Renderer::eVertexSemantic::Texcoord, 0, Renderer::eDataFormat::R32_G32);
+        m_dataStride += sizeof(Vector3);
+        m_vertexLayout.AddElement(Renderer::eVertexSemantic::Bitangent, 0, Renderer::eDataFormat::R32_G32_B32);
+    }
+    for (uint8 i = 0; i < MaxColorCount; ++i)
+    {
+        if (Color[i].Data.size() > 0)
+        {
+            assert(Color[i].Type != eVertexDataType::Type_Unknown);
+            m_dataStride += GetDataElementSize(Color[i]);
+            m_vertexLayout.AddElement(Renderer::eVertexSemantic::Color, i, GetVertexDataFormat(Color[i]));
+        }
+    }
+    for (uint8 i = 0; i < MaxUVCount; ++i)
+    {
+        if (UV[i].Data.size() > 0)
+        {
+            assert(UV[i].Type != eVertexDataType::Type_Unknown);
+            m_dataStride += GetDataElementSize(UV[i]);
+            m_vertexLayout.AddElement(Renderer::eVertexSemantic::Texcoord, i, GetVertexDataFormat(UV[i]));
+        }
     }
     byte* currDataPtr = m_data;
     for (uint32 i = 0; i < pSize; ++i)
@@ -229,6 +262,7 @@ void Mesh::PrepareForUpload()
     }
 
     uint32* currIndexPtr = reinterpret_cast<uint32*>(m_indexData);
+    assert((Indices.size() % 3) == 0);
     for (uint32 index : Indices)
     {
         *currIndexPtr = index;
@@ -239,7 +273,7 @@ void Mesh::PrepareForUpload()
     m_isDirty = false;
 }
 
-uint32 Mesh::GetDataElementSize(const VertexDataElement& data)
+uint32 Mesh::GetDataElementSize(const VertexDataElement& data) const
 {
     if (data.Type == eVertexDataType::Type_V1)
         return sizeof(float32);
@@ -251,6 +285,20 @@ uint32 Mesh::GetDataElementSize(const VertexDataElement& data)
         return sizeof(Vector4);
     assert(false);
     return -1;
+}
+
+Renderer::eDataFormat Mesh::GetVertexDataFormat(const VertexDataElement& data) const // [a_vorontsov] std::map?
+{
+    if (data.Type == eVertexDataType::Type_V1)
+        return Renderer::eDataFormat::R32;
+    if (data.Type == eVertexDataType::Type_V2)
+        return Renderer::eDataFormat::R32_G32;
+    if (data.Type == eVertexDataType::Type_V3)
+        return Renderer::eDataFormat::R32_G32_B32;
+    if (data.Type == eVertexDataType::Type_V4)
+        return Renderer::eDataFormat::R32_G32_B32_A32;
+    assert(false);
+    return Renderer::eDataFormat::R32;
 }
 
 Mesh& Mesh::operator=(Mesh&& other)
