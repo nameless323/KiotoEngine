@@ -13,6 +13,17 @@
 namespace Kioto
 {
 
+namespace
+{
+template <typename T>
+void SetValueInPtr(byte** dataPtr, const std::vector<Mesh::VertexDataElementType>& data, uint32 index)
+{
+    T* p = reinterpret_cast<T*>(*dataPtr);
+    *p = std::get<T>(data[index]);
+    *dataPtr += sizeof(T);
+}
+}
+
 Mesh::Mesh(byte* data, uint32 dataSize, uint32 dataStride, uint32 vertexCount, byte* indexData, uint32 indexDataSize, uint32 indexCount, eIndexFormat indexFormat, Renderer::VertexLayout vertexLayout, bool dynamic)
     : Asset("")
     , m_data(data)
@@ -50,8 +61,8 @@ Mesh::Mesh(const Mesh& other)
     Position = other.Position;
     Normal = other.Normal;
     Color = other.Color;
-    UV0 = other.UV0;
-    Triangles = other.Triangles;
+    UV = other.UV;
+    Indices = other.Indices;
 }
 
 Mesh::Mesh(Mesh&& other)
@@ -74,8 +85,8 @@ Mesh::Mesh(Mesh&& other)
     Position = std::move(other.Position);
     Normal = std::move(other.Normal);
     Color = std::move(other.Color);
-    UV0 = std::move(other.UV0);
-    Triangles = std::move(other.Triangles);
+    UV = std::move(other.UV);
+    Indices = std::move(other.Indices);
 }
 
 Mesh::Mesh() : Asset("")
@@ -121,16 +132,33 @@ void Mesh::PrepareForUpload()
 {
     uint32 pSize = static_cast<uint32>(Position.size());
     uint32 nSize = static_cast<uint32>(Normal.size());
-    uint32 cSize = static_cast<uint32>(Color.size());
-    uint32 uSize = static_cast<uint32>(UV0.size());
-    m_dataSize = pSize * sizeof(Vector3) + nSize * sizeof(Vector3) + cSize * sizeof(Vector4) + uSize * sizeof(Vector2);
+    uint32 cSize = 0;
+    for (uint8 i = 0; i < MaxColorCount; ++i)
+    {
+        if (Color[i].Data.size() > 0)
+        {
+            assert(Color[i].Type != eVertexDataType::Type_Unknown);
+            cSize += GetDataElementSize(Color[i]) * static_cast<uint32>(Color[i].Data.size());
+        }
+    }
+
+    uint32 uSize = 0;
+    for (uint8 i = 0; i < MaxUVCount; ++i)
+    {
+        if (UV[i].Data.size() > 0)
+        {
+            assert(UV[i].Type != eVertexDataType::Type_Unknown);
+            uSize += GetDataElementSize(UV[i]) * static_cast<uint32>(UV[i].Data.size());
+        }
+    }
+    m_dataSize = pSize * sizeof(Vector3) + nSize * sizeof(Vector3) + cSize + uSize;
     SafeDelete(m_data);
     m_data = new byte[m_dataSize];
     SafeDelete(m_indexData);
-    m_indexData = new byte[Triangles.size() * sizeof(uint32)];
+    m_indexData = new byte[Indices.size() * sizeof(uint32)];
 
     m_indexFormat = eIndexFormat::Format32Bit;
-    m_indexCount = static_cast<uint32>(Triangles.size());
+    m_indexCount = static_cast<uint32>(Indices.size());
     m_vertexCount = pSize;
 
     m_vertexLayout.CleanElements();
@@ -150,7 +178,7 @@ void Mesh::PrepareForUpload()
         m_dataStride += sizeof(Vector4);
         m_vertexLayout.AddElement(Renderer::eVertexSemantic::Color, 0, Renderer::eDataFormat::R32_G32_B32_A32);
     }
-    if (!UV0.empty())
+    if (!UV.empty())
     {
         m_dataStride += sizeof(Vector2);
         m_vertexLayout.AddElement(Renderer::eVertexSemantic::Texcoord, 0, Renderer::eDataFormat::R32_G32);
@@ -170,22 +198,38 @@ void Mesh::PrepareForUpload()
             *nptr = Normal[i];
             currDataPtr += sizeof(Vector3);
         }
-        if (!Color.empty())
+        for (uint8 setNum = 0; setNum < MaxColorCount; ++setNum)
         {
-            Vector4* cptr = reinterpret_cast<Vector4*>(currDataPtr);
-            *cptr = Color[i];
-            currDataPtr += sizeof(Vector4);
+            if (Color[setNum].Data.size() > 0)
+            {
+                if (Color[setNum].Type == eVertexDataType::Type_V1)
+                    SetValueInPtr<float32>(&currDataPtr, Color[setNum].Data, i);
+                else if (Color[setNum].Type == eVertexDataType::Type_V2)
+                    SetValueInPtr<Vector2>(&currDataPtr, Color[setNum].Data, i);
+                else if (Color[setNum].Type == eVertexDataType::Type_V3)
+                    SetValueInPtr<Vector3>(&currDataPtr, Color[setNum].Data, i);
+                else if (Color[setNum].Type == eVertexDataType::Type_V4)
+                    SetValueInPtr<Vector4>(&currDataPtr, Color[setNum].Data, i);
+            }
         }
-        if (!UV0.empty())
+        for (uint8 setNum = 0; setNum < MaxUVCount; ++setNum)
         {
-            Vector2* uptr = reinterpret_cast<Vector2*>(currDataPtr);
-            *uptr = UV0[i];
-            currDataPtr += sizeof(Vector2);
+            if (UV[setNum].Data.size() > 0)
+            {
+                if (UV[setNum].Type == eVertexDataType::Type_V1)
+                    SetValueInPtr<float32>(&currDataPtr, UV[setNum].Data, i);
+                else if (UV[setNum].Type == eVertexDataType::Type_V2)
+                    SetValueInPtr<Vector2>(&currDataPtr, UV[setNum].Data, i);
+                else if (UV[setNum].Type == eVertexDataType::Type_V3)
+                    SetValueInPtr<Vector3>(&currDataPtr, UV[setNum].Data, i);
+                else if (UV[setNum].Type == eVertexDataType::Type_V4)
+                    SetValueInPtr<Vector4>(&currDataPtr, UV[setNum].Data, i);
+            }
         }
     }
 
     uint32* currIndexPtr = reinterpret_cast<uint32*>(m_indexData);
-    for (uint32 index : Triangles)
+    for (uint32 index : Indices)
     {
         *currIndexPtr = index;
         ++currIndexPtr;
@@ -193,6 +237,20 @@ void Mesh::PrepareForUpload()
 
     m_handle = Renderer::GenerateVertexLayout(m_vertexLayout); // [a_vorontsov] And here we will generate new layout every time. TODO: Make lookup!
     m_isDirty = false;
+}
+
+uint32 Mesh::GetDataElementSize(const VertexDataElement& data)
+{
+    if (data.Type == eVertexDataType::Type_V1)
+        return sizeof(float32);
+    if (data.Type == eVertexDataType::Type_V2)
+        return sizeof(Vector2);
+    if (data.Type == eVertexDataType::Type_V3)
+        return sizeof(Vector3);
+    if (data.Type == eVertexDataType::Type_V4)
+        return sizeof(Vector4);
+    assert(false);
+    return -1;
 }
 
 Mesh& Mesh::operator=(Mesh&& other)
@@ -218,8 +276,8 @@ Mesh& Mesh::operator=(Mesh&& other)
     Position = std::move(other.Position);
     Normal = std::move(other.Normal);
     Color = std::move(other.Color);
-    UV0 = std::move(other.UV0);
-    Triangles = std::move(other.Triangles);
+    UV = std::move(other.UV);
+    Indices = std::move(other.Indices);
 
     m_vertexLayout = std::move(other.m_vertexLayout);
     m_handle = other.m_handle;
@@ -252,8 +310,8 @@ Mesh& Mesh::operator=(const Mesh& other)
     Position = other.Position;
     Normal = other.Normal;
     Color = other.Color;
-    UV0 = other.UV0;
-    Triangles = other.Triangles;
+    UV = other.UV;
+    Indices = other.Indices;
 
     m_vertexLayout = other.m_vertexLayout;
 
