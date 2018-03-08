@@ -35,7 +35,8 @@ public:
     Vector2_(T x_, T y_);
     Vector2_(const Vector2_& other);
 
-    // TODO:: operator== via memcmp data.
+    bool operator== (const Vector2_<T>& other) const;
+    bool operator!= (const Vector2_<T>& other) const;
 };
 
 template <typename T>
@@ -60,6 +61,30 @@ template <typename T>
 Vector2_<T>::Vector2_(const Vector2_& other)
     : x(other.x), y(other.y)
 {
+}
+
+template <typename T>
+bool Vector2_<T>::operator==(const Vector2_<T>& other) const
+{
+    return Math::IsFloatEqual(x, other.x) && Math::IsFloatEqual(y, other.y);
+}
+
+template <>
+bool Vector2_<int32>::operator==(const Vector2_<int32>& other) const
+{
+    return x == other.x && y == other.y;
+}
+
+template <>
+bool Vector2_<int64>::operator==(const Vector2_<int64>& other) const
+{
+    return x == other.x && y == other.y;
+}
+
+template <typename T>
+bool Vector2_<T>::operator!=(const Vector2_<T>& other) const
+{
+    return !(*this == other);
 }
 
 using Vector2 = Vector2_<float32>;

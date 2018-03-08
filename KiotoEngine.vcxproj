@@ -99,13 +99,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;KIOTOENGINE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Sources\Internal;$(ProjectDir)Libs\yaml-cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Sources\Internal;$(ProjectDir)Libs\yaml-cpp\include;$(ProjectDir)Libs\fbx-sdk\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>d3dcompiler.lib;D3D12.lib;dxgi.lib;dxguid.lib;$(ProjectDir)Libs\yaml-cpp\lib\libyaml-cppmdd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3dcompiler.lib;D3D12.lib;dxgi.lib;dxguid.lib;$(ProjectDir)Libs\yaml-cpp\lib\libyaml-cppmdd.lib;$(ProjectDir)Libs\fbx-sdk\lib\vs2015\x64\debug\libfbxsdk-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>RD /S /Q $(TargetDir)Assets
@@ -208,7 +208,11 @@
     <ClInclude Include="Sources\Internal\Render\DX12\VertexLayoutDX12.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\VertexLayoutManagerDX12.h" />
     <ClInclude Include="Sources\Internal\Render\Geometry\GeometryGenerator.h" />
+    <ClInclude Include="Sources\Internal\Render\Geometry\IntermediateMesh.h" />
     <ClInclude Include="Sources\Internal\Render\Geometry\Mesh.h" />
+    <ClInclude Include="Sources\Internal\Render\Geometry\MeshLoader.h" />
+    <ClInclude Include="Sources\Internal\Render\Geometry\MeshParser.h" />
+    <ClInclude Include="Sources\Internal\Render\Geometry\ParserFBX.h" />
     <ClInclude Include="Sources\Internal\Render\Material.h" />
     <ClInclude Include="Sources\Internal\Render\MaterialData.h" />
     <ClInclude Include="Sources\Internal\Render\PipelineState.h" />
@@ -263,7 +267,10 @@
     <ClCompile Include="Sources\Internal\Render\DX12\SwapChain.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\VertexLayoutManagerDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\Geometry\GeometryGenerator.cpp" />
+    <ClCompile Include="Sources\Internal\Render\Geometry\IntermediateMesh.cpp" />
     <ClCompile Include="Sources\Internal\Render\Geometry\Mesh.cpp" />
+    <ClCompile Include="Sources\Internal\Render\Geometry\MeshLoader.cpp" />
+    <ClCompile Include="Sources\Internal\Render\Geometry\ParserFBX.cpp" />
     <ClCompile Include="Sources\Internal\Render\Material.cpp" />
     <ClCompile Include="Sources\Internal\Render\PipelineState.cpp" />
     <ClCompile Include="Sources\Internal\Render\Renderer.cpp" />
