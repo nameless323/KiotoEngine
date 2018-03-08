@@ -40,6 +40,8 @@ void PipelineState::Append(const YAML::Node& node, PipelineState& srcCfg)
     if (node["depthStencil"] != nullptr)
     {
         YAML::Node dsNode = node["depthStencil"];
+        if (dsNode["enableDepth"] != nullptr)
+            srcCfg.EnableDepth = dsNode["enableDepth"].as<bool>();
         if (dsNode["enableStencil"] != nullptr)
             srcCfg.EnableStencill = dsNode["enableStencil"].as<bool>();
         if (dsNode["ZTest"] != nullptr)

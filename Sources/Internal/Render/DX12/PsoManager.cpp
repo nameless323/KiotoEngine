@@ -131,7 +131,8 @@ D3D12_DEPTH_STENCIL_DESC ParseDepthStencil(const PipelineState& state)
     desc.FrontFace.StencilFunc = stencilFunc[state.FrontFaceStencilDesc.StencilFunc];
     desc.FrontFace.StencilPassOp = stencilOps[state.FrontFaceStencilDesc.StencilPassOp];
 
-    desc.DepthEnable = state.Zwrite;
+    desc.DepthWriteMask = state.Zwrite ? D3D12_DEPTH_WRITE_MASK_ALL : D3D12_DEPTH_WRITE_MASK_ZERO;
+    desc.DepthEnable = state.EnableDepth;
     desc.DepthFunc = depthFunc[state.Ztest];
     desc.StencilEnable = state.EnableStencill;
     desc.StencilReadMask = state.StencilReadMask;
