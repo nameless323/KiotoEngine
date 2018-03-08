@@ -186,7 +186,7 @@ inline const byte* Mesh::GetIndexData() const
 
 inline uint32 Mesh::GetIndexDataSize() const
 {
-    return m_dataSize;
+    return m_indexDataSize;
 }
 
 inline Renderer::VertexLayout Mesh::GetVertexLayout() const
