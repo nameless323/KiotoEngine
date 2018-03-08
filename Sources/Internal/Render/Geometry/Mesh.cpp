@@ -187,7 +187,8 @@ void Mesh::PrepareForUpload()
     SafeDelete(m_data);
     m_data = new byte[m_dataSize];
     SafeDelete(m_indexData);
-    m_indexData = new byte[Indices.size() * sizeof(uint32)];
+    m_indexDataSize = static_cast<uint32>(Indices.size() * sizeof(uint32));
+    m_indexData = new byte[m_indexDataSize];
 
     m_indexFormat = eIndexFormat::Format32Bit;
     m_indexCount = static_cast<uint32>(Indices.size());
