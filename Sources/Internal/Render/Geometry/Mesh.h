@@ -19,6 +19,8 @@
 
 namespace Kioto
 {
+struct IntermediateMesh;
+
 enum class eTopology
 {
     TriangleList,
@@ -115,7 +117,14 @@ public:
     eVertexDataType GetColorType(uint8 colorSet) const;
     void ClearColor(uint8 colorSet);
 
+    void Cleanup();
+    void FromIntermediateMesh(const IntermediateMesh& iMesh);
+
 private:
+    uint32 GetDataElementSize(const VertexDataElement& data) const;
+    Renderer::eDataFormat GetVertexDataFormat(const VertexDataElement& data) const;
+    bool CompareVertices(uint32 i, uint32 j) const;
+
     byte * m_data = nullptr;
     uint32 m_dataSize = 0;
     uint32 m_dataStride = 0;
@@ -131,10 +140,8 @@ private:
     bool m_isDirty = true;
     bool m_isDynamic = false;
 
-    std::array<VertexDataElement, MaxUVCount> UV;
-    std::array<VertexDataElement, MaxColorCount> Color;
-    uint32 GetDataElementSize(const VertexDataElement& data) const;
-    Renderer::eDataFormat GetVertexDataFormat(const VertexDataElement& data) const;
+    std::array<VertexDataElement, MaxUVCount> m_uv;
+    std::array<VertexDataElement, MaxColorCount> m_color;
 };
 
 inline void Mesh::SetDynamic(bool isDynamic)
@@ -205,76 +212,76 @@ inline bool Mesh::GetIsDirty() const
 inline void Mesh::SetUV(uint32 index, VertexDataElementType value, uint8 uvSet)
 {
     assert(uvSet < MaxUVCount);
-    assert(index < UV[uvSet].Data.size());
-    UV[uvSet].Data[index] = value;
+    assert(index < m_uv[uvSet].Data.size());
+    m_uv[uvSet].Data[index] = value;
 }
 
 inline void Mesh::PushBackUV(VertexDataElementType value, uint8 uvSet)
 {
     assert(uvSet < MaxUVCount);
-    UV[uvSet].Data.push_back(value);
+    m_uv[uvSet].Data.push_back(value);
 }
 
 inline Mesh::VertexDataElementType Mesh::GetUV(uint32 index, uint8 uvSet) const
 {
     assert(uvSet < MaxUVCount);
-    assert(index < UV[uvSet].Data.size());
-    return UV[uvSet].Data[index];
+    assert(index < m_uv[uvSet].Data.size());
+    return m_uv[uvSet].Data[index];
 }
 
 inline eVertexDataType Mesh::GetUVType(uint8 uvSet) const
 {
     assert(uvSet < MaxUVCount);
-    return UV[uvSet].Type;
+    return m_uv[uvSet].Type;
 }
 
 inline void Mesh::SetUVType(eVertexDataType type, uint8 uvSet)
 {
     assert(uvSet < MaxUVCount);
-    UV[uvSet].Type = type;
+    m_uv[uvSet].Type = type;
 }
 
 inline void Mesh::ClearUV(uint8 uvSet)
 {
     assert(uvSet < MaxUVCount);
-    UV[uvSet].Data.clear();
+    m_uv[uvSet].Data.clear();
 }
 
 inline void Mesh::SetColor(uint32 index, VertexDataElementType value, uint8 colorSet)
 {
     assert(colorSet < MaxColorCount);
-    assert(index < Color[colorSet].Data.size());
-    Color[colorSet].Data[index] = value;
+    assert(index < m_color[colorSet].Data.size());
+    m_color[colorSet].Data[index] = value;
 }
 
 inline void Mesh::PushBackColor(VertexDataElementType value, uint8 colorSet)
 {
     assert(colorSet < MaxColorCount);
-    Color[colorSet].Data.push_back(value);
+    m_color[colorSet].Data.push_back(value);
 }
 
 inline Mesh::VertexDataElementType Mesh::GetColor(uint32 index, uint8 colorSet) const
 {
     assert(colorSet < MaxColorCount);
-    assert(index < Color[colorSet].Data.size());
-    return Color[colorSet].Data[index];
+    assert(index < m_color[colorSet].Data.size());
+    return m_color[colorSet].Data[index];
 }
 
 inline void Mesh::SetColorType(eVertexDataType type, uint8 colorSet)
 {
     assert(colorSet < MaxColorCount);
-    Color[colorSet].Type = type;
+    m_color[colorSet].Type = type;
 }
 
 inline eVertexDataType Mesh::GetColorType(uint8 colorSet) const
 {
     assert(colorSet < MaxColorCount);
-    return Color[colorSet].Type;
+    return m_color[colorSet].Type;
 }
 
 inline void Mesh::ClearColor(uint8 colorSet)
 {
     assert(colorSet < MaxColorCount);
-    Color[colorSet].Data.clear();
+    m_color[colorSet].Data.clear();
 }
 }

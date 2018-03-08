@@ -9,6 +9,7 @@
 
 #include "Render/Renderer.h"
 #include "Render/Geometry/MeshLoader.h"
+#include "Render/Geometry/IntermediateMesh.h"
 
 namespace Kioto
 {
@@ -21,6 +22,11 @@ void SetValueInPtr(byte** dataPtr, const std::vector<Mesh::VertexDataElementType
     T* p = reinterpret_cast<T*>(*dataPtr);
     *p = std::get<T>(data[index]);
     *dataPtr += sizeof(T);
+}
+
+Vector3 Vec4ToVec3(Vector4 src)
+{
+    return { src.x, src.y, src.z };
 }
 }
 
@@ -62,8 +68,8 @@ Mesh::Mesh(const Mesh& other)
     Normal = other.Normal;
     Tangent = other.Tangent;
     Bitangent = other.Bitangent;
-    Color = other.Color;
-    UV = other.UV;
+    m_color = other.m_color;
+    m_uv = other.m_uv;
     Indices = other.Indices;
 }
 
@@ -88,8 +94,8 @@ Mesh::Mesh(Mesh&& other)
     Normal = std::move(other.Normal);
     Tangent = std::move(other.Tangent);
     Bitangent = std::move(other.Bitangent);
-    Color = std::move(other.Color);
-    UV = std::move(other.UV);
+    m_color = std::move(other.m_color);
+    m_uv = std::move(other.m_uv);
     Indices = std::move(other.Indices);
 }
 
@@ -157,24 +163,24 @@ void Mesh::PrepareForUpload()
     uint32 cSize = 0;
     for (uint8 i = 0; i < MaxColorCount; ++i)
     {
-        if (Color[i].Data.size() > 0)
+        if (m_color[i].Data.size() > 0)
         {
-            assert(Color[i].Type != eVertexDataType::Type_Unknown);
-            uint32 size = static_cast<uint32>(Color[i].Data.size());
+            assert(m_color[i].Type != eVertexDataType::Type_Unknown);
+            uint32 size = static_cast<uint32>(m_color[i].Data.size());
             assert(pSize == size);
-            cSize += GetDataElementSize(Color[i]) * size;
+            cSize += GetDataElementSize(m_color[i]) * size;
         }
     }
 
     uint32 uSize = 0;
     for (uint8 i = 0; i < MaxUVCount; ++i)
     {
-        if (UV[i].Data.size() > 0)
+        if (m_uv[i].Data.size() > 0)
         {
-            assert(UV[i].Type != eVertexDataType::Type_Unknown);
-            uint32 size = static_cast<uint32>(UV[i].Data.size());
+            assert(m_uv[i].Type != eVertexDataType::Type_Unknown);
+            uint32 size = static_cast<uint32>(m_uv[i].Data.size());
             assert(pSize == size);
-            uSize += GetDataElementSize(UV[i]) * size;
+            uSize += GetDataElementSize(m_uv[i]) * size;
         }
     }
     m_dataSize = pSize * sizeof(Vector3) + nSize * sizeof(Vector3) + cSize + uSize + tSize * sizeof(Vector3) + btSize * sizeof(Vector3);
@@ -211,20 +217,20 @@ void Mesh::PrepareForUpload()
     }
     for (uint8 i = 0; i < MaxColorCount; ++i)
     {
-        if (Color[i].Data.size() > 0)
+        if (m_color[i].Data.size() > 0)
         {
-            assert(Color[i].Type != eVertexDataType::Type_Unknown);
-            m_dataStride += GetDataElementSize(Color[i]);
-            m_vertexLayout.AddElement(Renderer::eVertexSemantic::Color, i, GetVertexDataFormat(Color[i]));
+            assert(m_color[i].Type != eVertexDataType::Type_Unknown);
+            m_dataStride += GetDataElementSize(m_color[i]);
+            m_vertexLayout.AddElement(Renderer::eVertexSemantic::Color, i, GetVertexDataFormat(m_color[i]));
         }
     }
     for (uint8 i = 0; i < MaxUVCount; ++i)
     {
-        if (UV[i].Data.size() > 0)
+        if (m_uv[i].Data.size() > 0)
         {
-            assert(UV[i].Type != eVertexDataType::Type_Unknown);
-            m_dataStride += GetDataElementSize(UV[i]);
-            m_vertexLayout.AddElement(Renderer::eVertexSemantic::Texcoord, i, GetVertexDataFormat(UV[i]));
+            assert(m_uv[i].Type != eVertexDataType::Type_Unknown);
+            m_dataStride += GetDataElementSize(m_uv[i]);
+            m_vertexLayout.AddElement(Renderer::eVertexSemantic::Texcoord, i, GetVertexDataFormat(m_uv[i]));
         }
     }
     byte* currDataPtr = m_data;
@@ -244,30 +250,30 @@ void Mesh::PrepareForUpload()
         }
         for (uint8 setNum = 0; setNum < MaxColorCount; ++setNum)
         {
-            if (Color[setNum].Data.size() > 0)
+            if (m_color[setNum].Data.size() > 0)
             {
-                if (Color[setNum].Type == eVertexDataType::Type_V1)
-                    SetValueInPtr<float32>(&currDataPtr, Color[setNum].Data, i);
-                else if (Color[setNum].Type == eVertexDataType::Type_V2)
-                    SetValueInPtr<Vector2>(&currDataPtr, Color[setNum].Data, i);
-                else if (Color[setNum].Type == eVertexDataType::Type_V3)
-                    SetValueInPtr<Vector3>(&currDataPtr, Color[setNum].Data, i);
-                else if (Color[setNum].Type == eVertexDataType::Type_V4)
-                    SetValueInPtr<Vector4>(&currDataPtr, Color[setNum].Data, i);
+                if (m_color[setNum].Type == eVertexDataType::Type_V1)
+                    SetValueInPtr<float32>(&currDataPtr, m_color[setNum].Data, i);
+                else if (m_color[setNum].Type == eVertexDataType::Type_V2)
+                    SetValueInPtr<Vector2>(&currDataPtr, m_color[setNum].Data, i);
+                else if (m_color[setNum].Type == eVertexDataType::Type_V3)
+                    SetValueInPtr<Vector3>(&currDataPtr, m_color[setNum].Data, i);
+                else if (m_color[setNum].Type == eVertexDataType::Type_V4)
+                    SetValueInPtr<Vector4>(&currDataPtr, m_color[setNum].Data, i);
             }
         }
         for (uint8 setNum = 0; setNum < MaxUVCount; ++setNum)
         {
-            if (UV[setNum].Data.size() > 0)
+            if (m_uv[setNum].Data.size() > 0)
             {
-                if (UV[setNum].Type == eVertexDataType::Type_V1)
-                    SetValueInPtr<float32>(&currDataPtr, UV[setNum].Data, i);
-                else if (UV[setNum].Type == eVertexDataType::Type_V2)
-                    SetValueInPtr<Vector2>(&currDataPtr, UV[setNum].Data, i);
-                else if (UV[setNum].Type == eVertexDataType::Type_V3)
-                    SetValueInPtr<Vector3>(&currDataPtr, UV[setNum].Data, i);
-                else if (UV[setNum].Type == eVertexDataType::Type_V4)
-                    SetValueInPtr<Vector4>(&currDataPtr, UV[setNum].Data, i);
+                if (m_uv[setNum].Type == eVertexDataType::Type_V1)
+                    SetValueInPtr<float32>(&currDataPtr, m_uv[setNum].Data, i);
+                else if (m_uv[setNum].Type == eVertexDataType::Type_V2)
+                    SetValueInPtr<Vector2>(&currDataPtr, m_uv[setNum].Data, i);
+                else if (m_uv[setNum].Type == eVertexDataType::Type_V3)
+                    SetValueInPtr<Vector3>(&currDataPtr, m_uv[setNum].Data, i);
+                else if (m_uv[setNum].Type == eVertexDataType::Type_V4)
+                    SetValueInPtr<Vector4>(&currDataPtr, m_uv[setNum].Data, i);
             }
         }
     }
@@ -282,6 +288,63 @@ void Mesh::PrepareForUpload()
 
     m_handle = Renderer::GenerateVertexLayout(m_vertexLayout); // [a_vorontsov] And here we will generate new layout every time. TODO: Make lookup!
     m_isDirty = false;
+}
+
+void Mesh::Cleanup()
+{
+    SafeDelete(m_data);
+    m_dataSize = 0;
+    m_dataStride = 0;
+    m_vertexCount = 0;
+
+    SafeDelete(m_indexData);
+    m_indexDataSize = 0;
+    m_indexCount = 0;
+
+    for (uint32 colCnt = 0; colCnt < MaxColorCount; ++colCnt)
+    {
+        m_color[colCnt].Data.clear();
+        m_color[colCnt].Type = eVertexDataType::Type_Unknown;
+    }
+
+    for (uint32 uvCnt = 0; uvCnt < MaxColorCount; ++uvCnt)
+    {
+        m_uv[uvCnt].Data.clear();
+        m_uv[uvCnt].Type = eVertexDataType::Type_Unknown;
+    }
+}
+
+void Mesh::FromIntermediateMesh(const IntermediateMesh& iMesh)
+{
+    Cleanup();
+    Indices = iMesh.Indices;
+    for (uint32 i = 0; i < iMesh.Vertices.size(); ++i)
+    {
+        Position.push_back(Vec4ToVec3(iMesh.Vertices[i].Pos));
+        if ((iMesh.LayoutMask & IntermediateMesh::Normal) != 0)
+            Normal.push_back(Vec4ToVec3(iMesh.Vertices[i].Norm));
+        if ((iMesh.LayoutMask & IntermediateMesh::Tanget) != 0)
+            Tangent.push_back(Vec4ToVec3(iMesh.Vertices[i].Tangent));
+        if ((iMesh.LayoutMask & IntermediateMesh::Bitangent) != 0)
+            Bitangent.push_back(Vec4ToVec3(iMesh.Vertices[i].Bitangent));
+        for (uint32 colI = 0; colI< MaxColorCount; ++colI)
+        {
+            if ((iMesh.LayoutMask & (IntermediateMesh::Color0 << colI)) != 0)
+            {
+                m_color[i].Type = eVertexDataType::Type_V4;
+                m_color[i].Data.push_back(iMesh.Vertices[i].Color[colI]);
+            }
+        }
+        for (uint32 uvI = 0; uvI < MaxColorCount; ++uvI)
+        {
+            if ((iMesh.LayoutMask & (IntermediateMesh::Color0 << uvI)) != 0)
+            {
+                m_color[i].Type = eVertexDataType::Type_V4;
+                m_color[i].Data.push_back(iMesh.Vertices[i].Color[uvI]);
+            }
+        }
+    }
+    PrepareForUpload();
 }
 
 uint32 Mesh::GetDataElementSize(const VertexDataElement& data) const
@@ -312,6 +375,29 @@ Renderer::eDataFormat Mesh::GetVertexDataFormat(const VertexDataElement& data) c
     return Renderer::eDataFormat::R32;
 }
 
+bool Mesh::CompareVertices(uint32 i, uint32 j) const
+{
+    bool p = Position[i] == Position[j];
+    bool n = Normal[i] == Normal[j];
+    bool t = Tangent[i] == Tangent[j];
+    bool b = Bitangent[i] == Bitangent[j];
+    for (uint32 colCnt = 0; colCnt < MaxColorCount; ++colCnt)
+    {
+        if (m_color[colCnt].Data.size() == 0)
+            continue;
+        if (m_color[colCnt].Data[i] != m_color[colCnt].Data[j])
+            return false;
+    }
+    for (uint32 uvCnt = 0; uvCnt < MaxUVCount; ++uvCnt)
+    {
+        if (m_uv[uvCnt].Data.size() == 0)
+            continue;
+        if (m_uv[uvCnt].Data[i] != m_uv[uvCnt].Data[j])
+            return false;
+    }
+    return p && n && t && b;
+}
+
 Mesh& Mesh::operator=(Mesh&& other)
 {
     if (this == &other)
@@ -334,8 +420,8 @@ Mesh& Mesh::operator=(Mesh&& other)
 
     Position = std::move(other.Position);
     Normal = std::move(other.Normal);
-    Color = std::move(other.Color);
-    UV = std::move(other.UV);
+    m_color = std::move(other.m_color);
+    m_uv = std::move(other.m_uv);
     Indices = std::move(other.Indices);
 
     m_vertexLayout = std::move(other.m_vertexLayout);
@@ -368,8 +454,8 @@ Mesh& Mesh::operator=(const Mesh& other)
 
     Position = other.Position;
     Normal = other.Normal;
-    Color = other.Color;
-    UV = other.UV;
+    m_color = other.m_color;
+    m_uv = other.m_uv;
     Indices = other.Indices;
 
     m_vertexLayout = other.m_vertexLayout;

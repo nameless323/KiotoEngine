@@ -17,7 +17,7 @@ public:
     virtual void Init() abstract;
     virtual void Shutdown() abstract;
     virtual Mesh* ParseMesh(const std::string& path) abstract;
-    virtual void ParseMesh(Mesh* src) abstract;
+    virtual void ParseMesh(Mesh* dst) abstract;
 
     virtual ~MeshParser() = default;
 };
