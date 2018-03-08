@@ -331,16 +331,16 @@ void Mesh::FromIntermediateMesh(const IntermediateMesh& iMesh)
         {
             if ((iMesh.LayoutMask & (IntermediateMesh::Color0 << colI)) != 0)
             {
-                m_color[i].Type = eVertexDataType::Type_V4;
-                m_color[i].Data.push_back(iMesh.Vertices[i].Color[colI]);
+                m_color[colI].Type = eVertexDataType::Type_V4;
+                m_color[colI].Data.push_back(iMesh.Vertices[i].Color[colI]);
             }
         }
-        for (uint32 uvI = 0; uvI < MaxColorCount; ++uvI)
+        for (uint32 uvI = 0; uvI < MaxUVCount; ++uvI)
         {
-            if ((iMesh.LayoutMask & (IntermediateMesh::Color0 << uvI)) != 0)
+            if ((iMesh.LayoutMask & (IntermediateMesh::UV0 << uvI)) != 0)
             {
-                m_color[i].Type = eVertexDataType::Type_V4;
-                m_color[i].Data.push_back(iMesh.Vertices[i].Color[uvI]);
+                m_uv[uvI].Type = eVertexDataType::Type_V2;
+                m_uv[uvI].Data.push_back(iMesh.Vertices[i].Uv[uvI]);
             }
         }
     }
