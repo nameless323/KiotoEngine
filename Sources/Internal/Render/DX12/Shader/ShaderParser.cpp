@@ -565,7 +565,7 @@ ShaderData ParseShaderFromString(std::string source, const std::vector<ShaderDef
     ShaderData res;
     m_preprocessedHeaders.clear();
     source = UnfoldIncludes(source, 0);
-    GetPipelineState(source);
+    res.pipelineState = GetPipelineState(source);
     res.textureSet = ParseTextures(source);
     source = DXPreprocess(source, defines);
     res.shaderPrograms = GetAvaliableShaderProgTypes(source);
