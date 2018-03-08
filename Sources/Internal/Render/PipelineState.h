@@ -32,6 +32,7 @@ struct PipelineState
     eColorMask ColorMask = eColorMask::All;
     bool Zwrite = true;
     bool EnableStencill = false;
+    bool EnableDepth = false;
     bool WindingCCW = true;
 
     static PipelineState FromYaml(const YAML::Node& config);
