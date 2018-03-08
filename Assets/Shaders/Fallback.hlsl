@@ -23,6 +23,7 @@ fill: Solid
 cull: Back
 windingCCW: true
 depthStencil:
+    enableDepth: true
     enableStencil: false
     ZTest: LEqual
     ZWrite: true
