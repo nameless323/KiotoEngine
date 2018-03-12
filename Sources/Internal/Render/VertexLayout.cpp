@@ -27,16 +27,12 @@ VertexLayout::VertexLayout(const VertexLayout& other)
 
 VertexLayout::VertexLayout(VertexLayout&& other)
 {
-    using namespace std;
-    swap(m_verticesDesc, other.m_verticesDesc);
-    swap(m_totalOffset, other.m_totalOffset);
+    swap(*this, other);
 }
 
 VertexLayout& VertexLayout::operator=(VertexLayout other)
 {
-    using namespace std;
-    swap(m_verticesDesc, other.m_verticesDesc);
-    swap(m_totalOffset, other.m_totalOffset);
+    swap(*this, other);
     return *this;
 }
 
@@ -68,6 +64,16 @@ bool VertexLayout::operator==(const VertexLayout& other) const
 bool VertexLayout::operator!=(const VertexLayout& other) const
 {
     return !(*this == other);
+}
+
+const VertexDesc* VertexLayout::FindElement(eVertexSemantic semantic, uint8 semanticIndex) const
+{
+    for (const auto& desc : m_verticesDesc)
+    {
+        if (desc.Semantic == semantic && desc.SemanticIndex == semanticIndex)
+            return &desc;
+    }
+    return nullptr;
 }
 
 bool VertexDesc::operator==(const VertexDesc& other) const

@@ -60,15 +60,28 @@ public:
     void AddElement(eVertexSemantic semantic, uint8 semanticIndex, eDataFormat format);
     void CleanElements();
     std::vector<VertexDesc> GetElements() const;
+    const VertexDesc* FindElement(eVertexSemantic semantic, uint8 semanticIndex) const;
+    uint32 GetVertexStride() const;
+
+    friend void swap(VertexLayout& l, VertexLayout& r)
+    {
+        l.m_verticesDesc.swap(r.m_verticesDesc);
+        std::swap(l.m_totalOffset, r.m_totalOffset);
+    }
 
 private:
     std::vector<VertexDesc> m_verticesDesc;
-    uint16 m_totalOffset = 0;
+    uint32 m_totalOffset = 0;
 };
 
 inline std::vector<VertexDesc> VertexLayout::GetElements() const
 {
     return m_verticesDesc;
+}
+
+inline uint32 VertexLayout::GetVertexStride() const
+{
+    return m_totalOffset;
 }
 
 }
