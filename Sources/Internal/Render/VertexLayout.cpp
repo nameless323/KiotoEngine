@@ -31,6 +31,13 @@ VertexLayout::VertexLayout(VertexLayout&& other)
     swap(*this, other);
 }
 
+VertexLayout::VertexLayout(std::vector<VertexDesc> desc)
+{
+    m_verticesDesc.swap(desc);
+    for (const auto& desc : m_verticesDesc)
+        m_totalOffset += desc.Offset;
+}
+
 VertexLayout& VertexLayout::operator=(VertexLayout other)
 {
     swap(*this, other);

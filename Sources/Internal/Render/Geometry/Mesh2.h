@@ -64,7 +64,6 @@ public:
         std::swap(l.m_vertexCount, r.m_vertexCount);
         std::swap(l.m_indexCount, r.m_indexCount);
         swap(l.m_layout, r.m_layout);
-        std::swap(l.m_vertexStride, r.m_vertexStride);
     }
 
 private:
