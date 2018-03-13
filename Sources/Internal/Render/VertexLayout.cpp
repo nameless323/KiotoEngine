@@ -13,7 +13,8 @@ namespace Kioto::Renderer
 {
 static const std::map<const eDataFormat, uint16> formats
 {
-    { eDataFormat::R32_G32_B32_A32, 16},
+    { eDataFormat::UNKNOWN, 0 },
+    { eDataFormat::R32_G32_B32_A32, 16 },
     { eDataFormat::R32_G32_B32, 12 },
     { eDataFormat::R32_G32, 8 },
     { eDataFormat::R32, 4 }

@@ -24,6 +24,7 @@ enum class eVertexSemantic
 
 enum class eDataFormat
 {
+    UNKNOWN,
     R32_G32_B32_A32,
     R32_G32_B32,
     R32_G32,
@@ -46,7 +47,7 @@ struct VertexDesc
     uint8 SemanticIndex = 0;
     eDataFormat Format = eDataFormat::R32_G32_B32_A32;
 };
-
+// [a_vorontsov] TODO: predefine layouts. p_uv_n, p_n, p_uv_n_t_b, p_uv_n_t_b_c, p_uv_n_c, p_uv
 class VertexLayout
 {
 public:
