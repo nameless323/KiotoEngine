@@ -53,13 +53,21 @@ public:
     ///
     Vector4* GetColorPtr(uint32 i);
 
+    const byte* GetVertexData() const;
+    uint32 GetVertexDataSize() const;
+    uint32 GetVertexDataStride() const;
+    uint32 GetVertexCount() const;
+    uint32 GetIndexCount() const;
+    const byte* GetIndexData() const;
+    uint32 GetIndexDataSize() const;
+
     friend void swap(Mesh2& l, Mesh2& r)
     {
-        std::swap(l.m_vertData, r.m_vertData);
-        std::swap(l.m_vertDataSize, r.m_vertDataSize);
+        std::swap(l.m_vertexData, r.m_vertexData);
+        std::swap(l.m_vertexDataSize, r.m_vertexDataSize);
 
-        std::swap(l.m_indData, r.m_indData);
-        std::swap(l.m_indDataSize, r.m_indDataSize);
+        std::swap(l.m_indexData, r.m_indexData);
+        std::swap(l.m_indexDataSize, r.m_indexDataSize);
 
         std::swap(l.m_vertexCount, r.m_vertexCount);
         std::swap(l.m_indexCount, r.m_indexCount);
@@ -67,11 +75,11 @@ public:
     }
 
 private:
-    byte* m_vertData = nullptr;
-    uint32 m_vertDataSize = 0;
+    byte* m_vertexData = nullptr;
+    uint32 m_vertexDataSize = 0;
 
-    byte* m_indData = nullptr;
-    uint32 m_indDataSize = 0;
+    byte* m_indexData = nullptr;
+    uint32 m_indexDataSize = 0;
 
     uint32 m_vertexCount = 0;
     uint32 m_indexCount = 0;
@@ -80,7 +88,7 @@ private:
 
 inline uint32* Mesh2::GetIndexPtr(uint32 i)
 {
-    return reinterpret_cast<uint32*>(m_indData + sizeof(uint32) * i);
+    return reinterpret_cast<uint32*>(m_indexData + sizeof(uint32) * i);
 }
 
 template <typename T>
@@ -89,7 +97,7 @@ inline T* Mesh2::GetVertexElementPtr(uint32 i, Renderer::eVertexSemantic semanti
     const Renderer::VertexDesc* e = m_layout.FindElement(semantic, semanticIndex);
     if (e == nullptr)
         return nullptr;
-    return reinterpret_cast<T*>(m_vertData + m_layout.GetVertexStride() * i + e->Offset);
+    return reinterpret_cast<T*>(m_vertexData + m_layout.GetVertexStride() * i + e->Offset);
 }
 
 inline Vector3* Mesh2::GetPositionPtr(uint32 i)
@@ -119,4 +127,40 @@ inline Renderer::eDataFormat Mesh2::GetVertexElementFormat(Renderer::eVertexSema
         return Renderer::eDataFormat::UNKNOWN;
     return e->Format;
 }
+
+inline const byte* Mesh2::GetVertexData() const
+{
+    return m_vertexData;
+}
+
+inline uint32 Mesh2::GetVertexDataSize() const
+{
+    return m_vertexDataSize;
+}
+
+inline uint32 Mesh2::GetVertexDataStride() const
+{
+    return m_layout.GetVertexStride();
+}
+
+inline uint32 Mesh2::GetVertexCount() const
+{
+    return m_vertexCount;
+}
+
+inline uint32 Mesh2::GetIndexCount() const
+{
+    return m_indexCount;
+}
+
+inline const byte* Mesh2::GetIndexData() const
+{
+    return m_indexData;
+}
+
+inline uint32 Mesh2::GetIndexDataSize() const
+{
+    return m_indexDataSize;
+}
+
 }

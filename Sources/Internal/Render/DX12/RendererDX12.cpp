@@ -151,10 +151,11 @@ void RendererDX12::LoadPipeline()
     m_state.CommandList->Reset(m_state.CommandAllocators[0].Get(), nullptr);
 
     std::string path = AssetsSystem::GetAssetFullPath(R"(Models\Teapot.fbx)");
-    m_box = new Mesh(path);
+    //m_box = new Mesh(path);
+    m_box = GeometryGenerator::GetUnitCube();
 
     m_vertexBuffer = std::make_unique<VertexBufferDX12>(m_box->GetVertexData(), m_box->GetVertexDataSize(), m_box->GetVertexDataStride(), m_state.CommandList.Get(), m_state.Device.Get());
-    m_indexBuffer = std::make_unique<IndexBufferDX12>(m_box->GetIndexData(), m_box->GetIndexDataSize(), m_state.CommandList.Get(), m_state.Device.Get(), IndexFormatToDXGI(m_box->GetIndexFormat()));
+    m_indexBuffer = std::make_unique<IndexBufferDX12>(m_box->GetIndexData(), m_box->GetIndexDataSize(), m_state.CommandList.Get(), m_state.Device.Get(), IndexFormatToDXGI(eIndexFormat::Format32Bit));
 
     m_state.CommandList->Close();
     ID3D12CommandList* cmdLists[] = { m_state.CommandList.Get() };

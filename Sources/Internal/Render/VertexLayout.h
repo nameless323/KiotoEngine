@@ -71,80 +71,16 @@ public:
         std::swap(l.m_totalOffset, r.m_totalOffset);
     }
 
-    static VertexLayout LayoutPos3Uv2Norm3;
-    static VertexLayout LayoutPos3Norm3;
-    static VertexLayout LayoutPos3Uv2Norm3Tan3Bit3;
-    static VertexLayout LayoutPos3Uv2Norm3Tan3Bit3Col4;
-    static VertexLayout LayoutPos3Uv2Norm3Col4;
-    static VertexLayout LayoutPos3Uv2;
+    static const VertexLayout LayoutPos3Uv2Norm3;
+    static const VertexLayout LayoutPos3Norm3;
+    static const VertexLayout LayoutPos3Uv2Norm3Tan3Bit3;
+    static const VertexLayout LayoutPos3Uv2Norm3Tan3Bit3Col4;
+    static const VertexLayout LayoutPos3Uv2Norm3Col4;
+    static const VertexLayout LayoutPos3Uv2;
 
 private:
     std::vector<VertexDesc> m_verticesDesc;
     uint32 m_totalOffset = 0;
-};
-
-inline VertexLayout VertexLayout::LayoutPos3Uv2Norm3
-{
-    std::vector<VertexDesc>
-    {
-        { eVertexSemantic::Position, 0, eDataFormat::R32_G32_B32, 0 },
-        { eVertexSemantic::Texcoord, 0, eDataFormat::R32_G32, 12 },
-        { eVertexSemantic::Normal, 0, eDataFormat::R32_G32_B32, 20 }
-    }
-};
-
-inline VertexLayout VertexLayout::LayoutPos3Norm3
-{
-    std::vector<VertexDesc>
-    {
-        { eVertexSemantic::Position, 0, eDataFormat::R32_G32_B32, 0 },
-        { eVertexSemantic::Normal, 0, eDataFormat::R32_G32_B32, 12 }
-    }
-};
-
-inline VertexLayout VertexLayout::LayoutPos3Uv2Norm3Tan3Bit3
-{
-    std::vector<VertexDesc>
-    {
-        { eVertexSemantic::Position, 0, eDataFormat::R32_G32_B32, 0 },
-        { eVertexSemantic::Texcoord, 0, eDataFormat::R32_G32, 12 },
-        { eVertexSemantic::Normal, 0, eDataFormat::R32_G32_B32, 20 },
-        { eVertexSemantic::Tangent, 0, eDataFormat::R32_G32_B32, 32 },
-        { eVertexSemantic::Bitangent, 0, eDataFormat::R32_G32_B32, 44 }
-    }
-};
-
-inline VertexLayout VertexLayout::LayoutPos3Uv2Norm3Tan3Bit3Col4
-{
-    std::vector<VertexDesc>
-    {
-        { eVertexSemantic::Position, 0, eDataFormat::R32_G32_B32, 0 },
-        { eVertexSemantic::Texcoord, 0, eDataFormat::R32_G32, 12 },
-        { eVertexSemantic::Normal, 0, eDataFormat::R32_G32_B32, 20 },
-        { eVertexSemantic::Tangent, 0, eDataFormat::R32_G32_B32, 32 },
-        { eVertexSemantic::Bitangent, 0, eDataFormat::R32_G32_B32, 44 },
-        { eVertexSemantic::Color, 0, eDataFormat::R32_G32_B32_A32, 56 }
-    }
-};
-
-inline VertexLayout VertexLayout::LayoutPos3Uv2Norm3Col4
-{
-    std::vector<VertexDesc>
-    {
-        { eVertexSemantic::Position, 0, eDataFormat::R32_G32_B32, 0 },
-        { eVertexSemantic::Texcoord, 0, eDataFormat::R32_G32, 12 },
-        { eVertexSemantic::Normal, 0, eDataFormat::R32_G32_B32, 20 },
-        { eVertexSemantic::Color, 0, eDataFormat::R32_G32_B32_A32, 32 }
-    }
-};
-
-inline VertexLayout VertexLayout::LayoutPos3Uv2
-{
-    std::vector<VertexDesc>
-{
-    { eVertexSemantic::Position, 0, eDataFormat::R32_G32_B32, 0 },
-    { eVertexSemantic::Texcoord, 0, eDataFormat::R32_G32, 12 }
-}
 };
 
 inline std::vector<VertexDesc> VertexLayout::GetElements() const

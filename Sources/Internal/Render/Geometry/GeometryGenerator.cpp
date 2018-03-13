@@ -12,6 +12,7 @@
 #include <map>
 
 #include "Render/Geometry/Mesh.h"
+#include "Render/Geometry/Mesh2.h"
 #include "Math/Vector2.h"
 #include "Math/Vector3.h"
 #include "Math/Vector4.h"
@@ -72,14 +73,14 @@ T GetMiddlePoint(T p1, T p2, std::vector<Vector3>& vertices, std::map<uint64, T>
     return i;
 }
 
-Mesh* m_unitCube = nullptr;
+Mesh2* m_unitCube = nullptr;
 Mesh* m_unitSphere = nullptr;
 Mesh* m_unitIcosphere = nullptr;
 }
 
 void Init()
 {
-    m_unitCube = new Mesh(GenerateCube());
+    m_unitCube = new Mesh2(GenerateCube());
     m_unitSphere = new Mesh(GenerateSphere());
     m_unitIcosphere = new Mesh(GenerateIcosphere());
 }
@@ -160,9 +161,8 @@ Mesh GeometryGenerator::GeneratePlane(float32 sizeX /*= 1.0f*/, float32 sizeZ /*
     return { vDataBegin, stride * vCount, stride, vCount, iDataBegin, iCount * sizeof(uint16), iCount, eIndexFormat::Format16Bit, layout };
 }
 
-Mesh GenerateCube(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/, float32 sizeZ /*= 1.0f*/)
+Mesh2 GenerateCube(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/, float32 sizeZ /*= 1.0f*/)
 {
-    Mesh res;
     float32 xHalf = sizeX * 0.5f;
     float32 yHalf = sizeY * 0.5f;
     float32 zHalf = sizeZ * 0.5f;
@@ -177,45 +177,40 @@ Mesh GenerateCube(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/, float32 si
     Vector3 p6(zHalf, xHalf, -yHalf);
     Vector3 p7(-zHalf, xHalf, -yHalf);
 
-    Renderer::VertexLayout layout;
-    layout.AddElement(Renderer::eVertexSemantic::Position, 0, Renderer::eDataFormat::R32_G32_B32);
-    layout.AddElement(Renderer::eVertexSemantic::Normal, 0, Renderer::eDataFormat::R32_G32_B32);
-    layout.AddElement(Renderer::eVertexSemantic::Texcoord, 0, Renderer::eDataFormat::R32_G32);
+    Mesh2 res(Renderer::VertexLayout::LayoutPos3Uv2Norm3, 24, 36);
+    uint32 ind = 0;
 
-    uint32 stride = sizeof(Vector3) + sizeof(Vector2) + sizeof(Vector3);
-    byte* vData = new byte[stride * 24];
-    byte* vertBegin = vData;
-    
     // [a_vorontsov] Bottom.
-    res.Position.push_back(p0);
-    res.Position.push_back(p1);
-    res.Position.push_back(p2);
-    res.Position.push_back(p3);
+    *res.GetPositionPtr(ind++) = p0;
+    *res.GetPositionPtr(ind++) = p1;
+    *res.GetPositionPtr(ind++) = p2;
+    *res.GetPositionPtr(ind++) = p3;
     // [a_vorontsov] Left.
-    res.Position.push_back(p7);
-    res.Position.push_back(p4);
-    res.Position.push_back(p0);
-    res.Position.push_back(p3);
+    *res.GetPositionPtr(ind++) = p7;
+    *res.GetPositionPtr(ind++) = p4;
+    *res.GetPositionPtr(ind++) = p0;
+    *res.GetPositionPtr(ind++) = p3;
     // [a_vorontsov] Front.
-    res.Position.push_back(p4);
-    res.Position.push_back(p5);
-    res.Position.push_back(p1);
-    res.Position.push_back(p0);
+    *res.GetPositionPtr(ind++) = p4;
+    *res.GetPositionPtr(ind++) = p5;
+    *res.GetPositionPtr(ind++) = p1;
+    *res.GetPositionPtr(ind++) = p0;
     // [a_vorontsov] Back.
-    res.Position.push_back(p6);
-    res.Position.push_back(p7);
-    res.Position.push_back(p3);
-    res.Position.push_back(p2);
+    *res.GetPositionPtr(ind++) = p6;
+    *res.GetPositionPtr(ind++) = p7;
+    *res.GetPositionPtr(ind++) = p3;
+    *res.GetPositionPtr(ind++) = p2;
     // [a_vorontsov] Right.
-    res.Position.push_back(p5);
-    res.Position.push_back(p6);
-    res.Position.push_back(p2);
-    res.Position.push_back(p1);
+    *res.GetPositionPtr(ind++) = p5;
+    *res.GetPositionPtr(ind++) = p6;
+    *res.GetPositionPtr(ind++) = p2;
+    *res.GetPositionPtr(ind++) = p1;
     // [a_vorontsov] Top.
-    res.Position.push_back(p7);
-    res.Position.push_back(p6);
-    res.Position.push_back(p5);
-    res.Position.push_back(p4);
+    *res.GetPositionPtr(ind++) = p7;
+    *res.GetPositionPtr(ind++) = p6;
+    *res.GetPositionPtr(ind++) = p5;
+    *res.GetPositionPtr(ind++) = p4;
+    ind = 0;
 
     Vector3 up(0.0f, 1.0f, 0.0f);
     Vector3 down(0.0f, -1.0f, 0.0f);
@@ -225,35 +220,36 @@ Mesh GenerateCube(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/, float32 si
     Vector3 right(-1.0f, 0.0f, 0.0f);
 
     // [a_vorontsov] Normals. Bottom.
-    res.Normal.push_back(down);
-    res.Normal.push_back(down);
-    res.Normal.push_back(down);
-    res.Normal.push_back(down);
+    *res.GetNormalPtr(ind++) = down;
+    *res.GetNormalPtr(ind++) = down;
+    *res.GetNormalPtr(ind++) = down;
+    *res.GetNormalPtr(ind++) = down;
     // [a_vorontsov] Left.
-    res.Normal.push_back(left);
-    res.Normal.push_back(left);
-    res.Normal.push_back(left);
-    res.Normal.push_back(left);
+    *res.GetNormalPtr(ind++) = left;
+    *res.GetNormalPtr(ind++) = left;
+    *res.GetNormalPtr(ind++) = left;
+    *res.GetNormalPtr(ind++) = left;
     // [a_vorontsov] Front.
-    res.Normal.push_back(front);
-    res.Normal.push_back(front);
-    res.Normal.push_back(front);
-    res.Normal.push_back(front);
+    *res.GetNormalPtr(ind++) = front;
+    *res.GetNormalPtr(ind++) = front;
+    *res.GetNormalPtr(ind++) = front;
+    *res.GetNormalPtr(ind++) = front;
     // [a_vorontsov] Back.
-    res.Normal.push_back(back);
-    res.Normal.push_back(back);
-    res.Normal.push_back(back);
-    res.Normal.push_back(back);
+    *res.GetNormalPtr(ind++) = back;
+    *res.GetNormalPtr(ind++) = back;
+    *res.GetNormalPtr(ind++) = back;
+    *res.GetNormalPtr(ind++) = back;
     // [a_vorontsov] Right.
-    res.Normal.push_back(right);
-    res.Normal.push_back(right);
-    res.Normal.push_back(right);
-    res.Normal.push_back(right);
+    *res.GetNormalPtr(ind++) = right;
+    *res.GetNormalPtr(ind++) = right;
+    *res.GetNormalPtr(ind++) = right;
+    *res.GetNormalPtr(ind++) = right;
     // [a_vorontsov] Top.
-    res.Normal.push_back(up);
-    res.Normal.push_back(up);
-    res.Normal.push_back(up);
-    res.Normal.push_back(up);
+    *res.GetNormalPtr(ind++) = up;
+    *res.GetNormalPtr(ind++) = up;
+    *res.GetNormalPtr(ind++) = up;
+    *res.GetNormalPtr(ind++) = up;
+    ind = 0;
 
     Vector2 _00(0.0f, 0.0f);
     Vector2 _10(1.0f, 0.0f);
@@ -261,92 +257,90 @@ Mesh GenerateCube(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/, float32 si
     Vector2 _11(1.0f, 1.0f);
 
     // [a_vorontsov] UV. Bottom.
-    res.SetUVType(eVertexDataType::Type_V2);
-    res.PushBackUV(_11);
-    res.PushBackUV(_01);
-    res.PushBackUV(_00);
-    res.PushBackUV(_10);
+    *res.GetUv0Ptr(ind++) = _11;
+    *res.GetUv0Ptr(ind++) = _01;
+    *res.GetUv0Ptr(ind++) = _00;
+    *res.GetUv0Ptr(ind++) = _10;
     // [a_vorontsov] Left.
-    res.PushBackUV(_11);
-    res.PushBackUV(_01);
-    res.PushBackUV(_00);
-    res.PushBackUV(_10);
+    *res.GetUv0Ptr(ind++) = _11;
+    *res.GetUv0Ptr(ind++) = _01;
+    *res.GetUv0Ptr(ind++) = _00;
+    *res.GetUv0Ptr(ind++) = _10;
     // [a_vorontsov] Front.
-    res.PushBackUV(_11);
-    res.PushBackUV(_01);
-    res.PushBackUV(_00);
-    res.PushBackUV(_10);
+    *res.GetUv0Ptr(ind++) = _11;
+    *res.GetUv0Ptr(ind++) = _01;
+    *res.GetUv0Ptr(ind++) = _00;
+    *res.GetUv0Ptr(ind++) = _10;
     // [a_vorontsov] Back.
-    res.PushBackUV(_11);
-    res.PushBackUV(_01);
-    res.PushBackUV(_00);
-    res.PushBackUV(_10);
+    *res.GetUv0Ptr(ind++) = _11;
+    *res.GetUv0Ptr(ind++) = _01;
+    *res.GetUv0Ptr(ind++) = _00;
+    *res.GetUv0Ptr(ind++) = _10;
     // [a_vorontsov] Right.
-    res.PushBackUV(_11);
-    res.PushBackUV(_01);
-    res.PushBackUV(_00);
-    res.PushBackUV(_10);
+    *res.GetUv0Ptr(ind++) = _11;
+    *res.GetUv0Ptr(ind++) = _01;
+    *res.GetUv0Ptr(ind++) = _00;
+    *res.GetUv0Ptr(ind++) = _10;
     // [a_vorontsov] Top.
-    res.PushBackUV(_11);
-    res.PushBackUV(_01);
-    res.PushBackUV(_00);
-    res.PushBackUV(_10);
+    *res.GetUv0Ptr(ind++) = _11;
+    *res.GetUv0Ptr(ind++) = _01;
+    *res.GetUv0Ptr(ind++) = _00;
+    *res.GetUv0Ptr(ind++) = _10;
+    ind = 0;
 
     // [a_vorontsov] Bottom.
-    res.Indices.push_back(3);
-    res.Indices.push_back(1);
-    res.Indices.push_back(0);
+    *res.GetIndexPtr(ind++) = 3;
+    *res.GetIndexPtr(ind++) = 1;
+    *res.GetIndexPtr(ind++) = 0;
 
-    res.Indices.push_back(3);
-    res.Indices.push_back(2);
-    res.Indices.push_back(1);
+    *res.GetIndexPtr(ind++) = 3;
+    *res.GetIndexPtr(ind++) = 2;
+    *res.GetIndexPtr(ind++) = 1;
 
     // [a_vorontsov] Left.
-    res.Indices.push_back(7);
-    res.Indices.push_back(5);
-    res.Indices.push_back(4);
+    *res.GetIndexPtr(ind++) = 7;
+    *res.GetIndexPtr(ind++) = 5;
+    *res.GetIndexPtr(ind++) = 4;
 
-    res.Indices.push_back(7);
-    res.Indices.push_back(6);
-    res.Indices.push_back(5);
+    *res.GetIndexPtr(ind++) = 7;
+    *res.GetIndexPtr(ind++) = 6;
+    *res.GetIndexPtr(ind++) = 5;
 
     // [a_vorontsov] Front.
-    res.Indices.push_back(11);
-    res.Indices.push_back(9);
-    res.Indices.push_back(8);
+    *res.GetIndexPtr(ind++) = 11;
+    *res.GetIndexPtr(ind++) = 9;
+    *res.GetIndexPtr(ind++) = 8;
 
-    res.Indices.push_back(11);
-    res.Indices.push_back(10);
-    res.Indices.push_back(9);
+    *res.GetIndexPtr(ind++) = 11;
+    *res.GetIndexPtr(ind++) = 10;
+    *res.GetIndexPtr(ind++) = 9;
 
     // [a_vorontsov] Back.
-    res.Indices.push_back(15);
-    res.Indices.push_back(13);
-    res.Indices.push_back(12);
+    *res.GetIndexPtr(ind++) = 15;
+    *res.GetIndexPtr(ind++) = 13;
+    *res.GetIndexPtr(ind++) = 12;
 
-    res.Indices.push_back(15);
-    res.Indices.push_back(14);
-    res.Indices.push_back(13);
+    *res.GetIndexPtr(ind++) = 15;
+    *res.GetIndexPtr(ind++) = 14;
+    *res.GetIndexPtr(ind++) = 13;
 
     // [a_vorontsov] Right.
-    res.Indices.push_back(19);
-    res.Indices.push_back(17);
-    res.Indices.push_back(16);
+    *res.GetIndexPtr(ind++) = 19;
+    *res.GetIndexPtr(ind++) = 17;
+    *res.GetIndexPtr(ind++) = 16;
 
-    res.Indices.push_back(19);
-    res.Indices.push_back(18);
-    res.Indices.push_back(17);
+    *res.GetIndexPtr(ind++) = 19;
+    *res.GetIndexPtr(ind++) = 18;
+    *res.GetIndexPtr(ind++) = 17;
 
     // [a_vorontsov] Top.
-    res.Indices.push_back(23);
-    res.Indices.push_back(21);
-    res.Indices.push_back(20);
+    *res.GetIndexPtr(ind++) = 23;
+    *res.GetIndexPtr(ind++) = 21;
+    *res.GetIndexPtr(ind++) = 20;
 
-    res.Indices.push_back(23);
-    res.Indices.push_back(22);
-    res.Indices.push_back(21);
-
-    res.PrepareForUpload();
+    *res.GetIndexPtr(ind++) = 23;
+    *res.GetIndexPtr(ind++) = 22;
+    *res.GetIndexPtr(ind++) = 21;
 
     return res;
 }
@@ -1018,7 +1012,7 @@ Mesh GenerateIcosphere(int32 recursionLevel /*= 3*/, float32 radius /*= 1.0f*/)
     return { vDataBegin, stride * vCount, stride, vCount, iDataBegin, iCount * sizeof(uint32), iCount, eIndexFormat::Format16Bit, layout };
 }
 
-Mesh* GetUnitCube()
+Mesh2* GetUnitCube()
 {
     return m_unitCube;
 }

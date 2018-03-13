@@ -10,6 +10,7 @@
 namespace Kioto
 {
 class Mesh;
+class Mesh2;
 
 namespace GeometryGenerator
 {
@@ -23,7 +24,7 @@ Mesh GeneratePlane(float32 sizeX = 1.0f, float32 sizeY = 1.0f);
 ///
 /// Generate cube.
 ///
-Mesh GenerateCube(float32 sizeX = 1.0f, float32 sizeY = 1.0f, float32 sizeZ = 1.0f);
+Mesh2 GenerateCube(float32 sizeX = 1.0f, float32 sizeY = 1.0f, float32 sizeZ = 1.0f);
 ///
 /// Generate cone.
 ///
@@ -41,7 +42,7 @@ Mesh GenerateTube(float32 height = 1.0f, float32 bottomRadius1 = 0.5f, float32 b
 ///
 Mesh GenerateIcosphere(int32 recursionLevel = 3, float32 radius = 1.0f);
 
-Mesh* GetUnitCube();
+Mesh2* GetUnitCube();
 Mesh* GetUnitSphere();
 Mesh* GetUnitIcosphere();
 }
