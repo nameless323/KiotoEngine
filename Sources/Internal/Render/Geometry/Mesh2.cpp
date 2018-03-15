@@ -57,6 +57,14 @@ void Mesh2::InitFromLayout(Renderer::VertexLayout layout, uint32 vertexCount, ui
     m_indexData = new byte[m_indexDataSize];
 }
 
+void Mesh2::FromIntermediateMesh(const IntermediateMesh& iMesh)
+{
+    SafeDelete(m_vertexData);
+    SafeDelete(m_indexData);
+
+    m_layout.Clear();
+}
+
 Mesh2& Mesh2::operator=(Mesh2 other)
 {
     swap(*this, other);

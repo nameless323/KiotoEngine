@@ -60,7 +60,7 @@ public:
     bool operator!=(const VertexLayout& other) const;
 
     void AddElement(eVertexSemantic semantic, uint8 semanticIndex, eDataFormat format);
-    void CleanElements();
+    void Clear();
     std::vector<VertexDesc> GetElements() const;
     const VertexDesc* FindElement(eVertexSemantic semantic, uint8 semanticIndex) const;
     uint32 GetVertexStride() const;

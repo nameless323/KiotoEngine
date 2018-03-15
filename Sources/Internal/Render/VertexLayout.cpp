@@ -118,9 +118,10 @@ void VertexLayout::AddElement(eVertexSemantic semantic, uint8 semanticIndex, eDa
         m_totalOffset += it->second;
 }
 
-void VertexLayout::CleanElements()
+void VertexLayout::Clear()
 {
     m_verticesDesc.clear();
+    m_totalOffset = 0;
 }
 
 bool VertexLayout::operator==(const VertexLayout& other) const

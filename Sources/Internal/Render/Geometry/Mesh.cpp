@@ -194,7 +194,7 @@ void Mesh::PrepareForUpload()
     m_indexCount = static_cast<uint32>(Indices.size());
     m_vertexCount = pSize;
 
-    m_vertexLayout.CleanElements();
+    m_vertexLayout.Clear();
 
     if (!Position.empty())
     {

@@ -25,6 +25,7 @@ public:
     Mesh2& operator=(Mesh2 other);
 
     void InitFromLayout(Renderer::VertexLayout layout, uint32 vertexCount, uint32 indexCount);
+    void FromIntermediateMesh(const IntermediateMesh& iMesh);
 
     uint32* GetIndexPtr(uint32 i);
     Renderer::eDataFormat GetVertexElementFormat(Renderer::eVertexSemantic semantic, uint8 semanticIndex) const;
@@ -88,12 +89,14 @@ private:
 
 inline uint32* Mesh2::GetIndexPtr(uint32 i)
 {
+    assert(i < m_indexCount);
     return reinterpret_cast<uint32*>(m_indexData + sizeof(uint32) * i);
 }
 
 template <typename T>
 inline T* Mesh2::GetVertexElementPtr(uint32 i, Renderer::eVertexSemantic semantic, uint8 semanticIndex)
 {
+    assert(i < m_vertexCount);
     const Renderer::VertexDesc* e = m_layout.FindElement(semantic, semanticIndex);
     if (e == nullptr)
         return nullptr;
