@@ -10,6 +10,7 @@
 #include "Render/Geometry/ParserFBX.h"
 
 #include "Render/Geometry/IntermediateMesh.h"
+#include "Render/Geometry/Mesh2.h"
 
 namespace Kioto
 {
@@ -50,15 +51,16 @@ void ParserFBX::Shutdown()
     m_fbxManager->Destroy();
 }
 
-Mesh* ParserFBX::ParseMesh(const std::string& path)
+Mesh2* ParserFBX::ParseMesh(const std::string& path)
 {
-    Mesh* mesh = new Mesh();
-    mesh->SetAssetPath(path);
-    ParseMesh(mesh);
-    return mesh;
+    //Mesh2* mesh = new Mesh2();
+    //mesh->SetAssetPath(path);
+    //ParseMesh(mesh);
+    //return mesh;
+    return nullptr;
 }
 
-void ParserFBX::ParseMesh(Mesh* dst)
+void ParserFBX::ParseMesh(Mesh2* dst)
 {
     FbxScene* scene = FbxScene::Create(m_fbxManager, "ImportFbxScene");
     if (scene == nullptr)
@@ -128,14 +130,14 @@ bool ParserFBX::LoadScene(FbxManager* manager, FbxScene* scene, const char* file
     return status;
 }
 
-void ParserFBX::TraverseHiererchy(FbxScene* scene, Mesh* dst)
+void ParserFBX::TraverseHiererchy(FbxScene* scene, Mesh2* dst)
 {
     FbxNode* root = scene->GetRootNode();
     for (int32 i = 0; i < root->GetChildCount(); ++i)
         TraverseHiererchy(root->GetChild(i), 0, dst);
 }
 
-void ParserFBX::TraverseHiererchy(FbxNode* node, int32 depth, Mesh* dst)
+void ParserFBX::TraverseHiererchy(FbxNode* node, int32 depth, Mesh2* dst)
 {
     FbxString string = node->GetName();
     std::string name(string.Buffer());
@@ -158,7 +160,7 @@ void ParserFBX::TraverseHiererchy(FbxNode* node, int32 depth, Mesh* dst)
         TraverseHiererchy(node->GetChild(i), depth + 1, dst);
 }
 
-void ParserFBX::ParseFbxMesh(FbxNode* node, Mesh* dst)
+void ParserFBX::ParseFbxMesh(FbxNode* node, Mesh2* dst)
 {
     FbxVector4 mat = node->EvaluateLocalRotation(0);
     //Matrix4 loclaTransform(reinterpret_cast<float32>(mat.mData));

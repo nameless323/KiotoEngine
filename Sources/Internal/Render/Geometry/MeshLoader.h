@@ -9,13 +9,13 @@
 
 namespace Kioto
 {
-class Mesh;
+class Mesh2;
 
 namespace MeshLoader
 {
 void Init();
 void Shutdown();
-Mesh* LoadMesh(const std::string& path);
-void LoadMesh(Mesh* src);
+Mesh2* LoadMesh(const std::string& path);
+void LoadMesh(Mesh2* src);
 }
 }

@@ -150,9 +150,9 @@ void RendererDX12::LoadPipeline()
 {
     m_state.CommandList->Reset(m_state.CommandAllocators[0].Get(), nullptr);
 
-    std::string path = AssetsSystem::GetAssetFullPath(R"(Models\Teapot.fbx)");
+    std::string path = AssetsSystem::GetAssetFullPath(R"(Models\Box.fbx)");
     //m_box = new Mesh(path);
-    m_box = GeometryGenerator::GetUnitCube();
+    m_box = new Mesh2(path);
 
     m_vertexBuffer = std::make_unique<VertexBufferDX12>(m_box->GetVertexData(), m_box->GetVertexDataSize(), m_box->GetVertexDataStride(), m_state.CommandList.Get(), m_state.Device.Get());
     m_indexBuffer = std::make_unique<IndexBufferDX12>(m_box->GetIndexData(), m_box->GetIndexDataSize(), m_state.CommandList.Get(), m_state.Device.Get(), IndexFormatToDXGI(eIndexFormat::Format32Bit));

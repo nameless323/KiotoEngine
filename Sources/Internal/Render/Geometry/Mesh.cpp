@@ -106,7 +106,6 @@ Mesh::Mesh() : Asset("")
 Mesh::Mesh(const std::string& path)
     : Asset(path)
 {
-    MeshLoader::LoadMesh(this);
 }
 
 Mesh::~Mesh()

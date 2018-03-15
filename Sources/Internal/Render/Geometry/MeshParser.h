@@ -9,15 +9,15 @@
 
 namespace Kioto
 {
-class Mesh;
+class Mesh2;
 
 class MeshParser
 {
 public:
     virtual void Init() abstract;
     virtual void Shutdown() abstract;
-    virtual Mesh* ParseMesh(const std::string& path) abstract;
-    virtual void ParseMesh(Mesh* dst) abstract;
+    virtual Mesh2* ParseMesh(const std::string& path) abstract;
+    virtual void ParseMesh(Mesh2* dst) abstract;
 
     virtual ~MeshParser() = default;
 };

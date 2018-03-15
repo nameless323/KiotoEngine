@@ -3,6 +3,7 @@
 #include "Render/Geometry/Mesh2.h"
 
 #include "Render/Geometry/IntermediateMesh.h"
+#include "Render/Geometry/MeshLoader.h"
 
 namespace Kioto
 {
@@ -16,7 +17,7 @@ Mesh2::Mesh2(Renderer::VertexLayout layout, uint32 vertexCount, uint32 indexCoun
 Mesh2::Mesh2(const std::string& path)
     : Asset(path)
 {
-
+    MeshLoader::LoadMesh(this);
 }
 
 Mesh2::Mesh2(const Mesh2& other)
@@ -67,11 +68,14 @@ void Mesh2::FromIntermediateMesh(const IntermediateMesh& iMesh)
     m_layout.Clear();
 
     m_indexCount = static_cast<uint32>(iMesh.Indices.size());
-    m_vertexCount = static_cast<uint32>(iMesh.Indices.size());
+    m_vertexCount = static_cast<uint32>(iMesh.Vertices.size());
 
     LayoutFromIntermediateMesh(iMesh);
     m_vertexDataSize = m_layout.GetVertexStride() * m_vertexCount;
     m_indexDataSize = m_indexCount * sizeof(uint32);
+
+    m_vertexData = new byte[m_vertexDataSize];
+    m_indexData = new byte[m_indexDataSize];
 
     for (uint32 i = 0; i < m_indexCount; ++i)
         *GetIndexPtr(i) = iMesh.Indices[i];
