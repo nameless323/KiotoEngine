@@ -77,8 +77,8 @@ cbuffer cbRenderObjectBuffer : register(b2, space1)
 struct vIn
 {
     float3 position : POSITION;
-    float2 uv : TEXCOORD0;
     float3 normal : NORMAL;
+    float2 uv : TEXCOORD0;
 };
 
 struct vOut

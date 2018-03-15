@@ -25,10 +25,10 @@ enum class eVertexSemantic
 enum class eDataFormat
 {
     UNKNOWN,
-    R32_G32_B32_A32,
-    R32_G32_B32,
-    R32_G32,
-    R32,
+    R8_G8_B8_A8,
+    R8_G8_B8,
+    R8_G8,
+    R8,
     MATRIX3x3,
     MATRIX4x4
 };
@@ -45,7 +45,7 @@ struct VertexDesc
     uint16 Offset = 0;
     eVertexSemantic Semantic = eVertexSemantic::Position;
     uint8 SemanticIndex = 0;
-    eDataFormat Format = eDataFormat::R32_G32_B32_A32;
+    eDataFormat Format = eDataFormat::R8_G8_B8_A8;
 };
 
 class VertexLayout
@@ -64,6 +64,8 @@ public:
     std::vector<VertexDesc> GetElements() const;
     const VertexDesc* FindElement(eVertexSemantic semantic, uint8 semanticIndex) const;
     uint32 GetVertexStride() const;
+    const VertexDesc& GetElement(uint32 i) const;
+    uint32 GetElementsCount() const;
 
     friend void swap(VertexLayout& l, VertexLayout& r)
     {
@@ -71,11 +73,11 @@ public:
         std::swap(l.m_totalOffset, r.m_totalOffset);
     }
 
-    static const VertexLayout LayoutPos3Uv2Norm3;
+    static const VertexLayout LayoutPos3Norm3Uv2;
     static const VertexLayout LayoutPos3Norm3;
-    static const VertexLayout LayoutPos3Uv2Norm3Tan3Bit3;
-    static const VertexLayout LayoutPos3Uv2Norm3Tan3Bit3Col4;
-    static const VertexLayout LayoutPos3Uv2Norm3Col4;
+    static const VertexLayout LayoutPos3Norm3Tan3Bit3Uv2;
+    static const VertexLayout LayoutPos3Norm3Tan3Bit3Uv2Col4;
+    static const VertexLayout LayoutPos3Norm3Uv2Col4;
     static const VertexLayout LayoutPos3Uv2;
 
 private:
@@ -91,6 +93,17 @@ inline std::vector<VertexDesc> VertexLayout::GetElements() const
 inline uint32 VertexLayout::GetVertexStride() const
 {
     return m_totalOffset;
+}
+
+inline const VertexDesc& VertexLayout::GetElement(uint32 i) const
+{
+    assert(i < m_verticesDesc.size());
+    return m_verticesDesc[i];
+}
+
+inline uint32 VertexLayout::GetElementsCount() const
+{
+    return static_cast<uint32>(m_verticesDesc.size());
 }
 
 }

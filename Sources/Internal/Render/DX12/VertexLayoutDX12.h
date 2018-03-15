@@ -25,10 +25,10 @@ static inline std::map<eVertexSemantic, std::string> SemanticNames =
 
 static inline std::map<eDataFormat, DXGI_FORMAT> VertexDataFormats =
 {
-    { eDataFormat::R32_G32_B32_A32, DXGI_FORMAT_R32G32B32A32_FLOAT },
-    { eDataFormat::R32_G32_B32, DXGI_FORMAT_R32G32B32_FLOAT },
-    { eDataFormat::R32_G32, DXGI_FORMAT_R32G32_FLOAT },
-    { eDataFormat::R32, DXGI_FORMAT_R32_FLOAT}
+    { eDataFormat::R8_G8_B8_A8, DXGI_FORMAT_R32G32B32A32_FLOAT },
+    { eDataFormat::R8_G8_B8, DXGI_FORMAT_R32G32B32_FLOAT },
+    { eDataFormat::R8_G8, DXGI_FORMAT_R32G32_FLOAT },
+    { eDataFormat::R8, DXGI_FORMAT_R32_FLOAT}
 };
 
 struct VertexLayoutDX12

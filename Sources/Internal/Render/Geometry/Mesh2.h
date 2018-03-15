@@ -75,7 +75,12 @@ public:
         swap(l.m_layout, r.m_layout);
     }
 
+    inline static constexpr uint32 MaxTexcoordCount = 8;
+    inline static constexpr uint32 MaxColorCount = 8;
+
 private:
+    void LayoutFromIntermediateMesh(const IntermediateMesh& iMesh);
+
     byte* m_vertexData = nullptr;
     uint32 m_vertexDataSize = 0;
 

@@ -235,18 +235,18 @@ VertexLayout GetVertexLayout(const std::string& source)
             bool typeFound = false;
             if (IsEmptyChar(source[i + m_floatLen]))
             {
-                format = eDataFormat::R32;
+                format = eDataFormat::R8;
                 typeFound = true;
             }
             else if (isdigit(source[i + m_floatLen]) && IsEmptyChar(source[i + m_floatLen + 1]))
             {
                 uint8 dim = CharToInt(source[i + m_floatLen]);
                 if (dim == 2)
-                    format = eDataFormat::R32_G32;
+                    format = eDataFormat::R8_G8;
                 else if (dim == 3)
-                    format = eDataFormat::R32_G32_B32;
+                    format = eDataFormat::R8_G8_B8;
                 else if (dim == 4)
-                    format = eDataFormat::R32_G32_B32_A32;
+                    format = eDataFormat::R8_G8_B8_A8;
                 else
                     throw "wtf?";
 
@@ -336,7 +336,7 @@ void TryParseParams(const std::string& source, size_t start, size_t end, Constan
         {
             if (!typeFound && IsEmptyChar(source[i + m_floatLen]))
             {
-                format = eDataFormat::R32;
+                format = eDataFormat::R8;
                 i += m_floatLen;
                 typeFound = true;
             }
@@ -358,11 +358,11 @@ void TryParseParams(const std::string& source, size_t start, size_t end, Constan
             {
                 uint8 dim = CharToInt(source[i + m_floatLen]);
                 if (dim == 2)
-                    format = eDataFormat::R32_G32;
+                    format = eDataFormat::R8_G8;
                 else if (dim == 3)
-                    format = eDataFormat::R32_G32_B32;
+                    format = eDataFormat::R8_G8_B8;
                 else if (dim == 4)
-                    format = eDataFormat::R32_G32_B32_A32;
+                    format = eDataFormat::R8_G8_B8_A8;
                 else
                     throw "wtf?";
                 i += m_floatLen + 1;
@@ -390,13 +390,13 @@ void TryParseParams(const std::string& source, size_t start, size_t end, Constan
             if (!startComponseName)
                 throw "wtf";
 
-            if (format == eDataFormat::R32)
+            if (format == eDataFormat::R8)
                 buffer.Add(name, 0);
-            else if (format == eDataFormat::R32_G32)
+            else if (format == eDataFormat::R8_G8)
                 buffer.Add(name, Vector2());
-            else if (format == eDataFormat::R32_G32_B32)
+            else if (format == eDataFormat::R8_G8_B8)
                 buffer.Add(name, Vector3());
-            else if (format == eDataFormat::R32_G32_B32_A32)
+            else if (format == eDataFormat::R8_G8_B8_A8)
                 buffer.Add(name, Vector4());
             else if (format == eDataFormat::MATRIX3x3)
                 buffer.Add(name, Matrix3());

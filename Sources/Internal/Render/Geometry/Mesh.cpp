@@ -199,22 +199,22 @@ void Mesh::PrepareForUpload()
     if (!Position.empty())
     {
         m_dataStride += sizeof(Vector3);
-        m_vertexLayout.AddElement(Renderer::eVertexSemantic::Position, 0, Renderer::eDataFormat::R32_G32_B32);
+        m_vertexLayout.AddElement(Renderer::eVertexSemantic::Position, 0, Renderer::eDataFormat::R8_G8_B8);
     }
     if (!Normal.empty())
     {
         m_dataStride += sizeof(Vector3);
-        m_vertexLayout.AddElement(Renderer::eVertexSemantic::Normal, 0, Renderer::eDataFormat::R32_G32_B32);
+        m_vertexLayout.AddElement(Renderer::eVertexSemantic::Normal, 0, Renderer::eDataFormat::R8_G8_B8);
     }
     if (!Tangent.empty())
     {
         m_dataStride += sizeof(Vector3);
-        m_vertexLayout.AddElement(Renderer::eVertexSemantic::Tangent, 0, Renderer::eDataFormat::R32_G32_B32);
+        m_vertexLayout.AddElement(Renderer::eVertexSemantic::Tangent, 0, Renderer::eDataFormat::R8_G8_B8);
     }
     if (!Bitangent.empty())
     {
         m_dataStride += sizeof(Vector3);
-        m_vertexLayout.AddElement(Renderer::eVertexSemantic::Bitangent, 0, Renderer::eDataFormat::R32_G32_B32);
+        m_vertexLayout.AddElement(Renderer::eVertexSemantic::Bitangent, 0, Renderer::eDataFormat::R8_G8_B8);
     }
     for (uint8 i = 0; i < MaxColorCount; ++i)
     {
@@ -365,15 +365,15 @@ uint32 Mesh::GetDataElementSize(const VertexDataElement& data) const
 Renderer::eDataFormat Mesh::GetVertexDataFormat(const VertexDataElement& data) const // [a_vorontsov] std::map?
 {
     if (data.Type == eVertexDataType::Type_V1)
-        return Renderer::eDataFormat::R32;
+        return Renderer::eDataFormat::R8;
     if (data.Type == eVertexDataType::Type_V2)
-        return Renderer::eDataFormat::R32_G32;
+        return Renderer::eDataFormat::R8_G8;
     if (data.Type == eVertexDataType::Type_V3)
-        return Renderer::eDataFormat::R32_G32_B32;
+        return Renderer::eDataFormat::R8_G8_B8;
     if (data.Type == eVertexDataType::Type_V4)
-        return Renderer::eDataFormat::R32_G32_B32_A32;
+        return Renderer::eDataFormat::R8_G8_B8_A8;
     assert(false);
-    return Renderer::eDataFormat::R32;
+    return Renderer::eDataFormat::R8;
 }
 
 bool Mesh::CompareVertices(uint32 i, uint32 j) const
