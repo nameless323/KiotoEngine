@@ -73,6 +73,7 @@ T GetMiddlePoint(T p1, T p2, std::vector<Vector3>& vertices, std::map<uint64, T>
     return i;
 }
 
+Mesh2* m_plane = nullptr;
 Mesh2* m_unitCube = nullptr;
 Mesh* m_unitSphere = nullptr;
 Mesh* m_unitIcosphere = nullptr;
@@ -80,6 +81,7 @@ Mesh* m_unitIcosphere = nullptr;
 
 void Init()
 {
+    m_plane = new Mesh2(GeneratePlane());
     m_unitCube = new Mesh2(GenerateCube());
     m_unitSphere = new Mesh(GenerateSphere());
     m_unitIcosphere = new Mesh(GenerateIcosphere());
@@ -87,25 +89,24 @@ void Init()
 
 void Shutdown()
 {
+    SafeDelete(m_plane);
     SafeDelete(m_unitCube);
     SafeDelete(m_unitSphere);
     SafeDelete(m_unitIcosphere);
 }
 
-Mesh GeometryGenerator::GeneratePlane(float32 sizeX /*= 1.0f*/, float32 sizeZ /*= 1.0f*/)
+Mesh2 GeometryGenerator::GeneratePlane(float32 sizeX /*= 1.0f*/, float32 sizeZ /*= 1.0f*/)
 {
     uint32 resX = 2; // [a_vorontsov] 2 minimum.
     uint32 resZ = 2;
     uint32 vCount = resX * resZ;
-    uint32 stride = sizeof(Vector3) + sizeof(Vector3) + sizeof(Vector2);
-    byte* vData = new byte[vCount * stride];
-    byte* vDataBegin = vData;
 
-    Renderer::VertexLayout layout;
-    layout.AddElement(Renderer::eVertexSemantic::Position, 0, Renderer::eDataFormat::R8_G8_B8);
-    layout.AddElement(Renderer::eVertexSemantic::Normal, 0, Renderer::eDataFormat::R8_G8_B8);
-    layout.AddElement(Renderer::eVertexSemantic::Texcoord, 0, Renderer::eDataFormat::R8_G8);
+    uint32 nbFaces = (resX - 1) * (resZ - 1);
+    uint16 iCount = nbFaces * 6;
 
+    Mesh2 mesh(Renderer::VertexLayout::LayoutPos3Norm3Uv2, vCount, iCount);
+
+    uint32 index = 0;
     for (uint32 z = 0; z < resZ; z++)
     {
         // [a_vorontsov] [ -length / 2, length / 2 ]
@@ -114,51 +115,37 @@ Mesh GeometryGenerator::GeneratePlane(float32 sizeX /*= 1.0f*/, float32 sizeZ /*
         {
             // [a_vorontsov] [ -width / 2, width / 2 ]
             float32 xPos = (static_cast<float32>(x) / (resX - 1) - .5f) * sizeZ;
-            *reinterpret_cast<Vector3*>(vData) = Vector3(xPos, 0.0f, zPos);
-            vData += stride;
+            *mesh.GetPositionPtr(index++) = Vector3(xPos, 0.0f, zPos);
         }
     }
-    vData = vDataBegin;
-    vData += sizeof(Vector3);
+    index = 0;
 
     for (uint32 n = 0; n < vCount; n++)
-    {
-        *reinterpret_cast<Vector3*>(vData) = Vector3(0.0f, 1.0f, 0.0f);
-        vData += stride;
-    }
+        *mesh.GetNormalPtr(index++) = Vector3(0.0f, 1.0f, 0.0f);
+    index = 0;
 
-    vData = vDataBegin;
-    vData += sizeof(Vector3) + sizeof(Vector3);
     for (uint32 v = 0; v < resZ; v++)
     {
         for (uint32 u = 0; u < resX; u++)
-        {
-            *reinterpret_cast<Vector2*>(vData) = Vector2(static_cast<float32>(u) / (resX - 1), static_cast<float32>(v) / (resZ - 1));
-            vData += stride;
-        }
+            *mesh.GetUv0Ptr(index++) = Vector2(static_cast<float32>(u) / (resX - 1), static_cast<float32>(v) / (resZ - 1));
     }
-    vData = vDataBegin;
+    index = 0;
 
-    uint32 nbFaces = (resX - 1) * (resZ - 1);
-    uint16 iCount = nbFaces * 6;
-    uint16* iData = new uint16[iCount];
-    byte* iDataBegin = reinterpret_cast<byte*>(iData);
-    uint32 t = 0;
     for (uint16 face = 0; face < nbFaces; face++)
     {
         // [a_vorontsov] Retrieve lower left corner from face ind.
         uint32 i = face % (resX - 1) + (face / (resZ - 1) * resX);
 
-        *iData++ = i + resX;
-        *iData++ = i + 1;
-        *iData++ = i;
+        *mesh.GetIndexPtr(index++) = i + resX;
+        *mesh.GetIndexPtr(index++) = i + 1;
+        *mesh.GetIndexPtr(index++) = i;
 
-        *iData++ = i + resX;
-        *iData++ = i + resX + 1;
-        *iData++ = i + 1;
+        *mesh.GetIndexPtr(index++) = i + resX;
+        *mesh.GetIndexPtr(index++) = i + resX + 1;
+        *mesh.GetIndexPtr(index++) = i + 1;
     }
 
-    return { vDataBegin, stride * vCount, stride, vCount, iDataBegin, iCount * sizeof(uint16), iCount, eIndexFormat::Format16Bit, layout };
+    return mesh;
 }
 
 Mesh2 GenerateCube(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/, float32 sizeZ /*= 1.0f*/)
@@ -1025,6 +1012,11 @@ Mesh* GetUnitSphere()
 Mesh* GetUnitIcosphere()
 {
     return m_unitIcosphere;
+}
+
+Mesh2* GetPlane()
+{
+    return m_plane;
 }
 
 }

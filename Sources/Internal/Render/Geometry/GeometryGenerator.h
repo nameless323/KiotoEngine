@@ -20,7 +20,7 @@ void Shutdown();
 ///
 /// Generate XZ aligned plane.
 ///
-Mesh GeneratePlane(float32 sizeX = 1.0f, float32 sizeY = 1.0f);
+Mesh2 GeneratePlane(float32 sizeX = 1.0f, float32 sizeY = 1.0f);
 ///
 /// Generate cube.
 ///
@@ -42,6 +42,7 @@ Mesh GenerateTube(float32 height = 1.0f, float32 bottomRadius1 = 0.5f, float32 b
 ///
 Mesh GenerateIcosphere(int32 recursionLevel = 3, float32 radius = 1.0f);
 
+Mesh2* GetPlane();
 Mesh2* GetUnitCube();
 Mesh* GetUnitSphere();
 Mesh* GetUnitIcosphere();
