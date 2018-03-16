@@ -76,7 +76,7 @@ T GetMiddlePoint(T p1, T p2, std::vector<Vector3>& vertices, std::map<uint64, T>
 Mesh2* m_plane = nullptr;
 Mesh2* m_unitCube = nullptr;
 Mesh2* m_cone = nullptr;
-Mesh* m_unitSphere = nullptr;
+Mesh2* m_unitSphere = nullptr;
 Mesh* m_unitIcosphere = nullptr;
 }
 
@@ -85,7 +85,7 @@ void Init()
     m_plane = new Mesh2(GeneratePlane());
     m_cone = new Mesh2(GenerateCone());
     m_unitCube = new Mesh2(GenerateCube());
-    m_unitSphere = new Mesh(GenerateSphere());
+    m_unitSphere = new Mesh2(GenerateSphere());
     m_unitIcosphere = new Mesh(GenerateIcosphere());
 }
 
@@ -488,23 +488,21 @@ Mesh2 GenerateCone(float32 height /*= 1.0f*/, float32 bottomRadius /*= 0.25f*/, 
     return mesh;
 }
 
-Mesh GenerateSphere(float32 radius /*=1.0f*/)
+Mesh2 GenerateSphere(float32 radius /*=1.0f*/)
 {
     int32 nbLong = 24;
     int32 nbLat = 16;
 
     uint32 vCount = (nbLong + 1) * nbLat + 2;
-    uint32 stride = sizeof(Vector3) + sizeof(Vector3) + sizeof(Vector2);
-    byte* vData = new byte[vCount * stride];
-    byte* vDataBegin = vData;
 
-    Renderer::VertexLayout layout;
-    layout.AddElement(Renderer::eVertexSemantic::Position, 0, Renderer::eDataFormat::R8_G8_B8);
-    layout.AddElement(Renderer::eVertexSemantic::Normal, 0, Renderer::eDataFormat::R8_G8_B8);
-    layout.AddElement(Renderer::eVertexSemantic::Texcoord, 0, Renderer::eDataFormat::R8_G8);
+    uint32 nbFaces = vCount;
+    uint32 nbTriangles = nbFaces * 2;
+    uint32 iCount = nbTriangles * 3;
 
-    *reinterpret_cast<Vector3*>(vData) = Vector3(0.0f, 1.0f, 0.0) * radius;
-    vData += stride;
+    Mesh2 mesh(Renderer::VertexLayout::LayoutPos3Norm3Uv2, vCount, iCount);
+
+    uint32 index = 0;
+    *mesh.GetPositionPtr(index++) = Vector3(0.0f, 1.0f, 0.0) * radius;
 
     for (int32 lat = 0; lat < nbLat; lat++)
     {
@@ -518,49 +516,36 @@ Mesh GenerateSphere(float32 radius /*=1.0f*/)
             float32 sin2 = std::sin(a2);
             float32 cos2 = std::cos(a2);
 
-            *reinterpret_cast<Vector3*>(vData) = Vector3(sin1 * cos2, cos1, sin1 * sin2) * radius;
-            vData += stride;
+            *mesh.GetPositionPtr(index++) = Vector3(sin1 * cos2, cos1, sin1 * sin2) * radius;
         }
     }
-    *reinterpret_cast<Vector3*>(vData) = Vector3(0.0f, -1.0f, 0.0f) * radius;
-    vData = vDataBegin;
-    vData += sizeof(Vector3);
+    *mesh.GetPositionPtr(index++) = Vector3(0.0f, -1.0f, 0.0f) * radius;
+    index = 0;
 
     for (uint32 n = 0; n < vCount; n++)
     {
-        *reinterpret_cast<Vector3*>(vData) = *reinterpret_cast<Vector3*>(vDataBegin + stride * n);
-        vData += stride;
+        *mesh.GetNormalPtr(index) = *mesh.GetPositionPtr(index);
+        ++index;
     }
+    index = 0;
 
-    vData = vDataBegin;
-    vData += sizeof(Vector3) + sizeof(Vector3);
-
-    *reinterpret_cast<Vector2*>(vData) = Vector2(0.0f, 1.0f);
-    vData += stride;
+    *mesh.GetUv0Ptr(index++) = Vector2(0.0f, 1.0f);
 
     for (int lat = 0; lat < nbLat; lat++)
     {
         for (int lon = 0; lon <= nbLong; lon++)
-        {
-            *reinterpret_cast<Vector2*>(vData) = Vector2(static_cast<float32>(lon) / nbLong, 1.0f - static_cast<float32>(lat + 1) / (nbLat + 1));
-            vData += stride;
-        }
+            *mesh.GetUv0Ptr(index++) = Vector2(static_cast<float32>(lon) / nbLong, 1.0f - static_cast<float32>(lat + 1) / (nbLat + 1));
     }
-    *reinterpret_cast<Vector2*>(vData) = Vector2(0.0f, 0.0f);
+    *mesh.GetUv0Ptr(index++) = Vector2(0.0f, 0.0f);
 
-    uint32 nbFaces = vCount;
-    uint32 nbTriangles = nbFaces * 2;
-    uint32 iCount = nbTriangles * 3;
-    uint32* iData = new uint32[iCount];
-    byte* iDataBegin = reinterpret_cast<byte*>(iData);
+    index = 0;
 
     // [a_vorontsov] Top cap.
-    int32 i = 0;
     for (int32 lon = 0; lon < nbLong; lon++)
     {
-        *iData++ = lon + 2;
-        *iData++ = lon + 1;
-        *iData++ = 0;
+        *mesh.GetIndexPtr(index++) = lon + 2;
+        *mesh.GetIndexPtr(index++) = lon + 1;
+        *mesh.GetIndexPtr(index++) = 0;
     }
 
     // [a_vorontsov] Middle.
@@ -571,24 +556,24 @@ Mesh GenerateSphere(float32 radius /*=1.0f*/)
             int32 current = lon + lat * (nbLong + 1) + 1;
             int32 next = current + nbLong + 1;
 
-            *iData++ = current;
-            *iData++ = current + 1;
-            *iData++ = next + 1;
+            *mesh.GetIndexPtr(index++) = current;
+            *mesh.GetIndexPtr(index++) = current + 1;
+            *mesh.GetIndexPtr(index++) = next + 1;
 
-            *iData++ = current;
-            *iData++ = next + 1;
-            *iData++ = next;
+            *mesh.GetIndexPtr(index++) = current;
+            *mesh.GetIndexPtr(index++) = next + 1;
+            *mesh.GetIndexPtr(index++) = next;
         }
     }
 
     // [a_vorontsov] Bottom cap.
     for (int32 lon = 0; lon < nbLong; lon++)
     {
-        *iData++ = vCount - 1;
-        *iData++ = vCount - (lon + 2) - 1;
-        *iData++ = vCount - (lon + 1) - 1;
+        *mesh.GetIndexPtr(index++)  = vCount - 1;
+        *mesh.GetIndexPtr(index++)  = vCount - (lon + 2) - 1;
+        *mesh.GetIndexPtr(index++)  = vCount - (lon + 1) - 1;
     }
-    return { vDataBegin, stride * vCount, stride, vCount, iDataBegin, iCount * sizeof(uint32), iCount, eIndexFormat::Format32Bit, layout };
+    return mesh;
 }
 
 Mesh GenerateTube(float32 height /*= 1.0f*/, float32 bottomRadius1 /*= 0.5f*/, float32 bottomRadius2 /*= 0.15f*/, float32 topRadius1 /*= 0.5f*/, float32 topRadius2 /*= 0.15f*/)
@@ -965,7 +950,7 @@ Mesh2* GetUnitCube()
     return m_unitCube;
 }
 
-Mesh* GetUnitSphere()
+Mesh2* GetUnitSphere()
 {
     return m_unitSphere;
 }
