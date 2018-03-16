@@ -36,7 +36,7 @@ Mesh2 GenerateSphere(float32 radius = 1.0f);
 ///
 /// Generate tube.
 ///
-Mesh GenerateTube(float32 height = 1.0f, float32 bottomRadius1 = 0.5f, float32 bottomRadius2 = 0.15f, float32 topRadius1 = 0.5f, float32 topRadius2 = 0.15f);
+Mesh2 GenerateTube(float32 height = 1.0f, float32 bottomRadius1 = 0.5f, float32 bottomRadius2 = 0.15f, float32 topRadius1 = 0.5f, float32 topRadius2 = 0.15f);
 ///
 /// Generate icosphere.
 ///
@@ -46,6 +46,7 @@ Mesh2* GetPlane();
 Mesh2* GetUnitCube();
 Mesh2* GetCone();
 Mesh2* GetUnitSphere();
+Mesh2* GetTube();
 Mesh* GetUnitIcosphere();
 }
 }
