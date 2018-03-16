@@ -98,9 +98,14 @@ VertexLayout::VertexLayout(VertexLayout&& other)
 
 VertexLayout::VertexLayout(std::vector<VertexDesc> desc)
 {
+    assert(desc.size() > 0);
     m_verticesDesc.swap(desc);
-    for (const auto& desc : m_verticesDesc)
-        m_totalOffset += desc.Offset;
+    for (const auto& descr : m_verticesDesc)
+    {
+        auto it = formats.find(descr.Format);
+        assert(it != formats.end());
+        m_totalOffset += it->second;
+    }
 }
 
 VertexLayout& VertexLayout::operator=(VertexLayout other)
