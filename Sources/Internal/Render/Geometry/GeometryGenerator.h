@@ -28,7 +28,7 @@ Mesh2 GenerateCube(float32 sizeX = 1.0f, float32 sizeY = 1.0f, float32 sizeZ = 1
 ///
 /// Generate cone.
 ///
-Mesh GenerateCone(float32 height = 1.0f, float32 bottomRadius = 0.25f, float32 topRadius = 0.05f);
+Mesh2 GenerateCone(float32 height = 1.0f, float32 bottomRadius = 0.25f, float32 topRadius = 0.05f);
 ///
 /// Generate sphere.
 ///
@@ -44,6 +44,7 @@ Mesh GenerateIcosphere(int32 recursionLevel = 3, float32 radius = 1.0f);
 
 Mesh2* GetPlane();
 Mesh2* GetUnitCube();
+Mesh2* GetCone();
 Mesh* GetUnitSphere();
 Mesh* GetUnitIcosphere();
 }
