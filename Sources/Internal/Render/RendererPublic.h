@@ -18,6 +18,7 @@ class TextureSet;
 class Material;
 class RenderPass;
 class ShaderProgram;
+class Mesh;
 
 struct ShaderDefine
 {
@@ -96,4 +97,5 @@ using TextureSetHandle = SafeHandle<TextureSet>;
 using MaterialHandle = SafeHandle<Material>;
 using RenderPassHandle = SafeHandle<RenderPass>;
 using ShaderProgramHandle = SafeHandle<ShaderProgram>;
+using MeshHandle = SafeHandle<Mesh>;
 }

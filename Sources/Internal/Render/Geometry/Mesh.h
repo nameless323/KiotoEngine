@@ -8,6 +8,7 @@
 #include "AssetsSystem/Asset.h"
 #include "Core/CoreTypes.h"
 #include "Render/VertexLayout.h"
+#include "Render/RendererPublic.h"
 
 namespace Kioto
 {
@@ -86,6 +87,9 @@ public:
     const byte* GetIndexData() const;
     uint32 GetIndexDataSize() const;
 
+    Renderer::MeshHandle GetHandle() const;
+    void SetHandle(Renderer::MeshHandle handle);
+
     friend void swap(Mesh& l, Mesh& r)
     {
         std::swap(l.m_vertexData, r.m_vertexData);
@@ -114,6 +118,8 @@ private:
     uint32 m_vertexCount = 0;
     uint32 m_indexCount = 0;
     Renderer::VertexLayout m_layout;
+
+    Renderer::MeshHandle m_handle;
 };
 
 inline uint32* Mesh::GetIndexPtr(uint32 i)
@@ -193,6 +199,16 @@ inline const byte* Mesh::GetIndexData() const
 inline uint32 Mesh::GetIndexDataSize() const
 {
     return m_indexDataSize;
+}
+
+inline Renderer::MeshHandle Mesh::GetHandle() const
+{
+    return m_handle;
+}
+
+inline void Mesh::SetHandle(Renderer::MeshHandle handle)
+{
+    m_handle = handle;
 }
 
 }
