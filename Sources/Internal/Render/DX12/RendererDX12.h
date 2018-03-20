@@ -30,7 +30,11 @@
 #include "Render/DX12/PsoManager.h"
 #include "Render/DX12/VertexLayoutManagerDX12.h"
 #include "Render/DX12/RenderPacket.h"
-#include "Render/Geometry/Mesh.h"
+
+namespace Kioto
+{
+class Mesh;
+}
 
 namespace Kioto::Renderer
 {
@@ -114,7 +118,7 @@ private:
     std::unique_ptr<VertexBufferDX12> m_vertexBuffer;
     std::unique_ptr<IndexBufferDX12> m_indexBuffer;
 
-    Mesh* m_box;
+    Kioto::Mesh* m_box;
 
     EngineBuffers engineBuffers;
     UploadBufferDX12* m_timeBuffer = nullptr;

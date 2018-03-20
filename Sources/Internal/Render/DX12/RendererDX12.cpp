@@ -34,6 +34,8 @@
 #include "Render/Texture/Texture.h"
 #include "Render/ShaderData.h"
 
+#include "Render/Geometry/Mesh.h"
+
 namespace Kioto::Renderer
 {
 
@@ -150,7 +152,7 @@ void RendererDX12::LoadPipeline()
     m_state.CommandList->Reset(m_state.CommandAllocators[0].Get(), nullptr);
 
     std::string path = AssetsSystem::GetAssetFullPath(R"(Models\Teapot.fbx)");
-    m_box = new Mesh(path);
+    m_box = new Kioto::Mesh(path);
     //m_box = GeometryGenerator::GetUnitCube();
 
     m_vertexBuffer = std::make_unique<VertexBufferDX12>(m_box->GetVertexData(), m_box->GetVertexDataSize(), m_box->GetVertexDataStride(), m_state.CommandList.Get(), m_state.Device.Get());
