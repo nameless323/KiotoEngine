@@ -10,6 +10,7 @@
 #include "Render/Geometry/ParserFBX.h"
 
 #include "Render/Geometry/IntermediateMesh.h"
+#include "Render/Geometry/Mesh.h"
 
 namespace Kioto
 {
@@ -52,10 +53,11 @@ void ParserFBX::Shutdown()
 
 Mesh* ParserFBX::ParseMesh(const std::string& path)
 {
-    Mesh* mesh = new Mesh();
-    mesh->SetAssetPath(path);
-    ParseMesh(mesh);
-    return mesh;
+    //Mesh2* mesh = new Mesh2();
+    //mesh->SetAssetPath(path);
+    //ParseMesh(mesh);
+    //return mesh;
+    return nullptr;
 }
 
 void ParserFBX::ParseMesh(Mesh* dst)

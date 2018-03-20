@@ -20,7 +20,7 @@ public:
     Shader() : Asset("") {}
     Shader(const std::string& path) : Asset(path) 
     {
-        m_shader = AssetsSystem::ReadFileAsString(path);
+        m_shader = Kioto::AssetsSystem::ReadFileAsString(path);
     }
 
     void SetHandle(ShaderHandle handle);

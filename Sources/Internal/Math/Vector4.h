@@ -38,6 +38,8 @@ public:
     bool operator== (const Vector4_<T>& other) const;
     bool operator!= (const Vector4_<T>& other) const;
 
+    Vector3_<T> GetVec3() const;
+
 #if _WIN32 || _WIN64
     explicit Vector4_(const DirectX::XMFLOAT4& vec);
     operator DirectX::XMFLOAT4() const;
@@ -110,6 +112,12 @@ template <typename T>
 bool Vector4_<T>::operator!=(const Vector4_<T>& other) const
 {
     return !(*this == other);
+}
+
+template <typename T>
+Vector3_<T> Vector4_<T>::GetVec3() const
+{
+    return { x, y, z };
 }
 
 #if _WIN32 || _WIN64

@@ -30,6 +30,7 @@
 #include "Render/DX12/PsoManager.h"
 #include "Render/DX12/VertexLayoutManagerDX12.h"
 #include "Render/DX12/RenderPacket.h"
+#include "Render/Geometry/Mesh.h"
 
 namespace Kioto::Renderer
 {

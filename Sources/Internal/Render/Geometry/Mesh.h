@@ -5,17 +5,9 @@
 
 #pragma once
 
-#include <vector>
-#include <array>
-#include <variant>
-
 #include "AssetsSystem/Asset.h"
 #include "Core/CoreTypes.h"
-#include "Math/Vector2.h"
-#include "Math/Vector3.h"
-#include "Math/Vector4.h"
 #include "Render/VertexLayout.h"
-#include "Render/RendererPublic.h"
 
 namespace Kioto
 {
@@ -45,123 +37,142 @@ enum class eVertexDataType
     Type_V4
 };
 
-static constexpr uint8 MaxUVCount = 8;
-static constexpr uint8 MaxColorCount = 8;
-
-///
-/// Represent model's mesh. Use overloads with *data for best performance.
-/// If you use *data overloads - mesh owns data and handle it lifetime.
-///
-class Mesh : public Asset // [a_vorontsov] TODO:: template for index type.
+class Mesh : public Asset
 {
 public:
-    using VertexDataElementType = std::variant<float32, Vector2, Vector3, Vector4>;
-    struct VertexDataElement
-    {
-        eVertexDataType Type = eVertexDataType::Type_Unknown;
-        std::vector<VertexDataElementType> Data;
-    };
-
-    Mesh();
+    Mesh(Renderer::VertexLayout layout, uint32 vertexCount, uint32 indexCount);
     Mesh(const std::string& path);
-    ///
-    /// Mesh will steal data pointer and will handle it lifetime by himself.
-    ///
-    Mesh(byte* data, uint32 dataSize, uint32 dataStride, uint32 vertexCount, byte* indexData, uint32 indexDataSize, uint32 indexCount, eIndexFormat indexFormat, Renderer::VertexLayout vertexLayout, bool dynamic = false);
     Mesh(const Mesh& other);
-    Mesh(Mesh&& other); // [a_vorontsov] TODO: copy swap.
+    Mesh(Mesh&& other);
     ~Mesh();
-    Mesh& operator=(const Mesh& other);
-    Mesh& operator=(Mesh&& other);
 
-    // [a_vorontsov] Winding order is CW.
-    std::vector<Vector3> Position; // [a_vorontsov] Maybe just byte* position and so on? How to manage memory in that case?
-    std::vector<Vector3> Normal;
-    std::vector<Vector3> Tangent;
-    std::vector<Vector3> Bitangent;
-    std::vector<uint32> Indices; // [a_vorontsov] Hmmm... 32bits enough for almost everything but we definitely will need 64 later.
+    Mesh& operator=(Mesh other);
 
-    void SetData(byte* data, uint32 dataSize, uint32 dataStride, uint32 vertexCount, byte* indexData, uint32 indexDataSize, uint32 indexCount, eIndexFormat indexFormat, Renderer::VertexLayout vertexLayout, bool dynamic = false);
+    void InitFromLayout(Renderer::VertexLayout layout, uint32 vertexCount, uint32 indexCount);
+    void FromIntermediateMesh(const IntermediateMesh& iMesh);
+
+    uint32* GetIndexPtr(uint32 i);
+    Renderer::eDataFormat GetVertexElementFormat(Renderer::eVertexSemantic semantic, uint8 semanticIndex) const;
+
+    template <typename T>
+    T* GetVertexElementPtr(uint32 i, Renderer::eVertexSemantic semantic, uint8 semanticIndex);
+
+    // [a_vorontsov] Some helpers. If you need other types then return type or other semantic/index use GetVertexElementPtr.
+    // If you set in layout other type and use this methods you don't get error/warning message, you'll just trash data, so be careful
+    // or you angry pinokkio for yourself.
+
     ///
-    /// Prepares mesh to upload to api's vertex buffer. Call this method if you modified mesh via Position, Normal etc.
-    /// If you modify Position, Normal etc after you call this method, you should call it again.
+    /// Get position. Treating as Vector3 ptr.
     ///
-    void PrepareForUpload();
-
-    void SetDynamic(bool isDynamic);
+    Vector3* GetPositionPtr(uint32 i); // [a_vorontsov] TODO: remember offsets and return direct.
+    ///
+    /// Get normal. Treating as Vector3 ptr.
+    ///
+    Vector3* GetNormalPtr(uint32 i);
+    ///
+    /// Get uv0. Treating as Vector2 ptr.
+    ///
+    Vector2* GetUv0Ptr(uint32 i);
+    ///
+    /// Get color. Treating as Vector4 ptr.
+    ///
+    Vector4* GetColorPtr(uint32 i);
 
     const byte* GetVertexData() const;
     uint32 GetVertexDataSize() const;
     uint32 GetVertexDataStride() const;
     uint32 GetVertexCount() const;
     uint32 GetIndexCount() const;
-    eIndexFormat GetIndexFormat() const;
     const byte* GetIndexData() const;
     uint32 GetIndexDataSize() const;
-    Renderer::VertexLayout GetVertexLayout() const;
-    Renderer::VertexLayoutHandle GetVertexLayoutHandle() const;
-    bool GetIsDirty() const;
-    bool GetIsDynamic() const;
 
-    void SetUV(uint32 index, VertexDataElementType value, uint8 uvSet = 0); // [a_vorontsov] Think bout using only *data array wihtout vectors.
-    void PushBackUV(VertexDataElementType value, uint8 uvSet = 0);
-    VertexDataElementType GetUV(uint32 index, uint8 uvSet = 0) const;
-    void SetUVType(eVertexDataType type, uint8 uvSet = 0);
-    eVertexDataType GetUVType(uint8 uvSet) const;
-    void ClearUV(uint8 uvSet);
+    friend void swap(Mesh& l, Mesh& r)
+    {
+        std::swap(l.m_vertexData, r.m_vertexData);
+        std::swap(l.m_vertexDataSize, r.m_vertexDataSize);
 
-    void SetColor(uint32 index, VertexDataElementType value, uint8 colorSet = 0);
-    void PushBackColor(VertexDataElementType value, uint8 colorSet = 0);
-    VertexDataElementType GetColor(uint32 index, uint8 colorSet = 0) const;
-    void SetColorType(eVertexDataType type, uint8 colorSet = 0);
-    eVertexDataType GetColorType(uint8 colorSet) const;
-    void ClearColor(uint8 colorSet);
+        std::swap(l.m_indexData, r.m_indexData);
+        std::swap(l.m_indexDataSize, r.m_indexDataSize);
 
-    void Cleanup();
-    void FromIntermediateMesh(const IntermediateMesh& iMesh);
+        std::swap(l.m_vertexCount, r.m_vertexCount);
+        std::swap(l.m_indexCount, r.m_indexCount);
+        swap(l.m_layout, r.m_layout);
+    }
+
+    inline static constexpr uint32 MaxTexcoordCount = 8;
+    inline static constexpr uint32 MaxColorCount = 8;
 
 private:
-    uint32 GetDataElementSize(const VertexDataElement& data) const;
-    Renderer::eDataFormat GetVertexDataFormat(const VertexDataElement& data) const;
-    bool CompareVertices(uint32 i, uint32 j) const;
+    void LayoutFromIntermediateMesh(const IntermediateMesh& iMesh);
 
-    byte * m_data = nullptr;
-    uint32 m_dataSize = 0;
-    uint32 m_dataStride = 0;
-    uint32 m_vertexCount = 0;
+    byte* m_vertexData = nullptr;
+    uint32 m_vertexDataSize = 0;
 
     byte* m_indexData = nullptr;
     uint32 m_indexDataSize = 0;
+
+    uint32 m_vertexCount = 0;
     uint32 m_indexCount = 0;
-    eIndexFormat m_indexFormat = eIndexFormat::Format32Bit;
-    Renderer::VertexLayout m_vertexLayout;
-    Renderer::VertexLayoutHandle m_handle;
-
-    bool m_isDirty = true;
-    bool m_isDynamic = false;
-
-    std::array<VertexDataElement, MaxUVCount> m_uv;
-    std::array<VertexDataElement, MaxColorCount> m_color;
+    Renderer::VertexLayout m_layout;
 };
 
-inline void Mesh::SetDynamic(bool isDynamic)
+inline uint32* Mesh::GetIndexPtr(uint32 i)
 {
-    m_isDynamic = isDynamic;
+    assert(i < m_indexCount);
+    return reinterpret_cast<uint32*>(m_indexData + sizeof(uint32) * i);
+}
+
+template <typename T>
+inline T* Mesh::GetVertexElementPtr(uint32 i, Renderer::eVertexSemantic semantic, uint8 semanticIndex)
+{
+    assert(i < m_vertexCount);
+    const Renderer::VertexDesc* e = m_layout.FindElement(semantic, semanticIndex);
+    if (e == nullptr)
+        return nullptr;
+    return reinterpret_cast<T*>(m_vertexData + m_layout.GetVertexStride() * i + e->Offset);
+}
+
+inline Vector3* Mesh::GetPositionPtr(uint32 i)
+{
+    return GetVertexElementPtr<Vector3>(i, Renderer::eVertexSemantic::Position, 0);
+}
+
+inline Vector3* Mesh::GetNormalPtr(uint32 i)
+{
+    return GetVertexElementPtr<Vector3>(i, Renderer::eVertexSemantic::Normal, 0);
+}
+
+inline Vector2* Mesh::GetUv0Ptr(uint32 i)
+{
+    return GetVertexElementPtr<Vector2>(i, Renderer::eVertexSemantic::Texcoord, 0);
+}
+
+inline Vector4* Mesh::GetColorPtr(uint32 i)
+{
+    return GetVertexElementPtr<Vector4>(i, Renderer::eVertexSemantic::Color, 0);
+}
+
+inline Renderer::eDataFormat Mesh::GetVertexElementFormat(Renderer::eVertexSemantic semantic, uint8 semanticIndex) const
+{
+    const Renderer::VertexDesc* e = m_layout.FindElement(semantic, semanticIndex);
+    if (e == nullptr)
+        return Renderer::eDataFormat::UNKNOWN;
+    return e->Format;
 }
 
 inline const byte* Mesh::GetVertexData() const
 {
-    return m_data;
+    return m_vertexData;
 }
 
 inline uint32 Mesh::GetVertexDataSize() const
 {
-    return m_dataSize;
+    return m_vertexDataSize;
 }
 
 inline uint32 Mesh::GetVertexDataStride() const
 {
-    return m_dataStride;
+    return m_layout.GetVertexStride();
 }
 
 inline uint32 Mesh::GetVertexCount() const
@@ -174,11 +185,6 @@ inline uint32 Mesh::GetIndexCount() const
     return m_indexCount;
 }
 
-inline eIndexFormat Mesh::GetIndexFormat() const
-{
-    return m_indexFormat;
-}
-
 inline const byte* Mesh::GetIndexData() const
 {
     return m_indexData;
@@ -189,99 +195,4 @@ inline uint32 Mesh::GetIndexDataSize() const
     return m_indexDataSize;
 }
 
-inline Renderer::VertexLayout Mesh::GetVertexLayout() const
-{
-    return m_vertexLayout;
-}
-
-inline Renderer::VertexLayoutHandle Mesh::GetVertexLayoutHandle() const
-{
-    return m_handle;
-}
-
-inline bool Mesh::GetIsDynamic() const
-{
-    return m_isDynamic;
-}
-
-inline bool Mesh::GetIsDirty() const
-{
-    return m_isDirty;
-}
-
-inline void Mesh::SetUV(uint32 index, VertexDataElementType value, uint8 uvSet)
-{
-    assert(uvSet < MaxUVCount);
-    assert(index < m_uv[uvSet].Data.size());
-    m_uv[uvSet].Data[index] = value;
-}
-
-inline void Mesh::PushBackUV(VertexDataElementType value, uint8 uvSet)
-{
-    assert(uvSet < MaxUVCount);
-    m_uv[uvSet].Data.push_back(value);
-}
-
-inline Mesh::VertexDataElementType Mesh::GetUV(uint32 index, uint8 uvSet) const
-{
-    assert(uvSet < MaxUVCount);
-    assert(index < m_uv[uvSet].Data.size());
-    return m_uv[uvSet].Data[index];
-}
-
-inline eVertexDataType Mesh::GetUVType(uint8 uvSet) const
-{
-    assert(uvSet < MaxUVCount);
-    return m_uv[uvSet].Type;
-}
-
-inline void Mesh::SetUVType(eVertexDataType type, uint8 uvSet)
-{
-    assert(uvSet < MaxUVCount);
-    m_uv[uvSet].Type = type;
-}
-
-inline void Mesh::ClearUV(uint8 uvSet)
-{
-    assert(uvSet < MaxUVCount);
-    m_uv[uvSet].Data.clear();
-}
-
-inline void Mesh::SetColor(uint32 index, VertexDataElementType value, uint8 colorSet)
-{
-    assert(colorSet < MaxColorCount);
-    assert(index < m_color[colorSet].Data.size());
-    m_color[colorSet].Data[index] = value;
-}
-
-inline void Mesh::PushBackColor(VertexDataElementType value, uint8 colorSet)
-{
-    assert(colorSet < MaxColorCount);
-    m_color[colorSet].Data.push_back(value);
-}
-
-inline Mesh::VertexDataElementType Mesh::GetColor(uint32 index, uint8 colorSet) const
-{
-    assert(colorSet < MaxColorCount);
-    assert(index < m_color[colorSet].Data.size());
-    return m_color[colorSet].Data[index];
-}
-
-inline void Mesh::SetColorType(eVertexDataType type, uint8 colorSet)
-{
-    assert(colorSet < MaxColorCount);
-    m_color[colorSet].Type = type;
-}
-
-inline eVertexDataType Mesh::GetColorType(uint8 colorSet) const
-{
-    assert(colorSet < MaxColorCount);
-    return m_color[colorSet].Type;
-}
-
-inline void Mesh::ClearColor(uint8 colorSet)
-{
-    assert(colorSet < MaxColorCount);
-    m_color[colorSet].Data.clear();
-}
 }

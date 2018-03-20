@@ -72,20 +72,28 @@ T GetMiddlePoint(T p1, T p2, std::vector<Vector3>& vertices, std::map<uint64, T>
     return i;
 }
 
+Mesh* m_plane = nullptr;
 Mesh* m_unitCube = nullptr;
+Mesh* m_tube = nullptr;
+Mesh* m_cone = nullptr;
 Mesh* m_unitSphere = nullptr;
 Mesh* m_unitIcosphere = nullptr;
 }
 
 void Init()
 {
+    m_plane = new Mesh(GeneratePlane());
+    m_cone = new Mesh(GenerateCone());
     m_unitCube = new Mesh(GenerateCube());
     m_unitSphere = new Mesh(GenerateSphere());
+    m_tube = new Mesh(GenerateTube());
     m_unitIcosphere = new Mesh(GenerateIcosphere());
 }
 
 void Shutdown()
 {
+    SafeDelete(m_plane);
+    SafeDelete(m_cone);
     SafeDelete(m_unitCube);
     SafeDelete(m_unitSphere);
     SafeDelete(m_unitIcosphere);
@@ -96,15 +104,13 @@ Mesh GeometryGenerator::GeneratePlane(float32 sizeX /*= 1.0f*/, float32 sizeZ /*
     uint32 resX = 2; // [a_vorontsov] 2 minimum.
     uint32 resZ = 2;
     uint32 vCount = resX * resZ;
-    uint32 stride = sizeof(Vector3) + sizeof(Vector3) + sizeof(Vector2);
-    byte* vData = new byte[vCount * stride];
-    byte* vDataBegin = vData;
 
-    Renderer::VertexLayout layout;
-    layout.AddElement(Renderer::eVertexSemantic::Position, 0, Renderer::eDataFormat::R32_G32_B32);
-    layout.AddElement(Renderer::eVertexSemantic::Normal, 0, Renderer::eDataFormat::R32_G32_B32);
-    layout.AddElement(Renderer::eVertexSemantic::Texcoord, 0, Renderer::eDataFormat::R32_G32);
+    uint32 nbFaces = (resX - 1) * (resZ - 1);
+    uint16 iCount = nbFaces * 6;
 
+    Mesh mesh(Renderer::VertexLayout::LayoutPos3Norm3Uv2, vCount, iCount);
+
+    uint32 index = 0;
     for (uint32 z = 0; z < resZ; z++)
     {
         // [a_vorontsov] [ -length / 2, length / 2 ]
@@ -113,56 +119,41 @@ Mesh GeometryGenerator::GeneratePlane(float32 sizeX /*= 1.0f*/, float32 sizeZ /*
         {
             // [a_vorontsov] [ -width / 2, width / 2 ]
             float32 xPos = (static_cast<float32>(x) / (resX - 1) - .5f) * sizeZ;
-            *reinterpret_cast<Vector3*>(vData) = Vector3(xPos, 0.0f, zPos);
-            vData += stride;
+            *mesh.GetPositionPtr(index++) = Vector3(xPos, 0.0f, zPos);
         }
     }
-    vData = vDataBegin;
-    vData += sizeof(Vector3);
+    index = 0;
 
     for (uint32 n = 0; n < vCount; n++)
-    {
-        *reinterpret_cast<Vector3*>(vData) = Vector3(0.0f, 1.0f, 0.0f);
-        vData += stride;
-    }
+        *mesh.GetNormalPtr(index++) = Vector3(0.0f, 1.0f, 0.0f);
+    index = 0;
 
-    vData = vDataBegin;
-    vData += sizeof(Vector3) + sizeof(Vector3);
     for (uint32 v = 0; v < resZ; v++)
     {
         for (uint32 u = 0; u < resX; u++)
-        {
-            *reinterpret_cast<Vector2*>(vData) = Vector2(static_cast<float32>(u) / (resX - 1), static_cast<float32>(v) / (resZ - 1));
-            vData += stride;
-        }
+            *mesh.GetUv0Ptr(index++) = Vector2(static_cast<float32>(u) / (resX - 1), static_cast<float32>(v) / (resZ - 1));
     }
-    vData = vDataBegin;
+    index = 0;
 
-    uint32 nbFaces = (resX - 1) * (resZ - 1);
-    uint16 iCount = nbFaces * 6;
-    uint16* iData = new uint16[iCount];
-    byte* iDataBegin = reinterpret_cast<byte*>(iData);
-    uint32 t = 0;
     for (uint16 face = 0; face < nbFaces; face++)
     {
         // [a_vorontsov] Retrieve lower left corner from face ind.
         uint32 i = face % (resX - 1) + (face / (resZ - 1) * resX);
 
-        *iData++ = i + resX;
-        *iData++ = i + 1;
-        *iData++ = i;
+        *mesh.GetIndexPtr(index++) = i + resX;
+        *mesh.GetIndexPtr(index++) = i + 1;
+        *mesh.GetIndexPtr(index++) = i;
 
-        *iData++ = i + resX;
-        *iData++ = i + resX + 1;
-        *iData++ = i + 1;
+        *mesh.GetIndexPtr(index++) = i + resX;
+        *mesh.GetIndexPtr(index++) = i + resX + 1;
+        *mesh.GetIndexPtr(index++) = i + 1;
     }
 
-    return { vDataBegin, stride * vCount, stride, vCount, iDataBegin, iCount * sizeof(uint16), iCount, eIndexFormat::Format16Bit, layout };
+    return mesh;
 }
 
 Mesh GenerateCube(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/, float32 sizeZ /*= 1.0f*/)
 {
-    Mesh res;
     float32 xHalf = sizeX * 0.5f;
     float32 yHalf = sizeY * 0.5f;
     float32 zHalf = sizeZ * 0.5f;
@@ -177,45 +168,40 @@ Mesh GenerateCube(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/, float32 si
     Vector3 p6(zHalf, xHalf, -yHalf);
     Vector3 p7(-zHalf, xHalf, -yHalf);
 
-    Renderer::VertexLayout layout;
-    layout.AddElement(Renderer::eVertexSemantic::Position, 0, Renderer::eDataFormat::R32_G32_B32);
-    layout.AddElement(Renderer::eVertexSemantic::Normal, 0, Renderer::eDataFormat::R32_G32_B32);
-    layout.AddElement(Renderer::eVertexSemantic::Texcoord, 0, Renderer::eDataFormat::R32_G32);
+    Mesh res(Renderer::VertexLayout::LayoutPos3Norm3Uv2, 24, 36);
+    uint32 ind = 0;
 
-    uint32 stride = sizeof(Vector3) + sizeof(Vector2) + sizeof(Vector3);
-    byte* vData = new byte[stride * 24];
-    byte* vertBegin = vData;
-    
     // [a_vorontsov] Bottom.
-    res.Position.push_back(p0);
-    res.Position.push_back(p1);
-    res.Position.push_back(p2);
-    res.Position.push_back(p3);
+    *res.GetPositionPtr(ind++) = p0;
+    *res.GetPositionPtr(ind++) = p1;
+    *res.GetPositionPtr(ind++) = p2;
+    *res.GetPositionPtr(ind++) = p3;
     // [a_vorontsov] Left.
-    res.Position.push_back(p7);
-    res.Position.push_back(p4);
-    res.Position.push_back(p0);
-    res.Position.push_back(p3);
+    *res.GetPositionPtr(ind++) = p7;
+    *res.GetPositionPtr(ind++) = p4;
+    *res.GetPositionPtr(ind++) = p0;
+    *res.GetPositionPtr(ind++) = p3;
     // [a_vorontsov] Front.
-    res.Position.push_back(p4);
-    res.Position.push_back(p5);
-    res.Position.push_back(p1);
-    res.Position.push_back(p0);
+    *res.GetPositionPtr(ind++) = p4;
+    *res.GetPositionPtr(ind++) = p5;
+    *res.GetPositionPtr(ind++) = p1;
+    *res.GetPositionPtr(ind++) = p0;
     // [a_vorontsov] Back.
-    res.Position.push_back(p6);
-    res.Position.push_back(p7);
-    res.Position.push_back(p3);
-    res.Position.push_back(p2);
+    *res.GetPositionPtr(ind++) = p6;
+    *res.GetPositionPtr(ind++) = p7;
+    *res.GetPositionPtr(ind++) = p3;
+    *res.GetPositionPtr(ind++) = p2;
     // [a_vorontsov] Right.
-    res.Position.push_back(p5);
-    res.Position.push_back(p6);
-    res.Position.push_back(p2);
-    res.Position.push_back(p1);
+    *res.GetPositionPtr(ind++) = p5;
+    *res.GetPositionPtr(ind++) = p6;
+    *res.GetPositionPtr(ind++) = p2;
+    *res.GetPositionPtr(ind++) = p1;
     // [a_vorontsov] Top.
-    res.Position.push_back(p7);
-    res.Position.push_back(p6);
-    res.Position.push_back(p5);
-    res.Position.push_back(p4);
+    *res.GetPositionPtr(ind++) = p7;
+    *res.GetPositionPtr(ind++) = p6;
+    *res.GetPositionPtr(ind++) = p5;
+    *res.GetPositionPtr(ind++) = p4;
+    ind = 0;
 
     Vector3 up(0.0f, 1.0f, 0.0f);
     Vector3 down(0.0f, -1.0f, 0.0f);
@@ -225,35 +211,36 @@ Mesh GenerateCube(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/, float32 si
     Vector3 right(-1.0f, 0.0f, 0.0f);
 
     // [a_vorontsov] Normals. Bottom.
-    res.Normal.push_back(down);
-    res.Normal.push_back(down);
-    res.Normal.push_back(down);
-    res.Normal.push_back(down);
+    *res.GetNormalPtr(ind++) = down;
+    *res.GetNormalPtr(ind++) = down;
+    *res.GetNormalPtr(ind++) = down;
+    *res.GetNormalPtr(ind++) = down;
     // [a_vorontsov] Left.
-    res.Normal.push_back(left);
-    res.Normal.push_back(left);
-    res.Normal.push_back(left);
-    res.Normal.push_back(left);
+    *res.GetNormalPtr(ind++) = left;
+    *res.GetNormalPtr(ind++) = left;
+    *res.GetNormalPtr(ind++) = left;
+    *res.GetNormalPtr(ind++) = left;
     // [a_vorontsov] Front.
-    res.Normal.push_back(front);
-    res.Normal.push_back(front);
-    res.Normal.push_back(front);
-    res.Normal.push_back(front);
+    *res.GetNormalPtr(ind++) = front;
+    *res.GetNormalPtr(ind++) = front;
+    *res.GetNormalPtr(ind++) = front;
+    *res.GetNormalPtr(ind++) = front;
     // [a_vorontsov] Back.
-    res.Normal.push_back(back);
-    res.Normal.push_back(back);
-    res.Normal.push_back(back);
-    res.Normal.push_back(back);
+    *res.GetNormalPtr(ind++) = back;
+    *res.GetNormalPtr(ind++) = back;
+    *res.GetNormalPtr(ind++) = back;
+    *res.GetNormalPtr(ind++) = back;
     // [a_vorontsov] Right.
-    res.Normal.push_back(right);
-    res.Normal.push_back(right);
-    res.Normal.push_back(right);
-    res.Normal.push_back(right);
+    *res.GetNormalPtr(ind++) = right;
+    *res.GetNormalPtr(ind++) = right;
+    *res.GetNormalPtr(ind++) = right;
+    *res.GetNormalPtr(ind++) = right;
     // [a_vorontsov] Top.
-    res.Normal.push_back(up);
-    res.Normal.push_back(up);
-    res.Normal.push_back(up);
-    res.Normal.push_back(up);
+    *res.GetNormalPtr(ind++) = up;
+    *res.GetNormalPtr(ind++) = up;
+    *res.GetNormalPtr(ind++) = up;
+    *res.GetNormalPtr(ind++) = up;
+    ind = 0;
 
     Vector2 _00(0.0f, 0.0f);
     Vector2 _10(1.0f, 0.0f);
@@ -261,92 +248,90 @@ Mesh GenerateCube(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/, float32 si
     Vector2 _11(1.0f, 1.0f);
 
     // [a_vorontsov] UV. Bottom.
-    res.SetUVType(eVertexDataType::Type_V2);
-    res.PushBackUV(_11);
-    res.PushBackUV(_01);
-    res.PushBackUV(_00);
-    res.PushBackUV(_10);
+    *res.GetUv0Ptr(ind++) = _11;
+    *res.GetUv0Ptr(ind++) = _01;
+    *res.GetUv0Ptr(ind++) = _00;
+    *res.GetUv0Ptr(ind++) = _10;
     // [a_vorontsov] Left.
-    res.PushBackUV(_11);
-    res.PushBackUV(_01);
-    res.PushBackUV(_00);
-    res.PushBackUV(_10);
+    *res.GetUv0Ptr(ind++) = _11;
+    *res.GetUv0Ptr(ind++) = _01;
+    *res.GetUv0Ptr(ind++) = _00;
+    *res.GetUv0Ptr(ind++) = _10;
     // [a_vorontsov] Front.
-    res.PushBackUV(_11);
-    res.PushBackUV(_01);
-    res.PushBackUV(_00);
-    res.PushBackUV(_10);
+    *res.GetUv0Ptr(ind++) = _11;
+    *res.GetUv0Ptr(ind++) = _01;
+    *res.GetUv0Ptr(ind++) = _00;
+    *res.GetUv0Ptr(ind++) = _10;
     // [a_vorontsov] Back.
-    res.PushBackUV(_11);
-    res.PushBackUV(_01);
-    res.PushBackUV(_00);
-    res.PushBackUV(_10);
+    *res.GetUv0Ptr(ind++) = _11;
+    *res.GetUv0Ptr(ind++) = _01;
+    *res.GetUv0Ptr(ind++) = _00;
+    *res.GetUv0Ptr(ind++) = _10;
     // [a_vorontsov] Right.
-    res.PushBackUV(_11);
-    res.PushBackUV(_01);
-    res.PushBackUV(_00);
-    res.PushBackUV(_10);
+    *res.GetUv0Ptr(ind++) = _11;
+    *res.GetUv0Ptr(ind++) = _01;
+    *res.GetUv0Ptr(ind++) = _00;
+    *res.GetUv0Ptr(ind++) = _10;
     // [a_vorontsov] Top.
-    res.PushBackUV(_11);
-    res.PushBackUV(_01);
-    res.PushBackUV(_00);
-    res.PushBackUV(_10);
+    *res.GetUv0Ptr(ind++) = _11;
+    *res.GetUv0Ptr(ind++) = _01;
+    *res.GetUv0Ptr(ind++) = _00;
+    *res.GetUv0Ptr(ind++) = _10;
+    ind = 0;
 
     // [a_vorontsov] Bottom.
-    res.Indices.push_back(3);
-    res.Indices.push_back(1);
-    res.Indices.push_back(0);
+    *res.GetIndexPtr(ind++) = 3;
+    *res.GetIndexPtr(ind++) = 1;
+    *res.GetIndexPtr(ind++) = 0;
 
-    res.Indices.push_back(3);
-    res.Indices.push_back(2);
-    res.Indices.push_back(1);
+    *res.GetIndexPtr(ind++) = 3;
+    *res.GetIndexPtr(ind++) = 2;
+    *res.GetIndexPtr(ind++) = 1;
 
     // [a_vorontsov] Left.
-    res.Indices.push_back(7);
-    res.Indices.push_back(5);
-    res.Indices.push_back(4);
+    *res.GetIndexPtr(ind++) = 7;
+    *res.GetIndexPtr(ind++) = 5;
+    *res.GetIndexPtr(ind++) = 4;
 
-    res.Indices.push_back(7);
-    res.Indices.push_back(6);
-    res.Indices.push_back(5);
+    *res.GetIndexPtr(ind++) = 7;
+    *res.GetIndexPtr(ind++) = 6;
+    *res.GetIndexPtr(ind++) = 5;
 
     // [a_vorontsov] Front.
-    res.Indices.push_back(11);
-    res.Indices.push_back(9);
-    res.Indices.push_back(8);
+    *res.GetIndexPtr(ind++) = 11;
+    *res.GetIndexPtr(ind++) = 9;
+    *res.GetIndexPtr(ind++) = 8;
 
-    res.Indices.push_back(11);
-    res.Indices.push_back(10);
-    res.Indices.push_back(9);
+    *res.GetIndexPtr(ind++) = 11;
+    *res.GetIndexPtr(ind++) = 10;
+    *res.GetIndexPtr(ind++) = 9;
 
     // [a_vorontsov] Back.
-    res.Indices.push_back(15);
-    res.Indices.push_back(13);
-    res.Indices.push_back(12);
+    *res.GetIndexPtr(ind++) = 15;
+    *res.GetIndexPtr(ind++) = 13;
+    *res.GetIndexPtr(ind++) = 12;
 
-    res.Indices.push_back(15);
-    res.Indices.push_back(14);
-    res.Indices.push_back(13);
+    *res.GetIndexPtr(ind++) = 15;
+    *res.GetIndexPtr(ind++) = 14;
+    *res.GetIndexPtr(ind++) = 13;
 
     // [a_vorontsov] Right.
-    res.Indices.push_back(19);
-    res.Indices.push_back(17);
-    res.Indices.push_back(16);
+    *res.GetIndexPtr(ind++) = 19;
+    *res.GetIndexPtr(ind++) = 17;
+    *res.GetIndexPtr(ind++) = 16;
 
-    res.Indices.push_back(19);
-    res.Indices.push_back(18);
-    res.Indices.push_back(17);
+    *res.GetIndexPtr(ind++) = 19;
+    *res.GetIndexPtr(ind++) = 18;
+    *res.GetIndexPtr(ind++) = 17;
 
     // [a_vorontsov] Top.
-    res.Indices.push_back(23);
-    res.Indices.push_back(21);
-    res.Indices.push_back(20);
+    *res.GetIndexPtr(ind++) = 23;
+    *res.GetIndexPtr(ind++) = 21;
+    *res.GetIndexPtr(ind++) = 20;
 
-    res.Indices.push_back(23);
-    res.Indices.push_back(22);
-    res.Indices.push_back(21);
-
-    res.PrepareForUpload();
+    *res.GetIndexPtr(ind++) = 23;
+    *res.GetIndexPtr(ind++) = 22;
+    *res.GetIndexPtr(ind++) = 21;
 
     return res;
 }
@@ -360,123 +345,88 @@ Mesh GenerateCone(float32 height /*= 1.0f*/, float32 bottomRadius /*= 0.25f*/, f
 
     uint32 vCount = nbVerticesCap + nbVerticesCap + nbSides * nbHeightSeg * 2 + 2;
 
-    uint32 stride = sizeof(Vector3) + sizeof(Vector3) + sizeof(Vector2);
-    byte* vData = new byte[stride * vCount];
-    byte* vDataBegin = vData;
+    uint32 nbTriangles = nbSides + nbSides + nbSides * 2;
+    uint32 iCount = nbTriangles * 3 + 3;
 
-    uint32 vert = 0;
+    Mesh mesh(Renderer::VertexLayout::LayoutPos3Norm3Uv2, vCount, iCount);
 
-    Renderer::VertexLayout layout;
-    layout.AddElement(Renderer::eVertexSemantic::Position, 0, Renderer::eDataFormat::R32_G32_B32);
-    layout.AddElement(Renderer::eVertexSemantic::Normal, 0, Renderer::eDataFormat::R32_G32_B32);
-    layout.AddElement(Renderer::eVertexSemantic::Texcoord, 0, Renderer::eDataFormat::R32_G32);
+    uint32 index = 0;
+
 
     // [a_vorontsov] Bottom cap.
-    *reinterpret_cast<Vector3*>(vData) = Vector3(0.0f, 0.0f, 0.0f);
-    vData += stride;
+    *mesh.GetPositionPtr(index++) = Vector3(0.0f, 0.0f, 0.0f);
 
-    vert++;
-    while (vert <= nbSides)
+    while (index <= nbSides)
     {
-        float32 rad = static_cast<float32>(vert) / nbSides * Math::TwoPI;
-        *reinterpret_cast<Vector3*>(vData) = Vector3(std::cos(rad) * bottomRadius, 0.0f, std::sin(rad) * bottomRadius);
-        vData += stride;
-        vert++;
+        float32 rad = static_cast<float32>(index) / nbSides * Math::TwoPI;
+        *mesh.GetPositionPtr(index++) = Vector3(std::cos(rad) * bottomRadius, 0.0f, std::sin(rad) * bottomRadius);
     }
 
     // [a_vorontsov] Top cap.
-    *reinterpret_cast<Vector3*>(vData) = Vector3(0.0f, height, 0.0f);
-    vData += stride;
-    vert++;
-    while (vert <= nbSides * 2 + 1)
+    *mesh.GetPositionPtr(index++) = Vector3(0.0f, height, 0.0f);
+    while (index <= nbSides * 2 + 1)
     {
-        float32 rad = static_cast<float32>(vert - nbSides - 1) / nbSides * Math::TwoPI;
-        *reinterpret_cast<Vector3*>(vData) = Vector3(std::cos(rad) * topRadius, height, std::sin(rad) * topRadius);
-        vData += stride;
-        vert++;
+        float32 rad = static_cast<float32>(index - nbSides - 1) / nbSides * Math::TwoPI;
+        *mesh.GetPositionPtr(index++) = Vector3(std::cos(rad) * topRadius, height, std::sin(rad) * topRadius);
     }
 
     // [a_vorontsov] Sides.
     int32 v = 0;
-    while (vert <= vCount - 4)
+    while (index <= vCount - 4)
     {
         float32 rad = static_cast<float32>(v) / nbSides * Math::TwoPI;
-        *reinterpret_cast<Vector3*>(vData) = Vector3(std::cos(rad) * topRadius, height, std::sin(rad) * topRadius);
-        vData += stride;
-        *reinterpret_cast<Vector3*>(vData) = Vector3(std::cos(rad) * bottomRadius, 0.0f, std::sin(rad) * bottomRadius);
-        vData += stride;
-        vert += 2;
+        *mesh.GetPositionPtr(index++) = Vector3(std::cos(rad) * topRadius, height, std::sin(rad) * topRadius);
+        *mesh.GetPositionPtr(index++) = Vector3(std::cos(rad) * bottomRadius, 0.0f, std::sin(rad) * bottomRadius);
         v++;
     }
-    *reinterpret_cast<Vector3*>(vData) = *reinterpret_cast<Vector3*>(vDataBegin + stride * (nbSides * 2 + 2));
-    vData += stride;
-    *reinterpret_cast<Vector3*>(vData) = *reinterpret_cast<Vector3*>(vDataBegin + stride * (nbSides * 2 + 3));
-    vData = vDataBegin;
-    vData += sizeof(Vector3);
+    *mesh.GetPositionPtr(index++) = *mesh.GetPositionPtr(nbSides * 2 + 2);
+    *mesh.GetPositionPtr(index++) = *mesh.GetPositionPtr(nbSides * 2 + 3);
 
-    vert = 0;
+    index = 0;
 
     // [a_vorontsov] Bottom cap.
-    while (vert <= nbSides)
-    {
-        *reinterpret_cast<Vector3*>(vData) = Vector3(0.0f, -1.0f, 0.0f);
-        vData += stride;
-        vert++;
-    }
+    while (index <= nbSides)
+        *mesh.GetNormalPtr(index++) = Vector3(0.0f, -1.0f, 0.0f);
 
     // [a_vorontsov] Top cap.
-    while (vert <= nbSides * 2 + 1)
-    {
-        *reinterpret_cast<Vector3*>(vData) = Vector3(0.0f, 1.0f, 0.0f);
-        vData += stride;
-        vert++;
-    }
+    while (index <= nbSides * 2 + 1)
+        *mesh.GetNormalPtr(index++) = Vector3(0.0f, 1.0f, 0.0f);
 
     // [a_vorontsov] Sides.
     v = 0;
-    while (vert <= vCount - 4)
+    while (index <= vCount - 4)
     {
         float32 rad = static_cast<float32>(v) / nbSides * Math::TwoPI;
         float32 cos = std::cos(rad);
         float32 sin = std::sin(rad);
 
-        *reinterpret_cast<Vector3*>(vData) = Vector3(cos, 0.0f, sin);
-        vData += stride;
-        *reinterpret_cast<Vector3*>(vData) = Vector3(cos, 0.0f, sin);
-        vData += stride;
-
-        vert += 2;
+        *mesh.GetNormalPtr(index++) = Vector3(cos, 0.0f, sin);
+        *mesh.GetNormalPtr(index++) = Vector3(cos, 0.0f, sin);
         v++;
     }
 
-    *reinterpret_cast<Vector3*>(vData) = *reinterpret_cast<Vector3*>(vDataBegin + stride * (nbSides * 2 + 2) + sizeof(Vector3));
-    vData += stride;
-    *reinterpret_cast<Vector3*>(vData) = *reinterpret_cast<Vector3*>(vDataBegin + stride * (nbSides * 2 + 2) + sizeof(Vector3));
-    vData = vDataBegin;
-    vData += sizeof(Vector3) + sizeof(Vector3);
+    *mesh.GetNormalPtr(index++) = *mesh.GetNormalPtr(nbSides * 2 + 2);
+    *mesh.GetNormalPtr(index++) = *mesh.GetNormalPtr(nbSides * 2 + 2);
 
+    index = 0;
     // [a_vorontsov] Bottom cap.
     uint32 u = 0;
-    *reinterpret_cast<Vector2*>(vData) = Vector2(0.5f, 0.5f);
-    vData += stride;
+    *mesh.GetUv0Ptr(index++) = Vector2(0.5f, 0.5f);
     u++;
     while (u <= nbSides)
     {
         float32 rad = static_cast<float32>(u) / nbSides * Math::TwoPI;
-        *reinterpret_cast<Vector2*>(vData) = Vector2(std::cos(rad) * 0.5f + 0.5f, std::sin(rad) * 0.5f + 0.5f);
-        vData += stride;
+        *mesh.GetUv0Ptr(index++) = Vector2(std::cos(rad) * 0.5f + 0.5f, std::sin(rad) * 0.5f + 0.5f);
         u++;
     }
 
     // [a_vorontsov] Top cap.
-    *reinterpret_cast<Vector2*>(vData) = Vector2(0.5f, 0.5f);
-    vData += stride;
+    *mesh.GetUv0Ptr(index++) = Vector2(0.5f, 0.5f);
     u++;
     while (u <= nbSides * 2 + 1)
     {
         float32 rad = static_cast<float32>(u) / nbSides * Math::TwoPI;
-        *reinterpret_cast<Vector2*>(vData) = Vector2(std::cos(rad) * 0.5f + 0.5f, std::sin(rad) * 0.5f + 0.5f);
-        vData += stride;
+        *mesh.GetUv0Ptr(index++) = Vector2(std::cos(rad) * 0.5f + 0.5f, std::sin(rad) * 0.5f + 0.5f);
         u++;
     }
 
@@ -485,65 +435,58 @@ Mesh GenerateCone(float32 height /*= 1.0f*/, float32 bottomRadius /*= 0.25f*/, f
     while (u <= vCount - 4)
     {
         float32 t = static_cast<float32>(u_sides) / nbSides;
-        *reinterpret_cast<Vector2*>(vData) = Vector2(t, 1.0f);
-        vData += stride;
-        *reinterpret_cast<Vector2*>(vData) = Vector2(t, 0.0f);
-        vData += stride;
+        *mesh.GetUv0Ptr(index++) = Vector2(t, 1.0f);
+        *mesh.GetUv0Ptr(index++) = Vector2(t, 0.0f);
         u += 2;
         u_sides++;
     }
-    *reinterpret_cast<Vector2*>(vData) = Vector2(1.0f, 1.0f);
-    vData += stride;
-    *reinterpret_cast<Vector2*>(vData) = Vector2(1.0f, 0.0f);
-    vData += stride;
+    *mesh.GetUv0Ptr(index++) = Vector2(1.0f, 1.0f);
+    *mesh.GetUv0Ptr(index++) = Vector2(1.0f, 0.0f);
 
-    uint32 nbTriangles = nbSides + nbSides + nbSides * 2;
-    uint32 iCount = nbTriangles * 3 + 3;
-    uint16* iData = new uint16[iCount];
-    byte* iDataBegin = reinterpret_cast<byte*>(iData);
+    index = 0;
 
     // [a_vorontsov] Bottom cap.
     uint32 tri = 0;
     while (tri < nbSides - 1)
     {
-        *iData++ = 0;
-        *iData++ = tri + 1;
-        *iData++ = tri + 2;
+        *mesh.GetIndexPtr(index++) = 0;
+        *mesh.GetIndexPtr(index++) = tri + 1;
+        *mesh.GetIndexPtr(index++) = tri + 2;
         tri++;
     }
-    *iData++ = 0;
-    *iData++ = tri + 1;
-    *iData++ = 1;
+    *mesh.GetIndexPtr(index++) = 0;
+    *mesh.GetIndexPtr(index++) = tri + 1;
+    *mesh.GetIndexPtr(index++) = 1;
     tri++;
 
     // [a_vorontsov] Top cap.
     while (tri < nbSides * 2)
     {
-        *iData++ = tri + 2;
-        *iData++ = tri + 1;
-        *iData++ = nbVerticesCap;
+        *mesh.GetIndexPtr(index++) = tri + 2;
+        *mesh.GetIndexPtr(index++) = tri + 1;
+        *mesh.GetIndexPtr(index++) = nbVerticesCap;
         tri++;
     }
 
-    *iData++ = nbVerticesCap + 1;
-    *iData++ = tri + 1;
-    *iData++ = nbVerticesCap;
+    *mesh.GetIndexPtr(index++) = nbVerticesCap + 1;
+    *mesh.GetIndexPtr(index++) = tri + 1;
+    *mesh.GetIndexPtr(index++) = nbVerticesCap;
     tri += 2;
 
     // [a_vorontsov] Sides.
     while (tri <= nbTriangles)
     {
-        *iData++ = tri + 2;
-        *iData++ = tri + 1;
-        *iData++ = tri + 0;
+        *mesh.GetIndexPtr(index++) = tri + 2;
+        *mesh.GetIndexPtr(index++) = tri + 1;
+        *mesh.GetIndexPtr(index++) = tri + 0;
         tri++;
 
-        *iData++ = tri + 1;
-        *iData++ = tri + 2;
-        *iData++ = tri + 0;
+        *mesh.GetIndexPtr(index++) = tri + 1;
+        *mesh.GetIndexPtr(index++) = tri + 2;
+        *mesh.GetIndexPtr(index++) = tri + 0;
         tri++;
     }
-    return { vDataBegin, vCount * stride, stride, vCount, iDataBegin, iCount * sizeof(uint16), iCount, eIndexFormat::Format16Bit, layout };
+    return mesh;
 }
 
 Mesh GenerateSphere(float32 radius /*=1.0f*/)
@@ -552,17 +495,15 @@ Mesh GenerateSphere(float32 radius /*=1.0f*/)
     int32 nbLat = 16;
 
     uint32 vCount = (nbLong + 1) * nbLat + 2;
-    uint32 stride = sizeof(Vector3) + sizeof(Vector3) + sizeof(Vector2);
-    byte* vData = new byte[vCount * stride];
-    byte* vDataBegin = vData;
 
-    Renderer::VertexLayout layout;
-    layout.AddElement(Renderer::eVertexSemantic::Position, 0, Renderer::eDataFormat::R32_G32_B32);
-    layout.AddElement(Renderer::eVertexSemantic::Normal, 0, Renderer::eDataFormat::R32_G32_B32);
-    layout.AddElement(Renderer::eVertexSemantic::Texcoord, 0, Renderer::eDataFormat::R32_G32);
+    uint32 nbFaces = vCount;
+    uint32 nbTriangles = nbFaces * 2;
+    uint32 iCount = nbTriangles * 3;
 
-    *reinterpret_cast<Vector3*>(vData) = Vector3(0.0f, 1.0f, 0.0) * radius;
-    vData += stride;
+    Mesh mesh(Renderer::VertexLayout::LayoutPos3Norm3Uv2, vCount, iCount);
+
+    uint32 index = 0;
+    *mesh.GetPositionPtr(index++) = Vector3(0.0f, 1.0f, 0.0) * radius;
 
     for (int32 lat = 0; lat < nbLat; lat++)
     {
@@ -576,49 +517,36 @@ Mesh GenerateSphere(float32 radius /*=1.0f*/)
             float32 sin2 = std::sin(a2);
             float32 cos2 = std::cos(a2);
 
-            *reinterpret_cast<Vector3*>(vData) = Vector3(sin1 * cos2, cos1, sin1 * sin2) * radius;
-            vData += stride;
+            *mesh.GetPositionPtr(index++) = Vector3(sin1 * cos2, cos1, sin1 * sin2) * radius;
         }
     }
-    *reinterpret_cast<Vector3*>(vData) = Vector3(0.0f, -1.0f, 0.0f) * radius;
-    vData = vDataBegin;
-    vData += sizeof(Vector3);
+    *mesh.GetPositionPtr(index++) = Vector3(0.0f, -1.0f, 0.0f) * radius;
+    index = 0;
 
     for (uint32 n = 0; n < vCount; n++)
     {
-        *reinterpret_cast<Vector3*>(vData) = *reinterpret_cast<Vector3*>(vDataBegin + stride * n);
-        vData += stride;
+        *mesh.GetNormalPtr(index) = *mesh.GetPositionPtr(index);
+        ++index;
     }
+    index = 0;
 
-    vData = vDataBegin;
-    vData += sizeof(Vector3) + sizeof(Vector3);
-
-    *reinterpret_cast<Vector2*>(vData) = Vector2(0.0f, 1.0f);
-    vData += stride;
+    *mesh.GetUv0Ptr(index++) = Vector2(0.0f, 1.0f);
 
     for (int lat = 0; lat < nbLat; lat++)
     {
         for (int lon = 0; lon <= nbLong; lon++)
-        {
-            *reinterpret_cast<Vector2*>(vData) = Vector2(static_cast<float32>(lon) / nbLong, 1.0f - static_cast<float32>(lat + 1) / (nbLat + 1));
-            vData += stride;
-        }
+            *mesh.GetUv0Ptr(index++) = Vector2(static_cast<float32>(lon) / nbLong, 1.0f - static_cast<float32>(lat + 1) / (nbLat + 1));
     }
-    *reinterpret_cast<Vector2*>(vData) = Vector2(0.0f, 0.0f);
+    *mesh.GetUv0Ptr(index++) = Vector2(0.0f, 0.0f);
 
-    uint32 nbFaces = vCount;
-    uint32 nbTriangles = nbFaces * 2;
-    uint32 iCount = nbTriangles * 3;
-    uint32* iData = new uint32[iCount];
-    byte* iDataBegin = reinterpret_cast<byte*>(iData);
+    index = 0;
 
     // [a_vorontsov] Top cap.
-    int32 i = 0;
     for (int32 lon = 0; lon < nbLong; lon++)
     {
-        *iData++ = lon + 2;
-        *iData++ = lon + 1;
-        *iData++ = 0;
+        *mesh.GetIndexPtr(index++) = lon + 2;
+        *mesh.GetIndexPtr(index++) = lon + 1;
+        *mesh.GetIndexPtr(index++) = 0;
     }
 
     // [a_vorontsov] Middle.
@@ -629,24 +557,24 @@ Mesh GenerateSphere(float32 radius /*=1.0f*/)
             int32 current = lon + lat * (nbLong + 1) + 1;
             int32 next = current + nbLong + 1;
 
-            *iData++ = current;
-            *iData++ = current + 1;
-            *iData++ = next + 1;
+            *mesh.GetIndexPtr(index++) = current;
+            *mesh.GetIndexPtr(index++) = current + 1;
+            *mesh.GetIndexPtr(index++) = next + 1;
 
-            *iData++ = current;
-            *iData++ = next + 1;
-            *iData++ = next;
+            *mesh.GetIndexPtr(index++) = current;
+            *mesh.GetIndexPtr(index++) = next + 1;
+            *mesh.GetIndexPtr(index++) = next;
         }
     }
 
     // [a_vorontsov] Bottom cap.
     for (int32 lon = 0; lon < nbLong; lon++)
     {
-        *iData++ = vCount - 1;
-        *iData++ = vCount - (lon + 2) - 1;
-        *iData++ = vCount - (lon + 1) - 1;
+        *mesh.GetIndexPtr(index++)  = vCount - 1;
+        *mesh.GetIndexPtr(index++)  = vCount - (lon + 2) - 1;
+        *mesh.GetIndexPtr(index++)  = vCount - (lon + 1) - 1;
     }
-    return { vDataBegin, stride * vCount, stride, vCount, iDataBegin, iCount * sizeof(uint32), iCount, eIndexFormat::Format32Bit, layout };
+    return mesh;
 }
 
 Mesh GenerateTube(float32 height /*= 1.0f*/, float32 bottomRadius1 /*= 0.5f*/, float32 bottomRadius2 /*= 0.15f*/, float32 topRadius1 /*= 0.5f*/, float32 topRadius2 /*= 0.15f*/)
@@ -658,52 +586,43 @@ Mesh GenerateTube(float32 height /*= 1.0f*/, float32 bottomRadius1 /*= 0.5f*/, f
     uint32 nbVerticesSides = nbSides * 2 + 2;
     uint32 vCount = nbVerticesCap * 2 + nbVerticesSides * 2;
 
-    uint32 stride = sizeof(Vector3) + sizeof(Vector3) + sizeof(Vector2);
-    byte* vData = new byte[vCount * stride];
-    byte* vDataBegin = vData;
+    int32 nbFace = nbSides * 4;
+    int32 nbTriangles = nbFace * 2;
+    uint32 iCount = nbTriangles * 3;
 
-    uint32 vert = 0;
+    Mesh mesh(Renderer::VertexLayout::LayoutPos3Norm3Uv2, vCount, iCount);
 
-    Renderer::VertexLayout layout;
-    layout.AddElement(Renderer::eVertexSemantic::Position, 0, Renderer::eDataFormat::R32_G32_B32);
-    layout.AddElement(Renderer::eVertexSemantic::Normal, 0, Renderer::eDataFormat::R32_G32_B32);
-    layout.AddElement(Renderer::eVertexSemantic::Texcoord, 0, Renderer::eDataFormat::R32_G32);
+    uint32 index = 0;
 
     // [a_vorontsov] Bottom cap.
     int32 sideCounter = 0;
-    while (vert < nbVerticesCap)
+    while (index < nbVerticesCap)
     {
         sideCounter = sideCounter == nbSides ? 0 : sideCounter;
 
         float32 r1 = static_cast<float32>(sideCounter++) / nbSides * Math::TwoPI;
         float32 cos = std::cos(r1);
         float32 sin = std::sin(r1);
-        *reinterpret_cast<Vector3*>(vData) = Vector3(cos * (bottomRadius1 - bottomRadius2 * 0.5f), 0.0f, sin * (bottomRadius1 - bottomRadius2 * 0.5f));
-        vData += stride;
-        *reinterpret_cast<Vector3*>(vData) = Vector3(cos * (bottomRadius1 + bottomRadius2 * 0.5f), 0.0f, sin * (bottomRadius1 + bottomRadius2 * 0.5f));
-        vData += stride;
-        vert += 2;
+        *mesh.GetPositionPtr(index++) = Vector3(cos * (bottomRadius1 - bottomRadius2 * 0.5f), 0.0f, sin * (bottomRadius1 - bottomRadius2 * 0.5f));
+        *mesh.GetPositionPtr(index++) = Vector3(cos * (bottomRadius1 + bottomRadius2 * 0.5f), 0.0f, sin * (bottomRadius1 + bottomRadius2 * 0.5f));
     }
 
     // [a_vorontsov] Top cap.
     sideCounter = 0;
-    while (vert < nbVerticesCap * 2)
+    while (index < nbVerticesCap * 2)
     {
         sideCounter = sideCounter == nbSides ? 0 : sideCounter;
 
         float32 r1 = static_cast<float32>(sideCounter++) / nbSides * Math::TwoPI;
         float32 cos = std::cos(r1);
         float32 sin = std::sin(r1);
-        *reinterpret_cast<Vector3*>(vData) = Vector3(cos * (topRadius1 - topRadius2 * 0.5f), height, sin * (topRadius1 - topRadius2 * 0.5f));
-        vData += stride;
-        *reinterpret_cast<Vector3*>(vData) = Vector3(cos * (topRadius1 + topRadius2 * 0.5f), height, sin * (topRadius1 + topRadius2 * 0.5f));
-        vData += stride;
-        vert += 2;
+        *mesh.GetPositionPtr(index++) = Vector3(cos * (topRadius1 - topRadius2 * 0.5f), height, sin * (topRadius1 - topRadius2 * 0.5f));
+        *mesh.GetPositionPtr(index++) = Vector3(cos * (topRadius1 + topRadius2 * 0.5f), height, sin * (topRadius1 + topRadius2 * 0.5f));
     }
 
     // [a_vorontsov] Sides (out).
     sideCounter = 0;
-    while (vert < nbVerticesCap * 2 + nbVerticesSides)
+    while (index < nbVerticesCap * 2 + nbVerticesSides)
     {
         sideCounter = sideCounter == nbSides ? 0 : sideCounter;
 
@@ -711,16 +630,13 @@ Mesh GenerateTube(float32 height /*= 1.0f*/, float32 bottomRadius1 /*= 0.5f*/, f
         float32 cos = std::cos(r1);
         float32 sin = std::sin(r1);
 
-        *reinterpret_cast<Vector3*>(vData) = Vector3(cos * (topRadius1 + topRadius2 * .5f), height, sin * (topRadius1 + topRadius2 * 0.5f));
-        vData += stride;
-        *reinterpret_cast<Vector3*>(vData) = Vector3(cos * (bottomRadius1 + bottomRadius2 * 0.5f), 0.0f, sin * (bottomRadius1 + bottomRadius2 * 0.5f));
-        vData += stride;
-        vert += 2;
+        *mesh.GetPositionPtr(index++) = Vector3(cos * (topRadius1 + topRadius2 * .5f), height, sin * (topRadius1 + topRadius2 * 0.5f));
+        *mesh.GetPositionPtr(index++) = Vector3(cos * (bottomRadius1 + bottomRadius2 * 0.5f), 0.0f, sin * (bottomRadius1 + bottomRadius2 * 0.5f));
     }
 
     // [a_vorontsov] Sides (in).
     sideCounter = 0;
-    while (vert < vCount)
+    while (index < vCount)
     {
         sideCounter = sideCounter == nbSides ? 0 : sideCounter;
 
@@ -728,137 +644,95 @@ Mesh GenerateTube(float32 height /*= 1.0f*/, float32 bottomRadius1 /*= 0.5f*/, f
         float32 cos = std::cos(r1);
         float32 sin = std::sin(r1);
 
-        *reinterpret_cast<Vector3*>(vData) = Vector3(cos * (topRadius1 - topRadius2 * 0.5f), height, sin * (topRadius1 - topRadius2 * 0.5f));
-        vData += stride;
-        *reinterpret_cast<Vector3*>(vData) = Vector3(cos * (bottomRadius1 - bottomRadius2 * 0.5f), 0.0f, sin * (bottomRadius1 - bottomRadius2 * 0.5f));
-        vData += stride;
-        vert += 2;
+        *mesh.GetPositionPtr(index++) = Vector3(cos * (topRadius1 - topRadius2 * 0.5f), height, sin * (topRadius1 - topRadius2 * 0.5f));
+        *mesh.GetPositionPtr(index++) = Vector3(cos * (bottomRadius1 - bottomRadius2 * 0.5f), 0.0f, sin * (bottomRadius1 - bottomRadius2 * 0.5f));
     }
 
-    vert = 0;
-    vData = vDataBegin;
-    vData += sizeof(Vector3);
+    index = 0;
     // [a_vorontsov] Bottom cap.
-    while (vert < nbVerticesCap)
-    {
-        *reinterpret_cast<Vector3*>(vData) = Vector3(0.0f, -1.0f, 0.0f);
-        vData += stride;
-        vert++;
-    }
+    while (index < nbVerticesCap)
+        *mesh.GetNormalPtr(index++) = Vector3(0.0f, -1.0f, 0.0f);
 
     // [a_vorontsov] Top cap.
-    while (vert < nbVerticesCap * 2)
-    {
-        *reinterpret_cast<Vector3*>(vData) = Vector3(0.0f, 1.0f, 0.0f);
-        vData += stride;
-        vert++;
-    }
+    while (index < nbVerticesCap * 2)
+        *mesh.GetNormalPtr(index++) = Vector3(0.0f, 1.0f, 0.0f);
 
     // [a_vorontsov] Sides (out).
     sideCounter = 0;
-    while (vert < nbVerticesCap * 2 + nbVerticesSides)
+    while (index < nbVerticesCap * 2 + nbVerticesSides)
     {
         sideCounter = sideCounter == nbSides ? 0 : sideCounter;
 
         float32 r1 = static_cast<float32>(sideCounter++) / nbSides * Math::TwoPI;
 
-        *reinterpret_cast<Vector3*>(vData) = Vector3(std::cos(r1), 0.0f, std::sin(r1));
-        vData += stride;
-        *reinterpret_cast<Vector3*>(vData) = Vector3(std::cos(r1), 0.0f, std::sin(r1));
-        vData += stride;
-
-        vert += 2;
+        *mesh.GetNormalPtr(index++) = Vector3(std::cos(r1), 0.0f, std::sin(r1));
+        *mesh.GetNormalPtr(index++) = Vector3(std::cos(r1), 0.0f, std::sin(r1));
     }
 
     // [a_vorontsov] Sides (in).
     sideCounter = 0;
-    while (vert < vCount)
+    while (index < vCount)
     {
         sideCounter = sideCounter == nbSides ? 0 : sideCounter;
 
         float32 r1 = static_cast<float32>(sideCounter++) / nbSides * Math::TwoPI;
 
-        *reinterpret_cast<Vector3*>(vData) = Vector3(-std::cos(r1), 0.0f, -std::sin(r1));
-        vData += stride;
-        *reinterpret_cast<Vector3*>(vData) = Vector3(-std::cos(r1), 0.0f, -std::sin(r1));
-        vData += stride;
-
-        vert += 2;
+        *mesh.GetNormalPtr(index++) = Vector3(-std::cos(r1), 0.0f, -std::sin(r1));
+        *mesh.GetNormalPtr(index++) = Vector3(-std::cos(r1), 0.0f, -std::sin(r1));
     }
-    vData = vDataBegin;
-    vData += sizeof(Vector3) + sizeof(Vector3);
+    index = 0;
 
-    vert = 0;
     // [a_vorontsov] Bottom cap.
     sideCounter = 0;
-    while (vert < nbVerticesCap)
+    while (index < nbVerticesCap)
     {
         float32 t = static_cast<float32>(sideCounter++) / nbSides;
-        *reinterpret_cast<Vector2*>(vData) = Vector2(0.0f, t);
-        vData += stride;
-        *reinterpret_cast<Vector2*>(vData) = Vector2(1.0f, t);
-        vData += stride;
-
-        vert += 2;
+        *mesh.GetUv0Ptr(index++) = Vector2(0.0f, t);
+        *mesh.GetUv0Ptr(index++) = Vector2(1.0f, t);
     }
 
     // [a_vorontsov] Top cap.
     sideCounter = 0;
-    while (vert < nbVerticesCap * 2)
+    while (index < nbVerticesCap * 2)
     {
         float32 t = static_cast<float32>(sideCounter++) / nbSides;
-        *reinterpret_cast<Vector2*>(vData) = Vector2(0.0f, t);
-        vData += stride;
-        *reinterpret_cast<Vector2*>(vData) = Vector2(1.0f, t);
-        vData += stride;
-        vert += 2;
+        *mesh.GetUv0Ptr(index++) = Vector2(0.0f, t);
+        *mesh.GetUv0Ptr(index++) = Vector2(1.0f, t);
     }
 
     // [a_vorontsov] Sides (out).
     sideCounter = 0;
-    while (vert < nbVerticesCap * 2 + nbVerticesSides)
+    while (index < nbVerticesCap * 2 + nbVerticesSides)
     {
         float32 t = static_cast<float32>(sideCounter++) / nbSides;
-        *reinterpret_cast<Vector2*>(vData) = Vector2(0.0f, t);
-        vData += stride;
-        *reinterpret_cast<Vector2*>(vData) = Vector2(1.0f, t);
-        vData += stride;
-        vert += 2;
+        *mesh.GetUv0Ptr(index++) = Vector2(0.0f, t);
+        *mesh.GetUv0Ptr(index++) = Vector2(1.0f, t);
     }
 
     // [a_vorontsov] Sides (in).
     sideCounter = 0;
-    while (vert < vCount)
+    while (index < vCount)
     {
         float32 t = static_cast<float>(sideCounter++) / nbSides;
-        *reinterpret_cast<Vector2*>(vData) = Vector2(0.0f, t);
-        vData += stride;
-        *reinterpret_cast<Vector2*>(vData) = Vector2(1.0f, t);
-        vData += stride;
-        vert += 2;
+        *mesh.GetUv0Ptr(index++) = Vector2(0.0f, t);
+        *mesh.GetUv0Ptr(index++) = Vector2(1.0f, t);
     }
-
-    int32 nbFace = nbSides * 4;
-    int32 nbTriangles = nbFace * 2;
-    uint32 iCount = nbTriangles * 3;
-    uint16* iData = new uint16[iCount];
-    byte* iDataBegin = reinterpret_cast<byte*>(iData);
+    index = 0;
 
     // [a_vorontsov] Bottom cap.
-    int32 i = 0;
     sideCounter = 0;
     while (sideCounter < nbSides)
     {
         int16 current = sideCounter * 2;
         int16 next = sideCounter * 2 + 2;
 
-        *iData++ = next + 1;
-        *iData++ = next;
-        *iData++ = current;
+        *mesh.GetIndexPtr(index++) = next + 1;
+        *mesh.GetIndexPtr(index++) = next;
+        *mesh.GetIndexPtr(index++) = current;
 
-        *iData++ = current + 1;
-        *iData++ = next + 1;
-        *iData++ = current;
+        *mesh.GetIndexPtr(index++) = current + 1;
+        *mesh.GetIndexPtr(index++) = next + 1;
+        *mesh.GetIndexPtr(index++) = current;
 
         sideCounter++;
     }
@@ -869,13 +743,13 @@ Mesh GenerateTube(float32 height /*= 1.0f*/, float32 bottomRadius1 /*= 0.5f*/, f
         int16 current = sideCounter * 2 + 2;
         int16 next = sideCounter * 2 + 4;
 
-        *iData++ = current;
-        *iData++ = next;
-        *iData++ = next + 1;
+        *mesh.GetIndexPtr(index++) = current;
+        *mesh.GetIndexPtr(index++) = next;
+        *mesh.GetIndexPtr(index++) = next + 1;
 
-        *iData++ = current;
-        *iData++ = next + 1;
-        *iData++ = current + 1;
+        *mesh.GetIndexPtr(index++) = current;
+        *mesh.GetIndexPtr(index++) = next + 1;
+        *mesh.GetIndexPtr(index++) = current + 1;
 
         sideCounter++;
     }
@@ -886,13 +760,13 @@ Mesh GenerateTube(float32 height /*= 1.0f*/, float32 bottomRadius1 /*= 0.5f*/, f
         int16 current = sideCounter * 2 + 4;
         int16 next = sideCounter * 2 + 6;
 
-        *iData++ = current;
-        *iData++ = next;
-        *iData++ = next + 1;
+        *mesh.GetIndexPtr(index++) = current;
+        *mesh.GetIndexPtr(index++) = next;
+        *mesh.GetIndexPtr(index++) = next + 1;
 
-        *iData++ = current;
-        *iData++ = next + 1;
-        *iData++ = current + 1;
+        *mesh.GetIndexPtr(index++) = current;
+        *mesh.GetIndexPtr(index++) = next + 1;
+        *mesh.GetIndexPtr(index++) = current + 1;
 
         sideCounter++;
     }
@@ -904,27 +778,23 @@ Mesh GenerateTube(float32 height /*= 1.0f*/, float32 bottomRadius1 /*= 0.5f*/, f
         int16 current = sideCounter * 2 + 6;
         int16 next = sideCounter * 2 + 8;
 
-        *iData++ = next + 1;
-        *iData++ = next;
-        *iData++ = current;
+        *mesh.GetIndexPtr(index++) = next + 1;
+        *mesh.GetIndexPtr(index++) = next;
+        *mesh.GetIndexPtr(index++) = current;
 
-        *iData++ = current + 1;
-        *iData++ = next + 1;
-        *iData++ = current;
+        *mesh.GetIndexPtr(index++) = current + 1;
+        *mesh.GetIndexPtr(index++) = next + 1;
+        *mesh.GetIndexPtr(index++) = current;
 
         sideCounter++;
     }
-    return { vDataBegin, vCount * stride, stride, vCount, iDataBegin, iCount * sizeof(uint16), iCount, eIndexFormat::Format16Bit, layout };
+    return mesh;
 }
 
 Mesh GenerateIcosphere(int32 recursionLevel /*= 3*/, float32 radius /*= 1.0f*/)
 {
     std::vector<Vector3> positions;
     std::map<uint64, uint16> middlePointIndexCache;
-
-    Renderer::VertexLayout layout;
-    layout.AddElement(Renderer::eVertexSemantic::Position, 0, Renderer::eDataFormat::R32_G32_B32);
-    layout.AddElement(Renderer::eVertexSemantic::Normal, 0, Renderer::eDataFormat::R32_G32_B32);
 
     // [a_vorontsov] Create 12 vertices of a icosahedron.
     float32 t = (1.0f + std::sqrt(5.0f)) / 2.0f;
@@ -994,28 +864,26 @@ Mesh GenerateIcosphere(int32 recursionLevel /*= 3*/, float32 radius /*= 1.0f*/)
         }
         faces = faces2;
     }
-    uint32 stride = sizeof(Vector3) + sizeof(Vector3);
-    byte* vData = new byte[stride * positions.size()];
-    byte* vDataBegin = vData;
+    uint32 vCount = static_cast<uint32>(positions.size());
+    uint32 iCount = static_cast<uint32>(faces.size()) * 3;
+
+    Mesh mesh(Renderer::VertexLayout::LayoutPos3Norm3, vCount, iCount);
+    uint32 index = 0;
     for (const auto& pos : positions)
     {
-        *reinterpret_cast<Vector3*>(vData) = pos; // [a_vorontsov] Position.
-        vData += sizeof(Vector3);
-        *reinterpret_cast<Vector3*>(vData) = pos; // [a_vorontsov] Normal.
-        vData += sizeof(Vector3);
+        *mesh.GetPositionPtr(index) = pos; // [a_vorontsov] Position.
+        *mesh.GetNormalPtr(index) = pos; // [a_vorontsov] Normal.
+        ++index;
     }
+    index = 0;
 
-    uint32 iCount = static_cast<uint32>(faces.size()) * 3;
-    uint16* indices = new uint16[iCount];
-    byte* iDataBegin = reinterpret_cast<byte*>(indices);
     for (const auto& face : faces)
     {
-        *indices++ = face.i1;
-        *indices++ = face.i2;
-        *indices++ = face.i3;
+        *mesh.GetIndexPtr(index++) = face.i1;
+        *mesh.GetIndexPtr(index++) = face.i2;
+        *mesh.GetIndexPtr(index++) = face.i3;
     }
-    uint32 vCount = static_cast<uint32>(positions.size());
-    return { vDataBegin, stride * vCount, stride, vCount, iDataBegin, iCount * sizeof(uint32), iCount, eIndexFormat::Format16Bit, layout };
+    return mesh;
 }
 
 Mesh* GetUnitCube()
@@ -1031,6 +899,21 @@ Mesh* GetUnitSphere()
 Mesh* GetUnitIcosphere()
 {
     return m_unitIcosphere;
+}
+
+Mesh* GetPlane()
+{
+    return m_plane;
+}
+
+Mesh* GetCone()
+{
+    return m_cone;
+}
+
+Mesh* GetTube()
+{
+    return m_tube;
 }
 
 }
