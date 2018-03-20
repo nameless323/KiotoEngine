@@ -9,6 +9,7 @@
 
 #include "AssetsSystem/AssetsSystem.h"
 #include "Core/CoreHelpers.h"
+#include "Render/Material.h"
 
 #include "yaml-cpp/yaml.h"
 
@@ -20,6 +21,10 @@ using std::string;
 namespace
 {
 string AssetsPath;
+
+static RenderAssetsManager<Renderer::Texture> m_textureManager;
+static RenderAssetsManager<Renderer::Shader> m_shaderManager;
+static RenderAssetsManager<Renderer::Material> m_materialManager;
 }
 
 void GetAssetsPath()
@@ -100,7 +105,7 @@ bool CheckIfFileExist(const std::string& path)
     return false;
 }
 
-void UnloadAsset(std::string assetPath)
+void UnloadAsset(const std::string& assetPath)
 {
     auto it = m_assets.find(assetPath);
     if (it != m_assets.end())
@@ -133,4 +138,37 @@ std::string ReadFileAsString(const std::string& path)
     return buffer.str();
 }
 
+template <typename T>
+RenderAssetsManager<T>* GetRenderAssetsManager()
+{
+    throw "Not implemented";
+}
+
+template <>
+RenderAssetsManager<Renderer::Texture>* GetRenderAssetsManager()
+{
+    return &m_textureManager;
+}
+
+template <>
+RenderAssetsManager<Renderer::Shader>* GetRenderAssetsManager()
+{
+    return &m_shaderManager;
+}
+
+template <>
+RenderAssetsManager<Renderer::Material>* GetRenderAssetsManager()
+{
+    return &m_materialManager;
+}
+
+bool CheckIfAssetLoaded(const std::string& assetPath)
+{
+    auto it = m_assets.find(assetPath);
+    return it != m_assets.end();
+}
+
+template RenderAssetsManager<Renderer::Texture>* GetRenderAssetsManager();
+template RenderAssetsManager<Renderer::Shader>* GetRenderAssetsManager();
+template RenderAssetsManager<Renderer::Material>* GetRenderAssetsManager();
 }

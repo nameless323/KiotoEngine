@@ -209,7 +209,6 @@
     <ClInclude Include="Sources\Internal\Render\DX12\VertexLayoutManagerDX12.h" />
     <ClInclude Include="Sources\Internal\Render\Geometry\GeometryGenerator.h" />
     <ClInclude Include="Sources\Internal\Render\Geometry\IntermediateMesh.h" />
-    <ClInclude Include="Sources\Internal\Render\Geometry\Mesh.h" />
     <ClInclude Include="Sources\Internal\Render\Geometry\Mesh2.h" />
     <ClInclude Include="Sources\Internal\Render\Geometry\MeshLoader.h" />
     <ClInclude Include="Sources\Internal\Render\Geometry\MeshParser.h" />
@@ -269,7 +268,6 @@
     <ClCompile Include="Sources\Internal\Render\DX12\VertexLayoutManagerDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\Geometry\GeometryGenerator.cpp" />
     <ClCompile Include="Sources\Internal\Render\Geometry\IntermediateMesh.cpp" />
-    <ClCompile Include="Sources\Internal\Render\Geometry\Mesh.cpp" />
     <ClCompile Include="Sources\Internal\Render\Geometry\Mesh2.cpp" />
     <ClCompile Include="Sources\Internal\Render\Geometry\MeshLoader.cpp" />
     <ClCompile Include="Sources\Internal\Render\Geometry\ParserFBX.cpp" />

@@ -11,7 +11,6 @@
 #include <vector>
 #include <map>
 
-#include "Render/Geometry/Mesh.h"
 #include "Render/Geometry/Mesh2.h"
 #include "Math/Vector2.h"
 #include "Math/Vector3.h"
@@ -78,7 +77,7 @@ Mesh2* m_unitCube = nullptr;
 Mesh2* m_tube = nullptr;
 Mesh2* m_cone = nullptr;
 Mesh2* m_unitSphere = nullptr;
-Mesh* m_unitIcosphere = nullptr;
+Mesh2* m_unitIcosphere = nullptr;
 }
 
 void Init()
@@ -88,7 +87,7 @@ void Init()
     m_unitCube = new Mesh2(GenerateCube());
     m_unitSphere = new Mesh2(GenerateSphere());
     m_tube = new Mesh2(GenerateTube());
-    m_unitIcosphere = new Mesh(GenerateIcosphere());
+    m_unitIcosphere = new Mesh2(GenerateIcosphere());
 }
 
 void Shutdown()
@@ -792,14 +791,10 @@ Mesh2 GenerateTube(float32 height /*= 1.0f*/, float32 bottomRadius1 /*= 0.5f*/, 
     return mesh;
 }
 
-Mesh GenerateIcosphere(int32 recursionLevel /*= 3*/, float32 radius /*= 1.0f*/)
+Mesh2 GenerateIcosphere(int32 recursionLevel /*= 3*/, float32 radius /*= 1.0f*/)
 {
     std::vector<Vector3> positions;
     std::map<uint64, uint16> middlePointIndexCache;
-
-    Renderer::VertexLayout layout;
-    layout.AddElement(Renderer::eVertexSemantic::Position, 0, Renderer::eDataFormat::R8_G8_B8);
-    layout.AddElement(Renderer::eVertexSemantic::Normal, 0, Renderer::eDataFormat::R8_G8_B8);
 
     // [a_vorontsov] Create 12 vertices of a icosahedron.
     float32 t = (1.0f + std::sqrt(5.0f)) / 2.0f;
@@ -869,28 +864,26 @@ Mesh GenerateIcosphere(int32 recursionLevel /*= 3*/, float32 radius /*= 1.0f*/)
         }
         faces = faces2;
     }
-    uint32 stride = sizeof(Vector3) + sizeof(Vector3);
-    byte* vData = new byte[stride * positions.size()];
-    byte* vDataBegin = vData;
+    uint32 vCount = static_cast<uint32>(positions.size());
+    uint32 iCount = static_cast<uint32>(faces.size()) * 3;
+
+    Mesh2 mesh(Renderer::VertexLayout::LayoutPos3Norm3, vCount, iCount);
+    uint32 index = 0;
     for (const auto& pos : positions)
     {
-        *reinterpret_cast<Vector3*>(vData) = pos; // [a_vorontsov] Position.
-        vData += sizeof(Vector3);
-        *reinterpret_cast<Vector3*>(vData) = pos; // [a_vorontsov] Normal.
-        vData += sizeof(Vector3);
+        *mesh.GetPositionPtr(index) = pos; // [a_vorontsov] Position.
+        *mesh.GetNormalPtr(index) = pos; // [a_vorontsov] Normal.
+        ++index;
     }
+    index = 0;
 
-    uint32 iCount = static_cast<uint32>(faces.size()) * 3;
-    uint16* indices = new uint16[iCount];
-    byte* iDataBegin = reinterpret_cast<byte*>(indices);
     for (const auto& face : faces)
     {
-        *indices++ = face.i1;
-        *indices++ = face.i2;
-        *indices++ = face.i3;
+        *mesh.GetIndexPtr(index++) = face.i1;
+        *mesh.GetIndexPtr(index++) = face.i2;
+        *mesh.GetIndexPtr(index++) = face.i3;
     }
-    uint32 vCount = static_cast<uint32>(positions.size());
-    return { vDataBegin, stride * vCount, stride, vCount, iDataBegin, iCount * sizeof(uint32), iCount, eIndexFormat::Format16Bit, layout };
+    return mesh;
 }
 
 Mesh2* GetUnitCube()
@@ -903,7 +896,7 @@ Mesh2* GetUnitSphere()
     return m_unitSphere;
 }
 
-Mesh* GetUnitIcosphere()
+Mesh2* GetUnitIcosphere()
 {
     return m_unitIcosphere;
 }

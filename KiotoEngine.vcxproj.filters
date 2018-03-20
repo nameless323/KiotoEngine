@@ -84,9 +84,6 @@
     <ClInclude Include="Sources\Internal\Math\Vector2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\Internal\Render\Geometry\Mesh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Sources\Internal\Render\Geometry\GeometryGenerator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -288,9 +285,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Sources\Internal\Render\Geometry\GeometryGenerator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Internal\Render\Geometry\Mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Sources\Internal\Render\DX12\Buffers\VertexBufferDX12.cpp">

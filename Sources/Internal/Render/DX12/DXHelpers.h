@@ -11,7 +11,7 @@
 #include <string>
 #include <windows.h>
 
-#include "Sources/Internal/Render/Geometry/Mesh.h"
+#include "Render/Geometry/Mesh2.h"
 
 namespace Kioto::Renderer
 {

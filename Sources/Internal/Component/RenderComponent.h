@@ -8,7 +8,7 @@
 #include "Core/ECS/Component.h"
 
 #include "Render/Material.h"
-#include "Render/Geometry/Mesh.h"
+#include "Render/Geometry/Mesh2.h"
 
 #pragma once
 
@@ -28,12 +28,12 @@ public:
     void SetMaterial(const std::string& path);
     void SetMaterial(Renderer::Material* material);
 
-    void SetMesh(const Mesh& mesh);
-    void SetMesh(Mesh* mesh);
+    void SetMesh(const Mesh2& mesh);
+    void SetMesh(Mesh2* mesh);
 
 private:
     Renderer::Material * m_material = nullptr;
-    Mesh* m_mesh = nullptr;
+    Mesh2* m_mesh = nullptr;
 };
 
 inline void RenderComponent::SetMaterial(const std::string& path)
@@ -50,15 +50,15 @@ inline void RenderComponent::SetMaterial(Renderer::Material* material)
     m_material = material;
 }
 
-inline void RenderComponent::SetMesh(const Mesh& mesh)
+inline void RenderComponent::SetMesh(const Mesh2& mesh)
 {
     if (m_mesh == &mesh)
         return;
     SafeDelete(m_mesh);
-    m_mesh = new Mesh(mesh);
+    m_mesh = new Mesh2(mesh);
 }
 
-inline void RenderComponent::SetMesh(Mesh* mesh)
+inline void RenderComponent::SetMesh(Mesh2* mesh)
 {
     if (m_mesh == mesh)
         return;

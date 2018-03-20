@@ -40,13 +40,13 @@ Mesh2 GenerateTube(float32 height = 1.0f, float32 bottomRadius1 = 0.5f, float32 
 ///
 /// Generate icosphere.
 ///
-Mesh GenerateIcosphere(int32 recursionLevel = 3, float32 radius = 1.0f);
+Mesh2 GenerateIcosphere(int32 recursionLevel = 3, float32 radius = 1.0f);
 
 Mesh2* GetPlane();
 Mesh2* GetUnitCube();
 Mesh2* GetCone();
 Mesh2* GetUnitSphere();
 Mesh2* GetTube();
-Mesh* GetUnitIcosphere();
+Mesh2* GetUnitIcosphere();
 }
 }

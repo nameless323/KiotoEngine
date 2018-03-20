@@ -13,6 +13,30 @@ namespace Kioto
 {
 struct IntermediateMesh;
 
+enum class eTopology
+{
+    TriangleList,
+    TriangleStrip,
+    Point,
+    Line
+};
+
+enum class eIndexFormat
+{
+    Format8Bit,
+    Format16Bit,
+    Format32Bit
+};
+
+enum class eVertexDataType
+{
+    Type_Unknown,
+    Type_V1,
+    Type_V2,
+    Type_V3,
+    Type_V4
+};
+
 class Mesh2 : public Asset
 {
 public:

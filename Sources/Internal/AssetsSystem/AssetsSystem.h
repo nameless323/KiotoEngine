@@ -20,12 +20,19 @@ bool CheckIfFileExist(const std::wstring& path);
 bool CheckIfFileExist(const std::string& path);
 std::string ReadFileAsString(const std::string& path);
 
-void UnloadAsset(std::string assetPath);
+//////////////////////////////////////////////////////////////////////////
+/////////////////// Assets ///////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+void UnloadAsset(const std::string& assetPath);
 void CleanAssets();
 void RegisterAsset(const Asset* asset);
+bool CheckIfAssetLoaded(const std::string& assetPath);
 
 template <typename T>
-T* LoadAsset(std::string assetPath);
+T* LoadAsset(const std::string& assetPath);
+
+template <typename T>
+T* GetAsset(const std::string& assetPath);
 
 template <typename T>
 void UnloadAsset(T* asset);
@@ -36,7 +43,7 @@ static std::map<std::string, Asset*> m_assets;
 static std::vector<Asset*> m_dynamicAssets;
 
 template <typename T>
-T* Kioto::AssetsSystem::LoadAsset(std::string assetPath)
+T* LoadAsset(const std::string& assetPath)
 {
     auto it = m_assets.find(assetPath);
     if (it != m_assets.end())
@@ -51,6 +58,15 @@ T* Kioto::AssetsSystem::LoadAsset(std::string assetPath)
     Asset* newAsset = new T(assetPath);
     m_assets[assetPath] = newAsset;
     return static_cast<T*>(newAsset);
+}
+
+template <typename T>
+T* GetAsset(const std::string& assetPath)
+{
+    auto it = m_assets.find(assetPath);
+    if (it != m_assets.end())
+        return static_cast<T*>(it->second);
+    return nullptr;
 }
 
 template <typename T>
@@ -89,9 +105,6 @@ public:
     void Init();
     void Shutdown();
     T* GetOrLoadAsset(const std::string path);
-
-private:
-    std::map<std::string, T*> m_assets;
 };
 
 template <typename T>
@@ -102,47 +115,21 @@ inline void RenderAssetsManager<T>::Init()
 template <typename T>
 inline void RenderAssetsManager<T>::Shutdown()
 {
-    m_assets.clear();
 }
 
 template <typename T>
 inline T* RenderAssetsManager<T>::GetOrLoadAsset(const std::string path)
 {
-    auto it = m_assets.find(path);
-    if (it != m_assets.end())
-        return it->second;
+    T* tmp = AssetsSystem::GetAsset<T>(path);
+    if (tmp != nullptr)
+        return tmp;
     T* asset = AssetsSystem::LoadAsset<T>(path);
     Renderer::RegisterRenderAsset<T>(asset);
     m_assets[path] = asset;
     return asset;
 }
-//////////////////////////////////////////////////////////////////////////
-
-static RenderAssetsManager<Renderer::Texture> m_textureManager;
-static RenderAssetsManager<Renderer::Shader> m_shaderManager;
-static RenderAssetsManager<Renderer::Material> m_materialManager;
 
 template <typename T>
-inline RenderAssetsManager<T>* GetRenderAssetsManager()
-{
-    throw "Not implemented";
-}
+RenderAssetsManager<T>* GetRenderAssetsManager();
 
-template <>
-inline RenderAssetsManager<Renderer::Texture>* GetRenderAssetsManager()
-{
-    return &m_textureManager;
-}
-
-template <>
-inline RenderAssetsManager<Renderer::Shader>* GetRenderAssetsManager()
-{
-    return &m_shaderManager;
-}
-
-template <>
-inline RenderAssetsManager<Renderer::Material>* GetRenderAssetsManager()
-{
-    return &m_materialManager;
-}
 }
