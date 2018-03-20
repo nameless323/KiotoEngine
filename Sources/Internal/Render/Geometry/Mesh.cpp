@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "Render/Geometry/Mesh2.h"
+#include "Render/Geometry/Mesh.h"
 
 #include "Render/Geometry/IntermediateMesh.h"
 #include "Render/Geometry/MeshLoader.h"
@@ -8,19 +8,19 @@
 namespace Kioto
 {
 
-Mesh2::Mesh2(Renderer::VertexLayout layout, uint32 vertexCount, uint32 indexCount)
+Mesh::Mesh(Renderer::VertexLayout layout, uint32 vertexCount, uint32 indexCount)
     : Asset("")
 {
     InitFromLayout(std::move(layout), vertexCount, indexCount);
 }
 
-Mesh2::Mesh2(const std::string& path)
+Mesh::Mesh(const std::string& path)
     : Asset(path)
 {
     MeshLoader::LoadMesh(this);
 }
 
-Mesh2::Mesh2(const Mesh2& other)
+Mesh::Mesh(const Mesh& other)
     : Asset(other.GetAssetPath())
     , m_vertexData(other.m_vertexData)
     , m_vertexDataSize(other.m_vertexDataSize)
@@ -32,19 +32,19 @@ Mesh2::Mesh2(const Mesh2& other)
 {
 }
 
-Mesh2::Mesh2(Mesh2&& other)
+Mesh::Mesh(Mesh&& other)
     : Asset(other.GetAssetPath())
 {
     swap(*this, other);
 }
 
-Mesh2::~Mesh2()
+Mesh::~Mesh()
 {
     SafeDelete(m_vertexData);
     SafeDelete(m_indexData);
 }
 
-void Mesh2::InitFromLayout(Renderer::VertexLayout layout, uint32 vertexCount, uint32 indexCount)
+void Mesh::InitFromLayout(Renderer::VertexLayout layout, uint32 vertexCount, uint32 indexCount)
 {
     m_vertexCount = vertexCount;
     m_indexCount = indexCount;
@@ -60,7 +60,7 @@ void Mesh2::InitFromLayout(Renderer::VertexLayout layout, uint32 vertexCount, ui
     m_indexData = new byte[m_indexDataSize];
 }
 
-void Mesh2::FromIntermediateMesh(const IntermediateMesh& iMesh)
+void Mesh::FromIntermediateMesh(const IntermediateMesh& iMesh)
 {
     SafeDelete(m_vertexData);
     SafeDelete(m_indexData);
@@ -118,7 +118,7 @@ void Mesh2::FromIntermediateMesh(const IntermediateMesh& iMesh)
     }
 }
 
-void Mesh2::LayoutFromIntermediateMesh(const IntermediateMesh& iMesh)
+void Mesh::LayoutFromIntermediateMesh(const IntermediateMesh& iMesh)
 {
     m_layout.AddElement(Renderer::eVertexSemantic::Position, 0, Renderer::eDataFormat::R8_G8_B8);
     if ((iMesh.LayoutMask & IntermediateMesh::Normal) != 0)
@@ -140,7 +140,7 @@ void Mesh2::LayoutFromIntermediateMesh(const IntermediateMesh& iMesh)
     }
 }
 
-Mesh2& Mesh2::operator=(Mesh2 other)
+Mesh& Mesh::operator=(Mesh other)
 {
     swap(*this, other);
     return *this;

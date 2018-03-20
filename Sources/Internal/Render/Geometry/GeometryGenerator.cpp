@@ -11,7 +11,7 @@
 #include <vector>
 #include <map>
 
-#include "Render/Geometry/Mesh2.h"
+#include "Render/Geometry/Mesh.h"
 #include "Math/Vector2.h"
 #include "Math/Vector3.h"
 #include "Math/Vector4.h"
@@ -72,22 +72,22 @@ T GetMiddlePoint(T p1, T p2, std::vector<Vector3>& vertices, std::map<uint64, T>
     return i;
 }
 
-Mesh2* m_plane = nullptr;
-Mesh2* m_unitCube = nullptr;
-Mesh2* m_tube = nullptr;
-Mesh2* m_cone = nullptr;
-Mesh2* m_unitSphere = nullptr;
-Mesh2* m_unitIcosphere = nullptr;
+Mesh* m_plane = nullptr;
+Mesh* m_unitCube = nullptr;
+Mesh* m_tube = nullptr;
+Mesh* m_cone = nullptr;
+Mesh* m_unitSphere = nullptr;
+Mesh* m_unitIcosphere = nullptr;
 }
 
 void Init()
 {
-    m_plane = new Mesh2(GeneratePlane());
-    m_cone = new Mesh2(GenerateCone());
-    m_unitCube = new Mesh2(GenerateCube());
-    m_unitSphere = new Mesh2(GenerateSphere());
-    m_tube = new Mesh2(GenerateTube());
-    m_unitIcosphere = new Mesh2(GenerateIcosphere());
+    m_plane = new Mesh(GeneratePlane());
+    m_cone = new Mesh(GenerateCone());
+    m_unitCube = new Mesh(GenerateCube());
+    m_unitSphere = new Mesh(GenerateSphere());
+    m_tube = new Mesh(GenerateTube());
+    m_unitIcosphere = new Mesh(GenerateIcosphere());
 }
 
 void Shutdown()
@@ -99,7 +99,7 @@ void Shutdown()
     SafeDelete(m_unitIcosphere);
 }
 
-Mesh2 GeometryGenerator::GeneratePlane(float32 sizeX /*= 1.0f*/, float32 sizeZ /*= 1.0f*/)
+Mesh GeometryGenerator::GeneratePlane(float32 sizeX /*= 1.0f*/, float32 sizeZ /*= 1.0f*/)
 {
     uint32 resX = 2; // [a_vorontsov] 2 minimum.
     uint32 resZ = 2;
@@ -108,7 +108,7 @@ Mesh2 GeometryGenerator::GeneratePlane(float32 sizeX /*= 1.0f*/, float32 sizeZ /
     uint32 nbFaces = (resX - 1) * (resZ - 1);
     uint16 iCount = nbFaces * 6;
 
-    Mesh2 mesh(Renderer::VertexLayout::LayoutPos3Norm3Uv2, vCount, iCount);
+    Mesh mesh(Renderer::VertexLayout::LayoutPos3Norm3Uv2, vCount, iCount);
 
     uint32 index = 0;
     for (uint32 z = 0; z < resZ; z++)
@@ -152,7 +152,7 @@ Mesh2 GeometryGenerator::GeneratePlane(float32 sizeX /*= 1.0f*/, float32 sizeZ /
     return mesh;
 }
 
-Mesh2 GenerateCube(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/, float32 sizeZ /*= 1.0f*/)
+Mesh GenerateCube(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/, float32 sizeZ /*= 1.0f*/)
 {
     float32 xHalf = sizeX * 0.5f;
     float32 yHalf = sizeY * 0.5f;
@@ -168,7 +168,7 @@ Mesh2 GenerateCube(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/, float32 s
     Vector3 p6(zHalf, xHalf, -yHalf);
     Vector3 p7(-zHalf, xHalf, -yHalf);
 
-    Mesh2 res(Renderer::VertexLayout::LayoutPos3Norm3Uv2, 24, 36);
+    Mesh res(Renderer::VertexLayout::LayoutPos3Norm3Uv2, 24, 36);
     uint32 ind = 0;
 
     // [a_vorontsov] Bottom.
@@ -336,7 +336,7 @@ Mesh2 GenerateCube(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/, float32 s
     return res;
 }
 
-Mesh2 GenerateCone(float32 height /*= 1.0f*/, float32 bottomRadius /*= 0.25f*/, float32 topRadius /*= 0.05f*/)
+Mesh GenerateCone(float32 height /*= 1.0f*/, float32 bottomRadius /*= 0.25f*/, float32 topRadius /*= 0.05f*/)
 {
     uint32 nbSides = 18;
     uint32 nbHeightSeg = 1; // [a_vorontsov] Not implemented yet.
@@ -348,7 +348,7 @@ Mesh2 GenerateCone(float32 height /*= 1.0f*/, float32 bottomRadius /*= 0.25f*/, 
     uint32 nbTriangles = nbSides + nbSides + nbSides * 2;
     uint32 iCount = nbTriangles * 3 + 3;
 
-    Mesh2 mesh(Renderer::VertexLayout::LayoutPos3Norm3Uv2, vCount, iCount);
+    Mesh mesh(Renderer::VertexLayout::LayoutPos3Norm3Uv2, vCount, iCount);
 
     uint32 index = 0;
 
@@ -489,7 +489,7 @@ Mesh2 GenerateCone(float32 height /*= 1.0f*/, float32 bottomRadius /*= 0.25f*/, 
     return mesh;
 }
 
-Mesh2 GenerateSphere(float32 radius /*=1.0f*/)
+Mesh GenerateSphere(float32 radius /*=1.0f*/)
 {
     int32 nbLong = 24;
     int32 nbLat = 16;
@@ -500,7 +500,7 @@ Mesh2 GenerateSphere(float32 radius /*=1.0f*/)
     uint32 nbTriangles = nbFaces * 2;
     uint32 iCount = nbTriangles * 3;
 
-    Mesh2 mesh(Renderer::VertexLayout::LayoutPos3Norm3Uv2, vCount, iCount);
+    Mesh mesh(Renderer::VertexLayout::LayoutPos3Norm3Uv2, vCount, iCount);
 
     uint32 index = 0;
     *mesh.GetPositionPtr(index++) = Vector3(0.0f, 1.0f, 0.0) * radius;
@@ -577,7 +577,7 @@ Mesh2 GenerateSphere(float32 radius /*=1.0f*/)
     return mesh;
 }
 
-Mesh2 GenerateTube(float32 height /*= 1.0f*/, float32 bottomRadius1 /*= 0.5f*/, float32 bottomRadius2 /*= 0.15f*/, float32 topRadius1 /*= 0.5f*/, float32 topRadius2 /*= 0.15f*/)
+Mesh GenerateTube(float32 height /*= 1.0f*/, float32 bottomRadius1 /*= 0.5f*/, float32 bottomRadius2 /*= 0.15f*/, float32 topRadius1 /*= 0.5f*/, float32 topRadius2 /*= 0.15f*/)
 {
     int32 nbSides = 24;
 
@@ -590,7 +590,7 @@ Mesh2 GenerateTube(float32 height /*= 1.0f*/, float32 bottomRadius1 /*= 0.5f*/, 
     int32 nbTriangles = nbFace * 2;
     uint32 iCount = nbTriangles * 3;
 
-    Mesh2 mesh(Renderer::VertexLayout::LayoutPos3Norm3Uv2, vCount, iCount);
+    Mesh mesh(Renderer::VertexLayout::LayoutPos3Norm3Uv2, vCount, iCount);
 
     uint32 index = 0;
 
@@ -791,7 +791,7 @@ Mesh2 GenerateTube(float32 height /*= 1.0f*/, float32 bottomRadius1 /*= 0.5f*/, 
     return mesh;
 }
 
-Mesh2 GenerateIcosphere(int32 recursionLevel /*= 3*/, float32 radius /*= 1.0f*/)
+Mesh GenerateIcosphere(int32 recursionLevel /*= 3*/, float32 radius /*= 1.0f*/)
 {
     std::vector<Vector3> positions;
     std::map<uint64, uint16> middlePointIndexCache;
@@ -867,7 +867,7 @@ Mesh2 GenerateIcosphere(int32 recursionLevel /*= 3*/, float32 radius /*= 1.0f*/)
     uint32 vCount = static_cast<uint32>(positions.size());
     uint32 iCount = static_cast<uint32>(faces.size()) * 3;
 
-    Mesh2 mesh(Renderer::VertexLayout::LayoutPos3Norm3, vCount, iCount);
+    Mesh mesh(Renderer::VertexLayout::LayoutPos3Norm3, vCount, iCount);
     uint32 index = 0;
     for (const auto& pos : positions)
     {
@@ -886,32 +886,32 @@ Mesh2 GenerateIcosphere(int32 recursionLevel /*= 3*/, float32 radius /*= 1.0f*/)
     return mesh;
 }
 
-Mesh2* GetUnitCube()
+Mesh* GetUnitCube()
 {
     return m_unitCube;
 }
 
-Mesh2* GetUnitSphere()
+Mesh* GetUnitSphere()
 {
     return m_unitSphere;
 }
 
-Mesh2* GetUnitIcosphere()
+Mesh* GetUnitIcosphere()
 {
     return m_unitIcosphere;
 }
 
-Mesh2* GetPlane()
+Mesh* GetPlane()
 {
     return m_plane;
 }
 
-Mesh2* GetCone()
+Mesh* GetCone()
 {
     return m_cone;
 }
 
-Mesh2* GetTube()
+Mesh* GetTube()
 {
     return m_tube;
 }

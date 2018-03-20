@@ -5,7 +5,7 @@
 
 #include "stdafx.h"
 
-#include "Render/Geometry/Mesh2.h"
+#include "Render/Geometry/Mesh.h"
 
 #include "Render/Geometry/MeshParser.h"
 #include "Render/Geometry/ParserFBX.h"
@@ -32,7 +32,7 @@ void Shutdown()
     SafeDelete(MeshParsers[fbxExt]);
 }
 
-void LoadMesh(Mesh2* src)
+void LoadMesh(Mesh* src)
 {
     std::string& path = src->GetAssetPath();
     size_t lastPeriod = path.find_last_of('.');

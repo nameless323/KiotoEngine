@@ -37,16 +37,16 @@ enum class eVertexDataType
     Type_V4
 };
 
-class Mesh2 : public Asset
+class Mesh : public Asset
 {
 public:
-    Mesh2(Renderer::VertexLayout layout, uint32 vertexCount, uint32 indexCount);
-    Mesh2(const std::string& path);
-    Mesh2(const Mesh2& other);
-    Mesh2(Mesh2&& other);
-    ~Mesh2();
+    Mesh(Renderer::VertexLayout layout, uint32 vertexCount, uint32 indexCount);
+    Mesh(const std::string& path);
+    Mesh(const Mesh& other);
+    Mesh(Mesh&& other);
+    ~Mesh();
 
-    Mesh2& operator=(Mesh2 other);
+    Mesh& operator=(Mesh other);
 
     void InitFromLayout(Renderer::VertexLayout layout, uint32 vertexCount, uint32 indexCount);
     void FromIntermediateMesh(const IntermediateMesh& iMesh);
@@ -86,7 +86,7 @@ public:
     const byte* GetIndexData() const;
     uint32 GetIndexDataSize() const;
 
-    friend void swap(Mesh2& l, Mesh2& r)
+    friend void swap(Mesh& l, Mesh& r)
     {
         std::swap(l.m_vertexData, r.m_vertexData);
         std::swap(l.m_vertexDataSize, r.m_vertexDataSize);
@@ -116,14 +116,14 @@ private:
     Renderer::VertexLayout m_layout;
 };
 
-inline uint32* Mesh2::GetIndexPtr(uint32 i)
+inline uint32* Mesh::GetIndexPtr(uint32 i)
 {
     assert(i < m_indexCount);
     return reinterpret_cast<uint32*>(m_indexData + sizeof(uint32) * i);
 }
 
 template <typename T>
-inline T* Mesh2::GetVertexElementPtr(uint32 i, Renderer::eVertexSemantic semantic, uint8 semanticIndex)
+inline T* Mesh::GetVertexElementPtr(uint32 i, Renderer::eVertexSemantic semantic, uint8 semanticIndex)
 {
     assert(i < m_vertexCount);
     const Renderer::VertexDesc* e = m_layout.FindElement(semantic, semanticIndex);
@@ -132,27 +132,27 @@ inline T* Mesh2::GetVertexElementPtr(uint32 i, Renderer::eVertexSemantic semanti
     return reinterpret_cast<T*>(m_vertexData + m_layout.GetVertexStride() * i + e->Offset);
 }
 
-inline Vector3* Mesh2::GetPositionPtr(uint32 i)
+inline Vector3* Mesh::GetPositionPtr(uint32 i)
 {
     return GetVertexElementPtr<Vector3>(i, Renderer::eVertexSemantic::Position, 0);
 }
 
-inline Vector3* Mesh2::GetNormalPtr(uint32 i)
+inline Vector3* Mesh::GetNormalPtr(uint32 i)
 {
     return GetVertexElementPtr<Vector3>(i, Renderer::eVertexSemantic::Normal, 0);
 }
 
-inline Vector2* Mesh2::GetUv0Ptr(uint32 i)
+inline Vector2* Mesh::GetUv0Ptr(uint32 i)
 {
     return GetVertexElementPtr<Vector2>(i, Renderer::eVertexSemantic::Texcoord, 0);
 }
 
-inline Vector4* Mesh2::GetColorPtr(uint32 i)
+inline Vector4* Mesh::GetColorPtr(uint32 i)
 {
     return GetVertexElementPtr<Vector4>(i, Renderer::eVertexSemantic::Color, 0);
 }
 
-inline Renderer::eDataFormat Mesh2::GetVertexElementFormat(Renderer::eVertexSemantic semantic, uint8 semanticIndex) const
+inline Renderer::eDataFormat Mesh::GetVertexElementFormat(Renderer::eVertexSemantic semantic, uint8 semanticIndex) const
 {
     const Renderer::VertexDesc* e = m_layout.FindElement(semantic, semanticIndex);
     if (e == nullptr)
@@ -160,37 +160,37 @@ inline Renderer::eDataFormat Mesh2::GetVertexElementFormat(Renderer::eVertexSema
     return e->Format;
 }
 
-inline const byte* Mesh2::GetVertexData() const
+inline const byte* Mesh::GetVertexData() const
 {
     return m_vertexData;
 }
 
-inline uint32 Mesh2::GetVertexDataSize() const
+inline uint32 Mesh::GetVertexDataSize() const
 {
     return m_vertexDataSize;
 }
 
-inline uint32 Mesh2::GetVertexDataStride() const
+inline uint32 Mesh::GetVertexDataStride() const
 {
     return m_layout.GetVertexStride();
 }
 
-inline uint32 Mesh2::GetVertexCount() const
+inline uint32 Mesh::GetVertexCount() const
 {
     return m_vertexCount;
 }
 
-inline uint32 Mesh2::GetIndexCount() const
+inline uint32 Mesh::GetIndexCount() const
 {
     return m_indexCount;
 }
 
-inline const byte* Mesh2::GetIndexData() const
+inline const byte* Mesh::GetIndexData() const
 {
     return m_indexData;
 }
 
-inline uint32 Mesh2::GetIndexDataSize() const
+inline uint32 Mesh::GetIndexDataSize() const
 {
     return m_indexDataSize;
 }
