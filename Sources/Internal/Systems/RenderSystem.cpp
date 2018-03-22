@@ -13,7 +13,7 @@ namespace Kioto
 
 void RenderSystem::Init()
 {
-    m_material = AssetsSystem::GetRenderAssetsManager<Renderer::Material>()->GetOrLoadAsset(m_matPath);
+    m_material = AssetsSystem::GetRenderAssetsManager()->GetOrLoadAsset<Renderer::Material>(m_matPath);
     Renderer::RegisterRenderPass(&m_renderPass);
     m_renderPass.SetRenderTargetCount(1);
     m_material->BuildMaterialForPass(m_renderPass);

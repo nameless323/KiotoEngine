@@ -98,27 +98,27 @@ void CreateUniqueCopy(const T* source)
 //////////////////////////////////////////////////////////////////////////
 /////////////////// RenderAssetsManager //////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
-template <typename T>
 class RenderAssetsManager
 {
 public:
     void Init();
     void Shutdown();
+
+    template <typename T>
     T* GetOrLoadAsset(const std::string path);
 };
 
-template <typename T>
-inline void RenderAssetsManager<T>::Init()
+inline void RenderAssetsManager::Init()
 {
 }
 
-template <typename T>
-inline void RenderAssetsManager<T>::Shutdown()
+inline void RenderAssetsManager::Shutdown()
 {
+    // [a_vorontsov] Asset system owns assets. Nothing to do here.
 }
 
 template <typename T>
-inline T* RenderAssetsManager<T>::GetOrLoadAsset(const std::string path)
+inline T* RenderAssetsManager::GetOrLoadAsset(const std::string path)
 {
     T* tmp = AssetsSystem::GetAsset<T>(path);
     if (tmp != nullptr)
@@ -129,7 +129,6 @@ inline T* RenderAssetsManager<T>::GetOrLoadAsset(const std::string path)
     return asset;
 }
 
-template <typename T>
-RenderAssetsManager<T>* GetRenderAssetsManager();
+RenderAssetsManager* GetRenderAssetsManager();
 
 }
