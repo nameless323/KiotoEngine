@@ -304,6 +304,8 @@ void RendererDX12::Present()
     m_textureManager.ProcessRegistationQueue(m_state);
     m_textureManager.ProcessTextureSetUpdates(m_state);
 
+    m_meshManager.ProcessRegistrationQueue(m_state);
+
     std::vector<RenderPass> thisFramePasses = m_renderPasses[m_swapChain.GetCurrentFrameIndex()];
     for (auto& renderPass : thisFramePasses)
     {
@@ -563,6 +565,11 @@ void RendererDX12::RegisterTextureSet(TextureSet& set)
 void RendererDX12::QueueTextureSetForUpdate(const TextureSet& set)
 {
     m_textureManager.QueueTextureSetForUpdate(set);
+}
+
+void RendererDX12::RegisterMesh(Kioto::Mesh* mesh)
+{
+    m_meshManager.RegisterMesh(mesh);
 }
 
 }

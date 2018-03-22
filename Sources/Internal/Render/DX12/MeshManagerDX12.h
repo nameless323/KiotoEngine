@@ -17,7 +17,7 @@ class Mesh;
 
 namespace Kioto::Renderer
 {
-class StateDX;
+struct StateDX;
 class MeshDX12;
 
 class MeshManagerDX12

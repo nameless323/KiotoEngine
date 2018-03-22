@@ -25,6 +25,7 @@ string AssetsPath;
 static RenderAssetsManager<Renderer::Texture> m_textureManager;
 static RenderAssetsManager<Renderer::Shader> m_shaderManager;
 static RenderAssetsManager<Renderer::Material> m_materialManager;
+static RenderAssetsManager<Mesh> m_meshManager;
 }
 
 void GetAssetsPath()
@@ -160,6 +161,12 @@ template <>
 RenderAssetsManager<Renderer::Material>* GetRenderAssetsManager()
 {
     return &m_materialManager;
+}
+
+template <>
+RenderAssetsManager<Mesh>* GetRenderAssetsManager()
+{
+    return &m_meshManager;
 }
 
 bool CheckIfAssetLoaded(const std::string& assetPath)

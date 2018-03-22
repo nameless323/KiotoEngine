@@ -19,6 +19,7 @@
 #include "Render/DX12/VertexLayoutDX12.h"
 #include "Render/DX12/ShaderDX12.h"
 #include "Render/DX12/ShaderManagerDX12.h"
+#include "Render/DX12/MeshManagerDX12.h"
 #include "Render/Texture/TextureDX12.h"
 #include "Render/RendererPublic.h"
 #include "Render/RenderPass/RenderPass.h"
@@ -70,6 +71,7 @@ public:
     void RegisterShader(Shader* shader);
     void RegisterMaterial(Material* material);
     void BuildMaterialForPass(const Material& mat, const RenderPass& pass);
+    void RegisterMesh(Kioto::Mesh* mesh);
 
     void RegisterRenderPass(RenderPass* renderPass);
     void RegisterTextureSet(TextureSet& set);
@@ -90,6 +92,7 @@ private:
     StateDX m_state;
     SwapChain m_swapChain;
     RootSignatureManager m_rootSignatureManager;
+    MeshManagerDX12 m_meshManager;
     ShaderManagerDX12 m_shaderManager;
     PsoManager m_piplineStateManager;
     VertexLayoutManagerDX12 m_vertexLayoutManager;

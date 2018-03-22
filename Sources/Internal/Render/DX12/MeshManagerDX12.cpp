@@ -44,7 +44,7 @@ void MeshManagerDX12::RegisterMesh(Kioto::Mesh* mesh)
 void MeshManagerDX12::ProcessRegistrationQueue(const StateDX& state)
 {
     for (auto& m : m_meshQueue)
-        m.DstMesh->Create(m.VertexData, m.IndexData, m.VertexDataSize, m.IndexDataSize, m.VertexDataStride, m.VertexCount, m.IndexCount);
+        m.DstMesh->Create(m.VertexData, m.IndexData, m.VertexDataSize, m.IndexDataSize, m.VertexDataStride, m.VertexCount, m.IndexCount, state);
     m_meshQueue.clear();
 }
 
