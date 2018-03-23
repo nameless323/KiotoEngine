@@ -118,11 +118,6 @@ private:
     UINT m_height = -1;
     bool m_isFullScreen = false;
 
-    std::unique_ptr<VertexBufferDX12> m_vertexBuffer;
-    std::unique_ptr<IndexBufferDX12> m_indexBuffer;
-
-    Kioto::Mesh* m_box;
-
     EngineBuffers engineBuffers;
     UploadBufferDX12* m_timeBuffer = nullptr;
     UploadBufferDX12* m_passBuffer = nullptr;

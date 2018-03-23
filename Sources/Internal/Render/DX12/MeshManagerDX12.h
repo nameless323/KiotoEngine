@@ -38,7 +38,7 @@ public:
             : VertexData(vertexData)
             , IndexData(indexData)
             , VertexDataSize(vertexDataSize)
-            , IndexDataSize(IndexDataSize)
+            , IndexDataSize(indexDataSize)
             , VertexDataStride(vertexDataStride)
             , VertexCount(vertexCount)
             , IndexCount(indexCount)

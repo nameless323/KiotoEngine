@@ -29,6 +29,8 @@ public:
     const D3D12_VERTEX_BUFFER_VIEW& GetVertexBufferView() const;
     const D3D12_INDEX_BUFFER_VIEW& GetIndexBufferView() const;
 
+    uint32 GetIndexCount() const;
+
 private:
     VertexBufferDX12* m_vertexBuffer = nullptr;
     IndexBufferDX12* m_indexBuffer = nullptr;
@@ -47,6 +49,11 @@ inline MeshHandle MeshDX12::GetHandle() const
 inline void MeshDX12::SetHandle(MeshHandle handle)
 {
     m_handle = handle;
+}
+
+inline uint32 MeshDX12::GetIndexCount() const
+{
+    return m_indexCount;
 }
 
 }

@@ -35,6 +35,7 @@
 #include "Render/ShaderData.h"
 
 #include "Render/Geometry/Mesh.h"
+#include "Render/DX12/Geometry/MeshDX12.h"
 
 namespace Kioto::Renderer
 {
@@ -150,14 +151,6 @@ void RendererDX12::Init(uint16 width, uint16 height)
 void RendererDX12::LoadPipeline()
 {
     m_state.CommandList->Reset(m_state.CommandAllocators[0].Get(), nullptr);
-
-    std::string path = AssetsSystem::GetAssetFullPath(R"(Models\Teapot.fbx)");
-    m_box = new Kioto::Mesh(path);
-    //m_box = GeometryGenerator::GetUnitCube();
-
-    m_vertexBuffer = std::make_unique<VertexBufferDX12>(m_box->GetVertexData(), m_box->GetVertexDataSize(), m_box->GetVertexDataStride(), m_state.CommandList.Get(), m_state.Device.Get());
-    m_indexBuffer = std::make_unique<IndexBufferDX12>(m_box->GetIndexData(), m_box->GetIndexDataSize(), m_state.CommandList.Get(), m_state.Device.Get(), IndexFormatToDXGI(eIndexFormat::Format32Bit));
-
     m_state.CommandList->Close();
     ID3D12CommandList* cmdLists[] = { m_state.CommandList.Get() };
     m_state.CommandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
@@ -356,11 +349,13 @@ void RendererDX12::Present()
 
             m_state.CommandList->SetGraphicsRootDescriptorTable(3, currHeap->GetGPUDescriptorHandleForHeapStart());
 
-            m_state.CommandList->IASetVertexBuffers(0, 1, &m_vertexBuffer->GetVertexBufferView());
-            m_state.CommandList->IASetIndexBuffer(&m_indexBuffer->GetIndexBufferView());
+            MeshDX12* currGeometry = m_meshManager.Find(packet.Mesh);
+
+            m_state.CommandList->IASetVertexBuffers(0, 1, &currGeometry->GetVertexBufferView());
+            m_state.CommandList->IASetIndexBuffer(&currGeometry->GetIndexBufferView());
             m_state.CommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-            m_state.CommandList->DrawIndexedInstanced(m_box->GetIndexCount(), 1, 0, 0, 0);
+            m_state.CommandList->DrawIndexedInstanced(currGeometry->GetIndexCount(), 1, 0, 0, 0);
 
         }
         auto toPresent = CD3DX12_RESOURCE_BARRIER::Transition(currentRenderTarget->Resource.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
