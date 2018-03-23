@@ -150,11 +150,6 @@ void RendererDX12::Init(uint16 width, uint16 height)
 
 void RendererDX12::LoadPipeline()
 {
-    m_state.CommandList->Reset(m_state.CommandAllocators[0].Get(), nullptr);
-    m_state.CommandList->Close();
-    ID3D12CommandList* cmdLists[] = { m_state.CommandList.Get() };
-    m_state.CommandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
-
     UpdateTimeCB();
     m_timeBuffer = new UploadBufferDX12(StateDX::FrameCount, engineBuffers.TimeCB.GetBufferData(), engineBuffers.TimeCB.GetDataSize(), true, m_state.Device.Get());
 
