@@ -14,7 +14,7 @@ namespace Kioto
 void RenderSystem::Init()
 {
     m_material = AssetsSystem::GetRenderAssetsManager()->GetOrLoadAsset<Renderer::Material>(m_matPath);
-    m_mesh = AssetsSystem::GetRenderAssetsManager()->GetOrLoadAsset<Mesh>(m_meshPath);
+    m_mesh = AssetsSystem::GetRenderAssetsManager()->GetOrLoadAsset<Renderer::Mesh>(m_meshPath);
     Renderer::RegisterRenderPass(&m_renderPass);
     m_renderPass.SetRenderTargetCount(1);
     m_material->BuildMaterialForPass(m_renderPass);

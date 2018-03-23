@@ -9,7 +9,7 @@
 
 #include <algorithm>
 
-namespace Kioto
+namespace Kioto::Renderer
 {
 bool IntermediateMesh::Vertex::operator==(const IntermediateMesh::Vertex& other) const
 {

@@ -28,12 +28,12 @@ public:
     void SetMaterial(const std::string& path);
     void SetMaterial(Renderer::Material* material);
 
-    void SetMesh(const Mesh& mesh);
-    void SetMesh(Mesh* mesh);
+    void SetMesh(const Renderer::Mesh& mesh);
+    void SetMesh(Renderer::Mesh* mesh);
 
 private:
     Renderer::Material * m_material = nullptr;
-    Mesh* m_mesh = nullptr;
+    Renderer::Mesh* m_mesh = nullptr;
 };
 
 inline void RenderComponent::SetMaterial(const std::string& path)
@@ -50,15 +50,15 @@ inline void RenderComponent::SetMaterial(Renderer::Material* material)
     m_material = material;
 }
 
-inline void RenderComponent::SetMesh(const Mesh& mesh)
+inline void RenderComponent::SetMesh(const Renderer::Mesh& mesh)
 {
     if (m_mesh == &mesh)
         return;
     SafeDelete(m_mesh);
-    m_mesh = new Mesh(mesh);
+    m_mesh = new Renderer::Mesh(mesh);
 }
 
-inline void RenderComponent::SetMesh(Mesh* mesh)
+inline void RenderComponent::SetMesh(Renderer::Mesh* mesh)
 {
     if (m_mesh == mesh)
         return;

@@ -71,7 +71,7 @@ public:
     void RegisterShader(Shader* shader);
     void RegisterMaterial(Material* material);
     void BuildMaterialForPass(const Material& mat, const RenderPass& pass);
-    void RegisterMesh(Kioto::Mesh* mesh);
+    void RegisterMesh(Mesh* mesh);
 
     void RegisterRenderPass(RenderPass* renderPass);
     void RegisterTextureSet(TextureSet& set);

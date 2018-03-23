@@ -5,10 +5,10 @@
 #include "Render/Geometry/IntermediateMesh.h"
 #include "Render/Geometry/MeshLoader.h"
 
-namespace Kioto
+namespace Kioto::Renderer
 {
 
-Mesh::Mesh(Renderer::VertexLayout layout, uint32 vertexCount, uint32 indexCount)
+Mesh::Mesh(VertexLayout layout, uint32 vertexCount, uint32 indexCount)
     : Asset("")
 {
     InitFromLayout(std::move(layout), vertexCount, indexCount);

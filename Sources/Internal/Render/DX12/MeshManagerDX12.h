@@ -10,13 +10,9 @@
 #include <vector>
 #include <map>
 
-namespace Kioto
-{
-class Mesh;
-}
-
 namespace Kioto::Renderer
 {
+class Mesh;
 struct StateDX;
 class MeshDX12;
 
@@ -48,7 +44,7 @@ public:
 
     MeshManagerDX12();
     ~MeshManagerDX12();
-    void RegisterMesh(Kioto::Mesh* mesh);
+    void RegisterMesh(Mesh* mesh);
     void ProcessRegistrationQueue(const StateDX& state);
     MeshDX12* Find(MeshHandle handle);
 

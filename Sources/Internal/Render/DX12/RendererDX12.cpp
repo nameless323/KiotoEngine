@@ -557,7 +557,7 @@ void RendererDX12::QueueTextureSetForUpdate(const TextureSet& set)
     m_textureManager.QueueTextureSetForUpdate(set);
 }
 
-void RendererDX12::RegisterMesh(Kioto::Mesh* mesh)
+void RendererDX12::RegisterMesh(Mesh* mesh)
 {
     m_meshManager.RegisterMesh(mesh);
 }

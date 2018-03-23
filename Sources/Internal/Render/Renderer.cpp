@@ -134,7 +134,7 @@ void RegisterRenderAsset(Shader* asset)
 }
 
 template <>
-void RegisterRenderAsset(Kioto::Mesh* asset)
+void RegisterRenderAsset(Mesh* asset)
 {
     GameRenderer->RegisterMesh(asset);
 }
@@ -177,6 +177,6 @@ void QueueTextureSetForUpdate(const TextureSet& set)
 
 template void RegisterRenderAsset<Texture>(Texture* asset);
 template void RegisterRenderAsset<Shader>(Shader* asset);
-template void RegisterRenderAsset<Kioto::Mesh>(Kioto::Mesh* asset);
+template void RegisterRenderAsset<Mesh>(Mesh* asset);
 template void RegisterRenderAsset<Material>(Material* asset);
 }

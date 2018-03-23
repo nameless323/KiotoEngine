@@ -25,7 +25,7 @@ MeshManagerDX12::~MeshManagerDX12()
     m_meshes.clear();
 }
 
-void MeshManagerDX12::RegisterMesh(Kioto::Mesh* mesh)
+void MeshManagerDX12::RegisterMesh(Mesh* mesh)
 {
     auto it = m_meshes.find(mesh->GetHandle());
     if (it != m_meshes.end())

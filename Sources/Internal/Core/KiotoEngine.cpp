@@ -71,7 +71,7 @@ void Init()
     GlobalTimer::Init();
     AssetsSystem::Init();
     MeshLoader::Init();
-    GeometryGenerator::Init();
+    Renderer::GeometryGenerator::Init();
     WindowsApplication::Init(ApplicationInfo.HInstance, ApplicationInfo.NCmdShow, ApplicationInfo.WindowCapture);
     Renderer::Init(Renderer::eRenderApi::DirectX12, 1024, 768);
 
@@ -98,7 +98,7 @@ void Shutdown()
 
     Renderer::Shutdown();
     SafeDelete(m_scene);
-    GeometryGenerator::Shutdown();
+    Renderer::GeometryGenerator::Shutdown();
     MeshLoader::Shutdown();
     AssetsSystem::Shutdown();
 }

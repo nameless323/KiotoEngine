@@ -31,6 +31,6 @@ private:
     std::string m_matPath = AssetsSystem::GetAssetFullPath("Materials\\Test.mt");
     Renderer::Material* m_material = nullptr;
     std::string m_meshPath = AssetsSystem::GetAssetFullPath(R"(Models\Teapot.fbx)");
-    Mesh* m_mesh = nullptr;
+    Renderer::Mesh* m_mesh = nullptr;
 };
 }
