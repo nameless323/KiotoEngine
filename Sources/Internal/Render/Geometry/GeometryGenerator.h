@@ -7,9 +7,8 @@
 
 #include "Core/CoreTypes.h"
 
-namespace Kioto
+namespace Kioto::Renderer
 {
-class Mesh;
 class Mesh;
 
 namespace GeometryGenerator

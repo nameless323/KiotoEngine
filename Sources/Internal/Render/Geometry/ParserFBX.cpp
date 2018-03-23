@@ -51,7 +51,7 @@ void ParserFBX::Shutdown()
     m_fbxManager->Destroy();
 }
 
-Mesh* ParserFBX::ParseMesh(const std::string& path)
+Renderer::Mesh* ParserFBX::ParseMesh(const std::string& path)
 {
     //Mesh2* mesh = new Mesh2();
     //mesh->SetAssetPath(path);
@@ -60,7 +60,7 @@ Mesh* ParserFBX::ParseMesh(const std::string& path)
     return nullptr;
 }
 
-void ParserFBX::ParseMesh(Mesh* dst)
+void ParserFBX::ParseMesh(Renderer::Mesh* dst)
 {
     FbxScene* scene = FbxScene::Create(m_fbxManager, "ImportFbxScene");
     if (scene == nullptr)
@@ -130,14 +130,14 @@ bool ParserFBX::LoadScene(FbxManager* manager, FbxScene* scene, const char* file
     return status;
 }
 
-void ParserFBX::TraverseHiererchy(FbxScene* scene, Mesh* dst)
+void ParserFBX::TraverseHiererchy(FbxScene* scene, Renderer::Mesh* dst)
 {
     FbxNode* root = scene->GetRootNode();
     for (int32 i = 0; i < root->GetChildCount(); ++i)
         TraverseHiererchy(root->GetChild(i), 0, dst);
 }
 
-void ParserFBX::TraverseHiererchy(FbxNode* node, int32 depth, Mesh* dst)
+void ParserFBX::TraverseHiererchy(FbxNode* node, int32 depth, Renderer::Mesh* dst)
 {
     FbxString string = node->GetName();
     std::string name(string.Buffer());
@@ -160,14 +160,14 @@ void ParserFBX::TraverseHiererchy(FbxNode* node, int32 depth, Mesh* dst)
         TraverseHiererchy(node->GetChild(i), depth + 1, dst);
 }
 
-void ParserFBX::ParseFbxMesh(FbxNode* node, Mesh* dst)
+void ParserFBX::ParseFbxMesh(FbxNode* node, Renderer::Mesh* dst)
 {
     FbxVector4 mat = node->EvaluateLocalRotation(0);
     //Matrix4 loclaTransform(reinterpret_cast<float32>(mat.mData));
 
     FbxMesh* mesh = reinterpret_cast<FbxMesh*>(node->GetNodeAttribute());
  
-    IntermediateMesh resMesh;
+    Renderer::IntermediateMesh resMesh;
 
     int32 polygonCount = mesh->GetPolygonCount();
     FbxVector4* controlPoints = mesh->GetControlPoints();
@@ -187,9 +187,9 @@ void ParserFBX::ParseFbxMesh(FbxNode* node, Mesh* dst)
             FbxVector4 coord = controlPoints[controlPointIndex];
 
             resMesh.Vertices.emplace_back();
-            resMesh.LayoutMask |= IntermediateMesh::Position;
+            resMesh.LayoutMask |= Renderer::IntermediateMesh::Position;
 
-            IntermediateMesh::Vertex* vert = &resMesh.Vertices.back();
+            Renderer::IntermediateMesh::Vertex* vert = &resMesh.Vertices.back();
             vert->Pos = FbxVector4ToKioto(coord);
 
             ParseColors(vert, mesh, vertexId, controlPointIndex, resMesh.LayoutMask);
@@ -205,7 +205,7 @@ void ParserFBX::ParseFbxMesh(FbxNode* node, Mesh* dst)
     dst->FromIntermediateMesh(resMesh);
 }
 
-void ParserFBX::ParseColors(IntermediateMesh::Vertex* vertex, FbxMesh* src, int32 vertexId, int32 controlPointIndex, uint32& mask)
+void ParserFBX::ParseColors(Renderer::IntermediateMesh::Vertex* vertex, FbxMesh* src, int32 vertexId, int32 controlPointIndex, uint32& mask)
 {
     for (int32 l = 0; l < src->GetElementVertexColorCount(); ++l)
     {
@@ -249,12 +249,12 @@ void ParserFBX::ParseColors(IntermediateMesh::Vertex* vertex, FbxMesh* src, int3
         {
             assert(false);
         }
-        mask |= (IntermediateMesh::Color0 << l);
+        mask |= (Renderer::IntermediateMesh::Color0 << l);
         vertex->Color.push_back(color);
     }
 }
 
-void ParserFBX::ParseUVs(IntermediateMesh::Vertex* vertex, FbxMesh* src, int32 vertexId, int32 controlPointIndex, int32 polygonIndex, int32 positionInPolygon, uint32& mask)
+void ParserFBX::ParseUVs(Renderer::IntermediateMesh::Vertex* vertex, FbxMesh* src, int32 vertexId, int32 controlPointIndex, int32 polygonIndex, int32 positionInPolygon, uint32& mask)
 {
     for (int32 l = 0; l < src->GetElementUVCount(); ++l)
     {
@@ -287,12 +287,12 @@ void ParserFBX::ParseUVs(IntermediateMesh::Vertex* vertex, FbxMesh* src, int32 v
             assert(false);
         }
 
-        mask |= (IntermediateMesh::UV0 << l);
+        mask |= (Renderer::IntermediateMesh::UV0 << l);
         vertex->Uv.push_back(uv);
     }
 }
 
-void ParserFBX::ParseNormal(IntermediateMesh::Vertex* vertex, FbxMesh* src, int32 vertexId, int32 controlPointIndex, uint32& mask)
+void ParserFBX::ParseNormal(Renderer::IntermediateMesh::Vertex* vertex, FbxMesh* src, int32 vertexId, int32 controlPointIndex, uint32& mask)
 {
     assert(src->GetElementNormalCount() <= 1);
     for (int32 l = 0; l < src->GetElementNormalCount(); ++l)
@@ -320,12 +320,12 @@ void ParserFBX::ParseNormal(IntermediateMesh::Vertex* vertex, FbxMesh* src, int3
         {
             assert(false);
         }
-        mask |= IntermediateMesh::Normal;
+        mask |= Renderer::IntermediateMesh::Normal;
         vertex->Norm = normal;
     }
 }
 
-void ParserFBX::ParseTangent(IntermediateMesh::Vertex* vertex, FbxMesh* src, int32 vertexId, int32 controlPointIndex, uint32& mask)
+void ParserFBX::ParseTangent(Renderer::IntermediateMesh::Vertex* vertex, FbxMesh* src, int32 vertexId, int32 controlPointIndex, uint32& mask)
 {
     assert(src->GetElementTangentCount() <= 1);
     for (int32 l = 0; l < src->GetElementTangentCount(); ++l)
@@ -353,12 +353,12 @@ void ParserFBX::ParseTangent(IntermediateMesh::Vertex* vertex, FbxMesh* src, int
         {
             assert(false);
         }
-        mask |= IntermediateMesh::Tanget;
+        mask |= Renderer::IntermediateMesh::Tanget;
         vertex->Tangent = tangent;
     }
 }
 
-void ParserFBX::ParseBinormal(IntermediateMesh::Vertex* vertex, FbxMesh* src, int32 vertexId, int32 controlPointIndex, uint32& mask)
+void ParserFBX::ParseBinormal(Renderer::IntermediateMesh::Vertex* vertex, FbxMesh* src, int32 vertexId, int32 controlPointIndex, uint32& mask)
 {
     assert(src->GetElementBinormalCount() <= 1);
     for (int32 l = 0; l < src->GetElementBinormalCount(); ++l)
@@ -386,7 +386,7 @@ void ParserFBX::ParseBinormal(IntermediateMesh::Vertex* vertex, FbxMesh* src, in
         {
             assert(false);
         }
-        mask |= IntermediateMesh::Bitangent;
+        mask |= Renderer::IntermediateMesh::Bitangent;
         vertex->Bitangent = binormal;
     }
 }

@@ -8,8 +8,9 @@
 #include "AssetsSystem/Asset.h"
 #include "Core/CoreTypes.h"
 #include "Render/VertexLayout.h"
+#include "Render/RendererPublic.h"
 
-namespace Kioto
+namespace Kioto::Renderer
 {
 struct IntermediateMesh;
 
@@ -40,7 +41,7 @@ enum class eVertexDataType
 class Mesh : public Asset
 {
 public:
-    Mesh(Renderer::VertexLayout layout, uint32 vertexCount, uint32 indexCount);
+    Mesh(VertexLayout layout, uint32 vertexCount, uint32 indexCount);
     Mesh(const std::string& path);
     Mesh(const Mesh& other);
     Mesh(Mesh&& other);
@@ -48,14 +49,14 @@ public:
 
     Mesh& operator=(Mesh other);
 
-    void InitFromLayout(Renderer::VertexLayout layout, uint32 vertexCount, uint32 indexCount);
+    void InitFromLayout(VertexLayout layout, uint32 vertexCount, uint32 indexCount);
     void FromIntermediateMesh(const IntermediateMesh& iMesh);
 
     uint32* GetIndexPtr(uint32 i);
-    Renderer::eDataFormat GetVertexElementFormat(Renderer::eVertexSemantic semantic, uint8 semanticIndex) const;
+    eDataFormat GetVertexElementFormat(eVertexSemantic semantic, uint8 semanticIndex) const;
 
     template <typename T>
-    T* GetVertexElementPtr(uint32 i, Renderer::eVertexSemantic semantic, uint8 semanticIndex);
+    T* GetVertexElementPtr(uint32 i, eVertexSemantic semantic, uint8 semanticIndex);
 
     // [a_vorontsov] Some helpers. If you need other types then return type or other semantic/index use GetVertexElementPtr.
     // If you set in layout other type and use this methods you don't get error/warning message, you'll just trash data, so be careful
@@ -86,6 +87,9 @@ public:
     const byte* GetIndexData() const;
     uint32 GetIndexDataSize() const;
 
+    MeshHandle GetHandle() const;
+    void SetHandle(MeshHandle handle);
+
     friend void swap(Mesh& l, Mesh& r)
     {
         std::swap(l.m_vertexData, r.m_vertexData);
@@ -113,7 +117,9 @@ private:
 
     uint32 m_vertexCount = 0;
     uint32 m_indexCount = 0;
-    Renderer::VertexLayout m_layout;
+    VertexLayout m_layout;
+
+    MeshHandle m_handle;
 };
 
 inline uint32* Mesh::GetIndexPtr(uint32 i)
@@ -123,10 +129,10 @@ inline uint32* Mesh::GetIndexPtr(uint32 i)
 }
 
 template <typename T>
-inline T* Mesh::GetVertexElementPtr(uint32 i, Renderer::eVertexSemantic semantic, uint8 semanticIndex)
+inline T* Mesh::GetVertexElementPtr(uint32 i, eVertexSemantic semantic, uint8 semanticIndex)
 {
     assert(i < m_vertexCount);
-    const Renderer::VertexDesc* e = m_layout.FindElement(semantic, semanticIndex);
+    const VertexDesc* e = m_layout.FindElement(semantic, semanticIndex);
     if (e == nullptr)
         return nullptr;
     return reinterpret_cast<T*>(m_vertexData + m_layout.GetVertexStride() * i + e->Offset);
@@ -134,29 +140,29 @@ inline T* Mesh::GetVertexElementPtr(uint32 i, Renderer::eVertexSemantic semantic
 
 inline Vector3* Mesh::GetPositionPtr(uint32 i)
 {
-    return GetVertexElementPtr<Vector3>(i, Renderer::eVertexSemantic::Position, 0);
+    return GetVertexElementPtr<Vector3>(i, eVertexSemantic::Position, 0);
 }
 
 inline Vector3* Mesh::GetNormalPtr(uint32 i)
 {
-    return GetVertexElementPtr<Vector3>(i, Renderer::eVertexSemantic::Normal, 0);
+    return GetVertexElementPtr<Vector3>(i, eVertexSemantic::Normal, 0);
 }
 
 inline Vector2* Mesh::GetUv0Ptr(uint32 i)
 {
-    return GetVertexElementPtr<Vector2>(i, Renderer::eVertexSemantic::Texcoord, 0);
+    return GetVertexElementPtr<Vector2>(i, eVertexSemantic::Texcoord, 0);
 }
 
 inline Vector4* Mesh::GetColorPtr(uint32 i)
 {
-    return GetVertexElementPtr<Vector4>(i, Renderer::eVertexSemantic::Color, 0);
+    return GetVertexElementPtr<Vector4>(i, eVertexSemantic::Color, 0);
 }
 
-inline Renderer::eDataFormat Mesh::GetVertexElementFormat(Renderer::eVertexSemantic semantic, uint8 semanticIndex) const
+inline eDataFormat Mesh::GetVertexElementFormat(eVertexSemantic semantic, uint8 semanticIndex) const
 {
-    const Renderer::VertexDesc* e = m_layout.FindElement(semantic, semanticIndex);
+    const VertexDesc* e = m_layout.FindElement(semantic, semanticIndex);
     if (e == nullptr)
-        return Renderer::eDataFormat::UNKNOWN;
+        return eDataFormat::UNKNOWN;
     return e->Format;
 }
 
@@ -193,6 +199,16 @@ inline const byte* Mesh::GetIndexData() const
 inline uint32 Mesh::GetIndexDataSize() const
 {
     return m_indexDataSize;
+}
+
+inline MeshHandle Mesh::GetHandle() const
+{
+    return m_handle;
+}
+
+inline void Mesh::SetHandle(MeshHandle handle)
+{
+    m_handle = handle;
 }
 
 }

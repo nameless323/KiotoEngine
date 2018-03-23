@@ -22,9 +22,7 @@ namespace
 {
 string AssetsPath;
 
-static RenderAssetsManager<Renderer::Texture> m_textureManager;
-static RenderAssetsManager<Renderer::Shader> m_shaderManager;
-static RenderAssetsManager<Renderer::Material> m_materialManager;
+static RenderAssetsManager m_renderAssetsManager;
 }
 
 void GetAssetsPath()
@@ -74,13 +72,13 @@ void Init()
 #else
     GetAssetsPath();
 #endif
-    m_textureManager.Init();
+    m_renderAssetsManager.Init();
 }
 
 void Shutdown()
 {
     CleanAssets();
-    m_textureManager.Shutdown();
+    m_renderAssetsManager.Shutdown();
 }
 
 bool CheckIfFileExist(const std::wstring& path)
@@ -138,28 +136,9 @@ std::string ReadFileAsString(const std::string& path)
     return buffer.str();
 }
 
-template <typename T>
-RenderAssetsManager<T>* GetRenderAssetsManager()
+RenderAssetsManager* GetRenderAssetsManager()
 {
-    throw "Not implemented";
-}
-
-template <>
-RenderAssetsManager<Renderer::Texture>* GetRenderAssetsManager()
-{
-    return &m_textureManager;
-}
-
-template <>
-RenderAssetsManager<Renderer::Shader>* GetRenderAssetsManager()
-{
-    return &m_shaderManager;
-}
-
-template <>
-RenderAssetsManager<Renderer::Material>* GetRenderAssetsManager()
-{
-    return &m_materialManager;
+    return &m_renderAssetsManager;
 }
 
 bool CheckIfAssetLoaded(const std::string& assetPath)
@@ -167,8 +146,4 @@ bool CheckIfAssetLoaded(const std::string& assetPath)
     auto it = m_assets.find(assetPath);
     return it != m_assets.end();
 }
-
-template RenderAssetsManager<Renderer::Texture>* GetRenderAssetsManager();
-template RenderAssetsManager<Renderer::Shader>* GetRenderAssetsManager();
-template RenderAssetsManager<Renderer::Material>* GetRenderAssetsManager();
 }

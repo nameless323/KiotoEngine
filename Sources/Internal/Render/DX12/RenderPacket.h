@@ -18,6 +18,7 @@ public:
     ShaderHandle Shader;
     VertexLayoutHandle VertexLayout;
     TextureSetHandle TextureSet;
+    MeshHandle Mesh;
 };
 
 using RenderPacketList = std::vector<RenderPacket>;

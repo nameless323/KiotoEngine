@@ -10,7 +10,7 @@
 #include "Math/Vector4.h"
 #include "Math/Vector2.h"
 
-namespace Kioto
+namespace Kioto::Renderer
 {
 ///
 /// Mesh representation for parsing from 3rd side formats.

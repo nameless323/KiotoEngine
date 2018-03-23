@@ -13,7 +13,8 @@ namespace Kioto
 
 void RenderSystem::Init()
 {
-    m_material = AssetsSystem::GetRenderAssetsManager<Renderer::Material>()->GetOrLoadAsset(m_matPath);
+    m_material = AssetsSystem::GetRenderAssetsManager()->GetOrLoadAsset<Renderer::Material>(m_matPath);
+    m_mesh = AssetsSystem::GetRenderAssetsManager()->GetOrLoadAsset<Renderer::Mesh>(m_meshPath);
     Renderer::RegisterRenderPass(&m_renderPass);
     m_renderPass.SetRenderTargetCount(1);
     m_material->BuildMaterialForPass(m_renderPass);
@@ -50,6 +51,7 @@ void RenderSystem::Update(float32 dt)
     currPacket.Material = m_material->GetHandle();
     currPacket.Shader = m_material->GetShader()->GetHandle();
     currPacket.TextureSet = m_material->GetShaderData().textureSet.GetHandle();
+    currPacket.Mesh = m_mesh->GetHandle();
     Renderer::AddRenderPacket(m_renderPass.GetHandle(), currPacket);
 }
 

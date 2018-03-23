@@ -35,7 +35,7 @@ Material::Material(const std::string& path)
     {
         m_shaderPath = config["shader"].as<std::string>();
         std::string shaderPath = AssetsSystem::GetAssetFullPath(m_shaderPath);
-        m_shader = AssetsSystem::GetRenderAssetsManager<Shader>()->GetOrLoadAsset(shaderPath);
+        m_shader = AssetsSystem::GetRenderAssetsManager()->GetOrLoadAsset<Shader>(shaderPath);
     }
     else
     {
@@ -55,7 +55,7 @@ Material::Material(const std::string& path)
             std::string name = it->first.as<std::string>();
             std::string path = it->second.as<std::string>();
             std::string fullPath = AssetsSystem::GetAssetFullPath(path);
-            Texture* tex = AssetsSystem::GetRenderAssetsManager<Texture>()->GetOrLoadAsset(fullPath);
+            Texture* tex = AssetsSystem::GetRenderAssetsManager()->GetOrLoadAsset<Texture>(fullPath);
             m_shaderData.textureSet.SetTexture(name, tex);
         }
     }

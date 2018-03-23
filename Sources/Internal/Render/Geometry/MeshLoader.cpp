@@ -32,7 +32,7 @@ void Shutdown()
     SafeDelete(MeshParsers[fbxExt]);
 }
 
-void LoadMesh(Mesh* src)
+void LoadMesh(Renderer::Mesh* src)
 {
     std::string& path = src->GetAssetPath();
     size_t lastPeriod = path.find_last_of('.');

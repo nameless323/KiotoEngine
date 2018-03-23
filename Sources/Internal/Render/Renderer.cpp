@@ -133,6 +133,12 @@ void RegisterRenderAsset(Shader* asset)
     GameRenderer->RegisterShader(asset);
 }
 
+template <>
+void RegisterRenderAsset(Mesh* asset)
+{
+    GameRenderer->RegisterMesh(asset);
+}
+
 void BuildMaterialForPass(const Material& mat, const RenderPass& pass)
 {
     GameRenderer->BuildMaterialForPass(mat, pass);
@@ -171,5 +177,6 @@ void QueueTextureSetForUpdate(const TextureSet& set)
 
 template void RegisterRenderAsset<Texture>(Texture* asset);
 template void RegisterRenderAsset<Shader>(Shader* asset);
+template void RegisterRenderAsset<Mesh>(Mesh* asset);
 template void RegisterRenderAsset<Material>(Material* asset);
 }

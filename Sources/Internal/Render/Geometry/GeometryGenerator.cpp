@@ -18,7 +18,7 @@
 
 #include "Render/VertexLayout.h"
 
-namespace Kioto::GeometryGenerator
+namespace Kioto::Renderer::GeometryGenerator
 {
 namespace
 {
