@@ -188,6 +188,7 @@
     <ClInclude Include="Sources\Internal\Math\Vector3.h" />
     <ClInclude Include="Sources\Internal\Math\Vector4.h" />
     <ClInclude Include="Sources\Internal\Render\ConstantBuffer.h" />
+    <ClInclude Include="Sources\Internal\Render\DX12\Buffers\ConstantBufferManagerDX12.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\Buffers\DefaultHeapBuffer.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\Buffers\EngineBuffers.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\Buffers\IndexBufferDX12.h" />

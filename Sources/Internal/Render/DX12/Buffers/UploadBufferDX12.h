@@ -9,7 +9,9 @@
 
 #include <d3d12.h>
 #include <wrl.h>
+#include <variant>
 #include "Sources/External/Dx12Helpers/d3dx12.h"
+#include "Render/RendererPublic.h"
 
 namespace Kioto::Renderer
 {
@@ -33,6 +35,9 @@ public:
 
     D3D12_GPU_VIRTUAL_ADDRESS GetFrameDataGpuAddress(uint32 frame) const;
 
+    template <typename T>
+    T GetHandle() const;
+
 private:
     bool m_isConstantBuffer = false;
     size_t m_frameDataSize = 0;
@@ -41,8 +46,14 @@ private:
     uint32 m_framesCount = 0;
     Microsoft::WRL::ComPtr<ID3D12Resource> m_resource;
     byte* m_data = nullptr;
+    std::variant<ConstantBufferHandle> m_handle;
 
     static constexpr uint32 GetConstantBufferByteSize(uint32 byteSize); // [a_vorontsov] Constant buffers must be 255 byte aligned.
 };
 
+template <typename T>
+T UploadBufferDX12::GetHandle() const
+{
+    return std::get<T>(m_handle);
+}
 }

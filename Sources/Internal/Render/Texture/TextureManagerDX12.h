@@ -31,7 +31,7 @@ public:
     void RegisterTextureWithoutOwnership(TextureDX12* texture);
     void ProcessRegistationQueue(const StateDX& state);
     void UpdateTextureSetHeap(const StateDX& state, const TextureSet& texSet);
-    void QueueTextureSetForUpdate(const TextureSet& texSet);
+    void QueueTextureSetForUpdate(const TextureSet& texSet); // TODO: need material handles.
     void ProcessTextureSetUpdates(const StateDX& state);
 
     ID3D12DescriptorHeap* GetTextureHeap(TextureSetHandle handle) const;

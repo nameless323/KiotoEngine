@@ -18,6 +18,12 @@
 
 namespace Kioto::Renderer
 {
+struct ConstantBufferSet
+{
+    ConstantBufferSetHandle Handle;
+    std::vector<ConstantBufferHandle> BuffersSet;
+};
+
 class ConstantBuffer
 {
 public:
