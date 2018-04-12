@@ -139,7 +139,7 @@ void RegisterRenderAsset(Mesh* asset)
     GameRenderer->RegisterMesh(asset);
 }
 
-void BuildMaterialForPass(const Material& mat, const RenderPass& pass)
+void BuildMaterialForPass(Material& mat, const RenderPass& pass)
 {
     GameRenderer->BuildMaterialForPass(mat, pass);
 }

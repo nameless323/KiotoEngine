@@ -517,7 +517,7 @@ void RendererDX12::RegisterShader(Shader* shader)
     m_vertexLayoutManager.GenerateVertexLayout(shader);
 }
 
-void RendererDX12::BuildMaterialForPass(const Material& mat, const RenderPass& pass)
+void RendererDX12::BuildMaterialForPass(Material& mat, const RenderPass& pass)
 {
     ID3D12PipelineState* ps = m_piplineStateManager.GetPipelineState(mat.GetHandle(), pass.GetHandle());
     if (ps == nullptr)

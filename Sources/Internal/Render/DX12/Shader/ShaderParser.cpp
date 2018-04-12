@@ -573,6 +573,11 @@ ShaderData ParseShaderFromString(std::string source, const std::vector<ShaderDef
     res.vertexLayout = GetVertexLayout(source);
     res.constantBuffers = GetConstantBuffers(source);
     res.output = source;
+
+    res.bufferSetHandle = InvalidHandle;
+    res.constantBuffersHandles.clear();
+    for (size_t i = 0; i < res.constantBuffers.size(); ++i)
+        res.constantBuffersHandles.push_back(InvalidHandle);
     return res;
 }
 

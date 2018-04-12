@@ -29,7 +29,7 @@ public:
     MaterialHandle GetHandle() const;
 
     Shader* GetShader() const;
-    const ShaderData& GetShaderData() const;
+    ShaderData& GetShaderData();
     void BuildMaterialForPass(const RenderPass& pass);
 
 private:
@@ -56,7 +56,7 @@ inline Shader* Material::GetShader() const
     return m_shader;
 }
 
-inline const ShaderData& Material::GetShaderData() const
+inline ShaderData& Material::GetShaderData()
 {
     return m_shaderData;
 }

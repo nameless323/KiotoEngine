@@ -257,6 +257,7 @@
     <ClCompile Include="Sources\Internal\Core\WindowsApplication.cpp" />
     <ClCompile Include="Sources\Internal\AssetsSystem\AssetsSystem.cpp" />
     <ClCompile Include="Sources\Internal\Render\ConstantBuffer.cpp" />
+    <ClCompile Include="Sources\Internal\Render\DX12\Buffers\ConstantBufferManagerDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\Buffers\DefaultHeapBuffer.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\Buffers\EngineBuffers.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\Buffers\IndexBufferDX12.cpp" />

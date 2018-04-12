@@ -47,7 +47,7 @@ KIOTO_API uint16 GetHeight();
 KIOTO_API float32 GetAspect();
 
 VertexLayoutHandle GenerateVertexLayout(const VertexLayout& layout);
-void BuildMaterialForPass(const Material& mat, const RenderPass& pass);
+void BuildMaterialForPass(Material& mat, const RenderPass& pass);
 
 }
 }

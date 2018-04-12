@@ -44,6 +44,8 @@ Material::Material(const std::string& path)
     m_shaderData = m_shader->m_data;
     if (m_shaderData.textureSet.GetTexturesCount() > 0)
         Renderer::RegisterTextureSet(m_shaderData.textureSet);
+    for (auto& cb : m_shaderData.constantBuffers)
+        cb.ComposeBufferData();
 
     PipelineState::Append(config, m_shaderData.pipelineState);
     if (config["textures"] != nullptr)

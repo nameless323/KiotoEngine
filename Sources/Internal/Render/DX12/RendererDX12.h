@@ -70,7 +70,7 @@ public:
     void RegisterTexture(Texture* texture);
     void RegisterShader(Shader* shader);
     void RegisterMaterial(Material* material);
-    void BuildMaterialForPass(const Material& mat, const RenderPass& pass);
+    void BuildMaterialForPass(Material& mat, const RenderPass& pass);
     void RegisterMesh(Mesh* mesh);
 
     void RegisterRenderPass(RenderPass* renderPass);

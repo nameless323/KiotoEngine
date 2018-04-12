@@ -60,6 +60,7 @@ public:
     void ComposeBufferData();
     float32* GetBufferData();
     uint32 GetDataSize() const;
+    bool GetIsComposed() const;
 
     uint16 GetIndex() const;
     uint16 GetSpace() const;
@@ -133,5 +134,10 @@ inline float32* ConstantBuffer::GetBufferData()
 inline uint32 ConstantBuffer::GetDataSize() const
 {
     return m_dataSize;
+}
+
+inline bool ConstantBuffer::GetIsComposed() const
+{
+    return m_regenerateMemLayout;
 }
 }
