@@ -12,9 +12,10 @@
 namespace Kioto::Renderer
 {
 
-ConstantBufferManagerDX12::ConstantBufferManagerDX12(uint32 frameCount) : m_frameCount(frameCount)
+ConstantBufferManagerDX12::ConstantBufferManagerDX12()
 {
     m_updateQueues.reserve(128);
+    m_registrationQueue.reserve(128);
 }
 
 ConstantBufferManagerDX12::~ConstantBufferManagerDX12()
@@ -37,11 +38,7 @@ void ConstantBufferManagerDX12::RegisterMaterial(Material* material)
     material->GetShaderData().bufferSetHandle = setHandle;
     for (size_t i = 0; i < material->GetShaderData().constantBuffers.size(); ++i)
     {
-        ConstantBufferHandle bufHandle = GetNewHandle();
-        ConstantBuffer& buf = material->GetShaderData().constantBuffers[i];
-        assert(buf.GetIsComposed());
-        material->GetShaderData().constantBuffersHandles[i] = bufHandle;
-        m_registrationQueue.emplace_back(bufHandle, setHandle, buf.GetDataSize(), buf.GetBufferData());
+        RegisterConstantBuffer(&material->GetShaderData().constantBuffers[i], setHandle);
     }
 }
 
@@ -57,24 +54,37 @@ void ConstantBufferManagerDX12::ProcessRegistrationQueue(const StateDX& state)
     m_registrationQueue.clear();
 }
 
-void ConstantBufferManagerDX12::RegisterConstantBuffer(ConstantBuffer* buffer)
+void ConstantBufferManagerDX12::RegisterConstantBuffer(ConstantBuffer* buffer, ConstantBufferSetHandle bufferSetHandle)
 {
-
+    if (buffer->GetHandle() != InvalidHandle || !buffer->GetIsComposed())
+        return;
+    auto it = m_constantBuffers.find(buffer->GetHandle());
+    if (it != m_constantBuffers.cend())
+        return;
+    ConstantBufferHandle bufHandle = GetNewHandle();
+    assert(buffer->GetIsComposed());
+    buffer->SetHandle(bufHandle);
+    m_registrationQueue.emplace_back(bufHandle, bufferSetHandle, buffer->GetDataSize(), buffer->GetBufferData());
 }
 
-void ConstantBufferManagerDX12::RegisterInternalConstantBuffer(ConstantBuffer* buffer)
+void ConstantBufferManagerDX12::QueueConstantBufferForUpdate(ConstantBuffer& buffer)
 {
-
-}
-
-void ConstantBufferManagerDX12::QueueConstantBufferForUpdate(const ConstantBuffer& buffer)
-{
-
+    auto it = std::find(m_updateQueues.begin(), m_updateQueues.end(), &buffer);
+    if (it != m_updateQueues.begin())
+        return;
+    m_updateQueues.push_back(&buffer);
 }
 
 void ConstantBufferManagerDX12::ProcessBufferUpdates(UINT frameIndex)
 {
-
+    for (auto& cb : m_updateQueues)
+    {
+        UploadBufferDX12* uploadBuf = FindBuffer(cb->GetHandle());
+        if (uploadBuf == nullptr)
+            assert(false);
+        uploadBuf->UploadData(frameIndex, cb->GetBufferData());
+    }
+    m_updateQueues.clear();
 }
 
 UploadBufferDX12* ConstantBufferManagerDX12::FindBuffer(ConstantBufferHandle handle) const

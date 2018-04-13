@@ -31,6 +31,7 @@
 #include "Render/DX12/PsoManager.h"
 #include "Render/DX12/VertexLayoutManagerDX12.h"
 #include "Render/DX12/RenderPacket.h"
+#include "Render/DX12/Buffers/ConstantBufferManagerDX12.h"
 
 namespace Kioto
 {
@@ -96,6 +97,7 @@ private:
     ShaderManagerDX12 m_shaderManager;
     PsoManager m_piplineStateManager;
     VertexLayoutManagerDX12 m_vertexLayoutManager;
+    ConstantBufferManagerDX12 m_constantBufferManager;
 
     std::unordered_map<uint32, ResourceDX12> m_resources;
     std::array<std::vector<RenderPass>, StateDX::FrameCount> m_renderPasses;

@@ -294,6 +294,9 @@ void RendererDX12::Present()
 
     m_meshManager.ProcessRegistrationQueue(m_state);
 
+    m_constantBufferManager.ProcessRegistrationQueue(m_state);
+    m_constantBufferManager.ProcessBufferUpdates(m_swapChain.GetCurrentFrameIndex());
+
     std::vector<RenderPass> thisFramePasses = m_renderPasses[m_swapChain.GetCurrentFrameIndex()];
     for (auto& renderPass : thisFramePasses)
     {

@@ -26,7 +26,6 @@ struct ShaderData
     PipelineState pipelineState;
     TextureSet textureSet;
     std::vector<ConstantBuffer> constantBuffers;
-    std::vector<ConstantBufferHandle> constantBuffersHandles;
     ConstantBufferSet bufferSet;
     ConstantBufferSetHandle bufferSetHandle;
     uint8 shaderPrograms = 0;

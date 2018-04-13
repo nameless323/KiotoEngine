@@ -21,13 +21,12 @@ struct StateDX;
 class ConstantBufferManagerDX12
 {
 public:
-    ConstantBufferManagerDX12(uint32 frameCount);
+    ConstantBufferManagerDX12();
     ~ConstantBufferManagerDX12();
     void RegisterMaterial(Material* material);
     void ProcessRegistrationQueue(const StateDX& state);
-    void RegisterConstantBuffer(ConstantBuffer* buffer);
-    void RegisterInternalConstantBuffer(ConstantBuffer* buffer);
-    void QueueConstantBufferForUpdate(const ConstantBuffer& buffer);
+    void RegisterConstantBuffer(ConstantBuffer* buffer, ConstantBufferSetHandle bufferSetHandle); // [a_vorontsov] -1 for internal buffers.
+    void QueueConstantBufferForUpdate(ConstantBuffer& buffer);
     void ProcessBufferUpdates(UINT frameIndex);
 
     UploadBufferDX12* FindBuffer(ConstantBufferHandle handle) const;
@@ -55,6 +54,5 @@ private:
     std::map<ConstantBufferSetHandle, std::vector<UploadBufferDX12*>> m_constantBufferSets;
     std::vector<ConstantBuffer*> m_updateQueues;
     std::vector<TempCBData> m_registrationQueue;
-    uint32 m_frameCount = 0;
 };
 }

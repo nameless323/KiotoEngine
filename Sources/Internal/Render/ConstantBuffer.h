@@ -61,6 +61,8 @@ public:
     float32* GetBufferData();
     uint32 GetDataSize() const;
     bool GetIsComposed() const;
+    ConstantBufferHandle GetHandle() const;
+    void SetHandle(ConstantBufferHandle handle);
 
     uint16 GetIndex() const;
     uint16 GetSpace() const;
@@ -97,6 +99,8 @@ private:
     uint32 m_dataSize = 0;
     uint32 m_dataSize4ByteElem = 0;
 
+    ConstantBufferHandle m_handle;
+
     friend void swap(ConstantBuffer& l, ConstantBuffer& r)
     {
         std::swap(l.m_index, r.m_index);
@@ -108,6 +112,7 @@ private:
         std::swap(l.m_dataSize, r.m_dataSize);
         std::swap(l.m_dataSize4ByteElem, r.m_dataSize4ByteElem);
         l.m_params.swap(r.m_params);
+        std::swap(l.m_handle, r.m_handle);
     }
 };
 
@@ -139,5 +144,15 @@ inline uint32 ConstantBuffer::GetDataSize() const
 inline bool ConstantBuffer::GetIsComposed() const
 {
     return m_regenerateMemLayout;
+}
+
+inline ConstantBufferHandle ConstantBuffer::GetHandle() const
+{
+    return m_handle;
+}
+
+inline void ConstantBuffer::SetHandle(ConstantBufferHandle handle)
+{
+    m_handle = handle;
 }
 }
