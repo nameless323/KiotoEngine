@@ -33,8 +33,8 @@ void RenderSystem::OnEntityRemove(Entity* entity)
 void RenderSystem::Update(float32 dt)
 {
     for (int32 i = 0; i < m_renderPass.GetRenderTargetCount(); ++i)
-        m_renderPass.SetRenderTarget(i, Renderer::InvalidHandle);
-    m_renderPass.SetDepthStencil(Renderer::InvalidHandle);
+        m_renderPass.SetRenderTarget(i, Renderer::DefaultBackBufferHandle);
+    m_renderPass.SetDepthStencil(Renderer::DefaultDepthStencilHandle);
 
     m_renderPass.SetViewport({ 0, 0, Renderer::GetWidth(), Renderer::GetHeight() });
     m_renderPass.SetScissor({ 0, 0, Renderer::GetWidth(), Renderer::GetHeight() });

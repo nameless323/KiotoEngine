@@ -67,7 +67,6 @@ namespace KiotoCore
 {
 void Init()
 {
-
     GlobalTimer::Init();
     AssetsSystem::Init();
     MeshLoader::Init();

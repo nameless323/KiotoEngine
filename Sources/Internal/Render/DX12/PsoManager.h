@@ -27,7 +27,7 @@ class PsoManager
 public:
     PsoManager() = default;
 
-    void BuildPipelineState(const StateDX& state, const Material* mat, const RenderPass& pass, const RootSignatureManager& sigManager, TextureManagerDX12* textureManager, ShaderManagerDX12* shaderManager, VertexLayoutManagerDX12* vertexLayoutManager, DXGI_FORMAT backBufferFromat, DXGI_FORMAT defaultDepthStencilFormat);
+    void BuildPipelineState(const StateDX& state, Material* mat, const RenderPass& pass, const RootSignatureManager& sigManager, TextureManagerDX12* textureManager, ShaderManagerDX12* shaderManager, VertexLayoutManagerDX12* vertexLayoutManager, DXGI_FORMAT backBufferFromat, DXGI_FORMAT defaultDepthStencilFormat);
     ID3D12PipelineState* GetPipelineState(MaterialHandle matHandle, RenderPassHandle renderPassHandle);
 
 private:

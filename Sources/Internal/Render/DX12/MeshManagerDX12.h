@@ -19,6 +19,13 @@ class MeshDX12;
 class MeshManagerDX12
 {
 public:
+    MeshManagerDX12();
+    ~MeshManagerDX12();
+    void RegisterMesh(Mesh* mesh);
+    void ProcessRegistrationQueue(const StateDX& state);
+    MeshDX12* Find(MeshHandle handle);
+
+private:
     struct TempMeshData // [a_vorontsov] Dangerous stuff, rethink later.
     {
         const byte* VertexData = nullptr;
@@ -42,13 +49,6 @@ public:
         {}
     };
 
-    MeshManagerDX12();
-    ~MeshManagerDX12();
-    void RegisterMesh(Mesh* mesh);
-    void ProcessRegistrationQueue(const StateDX& state);
-    MeshDX12* Find(MeshHandle handle);
-
-private:
     std::vector<TempMeshData> m_meshQueue;
     std::map<MeshHandle, MeshDX12*> m_meshes;
 };

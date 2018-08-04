@@ -19,6 +19,8 @@ class Material;
 class RenderPass;
 class ShaderProgram;
 class Mesh;
+class ConstantBuffer;
+struct ConstantBufferSet;
 
 struct ShaderDefine
 {
@@ -27,6 +29,8 @@ struct ShaderDefine
 };
 
 constexpr uint32 InvalidHandle = -1;
+constexpr uint32 DefaultBackBufferHandle = InvalidHandle - 1;
+constexpr uint32 DefaultDepthStencilHandle = InvalidHandle - 2;
 
 template <typename T>
 struct SafeHandle
@@ -98,4 +102,6 @@ using MaterialHandle = SafeHandle<Material>;
 using RenderPassHandle = SafeHandle<RenderPass>;
 using ShaderProgramHandle = SafeHandle<ShaderProgram>;
 using MeshHandle = SafeHandle<Mesh>;
+using ConstantBufferHandle = SafeHandle<ConstantBuffer>;
+using ConstantBufferSetHandle = SafeHandle<ConstantBufferSet>;
 }

@@ -51,6 +51,7 @@ ID3D12Resource* UploadBufferDX12::GetResource() const
 
 void UploadBufferDX12::UploadData(uint32 frameIndex, const float32* data)
 {
+    assert(frameIndex < m_framesCount);
     memcpy(m_data + frameIndex * m_frameDataSize, data, m_rawDataSize);
 }
 

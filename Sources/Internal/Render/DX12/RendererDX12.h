@@ -31,6 +31,7 @@
 #include "Render/DX12/PsoManager.h"
 #include "Render/DX12/VertexLayoutManagerDX12.h"
 #include "Render/DX12/RenderPacket.h"
+#include "Render/DX12/Buffers/ConstantBufferManagerDX12.h"
 
 namespace Kioto
 {
@@ -70,7 +71,7 @@ public:
     void RegisterTexture(Texture* texture);
     void RegisterShader(Shader* shader);
     void RegisterMaterial(Material* material);
-    void BuildMaterialForPass(const Material& mat, const RenderPass& pass);
+    void BuildMaterialForPass(Material& mat, const RenderPass& pass);
     void RegisterMesh(Mesh* mesh);
 
     void RegisterRenderPass(RenderPass* renderPass);
@@ -86,7 +87,7 @@ public:
 
 private:
     static constexpr uint32 PacketListPoolSize = 64;
-    static constexpr uint32 PacketListSize = 64;
+    static constexpr uint32 PacketListSize = 4096;
 
     TextureManagerDX12 m_textureManager;
     StateDX m_state;
@@ -96,6 +97,7 @@ private:
     ShaderManagerDX12 m_shaderManager;
     PsoManager m_piplineStateManager;
     VertexLayoutManagerDX12 m_vertexLayoutManager;
+    ConstantBufferManagerDX12 m_constantBufferManager;
 
     std::unordered_map<uint32, ResourceDX12> m_resources;
     std::array<std::vector<RenderPass>, StateDX::FrameCount> m_renderPasses;

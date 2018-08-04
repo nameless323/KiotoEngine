@@ -141,7 +141,7 @@ D3D12_DEPTH_STENCIL_DESC ParseDepthStencil(const PipelineState& state)
     return desc;
 }
 
-D3D12_GRAPHICS_PIPELINE_STATE_DESC ParsePipelineState(const Material* mat, const RenderPass& pass, const RootSignatureManager& sigManager, TextureManagerDX12* textureManager, ShaderManagerDX12* shaderManager, VertexLayoutManagerDX12* vertexLayoutManager, DXGI_FORMAT backBufferFromat, DXGI_FORMAT defaultDepthStencilFormat)
+D3D12_GRAPHICS_PIPELINE_STATE_DESC ParsePipelineState(Material* mat, const RenderPass& pass, const RootSignatureManager& sigManager, TextureManagerDX12* textureManager, ShaderManagerDX12* shaderManager, VertexLayoutManagerDX12* vertexLayoutManager, DXGI_FORMAT backBufferFromat, DXGI_FORMAT defaultDepthStencilFormat)
 {
     D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};
     desc.pRootSignature = sigManager.GetRootSignature(mat->GetShader()->GetHandle());
@@ -182,7 +182,7 @@ D3D12_GRAPHICS_PIPELINE_STATE_DESC ParsePipelineState(const Material* mat, const
 }
 }
 
-void PsoManager::BuildPipelineState(const StateDX& state, const Material* mat, const RenderPass& pass, const RootSignatureManager& sigManager, TextureManagerDX12* textureManager, ShaderManagerDX12* shaderManager, VertexLayoutManagerDX12* vertexLayoutManager, DXGI_FORMAT backBufferFromat, DXGI_FORMAT defaultDepthStencilFormat)
+void PsoManager::BuildPipelineState(const StateDX& state, Material* mat, const RenderPass& pass, const RootSignatureManager& sigManager, TextureManagerDX12* textureManager, ShaderManagerDX12* shaderManager, VertexLayoutManagerDX12* vertexLayoutManager, DXGI_FORMAT backBufferFromat, DXGI_FORMAT defaultDepthStencilFormat)
 {
     uint64 key = GetKey(mat->GetHandle(), pass.GetHandle());
     if (m_psos.find(key) != m_psos.end())
