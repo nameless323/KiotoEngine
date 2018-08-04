@@ -87,7 +87,7 @@ public:
 
 private:
     static constexpr uint32 PacketListPoolSize = 64;
-    static constexpr uint32 PacketListSize = 64;
+    static constexpr uint32 PacketListSize = 4096;
 
     TextureManagerDX12 m_textureManager;
     StateDX m_state;

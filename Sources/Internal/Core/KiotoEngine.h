@@ -21,7 +21,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     return 0;                                                                                                       \
 }
 
-
 namespace Kioto
 {
 class Scene;
