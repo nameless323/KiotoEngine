@@ -14,6 +14,14 @@
 #include "Core/Core.h"
 #include "Core/CoreTypes.h"
 
+#define RUN_KIOTO                                                                                                   \
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int nCmdShow)                         \
+{                                                                                                                   \
+    Kioto::KiotoMain(hInstance, prevInstance, cmdLine, nCmdShow, L"Kioto game", OnEngineInit, OnEngineShutdown);    \
+    return 0;                                                                                                       \
+}
+
+
 namespace Kioto
 {
 class Scene;
