@@ -306,13 +306,13 @@ void RendererDX12::Present()
         std::vector<RenderPacket>* passPackets = passPacketsIt->second;
 
         TextureDX12* currentRenderTarget = nullptr;
-        if (renderPass.GetRenderTarget(0).GetHandle() == InvalidHandle)
+        if (renderPass.GetRenderTarget(0).GetHandle() == DefaultBackBufferHandle)
             currentRenderTarget = m_swapChain.GetCurrentBackBuffer();
         else
             currentRenderTarget = m_textureManager.FindTexture(renderPass.GetRenderTarget(0).GetHandle());
 
         TextureDX12* currentDS = nullptr;
-        if (renderPass.GetDepthStencil().GetHandle() == InvalidHandle)
+        if (renderPass.GetDepthStencil().GetHandle() == DefaultDepthStencilHandle)
             currentDS = m_swapChain.GetDepthStencil();
         else
             currentDS = m_textureManager.FindTexture(renderPass.GetDepthStencil().GetHandle());

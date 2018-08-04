@@ -29,6 +29,8 @@ struct ShaderDefine
 };
 
 constexpr uint32 InvalidHandle = -1;
+constexpr uint32 DefaultBackBufferHandle = InvalidHandle - 1;
+constexpr uint32 DefaultDepthStencilHandle = InvalidHandle - 2;
 
 template <typename T>
 struct SafeHandle
