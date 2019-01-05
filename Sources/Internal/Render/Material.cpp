@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2017
+// Copyright (C) Aleksandr Vorontcov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -67,13 +67,13 @@ Material::~Material()
 {
 }
 
-void Material::BuildMaterialForPass(const RenderPass& pass)
+void Material::BuildMaterialForPass(const RenderPass* pass)
 {
-    auto it = std::find(m_buildedPassesHandles.cbegin(), m_buildedPassesHandles.cend(), pass.GetHandle());
+    auto it = std::find(m_buildedPassesHandles.cbegin(), m_buildedPassesHandles.cend(), pass->GetHandle());
     if (it != m_buildedPassesHandles.cend())
         return;
     Renderer::BuildMaterialForPass(*this, pass);
-    m_buildedPassesHandles.push_back(pass.GetHandle());
+    m_buildedPassesHandles.push_back(pass->GetHandle());
 }
 
 }

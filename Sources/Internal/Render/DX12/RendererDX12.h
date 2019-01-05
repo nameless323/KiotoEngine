@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2017
+// Copyright (C) Aleksandr Vorontcov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -10,7 +10,7 @@
 #include <exception>
 #include <memory>
 
-// [a_vorontsov] To fwd decl.
+// [a_vorontcov] To fwd decl.
 #include "Render/DX12/Buffers/EngineBuffers.h"
 #include "Render/DX12/Buffers/UploadBuffer.h"
 #include "Render/DX12/Buffers/VertexBufferDX12.h"
@@ -71,7 +71,7 @@ public:
     void RegisterTexture(Texture* texture);
     void RegisterShader(Shader* shader);
     void RegisterMaterial(Material* material);
-    void BuildMaterialForPass(Material& mat, const RenderPass& pass);
+    void BuildMaterialForPass(Material& mat, const RenderPass* pass);
     void RegisterMesh(Mesh* mesh);
 
     void RegisterRenderPass(RenderPass* renderPass);
@@ -115,7 +115,7 @@ private:
     void UpdateRenderObjectCB();
     void UpdatePassCB();
 
-    bool m_isTearingSupported = false; // [a_vorontsov] TODO: Properly handle when tearing is not supported.
+    bool m_isTearingSupported = false; // [a_vorontcov] TODO: Properly handle when tearing is not supported.
     UINT m_width = -1;
     UINT m_height = -1;
     bool m_isFullScreen = false;

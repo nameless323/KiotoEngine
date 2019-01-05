@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2017
+// Copyright (C) Aleksandr Vorontcov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -20,7 +20,7 @@ namespace Kioto
 
 Scene::Scene()
 {
-    // [a_vorontsov] 64 systems are enough for anyone.
+    // [a_vorontcov] 64 systems are enough for anyone.
     m_systems.reserve(64);
     m_entities.reserve(512);
 }

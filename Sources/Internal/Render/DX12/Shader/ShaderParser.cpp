@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2018
+// Copyright (C) Aleksandr Vorontcov. 2018
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -16,7 +16,7 @@
 
 namespace Kioto::Renderer
 {
-namespace ShaderParser // [a_vorontsov] Real parser via AST tree too time consuming for now.
+namespace ShaderParser // [a_vorontcov] Real parser via AST tree too time consuming for now.
 {
 
 std::vector<std::string> m_preprocessedHeaders;
@@ -525,7 +525,7 @@ TextureSet ParseTextures(std::string& source)
 
 std::string DXPreprocess(const std::string& source, const std::vector<ShaderDefine>* const defines)
 {
-    Microsoft::WRL::ComPtr<ID3DBlob> rr; // [a_vorontsov] TODO: dependence from dx compiler. Do better later.
+    Microsoft::WRL::ComPtr<ID3DBlob> rr; // [a_vorontcov] TODO: dependence from dx compiler. Do better later.
     Microsoft::WRL::ComPtr<ID3DBlob> err;
 
     const D3D_SHADER_MACRO* macroData = nullptr;

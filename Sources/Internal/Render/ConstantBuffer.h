@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov 2017.
+// Copyright (C) Aleksandr Vorontcov 2017.
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -67,6 +67,11 @@ public:
     uint16 GetIndex() const;
     uint16 GetSpace() const;
     uint32 GetKey() const;
+
+    void MakeShallowCopy(ConstantBuffer& target) const; // [a_vorontcov] Copies params, space and key.
+    void CopyParams(ConstantBuffer& target) const;
+    void CopySpace(ConstantBuffer& target) const;
+    void CopyKey(ConstantBuffer& target) const;
 
 private:
 

@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov 2018.
+// Copyright (C) Aleksandr Vorontcov 2018.
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -48,7 +48,7 @@ private:
     byte* m_data = nullptr;
     std::variant<ConstantBufferHandle> m_handle;
 
-    static constexpr uint32 GetConstantBufferByteSize(uint32 byteSize); // [a_vorontsov] Constant buffers must be 255 byte aligned.
+    static constexpr uint32 GetConstantBufferByteSize(uint32 byteSize); // [a_vorontcov] Constant buffers must be 255 byte aligned.
 };
 
 template <typename T>

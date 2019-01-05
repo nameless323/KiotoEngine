@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2018
+// Copyright (C) Aleksandr Vorontcov. 2018
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -17,7 +17,7 @@ void VertexLayoutManagerDX12::GenerateVertexLayout(const Shader* shader)
     for (auto& l : m_inputLayouts)
     {
         if (shader->GetShaderData().vertexLayout == l.second.LayoutKioto)
-            m_inputLayouts[shader->GetHandle()] = l.second; // [a_vorontsov] TODO: remove copy.
+            m_inputLayouts[shader->GetHandle()] = l.second; // [a_vorontcov] TODO: remove copy.
     }
     VertexLayout layout = shader->GetShaderData().vertexLayout;
     VertexLayoutDX12 res;

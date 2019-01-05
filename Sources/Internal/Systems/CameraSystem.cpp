@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2017
+// Copyright (C) Aleksandr Vorontcov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -12,6 +12,7 @@
 #include "Math/MathHelpers.h"
 #include "Systems/EventSystem/EventSystem.h"
 #include "Systems/EventSystem/EngineEvents.h"
+#include "Render/Renderer.h"
 
 namespace Kioto
 {
@@ -59,17 +60,19 @@ void CameraSystem::OnEntityRemove(Entity* entity)
 
 void CameraSystem::Update(float32 dt)
 {
-    for (CameraComponent* cam : m_components)
+    for (CameraComponent* camComponent : m_components)
     {
-        if (cam->GetIsMain())
-            m_mainCamera = cam;
+        Renderer::Camera& currCam = camComponent->GetCamera();
+        if (camComponent->GetIsMain())
+            m_mainCamera = currCam;
 
-        UpdateView(cam);
-        if (cam->m_isProjDirty)
-            UpdateProjection(cam);
+        UpdateView(camComponent);
+        if (currCam->m_isProjDirty)
+            UpdateProjection(currCam);
 
-        cam->m_VP = cam->m_view * cam->m_projection;
+        currCam->m_VP = currCam->m_view * currCam->m_projection;
     }
+    Renderer::SetMainCamera(m_mainCamera);
 }
 
 void CameraSystem::Shutdown()
@@ -83,10 +86,10 @@ void CameraSystem::UpdateView(CameraComponent* cam)
     cam->m_view = m.InversedOrthonorm();
 }
 
-void CameraSystem::UpdateProjection(CameraComponent* cam)
+void CameraSystem::UpdateProjection(Renderer::Camera* cam)
 {
     cam->m_projection = Matrix4::BuildProjectionFov(cam->GetFovY(), cam->GetAspect(), cam->GetNearPlane(), cam->GetFarPlane());
-    // [a_vorontsov] TODO: If cam - ortho, than other, but later.
+    // [a_vorontcov] TODO: If cam - ortho, than other, but later.
 
     cam->m_nearPlaneHeight = 2.0f * cam->m_nearPlane * std::tan(0.5f * cam->m_fovY);
     cam->m_farPlaneHeight = 2.0f * cam->m_farPlane * std::tan(0.5f * cam->m_fovY);

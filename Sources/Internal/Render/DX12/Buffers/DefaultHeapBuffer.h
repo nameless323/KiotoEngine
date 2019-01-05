@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2017
+// Copyright (C) Aleksandr Vorontcov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -26,7 +26,7 @@ public:
 
 private:
     Microsoft::WRL::ComPtr<ID3D12Resource> m_buffer;
-    Microsoft::WRL::ComPtr<ID3D12Resource> m_uploadBuffer; // [a_vorontsov] TODO:: Check if command list was executed and release ptr. But maybe its not nessesary.
+    Microsoft::WRL::ComPtr<ID3D12Resource> m_uploadBuffer; // [a_vorontcov] TODO:: Check if command list was executed and release ptr. But maybe its not nessesary.
 };
 
 inline ID3D12Resource* DefaultHeapBuffer::GetBuffer() const

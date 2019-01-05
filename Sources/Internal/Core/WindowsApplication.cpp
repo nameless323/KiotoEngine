@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2017
+// Copyright (C) Aleksandr Vorontcov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -93,7 +93,7 @@ int64 Run()
         }
         else
         {
-            KiotoCore::Update(); // [a_vorontsov] TODO: If app minimized go to sleep.
+            KiotoCore::Update(); // [a_vorontcov] TODO: If app minimized go to sleep.
         }
     }
     Shutdown();
@@ -172,7 +172,7 @@ LRESULT WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
         return 0;
 
     case WM_SYSKEYDOWN:
-        if ((wParam == VK_RETURN) && (lParam & (1 << 29))) // [a_vorontsov] Handle Alt+Enter.
+        if ((wParam == VK_RETURN) && (lParam & (1 << 29))) // [a_vorontcov] Handle Alt+Enter.
         {
             KiotoCore::ChangeFullscreenMode(!IsFullscreen);
         }

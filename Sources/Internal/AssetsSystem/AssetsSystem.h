@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2017
+// Copyright (C) Aleksandr Vorontcov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -11,7 +11,7 @@
 
 #include "Asset.h"
 
-namespace Kioto::AssetsSystem // [a_vorontsov] Maybe to class and use with service locator.
+namespace Kioto::AssetsSystem // [a_vorontcov] Maybe to class and use with service locator.
 {
 void Init();
 void Shutdown();
@@ -114,7 +114,7 @@ inline void RenderAssetsManager::Init()
 
 inline void RenderAssetsManager::Shutdown()
 {
-    // [a_vorontsov] Asset system owns assets. Nothing to do here.
+    // [a_vorontcov] Asset system owns assets. Nothing to do here.
 }
 
 template <typename T>

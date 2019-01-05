@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2017
+// Copyright (C) Aleksandr Vorontcov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -25,7 +25,7 @@ TransformSystem::~TransformSystem()
 void TransformSystem::OnEntityAdd(Entity* entity)
 {
     TransformComponent* t = entity->GetTransform();
-    if (t == nullptr) // [a_vorontsov] o.O
+    if (t == nullptr) // [a_vorontcov] o.O
         return;
     m_components.push_back(t);
 }
@@ -33,7 +33,7 @@ void TransformSystem::OnEntityAdd(Entity* entity)
 void TransformSystem::OnEntityRemove(Entity* entity)
 {
     TransformComponent* t = entity->GetTransform();
-    if (t == nullptr) // [a_vorontsov] o.O
+    if (t == nullptr) // [a_vorontcov] o.O
         return;
     auto it = std::find(m_components.begin(), m_components.end(), t);
     if (it != m_components.end())

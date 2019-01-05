@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov 2017.
+// Copyright (C) Aleksandr Vorontcov 2017.
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -81,7 +81,7 @@ D3D12_BLEND_DESC ParseBlendState(const PipelineState& state)
     desc.RenderTarget[0].DestBlendAlpha = blends[state.DstBlend];
     desc.RenderTarget[0].SrcBlend = blends[state.SrcBlend];
     desc.RenderTarget[0].SrcBlendAlpha = blends[state.SrcBlend];
-    desc.RenderTarget[0].RenderTargetWriteMask = colorWrites[state.ColorMask]; // [a_vorontsov] TODO
+    desc.RenderTarget[0].RenderTargetWriteMask = colorWrites[state.ColorMask]; // [a_vorontcov] TODO
     return desc;
 }
 
@@ -141,7 +141,7 @@ D3D12_DEPTH_STENCIL_DESC ParseDepthStencil(const PipelineState& state)
     return desc;
 }
 
-D3D12_GRAPHICS_PIPELINE_STATE_DESC ParsePipelineState(Material* mat, const RenderPass& pass, const RootSignatureManager& sigManager, TextureManagerDX12* textureManager, ShaderManagerDX12* shaderManager, VertexLayoutManagerDX12* vertexLayoutManager, DXGI_FORMAT backBufferFromat, DXGI_FORMAT defaultDepthStencilFormat)
+D3D12_GRAPHICS_PIPELINE_STATE_DESC ParsePipelineState(Material* mat, const RenderPass* pass, const RootSignatureManager& sigManager, TextureManagerDX12* textureManager, ShaderManagerDX12* shaderManager, VertexLayoutManagerDX12* vertexLayoutManager, DXGI_FORMAT backBufferFromat, DXGI_FORMAT defaultDepthStencilFormat)
 {
     D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};
     desc.pRootSignature = sigManager.GetRootSignature(mat->GetShader()->GetHandle());
@@ -161,18 +161,18 @@ D3D12_GRAPHICS_PIPELINE_STATE_DESC ParsePipelineState(Material* mat, const Rende
     desc.DepthStencilState = ParseDepthStencil(state);
 
     DXGI_FORMAT dsvFormat = defaultDepthStencilFormat;
-    if (pass.GetDepthStencil().GetHandle() != InvalidHandle)
-        dsvFormat = textureManager->FindTexture(pass.GetDepthStencil().GetHandle())->GetFormat();
+    if (pass->GetDepthStencil().GetHandle() != InvalidHandle)
+        dsvFormat = textureManager->FindTexture(pass->GetDepthStencil().GetHandle())->GetFormat();
  
     desc.DSVFormat = dsvFormat;
     desc.SampleMask = UINT_MAX;
     desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-    desc.NumRenderTargets = pass.GetRenderTargetCount();
-    for (uint32 i = 0; i < pass.GetRenderTargetCount(); ++i)
+    desc.NumRenderTargets = pass->GetRenderTargetCount();
+    for (uint32 i = 0; i < pass->GetRenderTargetCount(); ++i)
     {
         DXGI_FORMAT rtvFormat = backBufferFromat;
-        if (pass.GetRenderTarget(i).GetHandle() != InvalidHandle)
-            rtvFormat = textureManager->FindTexture(pass.GetRenderTarget(i).GetHandle())->GetFormat();
+        if (pass->GetRenderTarget(i).GetHandle() != InvalidHandle)
+            rtvFormat = textureManager->FindTexture(pass->GetRenderTarget(i).GetHandle())->GetFormat();
 
         desc.RTVFormats[i] = rtvFormat;
     }
@@ -182,9 +182,9 @@ D3D12_GRAPHICS_PIPELINE_STATE_DESC ParsePipelineState(Material* mat, const Rende
 }
 }
 
-void PsoManager::BuildPipelineState(const StateDX& state, Material* mat, const RenderPass& pass, const RootSignatureManager& sigManager, TextureManagerDX12* textureManager, ShaderManagerDX12* shaderManager, VertexLayoutManagerDX12* vertexLayoutManager, DXGI_FORMAT backBufferFromat, DXGI_FORMAT defaultDepthStencilFormat)
+void PsoManager::BuildPipelineState(const StateDX& state, Material* mat, const RenderPass* pass, const RootSignatureManager& sigManager, TextureManagerDX12* textureManager, ShaderManagerDX12* shaderManager, VertexLayoutManagerDX12* vertexLayoutManager, DXGI_FORMAT backBufferFromat, DXGI_FORMAT defaultDepthStencilFormat)
 {
-    uint64 key = GetKey(mat->GetHandle(), pass.GetHandle());
+    uint64 key = GetKey(mat->GetHandle(), pass->GetHandle());
     if (m_psos.find(key) != m_psos.end())
         return;
     D3D12_GRAPHICS_PIPELINE_STATE_DESC stateDesc = ParsePipelineState(mat, pass, sigManager, textureManager, shaderManager, vertexLayoutManager, backBufferFromat, defaultDepthStencilFormat);

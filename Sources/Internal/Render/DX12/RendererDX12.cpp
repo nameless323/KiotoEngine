@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2017
+// Copyright (C) Aleksandr Vorontcov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -28,7 +28,7 @@
 #include "Component/CameraComponent.h"
 #include "Systems/CameraSystem.h"
 #include "Core/Scene.h"
-#include "Core/KiotoEngine.h" // [a_vorontsov] For now. TODO: render pass with render target and so on. This class shouldn't know 'bout camera and so on.
+#include "Core/KiotoEngine.h" // [a_vorontcov] For now. TODO: render pass with render target and so on. This class shouldn't know 'bout camera and so on.
 
 #include "Render/DX12/Buffers/UploadBufferDX12.h"
 #include "Render/Texture/Texture.h"
@@ -119,7 +119,7 @@ void RendererDX12::Init(uint16 width, uint16 height)
         ThrowIfFailed(m_state.Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_state.CommandAllocators[i])));
         NAME_D3D12_OBJECT(m_state.CommandAllocators[i]);
     }
-    ThrowIfFailed(m_state.Device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_state.CommandAllocators[0].Get(), nullptr, IID_PPV_ARGS(&m_state.CommandList))); // [a_vorontsov] Maybe not 0 as mask?
+    ThrowIfFailed(m_state.Device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_state.CommandAllocators[0].Get(), nullptr, IID_PPV_ARGS(&m_state.CommandList))); // [a_vorontcov] Maybe not 0 as mask?
     NAME_D3D12_OBJECT(m_state.CommandList);
     m_state.CommandList->Close();
 
@@ -197,7 +197,7 @@ void RendererDX12::GetHardwareAdapter(IDXGIFactory4* factory, IDXGIAdapter1** ad
     UINT deviceIndex = -1;
     UINT bestVendorIndex = -1;
 
-    static const std::array<UINT, 3> preferredVendors = // [a_vorontsov] http://pcidatabase.com/vendors.php?sort=id
+    static const std::array<UINT, 3> preferredVendors = // [a_vorontcov] http://pcidatabase.com/vendors.php?sort=id
     {
         0x10DE, // NVidia
         0x1002, // AMD
@@ -369,7 +369,7 @@ void RendererDX12::Present()
     m_state.CommandQueue->Signal(m_state.Fence.Get(), m_state.CurrentFence);
 
     m_renderPasses[m_swapChain.GetCurrentFrameIndex()].clear();
-    // [a_vorontsov] Check if we can move to next frame.
+    // [a_vorontcov] Check if we can move to next frame.
     m_swapChain.ProceedToNextFrame();
     for (uint32 i = 0; i < m_packetListPoolIndex; ++i)
         m_renderPacketListPool[i].clear();
@@ -481,7 +481,7 @@ void RendererDX12::UpdateRenderObjectCB()
     angle += 0.001f;
     Matrix4 toWorld = Matrix4::BuildRotation(Vector3(1.0f, 1.0f, 0.0f).Normalize(), angle);
     //toWorld = Matrix4::Identity();
-    toWorld.SetTranslation({ 0.0f, 0.0f, 3.0f });
+    toWorld.SetTranslation({ -3.0f, 0.0f, 8.0f });
 
     Matrix4 toModel;
     toWorld.Inversed(toModel);
@@ -501,6 +501,8 @@ void RendererDX12::UpdatePassCB()
 void RendererDX12::AddRenderPass(const RenderPass& renderPass)
 {
     m_renderPasses[m_swapChain.GetCurrentFrameIndex()].push_back(renderPass);
+    // Setup render pass cb here
+    // UpdatePassCB()
 }
 
 ResourceDX12* RendererDX12::FindDxResource(uint32 handle)
@@ -520,9 +522,9 @@ void RendererDX12::RegisterShader(Shader* shader)
     m_vertexLayoutManager.GenerateVertexLayout(shader);
 }
 
-void RendererDX12::BuildMaterialForPass(Material& mat, const RenderPass& pass)
+void RendererDX12::BuildMaterialForPass(Material& mat, const RenderPass* pass)
 {
-    ID3D12PipelineState* ps = m_piplineStateManager.GetPipelineState(mat.GetHandle(), pass.GetHandle());
+    ID3D12PipelineState* ps = m_piplineStateManager.GetPipelineState(mat.GetHandle(), pass->GetHandle());
     if (ps == nullptr)
         m_piplineStateManager.BuildPipelineState(m_state, &mat, pass, m_rootSignatureManager, &m_textureManager, &m_shaderManager, &m_vertexLayoutManager, m_swapChain.GetBackBufferFormat(), m_swapChain.GetDepthStencilFormat());
 }

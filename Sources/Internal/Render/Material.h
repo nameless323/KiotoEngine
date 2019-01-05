@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2017
+// Copyright (C) Aleksandr Vorontcov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -30,7 +30,7 @@ public:
 
     Shader* GetShader() const;
     ShaderData& GetShaderData();
-    void BuildMaterialForPass(const RenderPass& pass);
+    void BuildMaterialForPass(const RenderPass* pass);
 
 private:
     std::string m_shaderPath;

@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2017
+// Copyright (C) Aleksandr Vorontcov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -151,7 +151,7 @@ void ParserFBX::TraverseHiererchy(FbxNode* node, int32 depth, Renderer::Mesh* ds
         attribType = node->GetNodeAttribute()->GetAttributeType();
         if (attribType == FbxNodeAttribute::eMesh)
         {
-            ParseFbxMesh(node, dst); // [a_vorontsov] TODO: only one mesh in fbx supported by now.
+            ParseFbxMesh(node, dst); // [a_vorontcov] TODO: only one mesh in fbx supported by now.
             return;
         }
     }

@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2017
+// Copyright (C) Aleksandr Vorontcov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 // Adapted from http://wiki.unity3d.com/index.php/ProceduralPrimitives
@@ -37,11 +37,11 @@ struct TriangleIndices
     }
 };
 
-// [a_vorontsov] Return index of point in the middle of p1 and p2 (for the icosphere).
+// [a_vorontcov] Return index of point in the middle of p1 and p2 (for the icosphere).
 template <typename T, typename = std::enable_if_t<std::is_same_v<T, byte> || std::is_same_v<T, uint16> || std::is_same_v<T, uint32> || std::is_same_v<T, uint64>>>
 T GetMiddlePoint(T p1, T p2, std::vector<Vector3>& vertices, std::map<uint64, T>& cache, float radius)
 {
-    // [a_vorontsov] First check if we have it already.
+    // [a_vorontcov] First check if we have it already.
     bool firstIsSmaller = p1 < p2;
     uint64 smallerIndex = firstIsSmaller ? p1 : p2;
     uint64 greaterIndex = firstIsSmaller ? p2 : p1;
@@ -53,7 +53,7 @@ T GetMiddlePoint(T p1, T p2, std::vector<Vector3>& vertices, std::map<uint64, T>
         return it->second;
     }
 
-    // [a_vorontsov] Not in cache, calculate it.
+    // [a_vorontcov] Not in cache, calculate it.
     Vector3 point1 = vertices[p1];
     Vector3 point2 = vertices[p2];
     Vector3 middle
@@ -63,11 +63,11 @@ T GetMiddlePoint(T p1, T p2, std::vector<Vector3>& vertices, std::map<uint64, T>
         (point1.z + point2.z) / 2.0f
     );
 
-    // [a_vorontsov] Add vertex makes sure point is on unit sphere.
+    // [a_vorontcov] Add vertex makes sure point is on unit sphere.
     T i = static_cast<T>(vertices.size());
     vertices.push_back(middle.Normalized() * radius);
 
-    // [a_vorontsov] Store it, return index.
+    // [a_vorontcov] Store it, return index.
     cache[key] = i;
     return i;
 }
@@ -101,7 +101,7 @@ void Shutdown()
 
 Mesh GeometryGenerator::GeneratePlane(float32 sizeX /*= 1.0f*/, float32 sizeZ /*= 1.0f*/)
 {
-    uint32 resX = 2; // [a_vorontsov] 2 minimum.
+    uint32 resX = 2; // [a_vorontcov] 2 minimum.
     uint32 resZ = 2;
     uint32 vCount = resX * resZ;
 
@@ -113,11 +113,11 @@ Mesh GeometryGenerator::GeneratePlane(float32 sizeX /*= 1.0f*/, float32 sizeZ /*
     uint32 index = 0;
     for (uint32 z = 0; z < resZ; z++)
     {
-        // [a_vorontsov] [ -length / 2, length / 2 ]
+        // [a_vorontcov] [ -length / 2, length / 2 ]
         float32 zPos = (static_cast<float32>(z) / (resZ - 1) - .5f) * sizeX;
         for (uint32 x = 0; x < resX; x++)
         {
-            // [a_vorontsov] [ -width / 2, width / 2 ]
+            // [a_vorontcov] [ -width / 2, width / 2 ]
             float32 xPos = (static_cast<float32>(x) / (resX - 1) - .5f) * sizeZ;
             *mesh.GetPositionPtr(index++) = Vector3(xPos, 0.0f, zPos);
         }
@@ -137,7 +137,7 @@ Mesh GeometryGenerator::GeneratePlane(float32 sizeX /*= 1.0f*/, float32 sizeZ /*
 
     for (uint16 face = 0; face < nbFaces; face++)
     {
-        // [a_vorontsov] Retrieve lower left corner from face ind.
+        // [a_vorontcov] Retrieve lower left corner from face ind.
         uint32 i = face % (resX - 1) + (face / (resZ - 1) * resX);
 
         *mesh.GetIndexPtr(index++) = i + resX;
@@ -171,32 +171,32 @@ Mesh GenerateCube(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/, float32 si
     Mesh res(Renderer::VertexLayout::LayoutPos3Norm3Uv2, 24, 36);
     uint32 ind = 0;
 
-    // [a_vorontsov] Bottom.
+    // [a_vorontcov] Bottom.
     *res.GetPositionPtr(ind++) = p0;
     *res.GetPositionPtr(ind++) = p1;
     *res.GetPositionPtr(ind++) = p2;
     *res.GetPositionPtr(ind++) = p3;
-    // [a_vorontsov] Left.
+    // [a_vorontcov] Left.
     *res.GetPositionPtr(ind++) = p7;
     *res.GetPositionPtr(ind++) = p4;
     *res.GetPositionPtr(ind++) = p0;
     *res.GetPositionPtr(ind++) = p3;
-    // [a_vorontsov] Front.
+    // [a_vorontcov] Front.
     *res.GetPositionPtr(ind++) = p4;
     *res.GetPositionPtr(ind++) = p5;
     *res.GetPositionPtr(ind++) = p1;
     *res.GetPositionPtr(ind++) = p0;
-    // [a_vorontsov] Back.
+    // [a_vorontcov] Back.
     *res.GetPositionPtr(ind++) = p6;
     *res.GetPositionPtr(ind++) = p7;
     *res.GetPositionPtr(ind++) = p3;
     *res.GetPositionPtr(ind++) = p2;
-    // [a_vorontsov] Right.
+    // [a_vorontcov] Right.
     *res.GetPositionPtr(ind++) = p5;
     *res.GetPositionPtr(ind++) = p6;
     *res.GetPositionPtr(ind++) = p2;
     *res.GetPositionPtr(ind++) = p1;
-    // [a_vorontsov] Top.
+    // [a_vorontcov] Top.
     *res.GetPositionPtr(ind++) = p7;
     *res.GetPositionPtr(ind++) = p6;
     *res.GetPositionPtr(ind++) = p5;
@@ -210,32 +210,32 @@ Mesh GenerateCube(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/, float32 si
     Vector3 left(1.0f, 0.0f, 0.0f);
     Vector3 right(-1.0f, 0.0f, 0.0f);
 
-    // [a_vorontsov] Normals. Bottom.
+    // [a_vorontcov] Normals. Bottom.
     *res.GetNormalPtr(ind++) = down;
     *res.GetNormalPtr(ind++) = down;
     *res.GetNormalPtr(ind++) = down;
     *res.GetNormalPtr(ind++) = down;
-    // [a_vorontsov] Left.
+    // [a_vorontcov] Left.
     *res.GetNormalPtr(ind++) = left;
     *res.GetNormalPtr(ind++) = left;
     *res.GetNormalPtr(ind++) = left;
     *res.GetNormalPtr(ind++) = left;
-    // [a_vorontsov] Front.
+    // [a_vorontcov] Front.
     *res.GetNormalPtr(ind++) = front;
     *res.GetNormalPtr(ind++) = front;
     *res.GetNormalPtr(ind++) = front;
     *res.GetNormalPtr(ind++) = front;
-    // [a_vorontsov] Back.
+    // [a_vorontcov] Back.
     *res.GetNormalPtr(ind++) = back;
     *res.GetNormalPtr(ind++) = back;
     *res.GetNormalPtr(ind++) = back;
     *res.GetNormalPtr(ind++) = back;
-    // [a_vorontsov] Right.
+    // [a_vorontcov] Right.
     *res.GetNormalPtr(ind++) = right;
     *res.GetNormalPtr(ind++) = right;
     *res.GetNormalPtr(ind++) = right;
     *res.GetNormalPtr(ind++) = right;
-    // [a_vorontsov] Top.
+    // [a_vorontcov] Top.
     *res.GetNormalPtr(ind++) = up;
     *res.GetNormalPtr(ind++) = up;
     *res.GetNormalPtr(ind++) = up;
@@ -247,39 +247,39 @@ Mesh GenerateCube(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/, float32 si
     Vector2 _01(0.0f, 1.0f);
     Vector2 _11(1.0f, 1.0f);
 
-    // [a_vorontsov] UV. Bottom.
+    // [a_vorontcov] UV. Bottom.
     *res.GetUv0Ptr(ind++) = _11;
     *res.GetUv0Ptr(ind++) = _01;
     *res.GetUv0Ptr(ind++) = _00;
     *res.GetUv0Ptr(ind++) = _10;
-    // [a_vorontsov] Left.
+    // [a_vorontcov] Left.
     *res.GetUv0Ptr(ind++) = _11;
     *res.GetUv0Ptr(ind++) = _01;
     *res.GetUv0Ptr(ind++) = _00;
     *res.GetUv0Ptr(ind++) = _10;
-    // [a_vorontsov] Front.
+    // [a_vorontcov] Front.
     *res.GetUv0Ptr(ind++) = _11;
     *res.GetUv0Ptr(ind++) = _01;
     *res.GetUv0Ptr(ind++) = _00;
     *res.GetUv0Ptr(ind++) = _10;
-    // [a_vorontsov] Back.
+    // [a_vorontcov] Back.
     *res.GetUv0Ptr(ind++) = _11;
     *res.GetUv0Ptr(ind++) = _01;
     *res.GetUv0Ptr(ind++) = _00;
     *res.GetUv0Ptr(ind++) = _10;
-    // [a_vorontsov] Right.
+    // [a_vorontcov] Right.
     *res.GetUv0Ptr(ind++) = _11;
     *res.GetUv0Ptr(ind++) = _01;
     *res.GetUv0Ptr(ind++) = _00;
     *res.GetUv0Ptr(ind++) = _10;
-    // [a_vorontsov] Top.
+    // [a_vorontcov] Top.
     *res.GetUv0Ptr(ind++) = _11;
     *res.GetUv0Ptr(ind++) = _01;
     *res.GetUv0Ptr(ind++) = _00;
     *res.GetUv0Ptr(ind++) = _10;
     ind = 0;
 
-    // [a_vorontsov] Bottom.
+    // [a_vorontcov] Bottom.
     *res.GetIndexPtr(ind++) = 3;
     *res.GetIndexPtr(ind++) = 1;
     *res.GetIndexPtr(ind++) = 0;
@@ -288,7 +288,7 @@ Mesh GenerateCube(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/, float32 si
     *res.GetIndexPtr(ind++) = 2;
     *res.GetIndexPtr(ind++) = 1;
 
-    // [a_vorontsov] Left.
+    // [a_vorontcov] Left.
     *res.GetIndexPtr(ind++) = 7;
     *res.GetIndexPtr(ind++) = 5;
     *res.GetIndexPtr(ind++) = 4;
@@ -297,7 +297,7 @@ Mesh GenerateCube(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/, float32 si
     *res.GetIndexPtr(ind++) = 6;
     *res.GetIndexPtr(ind++) = 5;
 
-    // [a_vorontsov] Front.
+    // [a_vorontcov] Front.
     *res.GetIndexPtr(ind++) = 11;
     *res.GetIndexPtr(ind++) = 9;
     *res.GetIndexPtr(ind++) = 8;
@@ -306,7 +306,7 @@ Mesh GenerateCube(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/, float32 si
     *res.GetIndexPtr(ind++) = 10;
     *res.GetIndexPtr(ind++) = 9;
 
-    // [a_vorontsov] Back.
+    // [a_vorontcov] Back.
     *res.GetIndexPtr(ind++) = 15;
     *res.GetIndexPtr(ind++) = 13;
     *res.GetIndexPtr(ind++) = 12;
@@ -315,7 +315,7 @@ Mesh GenerateCube(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/, float32 si
     *res.GetIndexPtr(ind++) = 14;
     *res.GetIndexPtr(ind++) = 13;
 
-    // [a_vorontsov] Right.
+    // [a_vorontcov] Right.
     *res.GetIndexPtr(ind++) = 19;
     *res.GetIndexPtr(ind++) = 17;
     *res.GetIndexPtr(ind++) = 16;
@@ -324,7 +324,7 @@ Mesh GenerateCube(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/, float32 si
     *res.GetIndexPtr(ind++) = 18;
     *res.GetIndexPtr(ind++) = 17;
 
-    // [a_vorontsov] Top.
+    // [a_vorontcov] Top.
     *res.GetIndexPtr(ind++) = 23;
     *res.GetIndexPtr(ind++) = 21;
     *res.GetIndexPtr(ind++) = 20;
@@ -339,7 +339,7 @@ Mesh GenerateCube(float32 sizeX /*= 1.0f*/, float32 sizeY /*= 1.0f*/, float32 si
 Mesh GenerateCone(float32 height /*= 1.0f*/, float32 bottomRadius /*= 0.25f*/, float32 topRadius /*= 0.05f*/)
 {
     uint32 nbSides = 18;
-    uint32 nbHeightSeg = 1; // [a_vorontsov] Not implemented yet.
+    uint32 nbHeightSeg = 1; // [a_vorontcov] Not implemented yet.
 
     uint32 nbVerticesCap = nbSides + 1;
 
@@ -353,7 +353,7 @@ Mesh GenerateCone(float32 height /*= 1.0f*/, float32 bottomRadius /*= 0.25f*/, f
     uint32 index = 0;
 
 
-    // [a_vorontsov] Bottom cap.
+    // [a_vorontcov] Bottom cap.
     *mesh.GetPositionPtr(index++) = Vector3(0.0f, 0.0f, 0.0f);
 
     while (index <= nbSides)
@@ -362,7 +362,7 @@ Mesh GenerateCone(float32 height /*= 1.0f*/, float32 bottomRadius /*= 0.25f*/, f
         *mesh.GetPositionPtr(index++) = Vector3(std::cos(rad) * bottomRadius, 0.0f, std::sin(rad) * bottomRadius);
     }
 
-    // [a_vorontsov] Top cap.
+    // [a_vorontcov] Top cap.
     *mesh.GetPositionPtr(index++) = Vector3(0.0f, height, 0.0f);
     while (index <= nbSides * 2 + 1)
     {
@@ -370,7 +370,7 @@ Mesh GenerateCone(float32 height /*= 1.0f*/, float32 bottomRadius /*= 0.25f*/, f
         *mesh.GetPositionPtr(index++) = Vector3(std::cos(rad) * topRadius, height, std::sin(rad) * topRadius);
     }
 
-    // [a_vorontsov] Sides.
+    // [a_vorontcov] Sides.
     int32 v = 0;
     while (index <= vCount - 4)
     {
@@ -384,15 +384,15 @@ Mesh GenerateCone(float32 height /*= 1.0f*/, float32 bottomRadius /*= 0.25f*/, f
 
     index = 0;
 
-    // [a_vorontsov] Bottom cap.
+    // [a_vorontcov] Bottom cap.
     while (index <= nbSides)
         *mesh.GetNormalPtr(index++) = Vector3(0.0f, -1.0f, 0.0f);
 
-    // [a_vorontsov] Top cap.
+    // [a_vorontcov] Top cap.
     while (index <= nbSides * 2 + 1)
         *mesh.GetNormalPtr(index++) = Vector3(0.0f, 1.0f, 0.0f);
 
-    // [a_vorontsov] Sides.
+    // [a_vorontcov] Sides.
     v = 0;
     while (index <= vCount - 4)
     {
@@ -409,7 +409,7 @@ Mesh GenerateCone(float32 height /*= 1.0f*/, float32 bottomRadius /*= 0.25f*/, f
     *mesh.GetNormalPtr(index++) = *mesh.GetNormalPtr(nbSides * 2 + 2);
 
     index = 0;
-    // [a_vorontsov] Bottom cap.
+    // [a_vorontcov] Bottom cap.
     uint32 u = 0;
     *mesh.GetUv0Ptr(index++) = Vector2(0.5f, 0.5f);
     u++;
@@ -420,7 +420,7 @@ Mesh GenerateCone(float32 height /*= 1.0f*/, float32 bottomRadius /*= 0.25f*/, f
         u++;
     }
 
-    // [a_vorontsov] Top cap.
+    // [a_vorontcov] Top cap.
     *mesh.GetUv0Ptr(index++) = Vector2(0.5f, 0.5f);
     u++;
     while (u <= nbSides * 2 + 1)
@@ -430,7 +430,7 @@ Mesh GenerateCone(float32 height /*= 1.0f*/, float32 bottomRadius /*= 0.25f*/, f
         u++;
     }
 
-    // [a_vorontsov] Sides.
+    // [a_vorontcov] Sides.
     int32 u_sides = 0;
     while (u <= vCount - 4)
     {
@@ -445,7 +445,7 @@ Mesh GenerateCone(float32 height /*= 1.0f*/, float32 bottomRadius /*= 0.25f*/, f
 
     index = 0;
 
-    // [a_vorontsov] Bottom cap.
+    // [a_vorontcov] Bottom cap.
     uint32 tri = 0;
     while (tri < nbSides - 1)
     {
@@ -459,7 +459,7 @@ Mesh GenerateCone(float32 height /*= 1.0f*/, float32 bottomRadius /*= 0.25f*/, f
     *mesh.GetIndexPtr(index++) = 1;
     tri++;
 
-    // [a_vorontsov] Top cap.
+    // [a_vorontcov] Top cap.
     while (tri < nbSides * 2)
     {
         *mesh.GetIndexPtr(index++) = tri + 2;
@@ -473,7 +473,7 @@ Mesh GenerateCone(float32 height /*= 1.0f*/, float32 bottomRadius /*= 0.25f*/, f
     *mesh.GetIndexPtr(index++) = nbVerticesCap;
     tri += 2;
 
-    // [a_vorontsov] Sides.
+    // [a_vorontcov] Sides.
     while (tri <= nbTriangles)
     {
         *mesh.GetIndexPtr(index++) = tri + 2;
@@ -541,7 +541,7 @@ Mesh GenerateSphere(float32 radius /*=1.0f*/)
 
     index = 0;
 
-    // [a_vorontsov] Top cap.
+    // [a_vorontcov] Top cap.
     for (int32 lon = 0; lon < nbLong; lon++)
     {
         *mesh.GetIndexPtr(index++) = lon + 2;
@@ -549,7 +549,7 @@ Mesh GenerateSphere(float32 radius /*=1.0f*/)
         *mesh.GetIndexPtr(index++) = 0;
     }
 
-    // [a_vorontsov] Middle.
+    // [a_vorontcov] Middle.
     for (int32 lat = 0; lat < nbLat - 1; lat++)
     {
         for (int32 lon = 0; lon < nbLong; lon++)
@@ -567,7 +567,7 @@ Mesh GenerateSphere(float32 radius /*=1.0f*/)
         }
     }
 
-    // [a_vorontsov] Bottom cap.
+    // [a_vorontcov] Bottom cap.
     for (int32 lon = 0; lon < nbLong; lon++)
     {
         *mesh.GetIndexPtr(index++)  = vCount - 1;
@@ -581,7 +581,7 @@ Mesh GenerateTube(float32 height /*= 1.0f*/, float32 bottomRadius1 /*= 0.5f*/, f
 {
     int32 nbSides = 24;
 
-    // [a_vorontsov] Outter shell is at radius1 + radius2 / 2, inner shell at radius1 - radius2 / 2.
+    // [a_vorontcov] Outter shell is at radius1 + radius2 / 2, inner shell at radius1 - radius2 / 2.
     uint32 nbVerticesCap = nbSides * 2 + 2;
     uint32 nbVerticesSides = nbSides * 2 + 2;
     uint32 vCount = nbVerticesCap * 2 + nbVerticesSides * 2;
@@ -594,7 +594,7 @@ Mesh GenerateTube(float32 height /*= 1.0f*/, float32 bottomRadius1 /*= 0.5f*/, f
 
     uint32 index = 0;
 
-    // [a_vorontsov] Bottom cap.
+    // [a_vorontcov] Bottom cap.
     int32 sideCounter = 0;
     while (index < nbVerticesCap)
     {
@@ -607,7 +607,7 @@ Mesh GenerateTube(float32 height /*= 1.0f*/, float32 bottomRadius1 /*= 0.5f*/, f
         *mesh.GetPositionPtr(index++) = Vector3(cos * (bottomRadius1 + bottomRadius2 * 0.5f), 0.0f, sin * (bottomRadius1 + bottomRadius2 * 0.5f));
     }
 
-    // [a_vorontsov] Top cap.
+    // [a_vorontcov] Top cap.
     sideCounter = 0;
     while (index < nbVerticesCap * 2)
     {
@@ -620,7 +620,7 @@ Mesh GenerateTube(float32 height /*= 1.0f*/, float32 bottomRadius1 /*= 0.5f*/, f
         *mesh.GetPositionPtr(index++) = Vector3(cos * (topRadius1 + topRadius2 * 0.5f), height, sin * (topRadius1 + topRadius2 * 0.5f));
     }
 
-    // [a_vorontsov] Sides (out).
+    // [a_vorontcov] Sides (out).
     sideCounter = 0;
     while (index < nbVerticesCap * 2 + nbVerticesSides)
     {
@@ -634,7 +634,7 @@ Mesh GenerateTube(float32 height /*= 1.0f*/, float32 bottomRadius1 /*= 0.5f*/, f
         *mesh.GetPositionPtr(index++) = Vector3(cos * (bottomRadius1 + bottomRadius2 * 0.5f), 0.0f, sin * (bottomRadius1 + bottomRadius2 * 0.5f));
     }
 
-    // [a_vorontsov] Sides (in).
+    // [a_vorontcov] Sides (in).
     sideCounter = 0;
     while (index < vCount)
     {
@@ -649,15 +649,15 @@ Mesh GenerateTube(float32 height /*= 1.0f*/, float32 bottomRadius1 /*= 0.5f*/, f
     }
 
     index = 0;
-    // [a_vorontsov] Bottom cap.
+    // [a_vorontcov] Bottom cap.
     while (index < nbVerticesCap)
         *mesh.GetNormalPtr(index++) = Vector3(0.0f, -1.0f, 0.0f);
 
-    // [a_vorontsov] Top cap.
+    // [a_vorontcov] Top cap.
     while (index < nbVerticesCap * 2)
         *mesh.GetNormalPtr(index++) = Vector3(0.0f, 1.0f, 0.0f);
 
-    // [a_vorontsov] Sides (out).
+    // [a_vorontcov] Sides (out).
     sideCounter = 0;
     while (index < nbVerticesCap * 2 + nbVerticesSides)
     {
@@ -669,7 +669,7 @@ Mesh GenerateTube(float32 height /*= 1.0f*/, float32 bottomRadius1 /*= 0.5f*/, f
         *mesh.GetNormalPtr(index++) = Vector3(std::cos(r1), 0.0f, std::sin(r1));
     }
 
-    // [a_vorontsov] Sides (in).
+    // [a_vorontcov] Sides (in).
     sideCounter = 0;
     while (index < vCount)
     {
@@ -682,7 +682,7 @@ Mesh GenerateTube(float32 height /*= 1.0f*/, float32 bottomRadius1 /*= 0.5f*/, f
     }
     index = 0;
 
-    // [a_vorontsov] Bottom cap.
+    // [a_vorontcov] Bottom cap.
     sideCounter = 0;
     while (index < nbVerticesCap)
     {
@@ -691,7 +691,7 @@ Mesh GenerateTube(float32 height /*= 1.0f*/, float32 bottomRadius1 /*= 0.5f*/, f
         *mesh.GetUv0Ptr(index++) = Vector2(1.0f, t);
     }
 
-    // [a_vorontsov] Top cap.
+    // [a_vorontcov] Top cap.
     sideCounter = 0;
     while (index < nbVerticesCap * 2)
     {
@@ -700,7 +700,7 @@ Mesh GenerateTube(float32 height /*= 1.0f*/, float32 bottomRadius1 /*= 0.5f*/, f
         *mesh.GetUv0Ptr(index++) = Vector2(1.0f, t);
     }
 
-    // [a_vorontsov] Sides (out).
+    // [a_vorontcov] Sides (out).
     sideCounter = 0;
     while (index < nbVerticesCap * 2 + nbVerticesSides)
     {
@@ -709,7 +709,7 @@ Mesh GenerateTube(float32 height /*= 1.0f*/, float32 bottomRadius1 /*= 0.5f*/, f
         *mesh.GetUv0Ptr(index++) = Vector2(1.0f, t);
     }
 
-    // [a_vorontsov] Sides (in).
+    // [a_vorontcov] Sides (in).
     sideCounter = 0;
     while (index < vCount)
     {
@@ -719,7 +719,7 @@ Mesh GenerateTube(float32 height /*= 1.0f*/, float32 bottomRadius1 /*= 0.5f*/, f
     }
     index = 0;
 
-    // [a_vorontsov] Bottom cap.
+    // [a_vorontcov] Bottom cap.
     sideCounter = 0;
     while (sideCounter < nbSides)
     {
@@ -737,7 +737,7 @@ Mesh GenerateTube(float32 height /*= 1.0f*/, float32 bottomRadius1 /*= 0.5f*/, f
         sideCounter++;
     }
 
-    // [a_vorontsov] Top cap.
+    // [a_vorontcov] Top cap.
     while (sideCounter < nbSides * 2)
     {
         int16 current = sideCounter * 2 + 2;
@@ -754,7 +754,7 @@ Mesh GenerateTube(float32 height /*= 1.0f*/, float32 bottomRadius1 /*= 0.5f*/, f
         sideCounter++;
     }
 
-    // [a_vorontsov] Sides (out).
+    // [a_vorontcov] Sides (out).
     while (sideCounter < nbSides * 3)
     {
         int16 current = sideCounter * 2 + 4;
@@ -772,7 +772,7 @@ Mesh GenerateTube(float32 height /*= 1.0f*/, float32 bottomRadius1 /*= 0.5f*/, f
     }
 
 
-    // [a_vorontsov] Sides (in).
+    // [a_vorontcov] Sides (in).
     while (sideCounter < nbSides * 4)
     {
         int16 current = sideCounter * 2 + 6;
@@ -796,7 +796,7 @@ Mesh GenerateIcosphere(int32 recursionLevel /*= 3*/, float32 radius /*= 1.0f*/)
     std::vector<Vector3> positions;
     std::map<uint64, uint16> middlePointIndexCache;
 
-    // [a_vorontsov] Create 12 vertices of a icosahedron.
+    // [a_vorontcov] Create 12 vertices of a icosahedron.
     float32 t = (1.0f + std::sqrt(5.0f)) / 2.0f;
 
     positions.push_back(Vector3(-1.0f, t, 0.0f).Normalized() * radius);
@@ -814,38 +814,38 @@ Mesh GenerateIcosphere(int32 recursionLevel /*= 3*/, float32 radius /*= 1.0f*/)
     positions.push_back(Vector3(-t, 0.0f, -1.0f).Normalized() * radius);
     positions.push_back(Vector3(-t, 0.0f, 1.0f).Normalized() * radius);
 
-    // [a_vorontsov] Create 20 triangles of the icosahedron.
+    // [a_vorontcov] Create 20 triangles of the icosahedron.
     std::vector<TriangleIndices<uint16>> faces;
 
-    // [a_vorontsov] 5 faces around point 0.
+    // [a_vorontcov] 5 faces around point 0.
     faces.emplace_back(0, 11, 5);
     faces.emplace_back(0, 5, 1);
     faces.emplace_back(0, 1, 7);
     faces.emplace_back(0, 7, 10);
     faces.emplace_back(0, 10, 11);
 
-    // [a_vorontsov] 5 adjacent faces.
+    // [a_vorontcov] 5 adjacent faces.
     faces.emplace_back(1, 5, 9);
     faces.emplace_back(5, 11, 4);
     faces.emplace_back(11, 10, 2);
     faces.emplace_back(10, 7, 6);
     faces.emplace_back(7, 1, 8);
 
-    // [a_vorontsov] 5 faces around point 3.
+    // [a_vorontcov] 5 faces around point 3.
     faces.emplace_back(3, 9, 4);
     faces.emplace_back(3, 4, 2);
     faces.emplace_back(3, 2, 6);
     faces.emplace_back(3, 6, 8);
     faces.emplace_back(3, 8, 9);
 
-    // [a_vorontsov] 5 adjacent faces.
+    // [a_vorontcov] 5 adjacent faces.
     faces.emplace_back(4, 9, 5);
     faces.emplace_back(2, 4, 11);
     faces.emplace_back(6, 2, 10);
     faces.emplace_back(8, 6, 7);
     faces.emplace_back(9, 8, 1);
 
-    // [a_vorontsov] Refine triangles.
+    // [a_vorontcov] Refine triangles.
     std::vector<TriangleIndices<uint16>> faces2;
     faces2.reserve(20);
     for (int32 i = 0; i < recursionLevel; i++)
@@ -871,8 +871,8 @@ Mesh GenerateIcosphere(int32 recursionLevel /*= 3*/, float32 radius /*= 1.0f*/)
     uint32 index = 0;
     for (const auto& pos : positions)
     {
-        *mesh.GetPositionPtr(index) = pos; // [a_vorontsov] Position.
-        *mesh.GetNormalPtr(index) = pos; // [a_vorontsov] Normal.
+        *mesh.GetPositionPtr(index) = pos; // [a_vorontcov] Position.
+        *mesh.GetNormalPtr(index) = pos; // [a_vorontcov] Normal.
         ++index;
     }
     index = 0;

@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2017
+// Copyright (C) Aleksandr Vorontcov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -12,7 +12,7 @@
 
 namespace Kioto::RenderParamsConverter
 {
-const std::map<const std::string, eBlendModes> blendModes = // [a_vorontsov] To lower maybe.
+const std::map<const std::string, eBlendModes> blendModes = // [a_vorontcov] To lower maybe.
 {
     { "Zero", eBlendModes::Zero },
     { "One", eBlendModes::One },

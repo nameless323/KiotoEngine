@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2018
+// Copyright (C) Aleksandr Vorontcov. 2018
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -78,7 +78,7 @@ Matrix3_<T>::Matrix3_(
 template <typename T>
 Matrix3_<T>& Matrix3_<T>::operator=(const Matrix3_<T>& other)
 {
-    _00 = other._00; _01 = other._01; _02 = other._02; // [a_vorontsov] TODO: memcpy maybe?
+    _00 = other._00; _01 = other._01; _02 = other._02; // [a_vorontcov] TODO: memcpy maybe?
     _10 = other._10; _11 = other._11; _12 = other._12;
     _20 = other._20; _21 = other._21; _22 = other._22;
     return *this;

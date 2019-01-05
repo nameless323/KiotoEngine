@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov 2017.
+// Copyright (C) Aleksandr Vorontcov 2017.
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -319,6 +319,43 @@ ConstantBuffer& ConstantBuffer::operator=(ConstantBuffer other)
 {
     swap(*this, other);
     return *this;
+}
+
+void ConstantBuffer::MakeShallowCopy(ConstantBuffer& target) const
+{
+    target.m_index = m_index;
+    target.m_space = m_space;
+    target.m_key = m_key;
+    target.m_isDirty = true;
+    target.m_regenerateMemLayout = true;
+
+    for (auto& param : m_params)
+    {
+        if (param.Type == eTypeName::v1)
+        {
+            target.Add(param.name, std::get<float32>(param.Data));
+        }
+        else if (param.Type == eTypeName::v2)
+        {
+            target.Add(param.name, std::get<Vector2>(param.Data));
+        }
+        else if (param.Type == eTypeName::v3)
+        {
+            target.Add(param.name, std::get<Vector3>(param.Data));
+        }
+        else if (param.Type == eTypeName::v4)
+        {
+            target.Add(param.name, std::get<Vector4>(param.Data));
+        }
+        else if (param.Type == eTypeName::m3)
+        {
+            target.Add(param.name, std::get<Matrix3>(param.Data));
+        }
+        else
+        {
+            target.Add(param.name, std::get<Matrix4>(param.Data));
+        }
+    }
 }
 
 }

@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2017
+// Copyright (C) Aleksandr Vorontcov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -30,7 +30,7 @@ public:
     virtual ~Event() = default;
 
     virtual uint64 GetEventType() const abstract;
-    virtual void* GetEventData() abstract; // [a_vorontsov] TODO:: T* GetEventData() { return reinterpret_cast<data> };
+    virtual void* GetEventData() abstract; // [a_vorontcov] TODO:: T* GetEventData() { return reinterpret_cast<data> };
     void* Sender = nullptr;
     float64 Time = -1.0f;
 };

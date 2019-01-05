@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2018
+// Copyright (C) Aleksandr Vorontcov. 2018
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -38,7 +38,7 @@ public:
     TextureDX12* FindTexture(TextureHandle handle);
 
 private:
-    std::map<TextureSetHandle, Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>> m_textureHeaps; // [a_vorontsov] One tex heap for all textures?
+    std::map<TextureSetHandle, Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>> m_textureHeaps; // [a_vorontcov] One tex heap for all textures?
     std::vector<TextureDX12*> m_textureQueue;
     std::vector<const TextureSet*> m_textureSetUpdateQueue;
     std::map<TextureHandle, TextureDX12*> m_textures;

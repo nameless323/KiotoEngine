@@ -45,16 +45,8 @@ blending:
     dstBlend: Zero
 colorMask: All
 PIPELINE_DESCR_END;
-/*
-cbuffer chuufer : register(b0, space1)
-{
-    float4 Time; // [a_vorontsov] Time since start: (t / 20, t, t * 2, t * 3).
-    float4 SinTime; // [a_vorontsov] Sin of time: (t / 4, t / 2, t, t * 2).
-    float4 CosTime; // [a_vorontsov] Cos of time: (t / 4, t / 2, t, t * 2).
-    float4 DeltaTime; // [a_vorontsov] Delta time: (dt, 1 / dt, smoothDt, 1 / smoothDt).
-}*/
 
-cbuffer cbPassBuffer : register(b1, space1)
+cbuffer cbCameraBuffer : register(b1, space1)
 {
     float4x4 ViewProjection;
     float4x4 View;
@@ -114,7 +106,9 @@ vOut vs(vIn i)
 
 float4 ps(vOut i) : SV_Target
 {
-    return Diffuse.Sample(LinearClampSampl, i.uv) * (SinTime.w * 0.5f + 0.5f);
+    float4 origColor = Diffuse.Sample(LinearClampSampl, i.uv) * (SinTime.w * 0.5f + 0.5f);
+    origColor.x = 1.0f;
+    return origColor;
 }
 
 /*
@@ -125,5 +119,3 @@ cbuffer fuck : register(b0, space1)
     float4 CosTime; // [a_vorontsov] Cos of time: (t / 4, t / 2, t, t * 2).
     float4 DeltaTime; // [a_vorontsov] Delta time: (dt, 1 / dt, smoothDt, 1 / smoothDt).
 }*/
-
-новочкркасский 14 кв 51

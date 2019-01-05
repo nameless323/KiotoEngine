@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2017
+// Copyright (C) Aleksandr Vorontcov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -38,7 +38,7 @@ private:
 
 inline void RenderComponent::SetMaterial(const std::string& path)
 {
-    SafeDelete(m_material); // [a_vorontsov] Too fragile. TODO: all material work via asset system.
+    SafeDelete(m_material); // [a_vorontcov] Too fragile. TODO: all material work via asset system.
     m_material = new Renderer::Material(path);
 }
 

@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov 2017.
+// Copyright (C) Aleksandr Vorontcov 2017.
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -12,10 +12,10 @@ namespace Kioto::Renderer
 
 void EngineBuffers::Init()
 {
-    TimeCB.Add("Time", Vector4()); // [a_vorontsov] Time since start: (t / 20, t, t * 2, t * 3).
-    TimeCB.Add("SinTime", Vector4()); // [a_vorontsov] Sin of time: (t / 4, t / 2, t, t * 2).
-    TimeCB.Add("CosTime", Vector4()); // [a_vorontsov] Cos of time: (t / 4, t / 2, t, t * 2).
-    TimeCB.Add("DeltaTime", Vector4()); // [a_vorontsov] Delta time: (dt, 1 / dt, smoothDt, 1 / smoothDt).
+    TimeCB.Add("Time", Vector4()); // [a_vorontcov] Time since start: (t / 20, t, t * 2, t * 3).
+    TimeCB.Add("SinTime", Vector4()); // [a_vorontcov] Sin of time: (t / 4, t / 2, t, t * 2).
+    TimeCB.Add("CosTime", Vector4()); // [a_vorontcov] Cos of time: (t / 4, t / 2, t, t * 2).
+    TimeCB.Add("DeltaTime", Vector4()); // [a_vorontcov] Delta time: (dt, 1 / dt, smoothDt, 1 / smoothDt).
     TimeCB.ComposeBufferData();
 
     RenderObjectCB.Add("ToWorld", Matrix4());

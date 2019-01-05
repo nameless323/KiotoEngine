@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2017
+// Copyright (C) Aleksandr Vorontcov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -15,7 +15,7 @@
 
 namespace Kioto::Renderer
 {
-class ComException : public std::exception // [a_vorontsov] https://github.com/Microsoft/DirectXTK/wiki/ThrowIfFailed
+class ComException : public std::exception // [a_vorontcov] https://github.com/Microsoft/DirectXTK/wiki/ThrowIfFailed
 {
 public:
     ComException(HRESULT hr)
@@ -58,7 +58,7 @@ inline void SetName(ID3D12Object*, LPCWSTR)
 #define ReleaseComPtr(x) { if (x) { x->Release(); x = nullptr; }}
 #endif
 
-inline UINT CalculateConstantBufferByteSize(UINT byteSize) // [a_vorontsov] Dx12 constant buffers must be 255 byte aligned.
+inline UINT CalculateConstantBufferByteSize(UINT byteSize) // [a_vorontcov] Dx12 constant buffers must be 255 byte aligned.
 {
     return (byteSize + 255) & ~255;
 }

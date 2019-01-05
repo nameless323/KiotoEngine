@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2017
+// Copyright (C) Aleksandr Vorontcov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -58,14 +58,14 @@ public:
     template <typename T>
     T* GetVertexElementPtr(uint32 i, eVertexSemantic semantic, uint8 semanticIndex);
 
-    // [a_vorontsov] Some helpers. If you need other types then return type or other semantic/index use GetVertexElementPtr.
+    // [a_vorontcov] Some helpers. If you need other types then return type or other semantic/index use GetVertexElementPtr.
     // If you set in layout other type and use this methods you don't get error/warning message, you'll just trash data, so be careful
     // or you angry pinokkio for yourself.
 
     ///
     /// Get position. Treating as Vector3 ptr.
     ///
-    Vector3* GetPositionPtr(uint32 i); // [a_vorontsov] TODO: remember offsets and return direct.
+    Vector3* GetPositionPtr(uint32 i); // [a_vorontcov] TODO: remember offsets and return direct.
     ///
     /// Get normal. Treating as Vector3 ptr.
     ///

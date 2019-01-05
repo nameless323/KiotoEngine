@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2017
+// Copyright (C) Aleksandr Vorontcov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -14,6 +14,11 @@
 
 namespace Kioto
 {
+namespace Renderer
+{
+class Camera;
+}
+
 class CameraComponent;
 class EventSystem;
 
@@ -29,18 +34,18 @@ public:
     KIOTO_API void Update(float32 dt) override;
     void Shutdown() override;
 
-    CameraComponent* GetMainCamera() const;
+    Renderer::Camera* GetMainCamera() const;
 
 private:
     void UpdateView(CameraComponent* t);
-    void UpdateProjection(CameraComponent* cam);
+    void UpdateProjection(Renderer::Camera* cam);
 
-    CameraComponent* m_mainCamera = nullptr;
+    Renderer::Camera m_mainCamera;
     std::vector<CameraComponent*> m_components;
 };
 
-inline CameraComponent* CameraSystem::GetMainCamera() const
+inline Renderer::Camera* CameraSystem::GetMainCamera() const
 {
-    return m_mainCamera;
+    return &m_mainCamera;
 }
 }

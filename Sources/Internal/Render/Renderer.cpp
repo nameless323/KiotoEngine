@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2017
+// Copyright (C) Aleksandr Vorontcov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -16,11 +16,13 @@ namespace Kioto::Renderer
 {
 namespace
 {
-RendererDX12* GameRenderer = nullptr; // [a_vorontsov] Not too cross-api for now.
+RendererDX12* GameRenderer = nullptr; // [a_vorontcov] Not too cross-api for now.
 
 uint16 m_height = 1024;
 uint16 m_width = 768;
 float32 m_aspect = 1.0f;
+
+Camera m_mainCamera;
 }
 
 void Init(eRenderApi api, uint16 width, uint16 height)
@@ -62,7 +64,7 @@ void ChangeFullScreenMode(bool fullScreen)
     GameRenderer->ChangeFullScreenMode(fullScreen);
 }
 
-void Update(float32 dt) // [a_vorontsov] TODO: set frame command buffers here.
+void Update(float32 dt) // [a_vorontcov] TODO: set frame command buffers here.
 {
     GameRenderer->Update(dt);
 }
@@ -91,11 +93,11 @@ VertexLayoutHandle GenerateVertexLayout(const VertexLayout& layout)
 {
     return VertexLayoutHandle(InvalidHandle);
 
-    // [a_vorontsov] TODO;
+    // [a_vorontcov] TODO;
     //return GameRenderer->GenerateVertexLayout(layout);
 }
 
-void AddRenderPass(const RenderPass& renderPass)
+void SetRenderPass(const RenderPass& renderPass)
 {
     GameRenderer->AddRenderPass(renderPass);
 }
@@ -139,7 +141,7 @@ void RegisterRenderAsset(Mesh* asset)
     GameRenderer->RegisterMesh(asset);
 }
 
-void BuildMaterialForPass(Material& mat, const RenderPass& pass)
+void BuildMaterialForPass(Material& mat, const RenderPass* pass)
 {
     GameRenderer->BuildMaterialForPass(mat, pass);
 }
@@ -173,6 +175,16 @@ void RegisterTextureSet(TextureSet& set)
 void QueueTextureSetForUpdate(const TextureSet& set)
 {
     GameRenderer->QueueTextureSetForUpdate(set);
+}
+
+void SetMainCamera(const Camera& camera)
+{
+    m_mainCamera = camera;
+}
+
+Camera GetMainCamera()
+{
+    return m_mainCamera; // by reference? depends, think bout it
 }
 
 template void RegisterRenderAsset<Texture>(Texture* asset);
