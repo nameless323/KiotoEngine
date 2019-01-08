@@ -82,6 +82,8 @@ public:
     uint8 GetRenderTargetCount() const;
     RenderPassHandle GetHandle() const;
 
+    const std::string& GetPassName() const;
+
 private:
     virtual void SetRenderTargets() abstract; // Set scissor, render targets, viewports
     virtual void SetPassConstantBuffers() abstract;
@@ -101,7 +103,6 @@ private:
     uint32 m_priority = PassPriority::MainPass;
 
     Camera m_camera;
-
 
     std::string m_passName;
     std::list<RenderCommand> m_commands;
@@ -225,5 +226,10 @@ inline uint8 RenderPass::GetRenderTargetCount() const
 inline RenderPassHandle RenderPass::GetHandle() const
 {
     return m_handle;
+}
+
+inline const std::string& RenderPass::GetPassName() const
+{
+    return m_passName;
 }
 }

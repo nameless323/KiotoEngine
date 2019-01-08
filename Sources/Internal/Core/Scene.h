@@ -88,6 +88,7 @@ private:
     std::vector<SceneSystem*> m_systems; // [a_vorontcov] TODO: linked list in custom arena? Also, maybe updatable system or smth like that, to not call useless update.
     std::vector<Entity*> m_entities; // [a_vorontcov] Same as above.
     CameraSystem* m_cameraSystem = nullptr;
+    RenderSystem* m_renderSystem = nullptr;
 };
 
 template <typename T, typename>

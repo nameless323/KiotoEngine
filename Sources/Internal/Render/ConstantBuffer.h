@@ -69,9 +69,6 @@ public:
     uint32 GetKey() const;
 
     void MakeShallowCopy(ConstantBuffer& target) const; // [a_vorontcov] Copies params, space and key.
-    void CopyParams(ConstantBuffer& target) const;
-    void CopySpace(ConstantBuffer& target) const;
-    void CopyKey(ConstantBuffer& target) const;
 
 private:
 

@@ -8,6 +8,7 @@
 #include "Render/Renderer.h"
 #include "Render/RenderCommand.h"
 #include "Render/RenderPass/RenderPass.h"
+#include "Render/Material.h"
 
 namespace Kioto::Renderer
 {
@@ -34,16 +35,14 @@ public:
         currPacket.TextureSet = m_material->GetShaderData().textureSet.GetHandle();
         currPacket.Mesh = m_mesh->GetHandle();
 
-        PushCommand(RenderCommandHelpers::CreateRenderPacketCommand(currPacket));
+        PushCommand(RenderCommandHelpers::CreateRenderPacketCommand(currPacket, this));
     }
-
 
     virtual void SubmitRenderData() override
     {
         Renderer::SubmitRenderCommands(GetRenderCommands());
     }
-
-
+ 
     virtual void Cleanup() override
     {
         throw std::logic_error("The method or operation is not implemented.");
@@ -65,24 +64,19 @@ private:
         cmd.ClearStencil = true;
         cmd.ClearStencilValue = 0;
 
-        PushCommand(RenderCommandHelpers::CreateSetRenderTargetCommand(cmd));
+        PushCommand(RenderCommandHelpers::CreateSetRenderTargetCommand(cmd, this));
     }
-
 
     virtual void SetPassConstantBuffers() override
     {
         throw std::logic_error("The method or operation is not implemented.");
     }
 
-
     virtual void SetCameraConstantBuffers() override
     {
-        PushCommand(RenderCommandHelpers::CreateConstantBufferCommand(Renderer::GetMainCamera().GetConstantBufferHandle()));
+        PushCommand(RenderCommandHelpers::CreateConstantBufferCommand(Renderer::GetMainCamera().GetConstantBufferHandle(), this));
     }
-
-
-
-
+ 
     std::string m_matPath = AssetsSystem::GetAssetFullPath("Materials\\Test.mt");
     Renderer::Material* m_material = nullptr;
     Renderer::Material* m_materialCopy = nullptr;

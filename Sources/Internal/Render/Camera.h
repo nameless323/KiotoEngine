@@ -10,12 +10,16 @@
 #include "Math/Matrix4.h"
 #include "Render/RendererPublic.h"
 #include "Render/ConstantBuffer.h"
+#include "Render/Renderer.h"
+#include "Render/DX12/Buffers/EngineBuffers.h"
 
 namespace Kioto::Renderer
 {
 class Camera
 {
 public:
+    explicit Camera(bool createBuffer = false);
+
     ConstantBufferHandle GetConstantBufferHandle() const
     {
         return m_cameraBuffer.GetHandle();
@@ -77,6 +81,9 @@ public:
     /// Get height of far clipping plane.
     ///
     float32 GetFarPlaneHeight() const;
+
+    void SetView(const Matrix4& view);
+
     ///
     /// Get camera view matrix.
     ///
@@ -90,8 +97,17 @@ public:
     ///
     Matrix4 GetVP() const;
 
+    bool GetIsProjectionDirty() const
+    {
+        return m_isProjDirty;
+    }
+
+    void UpdateProjectionMatrix();
+
+    void UpdateViewProjectionMatrix();
+
 private:
-    ConstantBuffer m_cameraBuffer;
+    ConstantBuffer m_cameraBuffer; // [a_vorontcov] TODO: Really don't like it here.
 
     Matrix4 m_view = Matrix4::Identity;
     Matrix4 m_projection = Matrix4::Identity;
@@ -106,6 +122,15 @@ private:
     float32 m_aspect = 1.0f;
     bool m_isOrtho = false;
 };
+
+inline Camera::Camera(bool createBuffer)
+{
+    if (createBuffer)
+    {
+        EngineBuffers::GetCameraBufferCopy(m_cameraBuffer);
+        Renderer::RegisterConstantBuffer(m_cameraBuffer);
+    }
+}
 
 inline void Camera::SetFovY(float32 fovY)
 {
@@ -190,5 +215,29 @@ inline Matrix4 Camera::GetProjection() const
 inline Matrix4 Camera::GetVP() const
 {
     return m_VP;
+}
+
+inline void Camera::UpdateProjectionMatrix()
+{
+    m_projection = Matrix4::BuildProjectionFov(GetFovY(), GetAspect(), GetNearPlane(), GetFarPlane());
+    // [a_vorontcov] TODO: If cam - ortho, than other, but later.
+
+    m_nearPlaneHeight = 2.0f * m_nearPlane * std::tan(0.5f * m_fovY);
+    m_farPlaneHeight = 2.0f * m_farPlane * std::tan(0.5f * m_fovY);
+
+    float32 halfWidth = 0.5f * m_aspect * m_nearPlaneHeight;
+    m_foxX = 2.0f * atan(halfWidth / m_nearPlane);
+
+    m_isProjDirty = false;
+}
+
+inline void Camera::UpdateViewProjectionMatrix()
+{
+    m_VP = m_view * m_projection;
+}
+
+inline void Camera::SetView(const Matrix4& view)
+{
+    m_view = view;
 }
 }

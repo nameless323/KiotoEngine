@@ -48,6 +48,7 @@ template <typename T>
 void RegisterRenderAsset(T* asset);
 void RegisterRenderPass(RenderPass* renderPass); // [a_vorontcov] TODO: allocate passes and all packet lists in renderer and give them by request.
 void RegisterTextureSet(TextureSet& set);
+void RegisterConstantBuffer(ConstantBuffer& buffer);
 TextureHandle GetCurrentBackBufferHandle();
 TextureHandle GetDepthStencilHandle();
 KIOTO_API uint16 GetWidth();

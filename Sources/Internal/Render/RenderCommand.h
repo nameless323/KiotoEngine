@@ -52,42 +52,15 @@ struct RenderCommand
 {
     eRenderCommandType CommandType = eRenderCommandType::eInvalidCommand;
     std::variant<SetRenderTargetsCommand, SubmitConstantBufferCommand, SubmitRenderPacketCommand> Command;
+
+    std::string PassName; // [a_vorontcov] For debugging.
 };
 
 namespace RenderCommandHelpers
 {
-RenderCommand CreateConstantBufferCommand(ConstantBufferHandle handle)
-{
-    SubmitConstantBufferCommand cbCmd;
-    cbCmd.BufferHandle = handle;
-
-    RenderCommand command;
-    command.CommandType = eRenderCommandType::eSubmitConstantBuffer;
-    command.Command = cbCmd;
-
-    return command;
-}
-
-RenderCommand CreateRenderPacketCommand(RenderPacket packet)
-{
-    SubmitRenderPacketCommand rpCommand;
-    rpCommand.Packet = packet;
-
-    RenderCommand command;
-    command.CommandType = eRenderCommandType::eSubmitRenderPacket;
-    command.Command = rpCommand;
-
-    return command;
-}
-
-RenderCommand CreateSetRenderTargetCommand(SetRenderTargetsCommand setRTCmd)
-{
-    RenderCommand command;
-    command.CommandType = eRenderCommandType::eSetRenderTargets;
-    command.Command = setRTCmd;
-
-    return command;
-}
+RenderCommand CreateConstantBufferCommand(ConstantBufferHandle handle, RenderPass* pass);
+RenderCommand CreateRenderPacketCommand(RenderPacket packet, RenderPass* pass);
+RenderCommand CreateSetRenderTargetCommand(SetRenderTargetsCommand setRTCmd, RenderPass* pass);
 
 }
 }

@@ -67,10 +67,10 @@ void CameraSystem::Update(float32 dt)
             m_mainCamera = currCam;
 
         UpdateView(camComponent);
-        if (currCam->m_isProjDirty)
-            UpdateProjection(currCam);
+        if (currCam.GetIsProjectionDirty())
+            currCam.UpdateProjectionMatrix();
 
-        currCam->m_VP = currCam->m_view * currCam->m_projection;
+        currCam.UpdateViewProjectionMatrix();
     }
     Renderer::SetMainCamera(m_mainCamera);
 }
@@ -83,21 +83,7 @@ void CameraSystem::Shutdown()
 void CameraSystem::UpdateView(CameraComponent* cam)
 {
     Matrix4 m = cam->GetTransform()->GetToWorld();
-    cam->m_view = m.InversedOrthonorm();
-}
-
-void CameraSystem::UpdateProjection(Renderer::Camera* cam)
-{
-    cam->m_projection = Matrix4::BuildProjectionFov(cam->GetFovY(), cam->GetAspect(), cam->GetNearPlane(), cam->GetFarPlane());
-    // [a_vorontcov] TODO: If cam - ortho, than other, but later.
-
-    cam->m_nearPlaneHeight = 2.0f * cam->m_nearPlane * std::tan(0.5f * cam->m_fovY);
-    cam->m_farPlaneHeight = 2.0f * cam->m_farPlane * std::tan(0.5f * cam->m_fovY);
-
-    float32 halfWidth = 0.5f * cam->m_aspect * cam->m_nearPlaneHeight;
-    cam->m_foxX = 2.0f * atan(halfWidth / cam->m_nearPlane);
-
-    cam->m_isProjDirty = false;
+    cam->GetCamera().SetView(m.InversedOrthonorm());
 }
 
 }

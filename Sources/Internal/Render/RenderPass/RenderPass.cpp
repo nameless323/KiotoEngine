@@ -22,6 +22,7 @@ RenderPass::RenderPass(const RenderPass& other)
     , m_priority(other.m_priority)
     , m_handle(other.m_handle)
     , m_renderTargetCount(other.m_renderTargetCount)
+    , m_passName(other.m_passName)
 {
 }
 }
