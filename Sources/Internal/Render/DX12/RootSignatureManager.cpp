@@ -10,6 +10,8 @@
 #include "Render/DX12/Shader/ShaderParser.h"
 #include "Render/DX12/StateDX.h"
 
+#include "Render/DX12/Buffers/EngineBuffers.h"
+
 namespace Kioto::Renderer
 {
 
@@ -18,6 +20,14 @@ void RootSignatureManager::CreateRootSignature(const StateDX& state, const Shade
     using Microsoft::WRL::ComPtr;
 
     std::vector<CD3DX12_ROOT_PARAMETER1> rootParams;
+ 
+    for (size_t i = 0; i < EngineBuffers::EngineBuffersCount; ++i)
+    {
+        CD3DX12_ROOT_PARAMETER1 param;
+        param.InitAsConstantBufferView(EngineBuffers::BufferIndices[i], EngineBuffers::EngineBuffersSpace);
+        rootParams.push_back(std::move(param));
+    }
+
     for (size_t i = 0; i < parseResult.constantBuffers.size(); ++i)
     {
         CD3DX12_ROOT_PARAMETER1 param;

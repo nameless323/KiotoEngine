@@ -18,9 +18,6 @@ namespace TimeCBData
     std::pair<std::string, Vector4> SinTime = std::make_pair("SinTime", Vector4()); // [a_vorontcov] Sin of time: (t / 4, t / 2, t, t * 2).
     std::pair<std::string, Vector4> CosTime = std::make_pair("CosTime", Vector4()); // [a_vorontcov] Cos of time: (t / 4, t / 2, t, t * 2).
     std::pair<std::string, Vector4> DeltaTime = std::make_pair("DeltaTime", Vector4()); // [a_vorontcov] Delta time: (dt, 1 / dt, smoothDt, 1 / smoothDt).
-
-    static constexpr uint16 Index = 0;
-    static constexpr uint16 Space = 1;
 };
 
 namespace CameraCBData
@@ -32,13 +29,10 @@ namespace CameraCBData
     std::pair<std::string, float32> Pad0 = std::make_pair("Pad0", 0);
     std::pair<std::string, Vector4> CamWorldPosition = std::make_pair("CamWorldPosition", Vector4());
     std::pair<std::string, float32> Pad1 = std::make_pair("Pad1", 0);
-
-    static constexpr uint16 Index = 1;
-    static constexpr uint16 Space = 1;
 };
 
-ConstantBuffer m_cameraBuffer{ CameraCBData::Index, CameraCBData::Space };
-ConstantBuffer m_timeBuffer{ TimeCBData::Index, TimeCBData::Space };
+ConstantBuffer m_cameraBuffer{ CameraBufferIndex, EngineBuffersSpace };
+ConstantBuffer m_timeBuffer{ TimeBufferIndex, EngineBuffersSpace };
 }
 
 void EngineBuffers::Init()

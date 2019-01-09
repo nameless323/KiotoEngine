@@ -11,6 +11,7 @@
 #include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
 #include "Render/DX12/Shader/ShaderParser.h"
+#include "Render/DX12/Buffers/EngineBuffers.h"
 
 #include "AssetsSystem/AssetsSystem.h"
 
@@ -442,6 +443,10 @@ std::vector<ConstantBuffer> GetConstantBuffers(const std::string& source)
             }
             if (!found || !indexAcqired)
                 throw "wtf";
+
+            if (space == EngineBuffers::EngineBuffersSpace) // [a_vorontcov] We force set engine buffers at the beggining of root signature.
+                continue;
+
             res.emplace_back(index, space);
             TryParseParams(source, openBPos, closedBPos, res.back());
         }

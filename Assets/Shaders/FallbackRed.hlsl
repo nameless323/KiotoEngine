@@ -9,7 +9,7 @@
 #include "Include\tst3.hlsl"
 #include "Include\tst3.hlsl"
 
-cbuffer cbEngineBuffer : register(b0, space1)
+cbuffer cbEngineBuffer : register(b0, space9)
 {
     float4 Time; // [a_vorontsov] Time since start: (t / 20, t, t * 2, t * 3).
     float4 SinTime; // [a_vorontsov] Sin of time: (t / 4, t / 2, t, t * 2).
@@ -46,7 +46,7 @@ blending:
 colorMask: All
 PIPELINE_DESCR_END;
 
-cbuffer cbCameraBuffer : register(b1, space1)
+cbuffer cbCameraBuffer : register(b1, space9)
 {
     float4x4 ViewProjection;
     float4x4 View;
@@ -60,7 +60,7 @@ cbuffer cbCameraBuffer : register(b1, space1)
 SamplerState LinearClampSampl : register(s0);
 [_IN_] Texture2D Diffuse : register(t0);
 
-cbuffer cbRenderObjectBuffer : register(b2, space1)
+cbuffer cbRenderObjectBuffer : register(b2, space0)
 {
     float4x4 ToWorld;
     float4x4 ToModel;

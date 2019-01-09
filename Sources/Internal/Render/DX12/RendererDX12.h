@@ -82,6 +82,8 @@ public:
     void AllocateRenderPacketList(RenderPassHandle handle);
     void AddRenderPacket(RenderPassHandle handle, RenderPacket packet);
 
+    void SubmitRenderCommands(const std::list<RenderCommand>& commandList);
+
     TextureHandle GetCurrentBackBufferHandle() const;
     TextureHandle GetDepthStencilHandle() const;
 
@@ -120,14 +122,7 @@ private:
     UINT m_height = -1;
     bool m_isFullScreen = false;
 
-    EngineBuffers engineBuffers;
-    UploadBufferDX12* m_timeBuffer = nullptr;
-    UploadBufferDX12* m_passBuffer = nullptr;
-    UploadBufferDX12* m_renderObjectBuffer = nullptr;
-
-    std::vector<RenderPacketList> m_renderPacketListPool;
-    std::map<RenderPassHandle, RenderPacketList*> m_passesRenderPackets;
-    uint32 m_packetListPoolIndex = 0;
+    std::vector<RenderCommand> m_frameCommands;
 };
 
 inline TextureHandle RendererDX12::GetCurrentBackBufferHandle() const

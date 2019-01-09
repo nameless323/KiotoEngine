@@ -69,14 +69,7 @@ RendererDX12::RendererDX12()
 
 void RendererDX12::Init(uint16 width, uint16 height)
 {
-    engineBuffers.Init();
-
-    m_renderPacketListPool.resize(PacketListPoolSize);
-    for (uint32 i = 0; i < PacketListPoolSize; ++i)
-    {
-        m_renderPacketListPool.emplace_back();
-        m_renderPacketListPool.back().reserve(PacketListSize);
-    }
+    m_frameCommands.reserve(4096);
 
     UINT dxgiFactoryFlags = 0;
 #ifdef _DEBUG
@@ -151,24 +144,6 @@ void RendererDX12::Init(uint16 width, uint16 height)
 void RendererDX12::LoadPipeline()
 {
     UpdateTimeCB();
-    m_timeBuffer = new UploadBufferDX12(StateDX::FrameCount, engineBuffers.TimeCB.GetBufferData(), engineBuffers.TimeCB.GetDataSize(), true, m_state.Device.Get());
-
-    m_timeBuffer->UploadData(0, engineBuffers.TimeCB.GetBufferData());
-    m_timeBuffer->UploadData(1, engineBuffers.TimeCB.GetBufferData());
-    m_timeBuffer->UploadData(2, engineBuffers.TimeCB.GetBufferData());
-
-    m_passBuffer = new UploadBufferDX12(StateDX::FrameCount, engineBuffers.PassCB.GetBufferData(), engineBuffers.PassCB.GetDataSize(), true, m_state.Device.Get());
-
-    m_passBuffer->UploadData(0, engineBuffers.PassCB.GetBufferData());
-    m_passBuffer->UploadData(1, engineBuffers.PassCB.GetBufferData());
-    m_passBuffer->UploadData(2, engineBuffers.PassCB.GetBufferData());
-
-    m_renderObjectBuffer = new UploadBufferDX12(StateDX::FrameCount, engineBuffers.RenderObjectCB.GetBufferData(), engineBuffers.RenderObjectCB.GetDataSize(), true, m_state.Device.Get());
-    UpdateRenderObjectCB();
-    m_renderObjectBuffer->UploadData(0, engineBuffers.RenderObjectCB.GetBufferData());
-    m_renderObjectBuffer->UploadData(1, engineBuffers.RenderObjectCB.GetBufferData());
-    m_renderObjectBuffer->UploadData(2, engineBuffers.RenderObjectCB.GetBufferData());
-
     WaitForGPU();
 }
 
@@ -179,8 +154,6 @@ void RendererDX12::Shutdown()
 
     if (!m_isTearingSupported)
         ThrowIfFailed(m_swapChain.SetFullscreenState(false, nullptr));
-
-    SafeDelete(m_timeBuffer);
 
 #ifdef _DEBUG
     ComPtr<IDXGIDebug1> dxgiDebug;
@@ -274,14 +247,6 @@ void RendererDX12::Resize(uint16 width, uint16 height)
 
 void RendererDX12::Update(float32 dt)
 {
-    UpdateTimeCB();
-    m_timeBuffer->UploadData(m_swapChain.GetCurrentFrameIndex(), engineBuffers.TimeCB.GetBufferData());
-
-    UpdateRenderObjectCB();
-    m_renderObjectBuffer->UploadData(m_swapChain.GetCurrentFrameIndex(), engineBuffers.RenderObjectCB.GetBufferData());
-
-    UpdatePassCB();
-    m_passBuffer->UploadData(m_swapChain.GetCurrentFrameIndex(), engineBuffers.PassCB.GetBufferData());
 }
 
 void RendererDX12::Present()
@@ -388,6 +353,7 @@ void RendererDX12::Present()
         WaitForSingleObjectEx(fenceEventHandle, INFINITE, false);
         CloseHandle(fenceEventHandle);
     }
+    m_frameCommands.clear();
 }
 
 void RendererDX12::LogAdapters()
@@ -565,6 +531,11 @@ void RendererDX12::QueueTextureSetForUpdate(const TextureSet& set)
 void RendererDX12::RegisterMesh(Mesh* mesh)
 {
     m_meshManager.RegisterMesh(mesh);
+}
+
+void RendererDX12::SubmitRenderCommands(const std::list<RenderCommand>& commandList) // [a_vorontcov] Not const and splice would be better. https://stackoverflow.com/questions/1449703/how-to-append-a-listt-object-to-another
+{
+    m_frameCommands.insert(m_frameCommands.end(), commandList.begin(), commandList.end());
 }
 
 }
