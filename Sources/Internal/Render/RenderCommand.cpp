@@ -6,10 +6,12 @@
 
 namespace Kioto::Renderer::RenderCommandHelpers
 {
-RenderCommand CreateConstantBufferCommand(ConstantBufferHandle handle, RenderPass* pass)
+RenderCommand CreateConstantBufferCommand(const ConstantBuffer& buffer, RenderPass* pass)
 {
     SubmitConstantBufferCommand cbCmd;
-    cbCmd.BufferHandle = handle;
+    cbCmd.BufferHandle = buffer.GetHandle();
+    cbCmd.Index = buffer.GetIndex();
+    cbCmd.Space = buffer.GetSpace();
 
     RenderCommand command;
     command.CommandType = eRenderCommandType::eSubmitConstantBuffer;
@@ -40,4 +42,14 @@ RenderCommand CreateSetRenderTargetCommand(SetRenderTargetsCommand setRTCmd, Ren
 
     return command;
 }
+
+Renderer::RenderCommand CreatePassEndsCommand(RenderPass* pass)
+{
+    RenderCommand command;
+    command.CommandType = eRenderCommandType::eEndRenderPass;
+    command.PassName = pass->GetPassName();
+
+    return command;
+}
+
 }

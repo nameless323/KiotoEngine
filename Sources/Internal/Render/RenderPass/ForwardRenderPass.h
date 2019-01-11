@@ -34,8 +34,12 @@ public:
         currPacket.Shader = m_material->GetShader()->GetHandle();
         currPacket.TextureSet = m_material->GetShaderData().textureSet.GetHandle();
         currPacket.Mesh = m_mesh->GetHandle();
+        currPacket.Pass = GetHandle();
+        currPacket.CBSet = m_material->GetShaderData().bufferSetHandle;
 
         PushCommand(RenderCommandHelpers::CreateRenderPacketCommand(currPacket, this));
+
+        PushCommand(RenderCommandHelpers::CreatePassEndsCommand(this));
     }
 
     virtual void SubmitRenderData() override
@@ -52,8 +56,8 @@ private:
     virtual void SetRenderTargets() override
     {
         SetRenderTargetsCommand cmd;
-        for (int32 i = 0; i < GetRenderTargetCount(); ++i)
-            cmd.RenderTargets[i] = Renderer::DefaultBackBufferHandle;
+        cmd.SetRenderTargets(Renderer::DefaultBackBufferHandle);
+        cmd.RenderTargetCount = GetRenderTargetCount();
         cmd.DepthStencil = Renderer::DefaultDepthStencilHandle;
 
         cmd.Viewport = { 0, 0, Renderer::GetWidth(), Renderer::GetHeight() };
@@ -74,7 +78,7 @@ private:
 
     virtual void SetCameraConstantBuffers() override
     {
-        PushCommand(RenderCommandHelpers::CreateConstantBufferCommand(Renderer::GetMainCamera().GetConstantBufferHandle(), this));
+        PushCommand(RenderCommandHelpers::CreateConstantBufferCommand(Renderer::GetMainCamera().GetConstantBuffer(), this));
     }
  
     std::string m_matPath = AssetsSystem::GetAssetFullPath("Materials\\Test.mt");

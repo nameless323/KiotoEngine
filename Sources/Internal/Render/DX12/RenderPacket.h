@@ -15,10 +15,12 @@ class RenderPacket
 {
 public:
     MaterialHandle Material;
+    RenderPassHandle Pass;
     ShaderHandle Shader;
     VertexLayoutHandle VertexLayout;
     TextureSetHandle TextureSet;
     MeshHandle Mesh;
+    ConstantBufferSetHandle CBSet;
 };
 
 using RenderPacketList = std::vector<RenderPacket>;

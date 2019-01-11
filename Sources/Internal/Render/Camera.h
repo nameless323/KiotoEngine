@@ -25,6 +25,11 @@ public:
         return m_cameraBuffer.GetHandle();
     }
 
+    const ConstantBuffer& GetConstantBuffer() const
+    {
+        return m_cameraBuffer;
+    }
+
     ///
     /// Set camera field of view in Y in radians.
     ///

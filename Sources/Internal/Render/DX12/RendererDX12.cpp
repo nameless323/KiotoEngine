@@ -262,55 +262,80 @@ void RendererDX12::Present()
     m_constantBufferManager.ProcessRegistrationQueue(m_state);
     m_constantBufferManager.ProcessBufferUpdates(m_swapChain.GetCurrentFrameIndex());
 
-    std::vector<RenderPass> thisFramePasses = m_renderPasses[m_swapChain.GetCurrentFrameIndex()];
-    for (auto& renderPass : thisFramePasses)
+    TextureDX12* currentRenderTarget = nullptr;
+    for (auto& cmd : m_frameCommands)
     {
-        auto passPacketsIt = m_passesRenderPackets.find(renderPass.GetHandle());
-        if (passPacketsIt == m_passesRenderPackets.cend())
-            continue;
-        std::vector<RenderPacket>* passPackets = passPacketsIt->second;
-
-        TextureDX12* currentRenderTarget = nullptr;
-        if (renderPass.GetRenderTarget(0).GetHandle() == DefaultBackBufferHandle)
-            currentRenderTarget = m_swapChain.GetCurrentBackBuffer();
-        else
-            currentRenderTarget = m_textureManager.FindTexture(renderPass.GetRenderTarget(0).GetHandle());
-
-        TextureDX12* currentDS = nullptr;
-        if (renderPass.GetDepthStencil().GetHandle() == DefaultDepthStencilHandle)
-            currentDS = m_swapChain.GetDepthStencil();
-        else
-            currentDS = m_textureManager.FindTexture(renderPass.GetDepthStencil().GetHandle());
-        
-        if (currentRenderTarget == nullptr || currentDS == nullptr)
-            return;
-
-        auto toRt = CD3DX12_RESOURCE_BARRIER::Transition(currentRenderTarget->Resource.Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-        m_state.CommandList->ResourceBarrier(1, &toRt);
-
-        m_state.CommandList->RSSetScissorRects(1, &DXRectFromKioto(renderPass.GetScissor()));
-        m_state.CommandList->RSSetViewports(1, &DXViewportFromKioto(renderPass.GetViewport()));
-        m_state.CommandList->ClearRenderTargetView(currentRenderTarget->GetCPUHandle(), DirectX::Colors::Aqua, 0, nullptr);
-        m_state.CommandList->ClearDepthStencilView(currentDS->GetCPUHandle(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
-
-        m_state.CommandList->OMSetRenderTargets(1, &currentRenderTarget->GetCPUHandle(), false, &currentDS->GetCPUHandle());
-
-        for (const RenderPacket& packet : *passPackets)
+        assert(cmd.CommandType != eRenderCommandType::eInvalidCommand);
+        if (cmd.CommandType == eRenderCommandType::eSubmitConstantBuffer)
         {
-            ID3D12PipelineState* pipelineState = m_piplineStateManager.GetPipelineState(packet.Material.GetHandle(), renderPass.GetHandle());
+            const SubmitConstantBufferCommand& scbCommand = std::get<SubmitConstantBufferCommand>(cmd.Command);
+            assert(scbCommand.Space == EngineBuffers::EngineBuffersSpace);
+            if (scbCommand.Index == EngineBuffers::CameraBufferIndex)
+                m_currentCameraBuffer = scbCommand.BufferHandle;
+            else if (scbCommand.Index == EngineBuffers::TimeBufferIndex)
+                m_currentTimeBuffer = scbCommand.BufferHandle;
+            else
+                assert(false);
+        }
+        else if (cmd.CommandType == eRenderCommandType::eSetRenderTargets)
+        {
+            const SetRenderTargetsCommand& srtCommand = std::get<SetRenderTargetsCommand>(cmd.Command);
+            if (srtCommand.GetRenderTarget(0) == DefaultBackBufferHandle)
+                currentRenderTarget = m_swapChain.GetCurrentBackBuffer();
+            else
+                currentRenderTarget = m_textureManager.FindTexture(srtCommand.GetRenderTarget(0));
+
+            TextureDX12* currentDS = nullptr;
+            if (srtCommand.GetDepthStencil() == DefaultDepthStencilHandle)
+                currentDS = m_swapChain.GetDepthStencil();
+            else
+                currentDS = m_textureManager.FindTexture(srtCommand.GetDepthStencil());
+
+            if (currentRenderTarget == nullptr && currentDS == nullptr)
+                return;
+
+            auto toRt = CD3DX12_RESOURCE_BARRIER::Transition(currentRenderTarget->Resource.Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+            m_state.CommandList->ResourceBarrier(1, &toRt);
+
+            m_state.CommandList->RSSetScissorRects(1, &DXRectFromKioto(srtCommand.Scissor));
+            m_state.CommandList->RSSetViewports(1, &DXViewportFromKioto(srtCommand.Viewport));
+            m_state.CommandList->ClearRenderTargetView(currentRenderTarget->GetCPUHandle(), DirectX::Colors::Aqua, 0, nullptr);
+            m_state.CommandList->ClearDepthStencilView(currentDS->GetCPUHandle(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+
+            m_state.CommandList->OMSetRenderTargets(1, &currentRenderTarget->GetCPUHandle(), false, &currentDS->GetCPUHandle());
+        }
+        else if (cmd.CommandType == eRenderCommandType::eEndRenderPass)
+        {
+            auto toPresent = CD3DX12_RESOURCE_BARRIER::Transition(currentRenderTarget->Resource.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT); // [a_vorontcov] WRONG WRONG WRONG, but ok for now.
+            m_state.CommandList->ResourceBarrier(1, &toPresent);
+        }
+        else if (cmd.CommandType == eRenderCommandType::eSubmitRenderPacket)
+        {
+            const RenderPacket& packet = std::get<SubmitRenderPacketCommand>(cmd.Command).Packet;
+
+            ID3D12PipelineState* pipelineState = m_piplineStateManager.GetPipelineState(packet.Material.GetHandle(), packet.Pass);
             m_state.CommandList->SetPipelineState(pipelineState);
 
             ID3D12RootSignature* rootSig = m_rootSignatureManager.GetRootSignature(packet.Shader);
             m_state.CommandList->SetGraphicsRootSignature(rootSig);
-            m_state.CommandList->SetGraphicsRootConstantBufferView(0, m_timeBuffer->GetFrameDataGpuAddress(m_swapChain.GetCurrentFrameIndex()));
-            m_state.CommandList->SetGraphicsRootConstantBufferView(1, m_passBuffer->GetFrameDataGpuAddress(m_swapChain.GetCurrentFrameIndex()));
-            m_state.CommandList->SetGraphicsRootConstantBufferView(2, m_renderObjectBuffer->GetFrameDataGpuAddress(m_swapChain.GetCurrentFrameIndex()));
+
+            UploadBufferDX12* timeBuffer = m_constantBufferManager.FindBuffer(m_currentTimeBuffer);
+            UploadBufferDX12* cameraBuffer = m_constantBufferManager.FindBuffer(m_currentCameraBuffer);
+            m_state.CommandList->SetGraphicsRootConstantBufferView(0, timeBuffer->GetFrameDataGpuAddress(m_swapChain.GetCurrentFrameIndex()));
+            m_state.CommandList->SetGraphicsRootConstantBufferView(1, cameraBuffer->GetFrameDataGpuAddress(m_swapChain.GetCurrentFrameIndex()));
+
+            auto& bufferList = m_constantBufferManager.FindBuffers(packet.CBSet);
+            size_t engineBuffersCount = EngineBuffers::BufferIndices.size();
+            size_t buffersCount = bufferList.size() + engineBuffersCount;
+
+            for (uint32 i = engineBuffersCount; i < buffersCount; ++i)
+                m_state.CommandList->SetGraphicsRootConstantBufferView(i, bufferList[i - engineBuffersCount]->GetFrameDataGpuAddress(m_swapChain.GetCurrentFrameIndex()));
 
             ID3D12DescriptorHeap* currHeap = m_textureManager.GetTextureHeap(packet.TextureSet);
             ID3D12DescriptorHeap* descHeap[] = { currHeap };
             m_state.CommandList->SetDescriptorHeaps(_countof(descHeap), descHeap);
 
-            m_state.CommandList->SetGraphicsRootDescriptorTable(3, currHeap->GetGPUDescriptorHandleForHeapStart());
+            m_state.CommandList->SetGraphicsRootDescriptorTable(buffersCount, currHeap->GetGPUDescriptorHandleForHeapStart()); // [a_vorontcov] 3??? maybe enginebuffercount + bufferListSize?
 
             MeshDX12* currGeometry = m_meshManager.Find(packet.Mesh);
 
@@ -319,10 +344,12 @@ void RendererDX12::Present()
             m_state.CommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
             m_state.CommandList->DrawIndexedInstanced(currGeometry->GetIndexCount(), 1, 0, 0, 0);
-
         }
-        auto toPresent = CD3DX12_RESOURCE_BARRIER::Transition(currentRenderTarget->Resource.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
-        m_state.CommandList->ResourceBarrier(1, &toPresent);
+        else
+        {
+            assert(false);
+        }
+
     }
 
     m_state.CommandList->Close();
@@ -334,13 +361,12 @@ void RendererDX12::Present()
     m_state.CommandQueue->Signal(m_state.Fence.Get(), m_state.CurrentFence);
 
     m_renderPasses[m_swapChain.GetCurrentFrameIndex()].clear();
+    m_frameCommands.clear();
+    m_currentCameraBuffer = InvalidHandle;
+    m_currentTimeBuffer = InvalidHandle;
     // [a_vorontcov] Check if we can move to next frame.
     m_swapChain.ProceedToNextFrame();
-    for (uint32 i = 0; i < m_packetListPoolIndex; ++i)
-        m_renderPacketListPool[i].clear();
 
-    m_packetListPoolIndex = 0;
-    m_passesRenderPackets.clear();
     if (m_state.FenceValues[m_swapChain.GetCurrentFrameIndex()] != 0 && m_state.Fence->GetCompletedValue() < m_state.FenceValues[m_swapChain.GetCurrentFrameIndex()])
     {
         HANDLE fenceEventHandle = CreateEvent(nullptr, FALSE, FALSE, nullptr);
@@ -353,7 +379,6 @@ void RendererDX12::Present()
         WaitForSingleObjectEx(fenceEventHandle, INFINITE, false);
         CloseHandle(fenceEventHandle);
     }
-    m_frameCommands.clear();
 }
 
 void RendererDX12::LogAdapters()
@@ -429,48 +454,6 @@ void RendererDX12::ChangeFullScreenMode(bool fullScreen)
     Resize(m_width, m_height);
 }
 
-void RendererDX12::UpdateTimeCB()
-{
-    float32 timeFromStart = static_cast<float32>(GlobalTimer::GetTimeFromStart());
-    engineBuffers.TimeCB.Set("Time", Vector4(timeFromStart / 20.0f, timeFromStart, timeFromStart * 2, timeFromStart * 3));
-    engineBuffers.TimeCB.Set("SinTime", Vector4(sin(timeFromStart / 4.0f), sin(timeFromStart / 2.0f), sin(timeFromStart), sin(timeFromStart * 2.0f)));
-    engineBuffers.TimeCB.Set("CosTime", Vector4(cos(timeFromStart / 4.0f), cos(timeFromStart / 2.0f), cos(timeFromStart), cos(timeFromStart * 2.0f)));
-    float32 dt = static_cast<float32>(GlobalTimer::GetDeltaTime());
-    float32 smoothDt = static_cast<float32>(GlobalTimer::GetSmoothDt());
-    engineBuffers.TimeCB.Set("DeltaTime", Vector4(dt, 1.0f / dt, smoothDt, 1.0f / smoothDt));
-}
-
-void RendererDX12::UpdateRenderObjectCB()
-{
-    static float32 angle = 0.0f;
-    //angle += GlobalTimer::GetDeltaTime();
-    angle += 0.001f;
-    Matrix4 toWorld = Matrix4::BuildRotation(Vector3(1.0f, 1.0f, 0.0f).Normalize(), angle);
-    //toWorld = Matrix4::Identity();
-    toWorld.SetTranslation({ -3.0f, 0.0f, 8.0f });
-
-    Matrix4 toModel;
-    toWorld.Inversed(toModel);
-
-    engineBuffers.RenderObjectCB.Set("ToModel", toModel.Tranposed());
-    engineBuffers.RenderObjectCB.Set("ToWorld", toWorld.Tranposed());
-}
-
-void RendererDX12::UpdatePassCB()
-{
-    CameraComponent* cc = Kioto::GetScene()->GetCameraSystem()->GetMainCamera();
-    engineBuffers.PassCB.Set("View", cc->GetView().Tranposed());
-    engineBuffers.PassCB.Set("ViewProjection", cc->GetVP().Tranposed());
-}
-
-
-void RendererDX12::AddRenderPass(const RenderPass& renderPass)
-{
-    m_renderPasses[m_swapChain.GetCurrentFrameIndex()].push_back(renderPass);
-    // Setup render pass cb here
-    // UpdatePassCB()
-}
-
 ResourceDX12* RendererDX12::FindDxResource(uint32 handle)
 {
     return nullptr;
@@ -495,22 +478,10 @@ void RendererDX12::BuildMaterialForPass(Material& mat, const RenderPass* pass)
         m_piplineStateManager.BuildPipelineState(m_state, &mat, pass, m_rootSignatureManager, &m_textureManager, &m_shaderManager, &m_vertexLayoutManager, m_swapChain.GetBackBufferFormat(), m_swapChain.GetDepthStencilFormat());
 }
 
-void RendererDX12::AllocateRenderPacketList(RenderPassHandle handle)
-{
-    m_passesRenderPackets[handle] = &m_renderPacketListPool[m_packetListPoolIndex++];
-}
-
-void RendererDX12::AddRenderPacket(RenderPassHandle handle, RenderPacket packet)
-{
-    auto it = m_passesRenderPackets.find(handle);
-    if (it == m_passesRenderPackets.cend())
-        throw "No render packet list were allocated.";
-    m_passesRenderPackets[handle]->push_back(packet);
-}
-
 void RendererDX12::RegisterMaterial(Material* material)
 {
     material->SetHandle(GetNewHandle());
+    m_constantBufferManager.RegisterMaterial(material);
 }
 
 void RendererDX12::RegisterRenderPass(RenderPass* renderPass)

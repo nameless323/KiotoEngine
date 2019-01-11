@@ -65,9 +65,7 @@ public:
     void Shutdown();
     void Present();
     void Update(float32 dt);
-
-    void AddRenderPass(const RenderPass& renderPass);
-
+ 
     void RegisterTexture(Texture* texture);
     void RegisterShader(Shader* shader);
     void RegisterMaterial(Material* material);
@@ -78,9 +76,6 @@ public:
     void RegisterTextureSet(TextureSet& set);
 
     void QueueTextureSetForUpdate(const TextureSet& set);
-
-    void AllocateRenderPacketList(RenderPassHandle handle);
-    void AddRenderPacket(RenderPassHandle handle, RenderPacket packet);
 
     void SubmitRenderCommands(const std::list<RenderCommand>& commandList);
 
@@ -113,14 +108,14 @@ private:
     void LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format);
 
     void LoadPipeline();
-    void UpdateTimeCB();
-    void UpdateRenderObjectCB();
-    void UpdatePassCB();
 
     bool m_isTearingSupported = false; // [a_vorontcov] TODO: Properly handle when tearing is not supported.
     UINT m_width = -1;
     UINT m_height = -1;
     bool m_isFullScreen = false;
+
+    ConstantBufferHandle m_currentTimeBuffer;
+    ConstantBufferHandle m_currentCameraBuffer;
 
     std::vector<RenderCommand> m_frameCommands;
 };
