@@ -32,6 +32,19 @@ public:
     ShaderData& GetShaderData();
     void BuildMaterialForPass(const RenderPass* pass);
 
+    template<typename T>
+    ConstantBuffer::eReturnCode SetValueToBuffer(const std::string& name, T&& val)
+    {
+        ConstantBuffer::eReturnCode retCode = ConstantBuffer::eReturnCode::NotFound;
+        for (auto& cb : m_shaderData.constantBuffers)
+        {
+            auto code = cb.Set(name, std::forward(val));
+            if (code == ConstantBuffer::eReturnCode::Ok)
+                retCode = ConstantBuffer::eReturnCode::Ok;
+        }
+        return retCode;
+    }
+
 private:
     std::string m_shaderPath;
     Shader* m_shader = nullptr;

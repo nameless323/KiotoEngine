@@ -85,6 +85,8 @@ public:
     TextureHandle GetCurrentBackBufferHandle() const;
     TextureHandle GetDepthStencilHandle() const;
 
+    void SetTimeBuffer(ConstantBufferHandle handle);
+
 private:
     static constexpr uint32 PacketListPoolSize = 64;
     static constexpr uint32 PacketListSize = 4096;

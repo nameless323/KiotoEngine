@@ -11,6 +11,7 @@
 #include "Render/DX12/RendererDX12.h"
 #include "Systems/EventSystem/EngineEvents.h"
 #include "Systems/EventSystem/EventSystem.h"
+#include "Core/Timer/GlobalTimer.h"
 
 namespace Kioto::Renderer
 {
@@ -23,6 +24,19 @@ uint16 m_width = 768;
 float32 m_aspect = 1.0f;
 
 Camera m_mainCamera;
+
+ConstantBuffer m_timeBuffer; // [a_vorontcov] Find a better place.
+
+void UpdateTimeBuffer()
+{
+    float32 timeFromStart = static_cast<float32>(GlobalTimer::GetTimeFromStart());
+    m_timeBuffer.Set("Time", Vector4(timeFromStart / 20.0f, timeFromStart, timeFromStart * 2, timeFromStart * 3));
+    m_timeBuffer.Set("SinTime", Vector4(sin(timeFromStart / 4.0f), sin(timeFromStart / 2.0f), sin(timeFromStart), sin(timeFromStart * 2.0f)));
+    m_timeBuffer.Set("CosTime", Vector4(cos(timeFromStart / 4.0f), cos(timeFromStart / 2.0f), cos(timeFromStart), cos(timeFromStart * 2.0f)));
+    float32 dt = static_cast<float32>(GlobalTimer::GetDeltaTime());
+    float32 smoothDt = static_cast<float32>(GlobalTimer::GetSmoothDt());
+    m_timeBuffer.Set("DeltaTime", Vector4(dt, 1.0f / dt, smoothDt, 1.0f / smoothDt));
+}
 }
 
 void Init(eRenderApi api, uint16 width, uint16 height)
@@ -34,6 +48,8 @@ void Init(eRenderApi api, uint16 width, uint16 height)
     GameRenderer = new RendererDX12();
     if (api == eRenderApi::DirectX12)
         GameRenderer->Init(width, height);
+    GameRenderer->RegisterConstantBuffer(m_timeBuffer);
+    GameRenderer->SetTimeBuffer(m_timeBuffer.GetHandle());
 }
 
 void Shutdown()
@@ -66,6 +82,7 @@ void ChangeFullScreenMode(bool fullScreen)
 
 void Update(float32 dt) // [a_vorontcov] TODO: set frame command buffers here.
 {
+
     GameRenderer->Update(dt);
 }
 
@@ -95,11 +112,6 @@ VertexLayoutHandle GenerateVertexLayout(const VertexLayout& layout)
 
     // [a_vorontcov] TODO;
     //return GameRenderer->GenerateVertexLayout(layout);
-}
-
-void SetRenderPass(const RenderPass& renderPass)
-{
-    GameRenderer->AddRenderPass(renderPass);
 }
 
 TextureHandle GetCurrentBackBufferHandle()
@@ -144,16 +156,6 @@ void RegisterRenderAsset(Mesh* asset)
 void BuildMaterialForPass(Material& mat, const RenderPass* pass)
 {
     GameRenderer->BuildMaterialForPass(mat, pass);
-}
-
-void AllocateRenderPacketList(RenderPassHandle handle)
-{
-    GameRenderer->AllocateRenderPacketList(handle);
-}
-
-void AddRenderPacket(RenderPassHandle handle, RenderPacket packet)
-{
-    GameRenderer->AddRenderPacket(handle, packet);
 }
 
 template <>

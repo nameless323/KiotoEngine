@@ -143,7 +143,6 @@ void RendererDX12::Init(uint16 width, uint16 height)
 
 void RendererDX12::LoadPipeline()
 {
-    UpdateTimeCB();
     WaitForGPU();
 }
 
@@ -517,6 +516,11 @@ void RendererDX12::QueueConstantBufferForUpdate(const ConstantBuffer& buffer)
 void RendererDX12::RegisterConstantBuffer(ConstantBuffer& buffer)
 {
     m_constantBufferManager.RegisterConstantBuffer(&buffer, -1);
+}
+
+void RendererDX12::SetTimeBuffer(ConstantBufferHandle handle)
+{
+    m_currentTimeBuffer = handle;
 }
 
 }

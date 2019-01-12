@@ -73,6 +73,7 @@ void Init()
     Renderer::GeometryGenerator::Init();
     WindowsApplication::Init(ApplicationInfo.HInstance, ApplicationInfo.NCmdShow, ApplicationInfo.WindowCapture);
     Renderer::Init(Renderer::eRenderApi::DirectX12, 1024, 768);
+    Renderer::EngineBuffers::Init();
 
     if (InitEngineCallback != nullptr)
         InitEngineCallback();

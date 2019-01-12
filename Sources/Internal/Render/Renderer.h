@@ -16,7 +16,6 @@ namespace Kioto
 {
 namespace Renderer
 {
-
 class VertexLayout;
 
 enum class eRenderApi
@@ -39,9 +38,6 @@ Camera GetMainCamera();
 
 void SubmitRenderCommands(const std::list<RenderCommand>& commandList);
 
-void AllocateRenderPacketList(RenderPassHandle handle);
-void AddRenderPacket(RenderPassHandle handle, RenderPacket packet);
-
 void QueueTextureSetForUpdate(const TextureSet& set);
 void QueueConstantBufferForUpdate(const ConstantBuffer& buffer);
 
@@ -58,6 +54,5 @@ KIOTO_API float32 GetAspect();
 
 VertexLayoutHandle GenerateVertexLayout(const VertexLayout& layout);
 void BuildMaterialForPass(Material& mat, const RenderPass* pass);
-
 }
 }

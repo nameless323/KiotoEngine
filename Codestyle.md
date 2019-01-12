@@ -247,7 +247,6 @@ The following example shows properly formatted code.
 
 namespace Kioto
 {
-
 class MyClass : public MyBase
 {
 public: // Public block goes first. [Author]
@@ -288,7 +287,6 @@ T MyClass::TemplateFun(T t)
 {
     return t > 0.0f ? t : -t;
 }
-
 }
 
 // .cpp
@@ -305,7 +303,6 @@ T MyClass::TemplateFun(T t)
 
 namespace Kioto
 {
-
 MyClass::MyClass()
     : m_var0(8) // In order of appearance in .h file. [Author]
     , m_var1(2)
@@ -338,6 +335,5 @@ void MyClass::Bar()
         my_var1 = 0;
     }
 }
-
 }
 ```

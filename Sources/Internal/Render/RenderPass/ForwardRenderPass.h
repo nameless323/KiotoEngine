@@ -25,10 +25,13 @@ public:
         SetRenderTargetCount(1);
 
         m_material->BuildMaterialForPass(this);
+
     }
 
     virtual void CollectRenderData() override
     {
+
+
         Renderer::RenderPacket currPacket;
         currPacket.Material = m_material->GetHandle();
         currPacket.Shader = m_material->GetShader()->GetHandle();
@@ -53,6 +56,22 @@ public:
     }
 
 private:
+    void UpdateBuffer()
+    {
+        static float32 angle = 0.0f;
+        //angle += GlobalTimer::GetDeltaTime();	
+        angle += 0.001f;
+        Matrix4 toWorld = Matrix4::BuildRotation(Vector3(1.0f, 1.0f, 0.0f).Normalize(), angle);
+        //toWorld = Matrix4::Identity();	
+        toWorld.SetTranslation({ 0.0f, 0.0f, 3.0f });
+
+        Matrix4 toModel;
+        toWorld.Inversed(toModel);
+
+        m_material->SetValueToBuffer("ToModel", toModel.Tranposed());
+        m_material->SetValueToBuffer("ToWorld", toWorld.Tranposed());
+    }
+
     virtual void SetRenderTargets() override
     {
         SetRenderTargetsCommand cmd;
