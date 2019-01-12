@@ -73,9 +73,12 @@ public:
     void RegisterMesh(Mesh* mesh);
 
     void RegisterRenderPass(RenderPass* renderPass);
-    void RegisterTextureSet(TextureSet& set);
 
+    void RegisterTextureSet(TextureSet& set);
     void QueueTextureSetForUpdate(const TextureSet& set);
+
+    void RegisterConstantBuffer(ConstantBuffer& buffer);
+    void QueueConstantBufferForUpdate(const ConstantBuffer& buffer);
 
     void SubmitRenderCommands(const std::list<RenderCommand>& commandList);
 

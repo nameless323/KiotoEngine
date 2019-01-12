@@ -509,4 +509,14 @@ void RendererDX12::SubmitRenderCommands(const std::list<RenderCommand>& commandL
     m_frameCommands.insert(m_frameCommands.end(), commandList.begin(), commandList.end());
 }
 
+void RendererDX12::QueueConstantBufferForUpdate(const ConstantBuffer& buffer)
+{
+    m_constantBufferManager.QueueConstantBufferForUpdate(buffer);
+}
+
+void RendererDX12::RegisterConstantBuffer(ConstantBuffer& buffer)
+{
+    m_constantBufferManager.RegisterConstantBuffer(&buffer, -1);
+}
+
 }

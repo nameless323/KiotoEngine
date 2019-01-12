@@ -71,6 +71,7 @@ void CameraSystem::Update(float32 dt)
             currCam.UpdateProjectionMatrix();
 
         currCam.UpdateViewProjectionMatrix();
+        currCam.UpdateConstantBuffer();
     }
     Renderer::SetMainCamera(m_mainCamera);
 }

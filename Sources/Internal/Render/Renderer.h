@@ -43,6 +43,7 @@ void AllocateRenderPacketList(RenderPassHandle handle);
 void AddRenderPacket(RenderPassHandle handle, RenderPacket packet);
 
 void QueueTextureSetForUpdate(const TextureSet& set);
+void QueueConstantBufferForUpdate(const ConstantBuffer& buffer);
 
 template <typename T>
 void RegisterRenderAsset(T* asset);

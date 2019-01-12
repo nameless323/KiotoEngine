@@ -34,7 +34,7 @@ public:
     KIOTO_API void Update(float32 dt) override;
     void Shutdown() override;
 
-    Renderer::Camera* GetMainCamera() const;
+    const Renderer::Camera* GetMainCamera() const;
 
 private:
     void UpdateView(CameraComponent* t);
@@ -44,7 +44,7 @@ private:
     std::vector<CameraComponent*> m_components;
 };
 
-inline Renderer::Camera* CameraSystem::GetMainCamera() const
+inline const Renderer::Camera* CameraSystem::GetMainCamera() const
 {
     return &m_mainCamera;
 }

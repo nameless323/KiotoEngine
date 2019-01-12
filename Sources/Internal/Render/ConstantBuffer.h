@@ -58,7 +58,7 @@ public:
     eReturnCode Set(const std::string& name, const Matrix4& data);
 
     void ComposeBufferData();
-    float32* GetBufferData();
+    const float32* GetBufferData() const;
     uint32 GetDataSize() const;
     bool GetIsComposed() const;
     ConstantBufferHandle GetHandle() const;
@@ -101,7 +101,7 @@ private:
     uint32 m_dataSize = 0;
     uint32 m_dataSize4ByteElem = 0;
 
-    ConstantBufferHandle m_handle;
+    ConstantBufferHandle m_handle = InvalidHandle;
 
     friend void swap(ConstantBuffer& l, ConstantBuffer& r)
     {
@@ -133,7 +133,7 @@ inline uint32 ConstantBuffer::GetKey() const
     return m_key;
 }
 
-inline float32* ConstantBuffer::GetBufferData()
+inline const float32* ConstantBuffer::GetBufferData() const
 {
     return m_memData;
 }

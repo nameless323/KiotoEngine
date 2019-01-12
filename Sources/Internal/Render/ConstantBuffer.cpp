@@ -6,6 +6,7 @@
 #include "stdafx.h"
 
 #include "Render/ConstantBuffer.h"
+#include "Render/Renderer.h"
 
 namespace Kioto::Renderer
 {
@@ -47,6 +48,9 @@ ConstantBuffer::eReturnCode ConstantBuffer::Add(const std::string& name, float32
     p.Data = data;
     m_params.push_back(std::move(p));
     m_regenerateMemLayout = true;
+
+    Renderer::QueueConstantBufferForUpdate(*this);
+
     return eReturnCode::Ok;
 }
 
@@ -64,6 +68,9 @@ ConstantBuffer::eReturnCode ConstantBuffer::Add(const std::string& name, const V
     p.Data = data;
     m_params.push_back(std::move(p));
     m_regenerateMemLayout = true;
+
+    Renderer::QueueConstantBufferForUpdate(*this);
+
     return eReturnCode::Ok;
 }
 
@@ -81,6 +88,9 @@ ConstantBuffer::eReturnCode ConstantBuffer::Add(const std::string& name, const V
     p.Data = data;
     m_params.push_back(std::move(p));
     m_regenerateMemLayout = true;
+
+    Renderer::QueueConstantBufferForUpdate(*this);
+
     return eReturnCode::Ok;
 }
 
@@ -98,6 +108,9 @@ ConstantBuffer::eReturnCode ConstantBuffer::Add(const std::string& name, const V
     p.Data = data;
     m_params.push_back(std::move(p));
     m_regenerateMemLayout = true;
+
+    Renderer::QueueConstantBufferForUpdate(*this);
+
     return eReturnCode::Ok;
 }
 
@@ -115,6 +128,9 @@ ConstantBuffer::eReturnCode ConstantBuffer::Add(const std::string& name, const M
     p.Data = data;
     m_params.push_back(std::move(p));
     m_regenerateMemLayout = true;
+
+    Renderer::QueueConstantBufferForUpdate(*this);
+
     return eReturnCode::Ok;
 }
 
@@ -132,6 +148,9 @@ ConstantBuffer::eReturnCode ConstantBuffer::Add(const std::string& name, const M
     p.Data = data;
     m_params.push_back(std::move(p));
     m_regenerateMemLayout = true;
+
+    Renderer::QueueConstantBufferForUpdate(*this);
+
     return eReturnCode::Ok;
 }
 
@@ -147,6 +166,8 @@ ConstantBuffer::eReturnCode ConstantBuffer::Set(const std::string& name, float32
 
     if (!m_regenerateMemLayout)
         m_memData[offset] = data;
+
+    Renderer::QueueConstantBufferForUpdate(*this);
 
     return eReturnCode::Ok;
 }
@@ -167,6 +188,8 @@ ConstantBuffer::eReturnCode ConstantBuffer::Set(const std::string& name, const V
         m_memData[offset++] = data.y;
     }
 
+    Renderer::QueueConstantBufferForUpdate(*this);
+
     return eReturnCode::Ok;
 }
 
@@ -186,6 +209,8 @@ ConstantBuffer::eReturnCode ConstantBuffer::Set(const std::string& name, const V
         m_memData[offset++] = data.y;
         m_memData[offset++] = data.z;
     }
+
+    Renderer::QueueConstantBufferForUpdate(*this);
 
     return eReturnCode::Ok;
 }
@@ -208,6 +233,8 @@ ConstantBuffer::eReturnCode ConstantBuffer::Set(const std::string& name, const V
         m_memData[offset++] = data.w;
     }
 
+    Renderer::QueueConstantBufferForUpdate(*this);
+
     return eReturnCode::Ok;
 }
 
@@ -224,6 +251,8 @@ ConstantBuffer::eReturnCode ConstantBuffer::Set(const std::string& name, const M
     if (!m_regenerateMemLayout)
         memcpy(m_memData + offset, data.data, 9 * sizeof(float32));
 
+    Renderer::QueueConstantBufferForUpdate(*this);
+
     return eReturnCode::Ok;
 }
 
@@ -239,6 +268,8 @@ ConstantBuffer::eReturnCode ConstantBuffer::Set(const std::string& name, const M
 
     if (!m_regenerateMemLayout)
         memcpy(m_memData + offset, data.data, 16 * sizeof(float32));
+
+    Renderer::QueueConstantBufferForUpdate(*this);
 
     return eReturnCode::Ok;
 }

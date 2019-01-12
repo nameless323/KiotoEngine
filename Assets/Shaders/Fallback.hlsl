@@ -125,5 +125,3 @@ cbuffer fuck : register(b0, space1)
     float4 CosTime; // [a_vorontsov] Cos of time: (t / 4, t / 2, t, t * 2).
     float4 DeltaTime; // [a_vorontsov] Delta time: (dt, 1 / dt, smoothDt, 1 / smoothDt).
 }*/
-
-новочкркасский 14 кв 51

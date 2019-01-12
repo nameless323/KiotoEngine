@@ -192,6 +192,16 @@ void SubmitRenderCommands(const std::list<RenderCommand>& commandList)
     GameRenderer->SubmitRenderCommands(commandList);
 }
 
+void QueueConstantBufferForUpdate(const ConstantBuffer& buffer)
+{
+    GameRenderer->QueueConstantBufferForUpdate(buffer);
+}
+
+void RegisterConstantBuffer(ConstantBuffer& buffer)
+{
+    GameRenderer->RegisterConstantBuffer(buffer);
+}
+
 template void RegisterRenderAsset<Texture>(Texture* asset);
 template void RegisterRenderAsset<Shader>(Shader* asset);
 template void RegisterRenderAsset<Mesh>(Mesh* asset);

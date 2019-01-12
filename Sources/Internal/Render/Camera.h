@@ -111,6 +111,8 @@ public:
 
     void UpdateViewProjectionMatrix();
 
+    void UpdateConstantBuffer();
+
 private:
     ConstantBuffer m_cameraBuffer; // [a_vorontcov] TODO: Really don't like it here.
 
@@ -132,7 +134,7 @@ inline Camera::Camera(bool createBuffer)
 {
     if (createBuffer)
     {
-        EngineBuffers::GetCameraBufferCopy(m_cameraBuffer);
+        EngineBuffers::GetCameraBufferCopy(m_cameraBuffer); // [a_vorontcov] Reeeeeeeeeealy don't like it here.
         Renderer::RegisterConstantBuffer(m_cameraBuffer);
     }
 }
@@ -244,5 +246,12 @@ inline void Camera::UpdateViewProjectionMatrix()
 inline void Camera::SetView(const Matrix4& view)
 {
     m_view = view;
+}
+
+inline void Camera::UpdateConstantBuffer()
+{
+    assert(m_cameraBuffer.GetHandle() != InvalidHandle);
+    m_cameraBuffer.Set("ViewProjection", m_VP);
+    m_cameraBuffer.Set("View", m_view);
 }
 }
