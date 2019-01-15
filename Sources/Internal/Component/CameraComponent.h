@@ -59,7 +59,7 @@ private:
     bool m_hdr = true;
     bool m_isMainRT = false;
 
-    Renderer::Camera m_camera;
+    Renderer::Camera m_camera{ true };
 
     friend class CameraSystem;
 };

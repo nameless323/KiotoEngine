@@ -50,7 +50,7 @@ public:
  
     virtual void Cleanup() override
     {
-        throw std::logic_error("The method or operation is not implemented.");
+        //throw std::logic_error("The method or operation is not implemented.");
     }
 
 private:
@@ -90,7 +90,7 @@ private:
 
     virtual void SetPassConstantBuffers() override
     {
-        throw std::logic_error("The method or operation is not implemented.");
+        //throw std::logic_error("The method or operation is not implemented.");
     }
 
     virtual void SetCameraConstantBuffers() override

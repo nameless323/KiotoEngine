@@ -44,6 +44,8 @@ void Init(eRenderApi api, uint16 width, uint16 height)
     m_width = width;
     m_height = height;
     m_aspect = static_cast<float32>(m_width) / static_cast<float32>(m_height);
+    EngineBuffers::GetTimeBufferCopy(m_timeBuffer);
+    m_timeBuffer.ComposeBufferData();
 
     GameRenderer = new RendererDX12();
     if (api == eRenderApi::DirectX12)

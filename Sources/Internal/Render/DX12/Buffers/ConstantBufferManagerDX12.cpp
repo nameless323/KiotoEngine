@@ -56,13 +56,12 @@ void ConstantBufferManagerDX12::ProcessRegistrationQueue(const StateDX& state)
 
 void ConstantBufferManagerDX12::RegisterConstantBuffer(ConstantBuffer* buffer, ConstantBufferSetHandle bufferSetHandle)
 {
-    if (buffer->GetHandle() != InvalidHandle || !buffer->GetIsComposed())
+    if (buffer->GetHandle() != InvalidHandle)
         return;
     auto it = m_constantBuffers.find(buffer->GetHandle());
     if (it != m_constantBuffers.cend())
         return;
     ConstantBufferHandle bufHandle = GetNewHandle();
-    assert(buffer->GetIsComposed());
     buffer->SetHandle(bufHandle);
     m_registrationQueue.emplace_back(bufHandle, bufferSetHandle, buffer->GetDataSize(), buffer->GetBufferData());
 }
@@ -70,7 +69,7 @@ void ConstantBufferManagerDX12::RegisterConstantBuffer(ConstantBuffer* buffer, C
 void ConstantBufferManagerDX12::QueueConstantBufferForUpdate(ConstantBuffer& buffer)
 {
     const auto it = std::find(m_updateQueues.cbegin(), m_updateQueues.cend(), &buffer);
-    if (it != m_updateQueues.cbegin())
+    if (it != m_updateQueues.cend() || buffer.GetHandle() == InvalidHandle)
         return;
     m_updateQueues.push_back(&buffer);
 }
@@ -80,6 +79,8 @@ void ConstantBufferManagerDX12::ProcessBufferUpdates(UINT frameIndex)
     for (auto& cb : m_updateQueues)
     {
         UploadBufferDX12* uploadBuf = FindBuffer(cb->GetHandle());
+
+        assert(cb->GetIsComposed());
         if (uploadBuf == nullptr)
             assert(false);
         uploadBuf->UploadData(frameIndex, cb->GetBufferData());
