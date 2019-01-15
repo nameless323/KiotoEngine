@@ -15,6 +15,7 @@ namespace Kioto
 class SceneSystem;
 class Entity;
 class CameraSystem;
+class RenderSystem;
 class EventSystem;
 
 class Scene

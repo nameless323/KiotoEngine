@@ -6,6 +6,7 @@
 #pragma once
 
 #include <Array>
+#include <vector>
 
 #include "Core/CoreTypes.h"
 #include "Math/Rect.h"
@@ -28,6 +29,8 @@ public:
     {
     }
 
+    RenderPass(const RenderPass& other);
+
     virtual ~RenderPass() = default;
 
     virtual void Setup()         // set all pass buffers
@@ -45,7 +48,7 @@ public:
         m_commands.push_back(command);
     }
 
-    const std::list<RenderCommand>& GetRenderCommands() const
+    const std::vector<RenderCommand>& GetRenderCommands() const
     {
         return m_commands;
     }
@@ -55,7 +58,6 @@ public:
         m_commands.clear();
     }
 
-    void SetCamera(const Camera& camera);
     void SetScissor(const RectI& scissor);
     void SetViewport(const RectI& viewport);
     void SetClearColor(bool clearColor);
@@ -102,10 +104,8 @@ private:
     TextureHandle m_depthStencil;
     uint32 m_priority = PassPriority::MainPass;
 
-    Camera m_camera;
-
     std::string m_passName;
-    std::list<RenderCommand> m_commands;
+    std::vector<RenderCommand> m_commands;
 };
 
 inline void RenderPass::SetScissor(const RectI& scissor)

@@ -38,7 +38,7 @@ public:
         ConstantBuffer::eReturnCode retCode = ConstantBuffer::eReturnCode::NotFound;
         for (auto& cb : m_shaderData.constantBuffers)
         {
-            auto code = cb.Set(name, std::forward(val));
+            auto code = cb.Set(name, std::forward<T>(val));
             if (code == ConstantBuffer::eReturnCode::Ok)
                 retCode = ConstantBuffer::eReturnCode::Ok;
         }

@@ -64,9 +64,10 @@ void CameraSystem::Update(float32 dt)
     {
         Renderer::Camera& currCam = camComponent->GetCamera();
         if (camComponent->GetIsMain())
-            m_mainCamera = currCam;
+            m_mainCamera = &currCam;
 
         UpdateView(camComponent);
+
         if (currCam.GetIsProjectionDirty())
             currCam.UpdateProjectionMatrix();
 

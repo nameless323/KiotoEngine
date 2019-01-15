@@ -14,21 +14,17 @@ namespace Kioto
 
 CameraComponent::CameraComponent(float32 fovY, float32 aspect, float32 nearPlane, float32 farPlane)
 {
-    m_fovY = fovY;
-    m_aspect = aspect;
-    m_nearPlane = nearPlane;
-    m_farPlane = farPlane;
+    m_camera.SetFovY(fovY);
+    m_camera.SetAspect(aspect);
+    m_camera.SetNearPlane(nearPlane);
+    m_camera.SetFarPlane(farPlane);
 }
 
 Component* CameraComponent::Clone() const
 {
     CameraComponent* newComponent = new CameraComponent();
-    newComponent->m_fovY = m_fovY;
-    newComponent->m_aspect = m_aspect;
-    newComponent->m_nearPlane = m_nearPlane;
-    newComponent->m_farPlane = m_farPlane;
+    newComponent->m_camera = m_camera;
     newComponent->m_hdr = m_hdr;
-    newComponent->m_isOrtho = m_isOrtho;
     return newComponent;
 }
 

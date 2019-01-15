@@ -8,17 +8,15 @@
 #include "Core/Core.h"
 #include "Core/CoreTypes.h"
 #include "Math/Matrix4.h"
-#include "Render/RendererPublic.h"
 #include "Render/ConstantBuffer.h"
-#include "Render/Renderer.h"
-#include "Render/DX12/Buffers/EngineBuffers.h"
+#include "Render/RendererPublic.h"
 
 namespace Kioto::Renderer
 {
 class Camera
 {
 public:
-    explicit Camera(bool createBuffer = false);
+    Camera(bool createBuffer = false);
 
     ConstantBufferHandle GetConstantBufferHandle() const
     {
@@ -130,14 +128,6 @@ private:
     bool m_isOrtho = false;
 };
 
-inline Camera::Camera(bool createBuffer)
-{
-    if (createBuffer)
-    {
-        EngineBuffers::GetCameraBufferCopy(m_cameraBuffer); // [a_vorontcov] Reeeeeeeeeealy don't like it here.
-        Renderer::RegisterConstantBuffer(m_cameraBuffer);
-    }
-}
 
 inline void Camera::SetFovY(float32 fovY)
 {
@@ -246,12 +236,5 @@ inline void Camera::UpdateViewProjectionMatrix()
 inline void Camera::SetView(const Matrix4& view)
 {
     m_view = view;
-}
-
-inline void Camera::UpdateConstantBuffer()
-{
-    assert(m_cameraBuffer.GetHandle() != InvalidHandle);
-    m_cameraBuffer.Set("ViewProjection", m_VP);
-    m_cameraBuffer.Set("View", m_view);
 }
 }

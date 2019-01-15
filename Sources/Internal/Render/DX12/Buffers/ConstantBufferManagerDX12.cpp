@@ -67,7 +67,7 @@ void ConstantBufferManagerDX12::RegisterConstantBuffer(ConstantBuffer* buffer, C
     m_registrationQueue.emplace_back(bufHandle, bufferSetHandle, buffer->GetDataSize(), buffer->GetBufferData());
 }
 
-void ConstantBufferManagerDX12::QueueConstantBufferForUpdate(const ConstantBuffer& buffer)
+void ConstantBufferManagerDX12::QueueConstantBufferForUpdate(ConstantBuffer& buffer)
 {
     const auto it = std::find(m_updateQueues.cbegin(), m_updateQueues.cend(), &buffer);
     if (it != m_updateQueues.cbegin())

@@ -26,7 +26,7 @@ public:
     void RegisterMaterial(Material* material);
     void ProcessRegistrationQueue(const StateDX& state);
     void RegisterConstantBuffer(ConstantBuffer* buffer, ConstantBufferSetHandle bufferSetHandle); // [a_vorontcov] -1 for internal buffers.
-    void QueueConstantBufferForUpdate(const ConstantBuffer& buffer);
+    void QueueConstantBufferForUpdate(ConstantBuffer& buffer);
     void ProcessBufferUpdates(UINT frameIndex);
 
     UploadBufferDX12* FindBuffer(ConstantBufferHandle handle) const;
@@ -52,7 +52,7 @@ private:
     std::map<ConstantBufferHandle, UploadBufferDX12*> m_constantBuffers;
     std::map<ConstantBufferHandle, UploadBufferDX12*> m_internalBuffers;
     std::map<ConstantBufferSetHandle, std::vector<UploadBufferDX12*>> m_constantBufferSets;
-    std::vector<const ConstantBuffer*> m_updateQueues;
+    std::vector<ConstantBuffer*> m_updateQueues;
     std::vector<TempCBData> m_registrationQueue;
 };
 }

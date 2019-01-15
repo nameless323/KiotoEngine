@@ -9,16 +9,12 @@
 #include "Core/Core.h"
 
 #include "Core/ECS/SceneSystem.h"
+#include "Render/Camera.h"
 
 #include <vector>
 
 namespace Kioto
 {
-namespace Renderer
-{
-class Camera;
-}
-
 class CameraComponent;
 class EventSystem;
 
@@ -37,15 +33,14 @@ public:
     const Renderer::Camera* GetMainCamera() const;
 
 private:
-    void UpdateView(CameraComponent* t);
-    void UpdateProjection(Renderer::Camera* cam);
+    void UpdateView(CameraComponent* cam);
 
-    Renderer::Camera m_mainCamera;
+    Renderer::Camera* m_mainCamera = nullptr;
     std::vector<CameraComponent*> m_components;
 };
 
 inline const Renderer::Camera* CameraSystem::GetMainCamera() const
 {
-    return &m_mainCamera;
+    return m_mainCamera;
 }
 }

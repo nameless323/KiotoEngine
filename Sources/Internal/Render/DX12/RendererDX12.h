@@ -78,9 +78,9 @@ public:
     void QueueTextureSetForUpdate(const TextureSet& set);
 
     void RegisterConstantBuffer(ConstantBuffer& buffer);
-    void QueueConstantBufferForUpdate(const ConstantBuffer& buffer);
+    void QueueConstantBufferForUpdate(ConstantBuffer& buffer);
 
-    void SubmitRenderCommands(const std::list<RenderCommand>& commandList);
+    void SubmitRenderCommands(const std::vector<RenderCommand>& commandList);
 
     TextureHandle GetCurrentBackBufferHandle() const;
     TextureHandle GetDepthStencilHandle() const;

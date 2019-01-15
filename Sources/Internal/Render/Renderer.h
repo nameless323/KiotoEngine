@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <vector>
+
 #include "Core/Core.h"
 #include "Core/CoreTypes.h"
 #include "Render/RendererPublic.h"
@@ -30,16 +32,13 @@ void Update(float32 dt);
 void Present();
 void ChangeFullScreenMode(bool fullScreen);
 
-// Push pass?
-// Pop pass?
-void SetRenderPass(const RenderPass& renderPass);
 void SetMainCamera(const Camera& camera); // Set camera command buffers.
 Camera GetMainCamera();
 
-void SubmitRenderCommands(const std::list<RenderCommand>& commandList);
+void SubmitRenderCommands(const std::vector<RenderCommand>& commandList);
 
 void QueueTextureSetForUpdate(const TextureSet& set);
-void QueueConstantBufferForUpdate(const ConstantBuffer& buffer);
+void QueueConstantBufferForUpdate(ConstantBuffer& buffer);
 
 template <typename T>
 void RegisterRenderAsset(T* asset);

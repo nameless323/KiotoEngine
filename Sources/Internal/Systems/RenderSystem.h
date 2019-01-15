@@ -38,7 +38,7 @@ private:
 
 };
 
-RenderSystem::RenderSystem()
+inline RenderSystem::RenderSystem()
 {
     m_renderPasses.reserve(MaxRenderPassesCount);
 }

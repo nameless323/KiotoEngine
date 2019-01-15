@@ -327,14 +327,14 @@ void RendererDX12::Present()
             size_t engineBuffersCount = EngineBuffers::BufferIndices.size();
             size_t buffersCount = bufferList.size() + engineBuffersCount;
 
-            for (uint32 i = engineBuffersCount; i < buffersCount; ++i)
-                m_state.CommandList->SetGraphicsRootConstantBufferView(i, bufferList[i - engineBuffersCount]->GetFrameDataGpuAddress(m_swapChain.GetCurrentFrameIndex()));
+            for (size_t i = engineBuffersCount; i < buffersCount; ++i)
+                m_state.CommandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(i), bufferList[i - engineBuffersCount]->GetFrameDataGpuAddress(m_swapChain.GetCurrentFrameIndex()));
 
             ID3D12DescriptorHeap* currHeap = m_textureManager.GetTextureHeap(packet.TextureSet);
             ID3D12DescriptorHeap* descHeap[] = { currHeap };
             m_state.CommandList->SetDescriptorHeaps(_countof(descHeap), descHeap);
 
-            m_state.CommandList->SetGraphicsRootDescriptorTable(buffersCount, currHeap->GetGPUDescriptorHandleForHeapStart()); // [a_vorontcov] 3??? maybe enginebuffercount + bufferListSize?
+            m_state.CommandList->SetGraphicsRootDescriptorTable(static_cast<UINT>(buffersCount), currHeap->GetGPUDescriptorHandleForHeapStart()); // [a_vorontcov] 3??? maybe enginebuffercount + bufferListSize?
 
             MeshDX12* currGeometry = m_meshManager.Find(packet.Mesh);
 
@@ -503,12 +503,12 @@ void RendererDX12::RegisterMesh(Mesh* mesh)
     m_meshManager.RegisterMesh(mesh);
 }
 
-void RendererDX12::SubmitRenderCommands(const std::list<RenderCommand>& commandList) // [a_vorontcov] Not const and splice would be better. https://stackoverflow.com/questions/1449703/how-to-append-a-listt-object-to-another
+void RendererDX12::SubmitRenderCommands(const std::vector<RenderCommand>& commandList) // [a_vorontcov] Not const and splice would be better. https://stackoverflow.com/questions/1449703/how-to-append-a-listt-object-to-another
 {
     m_frameCommands.insert(m_frameCommands.end(), commandList.begin(), commandList.end());
 }
 
-void RendererDX12::QueueConstantBufferForUpdate(const ConstantBuffer& buffer)
+void RendererDX12::QueueConstantBufferForUpdate(ConstantBuffer& buffer)
 {
     m_constantBufferManager.QueueConstantBufferForUpdate(buffer);
 }

@@ -34,6 +34,5 @@ private:
     static uint64 GetKey(MaterialHandle matHandle, RenderPassHandle renderPassHandle);
 
     std::map<uint64, Microsoft::WRL::ComPtr<ID3D12PipelineState>> m_psos;
-    std::list<
 };
 }

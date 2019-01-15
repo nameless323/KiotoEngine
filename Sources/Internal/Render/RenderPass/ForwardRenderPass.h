@@ -30,8 +30,6 @@ public:
 
     virtual void CollectRenderData() override
     {
-
-
         Renderer::RenderPacket currPacket;
         currPacket.Material = m_material->GetHandle();
         currPacket.Shader = m_material->GetShader()->GetHandle();
@@ -107,9 +105,9 @@ private:
     Renderer::Mesh* m_mesh = nullptr;
     Renderer::Mesh* m_meshCopy = nullptr;
 
-    std::string m_spherePath = AssetsSystem::GetAssetFullPath(R"(Models\Sphere.fbx)");
+    /*std::string m_spherePath = AssetsSystem::GetAssetFullPath(R"(Models\Sphere.fbx)");
     std::string m_matPath = AssetsSystem::GetAssetFullPath("Materials\\TestRed.mt");
     Renderer::Material* m_materialRed = nullptr;
-    Renderer::Mesh* m_meshSphere = nullptr;
+    Renderer::Mesh* m_meshSphere = nullptr;*/
 };
 }

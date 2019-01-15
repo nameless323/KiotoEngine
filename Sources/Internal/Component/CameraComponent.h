@@ -44,6 +44,11 @@ public:
     ///
     bool GetIsMain() const;
 
+    void SetIsMain(bool val)
+    {
+        m_isMainRT = val;
+    }
+
     Renderer::Camera& GetCamera();
 
 protected:

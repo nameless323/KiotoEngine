@@ -26,9 +26,9 @@ namespace CameraCBData
     std::pair<std::string, Matrix4> View = std::make_pair("View", Matrix4());
     std::pair<std::string, Vector4> RTParams = std::make_pair("RTParams", Vector4()); // [a_vorontcov] x is the current render target width in pixels, y is the current render target height in pixels, z is (1.0 + 1.0 / width) and w is (1.0 + 1.0/height).
     std::pair<std::string, Vector3> ProjParams = std::make_pair("ProjParams", Vector3()); // [a_vorontcov] x is the camera’s near, z is the camera’s far and w is 1/FarPlane.
-    std::pair<std::string, float32> Pad0 = std::make_pair("Pad0", 0);
+    std::pair<std::string, float32> Pad0 = std::make_pair("Pad0", 0.0f);
     std::pair<std::string, Vector4> CamWorldPosition = std::make_pair("CamWorldPosition", Vector4());
-    std::pair<std::string, float32> Pad1 = std::make_pair("Pad1", 0);
+    std::pair<std::string, float32> Pad1 = std::make_pair("Pad1", 0.0f);
 };
 
 ConstantBuffer m_cameraBuffer{ CameraBufferIndex, EngineBuffersSpace };

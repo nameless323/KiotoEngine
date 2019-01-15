@@ -189,12 +189,12 @@ Camera GetMainCamera()
     return m_mainCamera; // by reference? depends, think bout it
 }
 
-void SubmitRenderCommands(const std::list<RenderCommand>& commandList)
+void SubmitRenderCommands(const std::vector<RenderCommand>& commandList)
 {
     GameRenderer->SubmitRenderCommands(commandList);
 }
 
-void QueueConstantBufferForUpdate(const ConstantBuffer& buffer)
+void QueueConstantBufferForUpdate(ConstantBuffer& buffer)
 {
     GameRenderer->QueueConstantBufferForUpdate(buffer);
 }

@@ -16,6 +16,8 @@
 #include <vector>
 #include <variant>
 
+#include "Render/RendererPublic.h"
+
 namespace Kioto::Renderer
 {
 struct ConstantBufferSet
@@ -58,7 +60,7 @@ public:
     eReturnCode Set(const std::string& name, const Matrix4& data);
 
     void ComposeBufferData();
-    const float32* GetBufferData() const;
+    float32* GetBufferData();
     uint32 GetDataSize() const;
     bool GetIsComposed() const;
     ConstantBufferHandle GetHandle() const;
@@ -101,7 +103,7 @@ private:
     uint32 m_dataSize = 0;
     uint32 m_dataSize4ByteElem = 0;
 
-    ConstantBufferHandle m_handle = InvalidHandle;
+    ConstantBufferHandle m_handle;
 
     friend void swap(ConstantBuffer& l, ConstantBuffer& r)
     {
@@ -133,7 +135,7 @@ inline uint32 ConstantBuffer::GetKey() const
     return m_key;
 }
 
-inline const float32* ConstantBuffer::GetBufferData() const
+inline float32* ConstantBuffer::GetBufferData()
 {
     return m_memData;
 }
