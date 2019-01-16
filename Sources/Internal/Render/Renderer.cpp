@@ -23,7 +23,7 @@ uint16 m_height = 1024;
 uint16 m_width = 768;
 float32 m_aspect = 1.0f;
 
-Camera m_mainCamera;
+Camera* m_mainCamera;
 
 ConstantBuffer m_timeBuffer; // [a_vorontcov] Find a better place.
 
@@ -44,12 +44,13 @@ void Init(eRenderApi api, uint16 width, uint16 height)
     m_width = width;
     m_height = height;
     m_aspect = static_cast<float32>(m_width) / static_cast<float32>(m_height);
-    EngineBuffers::GetTimeBufferCopy(m_timeBuffer);
-    m_timeBuffer.ComposeBufferData();
 
     GameRenderer = new RendererDX12();
     if (api == eRenderApi::DirectX12)
         GameRenderer->Init(width, height);
+
+    EngineBuffers::GetTimeBufferCopy(m_timeBuffer);
+    m_timeBuffer.ComposeBufferData();
     GameRenderer->RegisterConstantBuffer(m_timeBuffer);
     GameRenderer->SetTimeBuffer(m_timeBuffer.GetHandle());
 }
@@ -181,12 +182,12 @@ void QueueTextureSetForUpdate(const TextureSet& set)
     GameRenderer->QueueTextureSetForUpdate(set);
 }
 
-void SetMainCamera(const Camera& camera)
+void SetMainCamera(Camera* camera)
 {
     m_mainCamera = camera;
 }
 
-Camera GetMainCamera()
+Camera* GetMainCamera()
 {
     return m_mainCamera; // by reference? depends, think bout it
 }

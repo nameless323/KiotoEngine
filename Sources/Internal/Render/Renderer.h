@@ -32,8 +32,8 @@ void Update(float32 dt);
 void Present();
 void ChangeFullScreenMode(bool fullScreen);
 
-void SetMainCamera(const Camera& camera); // Set camera command buffers.
-Camera GetMainCamera();
+void SetMainCamera(Camera* camera); // Set camera command buffers.
+Camera* GetMainCamera();
 
 void SubmitRenderCommands(const std::vector<RenderCommand>& commandList);
 

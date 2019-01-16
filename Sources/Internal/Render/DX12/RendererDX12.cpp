@@ -262,6 +262,7 @@ void RendererDX12::Present()
     m_constantBufferManager.ProcessBufferUpdates(m_swapChain.GetCurrentFrameIndex());
 
     TextureDX12* currentRenderTarget = nullptr;
+    TextureDX12* currentDS = nullptr;
     for (auto& cmd : m_frameCommands)
     {
         assert(cmd.CommandType != eRenderCommandType::eInvalidCommand);
@@ -284,7 +285,6 @@ void RendererDX12::Present()
             else
                 currentRenderTarget = m_textureManager.FindTexture(srtCommand.GetRenderTarget(0));
 
-            TextureDX12* currentDS = nullptr;
             if (srtCommand.GetDepthStencil() == DefaultDepthStencilHandle)
                 currentDS = m_swapChain.GetDepthStencil();
             else
@@ -307,6 +307,8 @@ void RendererDX12::Present()
         {
             auto toPresent = CD3DX12_RESOURCE_BARRIER::Transition(currentRenderTarget->Resource.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT); // [a_vorontcov] WRONG WRONG WRONG, but ok for now.
             m_state.CommandList->ResourceBarrier(1, &toPresent);
+            currentRenderTarget = nullptr;
+            currentDS = nullptr;
         }
         else if (cmd.CommandType == eRenderCommandType::eSubmitRenderPacket)
         {
@@ -362,7 +364,7 @@ void RendererDX12::Present()
     m_renderPasses[m_swapChain.GetCurrentFrameIndex()].clear();
     m_frameCommands.clear();
     m_currentCameraBuffer = InvalidHandle;
-    m_currentTimeBuffer = InvalidHandle;
+
     // [a_vorontcov] Check if we can move to next frame.
     m_swapChain.ProceedToNextFrame();
 

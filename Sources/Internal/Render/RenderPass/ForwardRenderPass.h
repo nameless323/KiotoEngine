@@ -30,6 +30,8 @@ public:
 
     virtual void CollectRenderData() override
     {
+        SetRenderTargets();
+
         Renderer::RenderPacket currPacket;
         currPacket.Material = m_material->GetHandle();
         currPacket.Shader = m_material->GetShader()->GetHandle();
@@ -95,7 +97,7 @@ private:
 
     virtual void SetCameraConstantBuffers() override
     {
-        PushCommand(RenderCommandHelpers::CreateConstantBufferCommand(Renderer::GetMainCamera().GetConstantBuffer(), this));
+        PushCommand(RenderCommandHelpers::CreateConstantBufferCommand(Renderer::GetMainCamera()->GetConstantBuffer(), this));
     }
  
     std::string m_matPath = AssetsSystem::GetAssetFullPath("Materials\\Test.mt");

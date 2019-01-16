@@ -37,28 +37,30 @@ ConstantBuffer m_timeBuffer{ TimeBufferIndex, EngineBuffersSpace };
 
 void EngineBuffers::Init()
 {
-    m_timeBuffer.Add(TimeCBData::Time.first, TimeCBData::Time.second);
-    m_timeBuffer.Add(TimeCBData::SinTime.first, TimeCBData::SinTime.second);
-    m_timeBuffer.Add(TimeCBData::CosTime.first, TimeCBData::CosTime.second);
-    m_timeBuffer.Add(TimeCBData::DeltaTime.first, TimeCBData::DeltaTime.second);
+    m_timeBuffer.Add(TimeCBData::Time.first, TimeCBData::Time.second, false);
+    m_timeBuffer.Add(TimeCBData::SinTime.first, TimeCBData::SinTime.second, false);
+    m_timeBuffer.Add(TimeCBData::CosTime.first, TimeCBData::CosTime.second, false);
+    m_timeBuffer.Add(TimeCBData::DeltaTime.first, TimeCBData::DeltaTime.second, false);
 
-    m_cameraBuffer.Add(CameraCBData::ViewProjection.first, CameraCBData::ViewProjection.second);
-    m_cameraBuffer.Add(CameraCBData::View.first, CameraCBData::View.second);
-    m_cameraBuffer.Add(CameraCBData::RTParams.first, CameraCBData::RTParams.second);
-    m_cameraBuffer.Add(CameraCBData::ProjParams.first, CameraCBData::ProjParams.second);
-    m_cameraBuffer.Add(CameraCBData::Pad0.first, CameraCBData::Pad0.second);
-    m_cameraBuffer.Add(CameraCBData::CamWorldPosition.first, CameraCBData::CamWorldPosition.second);
-    m_cameraBuffer.Add(CameraCBData::Pad1.first, CameraCBData::Pad1.second);
+    m_cameraBuffer.Add(CameraCBData::ViewProjection.first, CameraCBData::ViewProjection.second, false);
+    m_cameraBuffer.Add(CameraCBData::View.first, CameraCBData::View.second, false);
+    m_cameraBuffer.Add(CameraCBData::RTParams.first, CameraCBData::RTParams.second, false);
+    m_cameraBuffer.Add(CameraCBData::ProjParams.first, CameraCBData::ProjParams.second, false);
+    m_cameraBuffer.Add(CameraCBData::Pad0.first, CameraCBData::Pad0.second, false);
+    m_cameraBuffer.Add(CameraCBData::CamWorldPosition.first, CameraCBData::CamWorldPosition.second, false);
+    m_cameraBuffer.Add(CameraCBData::Pad1.first, CameraCBData::Pad1.second, false);
 }
 
 void GetTimeBufferCopy(ConstantBuffer& target)
 {
-    m_timeBuffer.MakeShallowCopy(target);
+    m_timeBuffer.MakeShallowCopy(target, false);
+    target.ComposeBufferData();
 }
 
 void GetCameraBufferCopy(ConstantBuffer& target)
 {
-    m_cameraBuffer.MakeShallowCopy(target);
+    m_cameraBuffer.MakeShallowCopy(target, false);
+    target.ComposeBufferData();
 }
 
 }

@@ -45,19 +45,19 @@ public:
 
     ConstantBuffer& operator= (ConstantBuffer other);
 
-    eReturnCode Add(const std::string& name, float32 data);
-    eReturnCode Add(const std::string& name, const Vector2& data);
-    eReturnCode Add(const std::string& name, const Vector3& data);
-    eReturnCode Add(const std::string& name, const Vector4& data);
-    eReturnCode Add(const std::string& name, const Matrix3& data);
-    eReturnCode Add(const std::string& name, const Matrix4& data);
+    eReturnCode Add(const std::string& name, float32 data, bool queueForUpdate = true);
+    eReturnCode Add(const std::string& name, const Vector2& data, bool queueForUpdate = true);
+    eReturnCode Add(const std::string& name, const Vector3& data, bool queueForUpdate = true);
+    eReturnCode Add(const std::string& name, const Vector4& data, bool queueForUpdate = true);
+    eReturnCode Add(const std::string& name, const Matrix3& data, bool queueForUpdate = true);
+    eReturnCode Add(const std::string& name, const Matrix4& data, bool queueForUpdate = true);
 
-    eReturnCode Set(const std::string& name, float32 data);
-    eReturnCode Set(const std::string& name, const Vector2& data);
-    eReturnCode Set(const std::string& name, const Vector3& data);
-    eReturnCode Set(const std::string& name, const Vector4& data);
-    eReturnCode Set(const std::string& name, const Matrix3& data);
-    eReturnCode Set(const std::string& name, const Matrix4& data);
+    eReturnCode Set(const std::string& name, float32 data, bool queueForUpdate = true);
+    eReturnCode Set(const std::string& name, const Vector2& data, bool queueForUpdate = true);
+    eReturnCode Set(const std::string& name, const Vector3& data, bool queueForUpdate = true);
+    eReturnCode Set(const std::string& name, const Vector4& data, bool queueForUpdate = true);
+    eReturnCode Set(const std::string& name, const Matrix3& data, bool queueForUpdate = true);
+    eReturnCode Set(const std::string& name, const Matrix4& data, bool queueForUpdate = true);
 
     void ComposeBufferData();
     float32* GetBufferData();
@@ -70,7 +70,7 @@ public:
     uint16 GetSpace() const;
     uint32 GetKey() const;
 
-    void MakeShallowCopy(ConstantBuffer& target) const; // [a_vorontcov] Copies params, space and key.
+    void MakeShallowCopy(ConstantBuffer& target, bool queueForUpdate = true) const; // [a_vorontcov] Copies params, space and key.
 
 private:
 
@@ -147,7 +147,7 @@ inline uint32 ConstantBuffer::GetDataSize() const
 
 inline bool ConstantBuffer::GetIsComposed() const
 {
-    return m_regenerateMemLayout;
+    return !m_regenerateMemLayout;
 }
 
 inline ConstantBufferHandle ConstantBuffer::GetHandle() const

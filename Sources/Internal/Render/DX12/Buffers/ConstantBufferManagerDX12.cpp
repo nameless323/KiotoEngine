@@ -58,12 +58,19 @@ void ConstantBufferManagerDX12::RegisterConstantBuffer(ConstantBuffer* buffer, C
 {
     if (buffer->GetHandle() != InvalidHandle)
         return;
-    auto it = m_constantBuffers.find(buffer->GetHandle());
+    auto it = m_constantBuffers.find(buffer->GetHandle()); // [a_vorontcov] We have this buffer registred.
     if (it != m_constantBuffers.cend())
         return;
+    for (auto& tmpBuf : m_registrationQueue)
+    {
+        if (tmpBuf.CBHandle == buffer->GetHandle())
+            return;
+    }
+
     ConstantBufferHandle bufHandle = GetNewHandle();
     buffer->SetHandle(bufHandle);
     m_registrationQueue.emplace_back(bufHandle, bufferSetHandle, buffer->GetDataSize(), buffer->GetBufferData());
+    QueueConstantBufferForUpdate(*buffer);
 }
 
 void ConstantBufferManagerDX12::QueueConstantBufferForUpdate(ConstantBuffer& buffer)
