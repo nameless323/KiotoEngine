@@ -31,6 +31,7 @@ public:
     virtual void CollectRenderData() override
     {
         SetRenderTargets();
+        UpdateBuffer();
 
         Renderer::RenderPacket currPacket;
         currPacket.Material = m_material->GetHandle();
@@ -48,6 +49,7 @@ public:
     virtual void SubmitRenderData() override
     {
         Renderer::SubmitRenderCommands(GetRenderCommands());
+        ClearCommands();
     }
  
     virtual void Cleanup() override

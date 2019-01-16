@@ -445,7 +445,10 @@ std::vector<ConstantBuffer> GetConstantBuffers(const std::string& source)
                 throw "wtf";
 
             if (space == EngineBuffers::EngineBuffersSpace) // [a_vorontcov] We force set engine buffers at the beggining of root signature.
+            {
+                cbStart = source.find("cbuffer ", closedBPos);
                 continue;
+            }
 
             res.emplace_back(index, space);
             TryParseParams(source, openBPos, closedBPos, res.back());
