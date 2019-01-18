@@ -65,6 +65,7 @@ public:
     bool GetIsComposed() const;
     ConstantBufferHandle GetHandle() const;
     void SetHandle(ConstantBufferHandle handle);
+    void ScheduleToUpdate();
 
     uint16 GetIndex() const;
     uint16 GetSpace() const;

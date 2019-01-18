@@ -401,4 +401,9 @@ void ConstantBuffer::MakeShallowCopy(ConstantBuffer& target, bool queueForUpdate
     }
 }
 
+void ConstantBuffer::ScheduleToUpdate()
+{
+    Renderer::QueueConstantBufferForUpdate(*this);
+}
+
 }

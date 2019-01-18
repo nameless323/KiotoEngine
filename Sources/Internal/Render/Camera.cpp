@@ -23,5 +23,7 @@ void Camera::UpdateConstantBuffer()
     m_cameraBuffer.Set("ViewProjection", m_VP);
     m_cameraBuffer.Set("View", m_view);
     m_cameraBuffer.ComposeBufferData();
+
+    m_cameraBuffer.ScheduleToUpdate();
 }
 }
