@@ -72,7 +72,7 @@ void CameraSystem::Update(float32 dt)
             currCam.UpdateProjectionMatrix();
 
         currCam.UpdateViewProjectionMatrix();
-        currCam.UpdateConstantBuffer();
+        currCam.UpdateConstantBuffer(); // [a_vorontcov] TODO: Do in when something was really changed.
     }
     Renderer::SetMainCamera(m_mainCamera);
 }

@@ -15,6 +15,7 @@ namespace Kioto::Renderer
 ConstantBufferManagerDX12::ConstantBufferManagerDX12()
 {
     m_updateQueues.reserve(128);
+    m_buffersToResetUpdatedFramesCount.reserve(128);
     m_registrationQueue.reserve(128);
 }
 
@@ -75,14 +76,24 @@ void ConstantBufferManagerDX12::RegisterConstantBuffer(ConstantBuffer* buffer, C
 
 void ConstantBufferManagerDX12::QueueConstantBufferForUpdate(ConstantBuffer& buffer)
 {
-    const auto it = std::find(m_updateQueues.cbegin(), m_updateQueues.cend(), &buffer);
-    if (it != m_updateQueues.cend() || buffer.GetHandle() == InvalidHandle)
+    if (buffer.GetHandle() == InvalidHandle)
         return;
+
+    auto itr = std::find(m_buffersToResetUpdatedFramesCount.cbegin(), m_buffersToResetUpdatedFramesCount.cend(), &buffer);
+    if (itr == m_buffersToResetUpdatedFramesCount.cend())
+        m_buffersToResetUpdatedFramesCount.push_back(&buffer); // [a_vorontcov] TODO: Very questionable.
+
+    auto it = std::find(m_updateQueues.cbegin(), m_updateQueues.cend(), &buffer);
+    if (it != m_updateQueues.cend())
+        return;
+
     m_updateQueues.push_back(&buffer);
 }
 
 void ConstantBufferManagerDX12::ProcessBufferUpdates(UINT frameIndex)
 {
+    std::vector<ConstantBuffer*> intermediateQueue; // [a_vorontcov] TODO: Too ugly. Rethink.
+    intermediateQueue.reserve(m_updateQueues.size());
     for (auto& cb : m_updateQueues)
     {
         UploadBufferDX12* uploadBuf = FindBuffer(cb->GetHandle());
@@ -90,9 +101,19 @@ void ConstantBufferManagerDX12::ProcessBufferUpdates(UINT frameIndex)
         assert(cb->GetIsComposed());
         if (uploadBuf == nullptr)
             assert(false);
+
+        auto it = std::find(m_buffersToResetUpdatedFramesCount.cbegin(), m_buffersToResetUpdatedFramesCount.cend(), cb);
+        if (it != m_buffersToResetUpdatedFramesCount.cend())
+            uploadBuf->ResetUpdatedFramesCount();
+
         uploadBuf->UploadData(frameIndex, cb->GetBufferData());
+        uploadBuf->IncrementUpdatedFramesCount();
+        if (!uploadBuf->IsUpdated())
+            intermediateQueue.push_back(cb);
     }
+    m_buffersToResetUpdatedFramesCount.clear();
     m_updateQueues.clear();
+    m_updateQueues = std::move(intermediateQueue);
 }
 
 UploadBufferDX12* ConstantBufferManagerDX12::FindBuffer(ConstantBufferHandle handle) const

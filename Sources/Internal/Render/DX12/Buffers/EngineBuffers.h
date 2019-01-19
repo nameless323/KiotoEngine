@@ -16,7 +16,7 @@ namespace Kioto::Renderer
 {
 namespace EngineBuffers
 {
-constexpr uint16 EngineBuffersSpace = 9;
+constexpr uint16 EngineBuffersSpace = 1;
 
 constexpr uint16 TimeBufferIndex = 0;
 constexpr uint16 CameraBufferIndex = 1;

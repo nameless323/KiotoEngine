@@ -53,6 +53,7 @@ private:
     std::map<ConstantBufferHandle, UploadBufferDX12*> m_internalBuffers;
     std::map<ConstantBufferSetHandle, std::vector<UploadBufferDX12*>> m_constantBufferSets;
     std::vector<ConstantBuffer*> m_updateQueues;
+    std::vector<ConstantBuffer*> m_buffersToResetUpdatedFramesCount;
     std::vector<TempCBData> m_registrationQueue;
 };
 }

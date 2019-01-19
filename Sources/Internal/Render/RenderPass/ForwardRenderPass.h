@@ -62,10 +62,10 @@ private:
     {
         static float32 angle = 0.0f;
         //angle += GlobalTimer::GetDeltaTime();	
-        angle += 0.001f;
+        angle += 0.01f;
         Matrix4 toWorld = Matrix4::BuildRotation(Vector3(1.0f, 1.0f, 0.0f).Normalize(), angle);
         //toWorld = Matrix4::Identity();	
-        toWorld.SetTranslation({ 0.0f, 0.0f, 3.0f });
+        toWorld.SetTranslation({ 0.0f, 0.0f, 2.0f });
 
         Matrix4 toModel;
         toWorld.Inversed(toModel);
