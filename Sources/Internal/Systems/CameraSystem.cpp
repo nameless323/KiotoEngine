@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2017
+// Copyright (C) Aleksandr Vorontcov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -12,6 +12,7 @@
 #include "Math/MathHelpers.h"
 #include "Systems/EventSystem/EventSystem.h"
 #include "Systems/EventSystem/EngineEvents.h"
+#include "Render/Renderer.h"
 
 namespace Kioto
 {
@@ -59,17 +60,21 @@ void CameraSystem::OnEntityRemove(Entity* entity)
 
 void CameraSystem::Update(float32 dt)
 {
-    for (CameraComponent* cam : m_components)
+    for (CameraComponent* camComponent : m_components)
     {
-        if (cam->GetIsMain())
-            m_mainCamera = cam;
+        Renderer::Camera& currCam = camComponent->GetCamera();
+        if (camComponent->GetIsMain())
+            m_mainCamera = &currCam;
 
-        UpdateView(cam);
-        if (cam->m_isProjDirty)
-            UpdateProjection(cam);
+        UpdateView(camComponent);
 
-        cam->m_VP = cam->m_view * cam->m_projection;
+        if (currCam.GetIsProjectionDirty())
+            currCam.UpdateProjectionMatrix();
+
+        currCam.UpdateViewProjectionMatrix();
+        currCam.UpdateConstantBuffer(); // [a_vorontcov] TODO: Do in when something was really changed.
     }
+    Renderer::SetMainCamera(m_mainCamera);
 }
 
 void CameraSystem::Shutdown()
@@ -80,21 +85,7 @@ void CameraSystem::Shutdown()
 void CameraSystem::UpdateView(CameraComponent* cam)
 {
     Matrix4 m = cam->GetTransform()->GetToWorld();
-    cam->m_view = m.InversedOrthonorm();
-}
-
-void CameraSystem::UpdateProjection(CameraComponent* cam)
-{
-    cam->m_projection = Matrix4::BuildProjectionFov(cam->GetFovY(), cam->GetAspect(), cam->GetNearPlane(), cam->GetFarPlane());
-    // [a_vorontsov] TODO: If cam - ortho, than other, but later.
-
-    cam->m_nearPlaneHeight = 2.0f * cam->m_nearPlane * std::tan(0.5f * cam->m_fovY);
-    cam->m_farPlaneHeight = 2.0f * cam->m_farPlane * std::tan(0.5f * cam->m_fovY);
-
-    float32 halfWidth = 0.5f * cam->m_aspect * cam->m_nearPlaneHeight;
-    cam->m_foxX = 2.0f * atan(halfWidth / cam->m_nearPlane);
-
-    cam->m_isProjDirty = false;
+    cam->GetCamera().SetView(m.InversedOrthonorm());
 }
 
 }

@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov 2017.
+// Copyright (C) Aleksandr Vorontcov 2017.
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -227,7 +227,7 @@ inline float32 Vector3_<T>::Length() const
 template <typename T>
 inline Vector3_<T>& Vector3_<T>::Normalize()
 {
-    float32 invLen = 1.f / Length(); // [a_vorontsov] Assert sqrLen > Epsilon * Epsilon maybe?
+    float32 invLen = 1.f / Length(); // [a_vorontcov] Assert sqrLen > Epsilon * Epsilon maybe?
     x *= invLen;
     y *= invLen;
     z *= invLen;

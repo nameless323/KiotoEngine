@@ -1,11 +1,12 @@
 //
-// Copyright (C) Alexandr Vorontsov 2017.
+// Copyright (C) Aleksandr Vorontcov 2017.
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
 #include "stdafx.h"
 
 #include "Render/ConstantBuffer.h"
+#include "Render/Renderer.h"
 
 namespace Kioto::Renderer
 {
@@ -33,7 +34,7 @@ ConstantBuffer::ConstantBuffer(ConstantBuffer&& other)
     swap(*this, other);
 }
 
-ConstantBuffer::eReturnCode ConstantBuffer::Add(const std::string& name, float32 data)
+ConstantBuffer::eReturnCode ConstantBuffer::Add(const std::string& name, float32 data, bool queueForUpdate)
 {
     uint32 offset = 0;
     Param* pptr = nullptr;
@@ -47,10 +48,14 @@ ConstantBuffer::eReturnCode ConstantBuffer::Add(const std::string& name, float32
     p.Data = data;
     m_params.push_back(std::move(p));
     m_regenerateMemLayout = true;
+
+    if (queueForUpdate)
+        Renderer::QueueConstantBufferForUpdate(*this);
+
     return eReturnCode::Ok;
 }
 
-ConstantBuffer::eReturnCode ConstantBuffer::Add(const std::string& name, const Vector2& data)
+ConstantBuffer::eReturnCode ConstantBuffer::Add(const std::string& name, const Vector2& data, bool queueForUpdate)
 {
     uint32 offset = 0;
     Param* pptr = nullptr;
@@ -64,10 +69,14 @@ ConstantBuffer::eReturnCode ConstantBuffer::Add(const std::string& name, const V
     p.Data = data;
     m_params.push_back(std::move(p));
     m_regenerateMemLayout = true;
+
+    if (queueForUpdate)
+        Renderer::QueueConstantBufferForUpdate(*this);
+
     return eReturnCode::Ok;
 }
 
-ConstantBuffer::eReturnCode ConstantBuffer::Add(const std::string& name, const Vector3& data)
+ConstantBuffer::eReturnCode ConstantBuffer::Add(const std::string& name, const Vector3& data, bool queueForUpdate)
 {
     uint32 offset = 0;
     Param* pptr = nullptr;
@@ -81,10 +90,14 @@ ConstantBuffer::eReturnCode ConstantBuffer::Add(const std::string& name, const V
     p.Data = data;
     m_params.push_back(std::move(p));
     m_regenerateMemLayout = true;
+
+    if (queueForUpdate)
+        Renderer::QueueConstantBufferForUpdate(*this);
+
     return eReturnCode::Ok;
 }
 
-ConstantBuffer::eReturnCode ConstantBuffer::Add(const std::string& name, const Vector4& data)
+ConstantBuffer::eReturnCode ConstantBuffer::Add(const std::string& name, const Vector4& data, bool queueForUpdate)
 {
     uint32 offset = 0;
     Param* pptr = nullptr;
@@ -98,10 +111,14 @@ ConstantBuffer::eReturnCode ConstantBuffer::Add(const std::string& name, const V
     p.Data = data;
     m_params.push_back(std::move(p));
     m_regenerateMemLayout = true;
+
+    if (queueForUpdate)
+        Renderer::QueueConstantBufferForUpdate(*this);
+
     return eReturnCode::Ok;
 }
 
-ConstantBuffer::eReturnCode ConstantBuffer::Add(const std::string& name, const Matrix3& data)
+ConstantBuffer::eReturnCode ConstantBuffer::Add(const std::string& name, const Matrix3& data, bool queueForUpdate)
 {
     uint32 offset = 0;
     Param* pptr = nullptr;
@@ -115,10 +132,14 @@ ConstantBuffer::eReturnCode ConstantBuffer::Add(const std::string& name, const M
     p.Data = data;
     m_params.push_back(std::move(p));
     m_regenerateMemLayout = true;
+
+    if (queueForUpdate)
+        Renderer::QueueConstantBufferForUpdate(*this);
+
     return eReturnCode::Ok;
 }
 
-ConstantBuffer::eReturnCode ConstantBuffer::Add(const std::string& name, const Matrix4& data)
+ConstantBuffer::eReturnCode ConstantBuffer::Add(const std::string& name, const Matrix4& data, bool queueForUpdate)
 {
     uint32 offset = 0;
     Param* pptr = nullptr;
@@ -132,10 +153,14 @@ ConstantBuffer::eReturnCode ConstantBuffer::Add(const std::string& name, const M
     p.Data = data;
     m_params.push_back(std::move(p));
     m_regenerateMemLayout = true;
+
+    if (queueForUpdate)
+        Renderer::QueueConstantBufferForUpdate(*this);
+
     return eReturnCode::Ok;
 }
 
-ConstantBuffer::eReturnCode ConstantBuffer::Set(const std::string& name, float32 data)
+ConstantBuffer::eReturnCode ConstantBuffer::Set(const std::string& name, float32 data, bool queueForUpdate)
 {
     uint32 offset = 0;
     Param* p = nullptr;
@@ -148,10 +173,13 @@ ConstantBuffer::eReturnCode ConstantBuffer::Set(const std::string& name, float32
     if (!m_regenerateMemLayout)
         m_memData[offset] = data;
 
+    if (queueForUpdate)
+        Renderer::QueueConstantBufferForUpdate(*this);
+
     return eReturnCode::Ok;
 }
 
-ConstantBuffer::eReturnCode ConstantBuffer::Set(const std::string& name, const Vector2& data)
+ConstantBuffer::eReturnCode ConstantBuffer::Set(const std::string& name, const Vector2& data, bool queueForUpdate)
 {
     uint32 offset = 0;
     Param* p = nullptr;
@@ -167,10 +195,13 @@ ConstantBuffer::eReturnCode ConstantBuffer::Set(const std::string& name, const V
         m_memData[offset++] = data.y;
     }
 
+    if (queueForUpdate)
+        Renderer::QueueConstantBufferForUpdate(*this);
+
     return eReturnCode::Ok;
 }
 
-ConstantBuffer::eReturnCode ConstantBuffer::Set(const std::string& name, const Vector3& data)
+ConstantBuffer::eReturnCode ConstantBuffer::Set(const std::string& name, const Vector3& data, bool queueForUpdate)
 {
     uint32 offset = 0;
     Param* p = nullptr;
@@ -187,10 +218,13 @@ ConstantBuffer::eReturnCode ConstantBuffer::Set(const std::string& name, const V
         m_memData[offset++] = data.z;
     }
 
+    if (queueForUpdate)
+        Renderer::QueueConstantBufferForUpdate(*this);
+
     return eReturnCode::Ok;
 }
 
-ConstantBuffer::eReturnCode ConstantBuffer::Set(const std::string& name, const Vector4& data)
+ConstantBuffer::eReturnCode ConstantBuffer::Set(const std::string& name, const Vector4& data, bool queueForUpdate)
 {
     uint32 offset = 0;
     Param* p = nullptr;
@@ -208,10 +242,13 @@ ConstantBuffer::eReturnCode ConstantBuffer::Set(const std::string& name, const V
         m_memData[offset++] = data.w;
     }
 
+    if (queueForUpdate)
+        Renderer::QueueConstantBufferForUpdate(*this);
+
     return eReturnCode::Ok;
 }
 
-ConstantBuffer::eReturnCode ConstantBuffer::Set(const std::string& name, const Matrix3& data)
+ConstantBuffer::eReturnCode ConstantBuffer::Set(const std::string& name, const Matrix3& data, bool queueForUpdate)
 {
     uint32 offset = 0;
     Param* p = nullptr;
@@ -224,10 +261,13 @@ ConstantBuffer::eReturnCode ConstantBuffer::Set(const std::string& name, const M
     if (!m_regenerateMemLayout)
         memcpy(m_memData + offset, data.data, 9 * sizeof(float32));
 
+    if (queueForUpdate)
+        Renderer::QueueConstantBufferForUpdate(*this);
+
     return eReturnCode::Ok;
 }
 
-ConstantBuffer::eReturnCode ConstantBuffer::Set(const std::string& name, const Matrix4& data)
+ConstantBuffer::eReturnCode ConstantBuffer::Set(const std::string& name, const Matrix4& data, bool queueForUpdate)
 {
     uint32 offset = 0;
     Param* p = nullptr;
@@ -239,6 +279,9 @@ ConstantBuffer::eReturnCode ConstantBuffer::Set(const std::string& name, const M
 
     if (!m_regenerateMemLayout)
         memcpy(m_memData + offset, data.data, 16 * sizeof(float32));
+
+    if (queueForUpdate)
+        Renderer::QueueConstantBufferForUpdate(*this);
 
     return eReturnCode::Ok;
 }
@@ -319,6 +362,48 @@ ConstantBuffer& ConstantBuffer::operator=(ConstantBuffer other)
 {
     swap(*this, other);
     return *this;
+}
+
+void ConstantBuffer::MakeShallowCopy(ConstantBuffer& target, bool queueForUpdate) const
+{
+    target.m_index = m_index;
+    target.m_space = m_space;
+    target.m_key = m_key;
+    target.m_isDirty = true;
+    target.m_regenerateMemLayout = true;
+
+    for (auto& param : m_params)
+    {
+        if (param.Type == eTypeName::v1)
+        {
+            target.Add(param.name, std::get<float32>(param.Data), queueForUpdate);
+        }
+        else if (param.Type == eTypeName::v2)
+        {
+            target.Add(param.name, std::get<Vector2>(param.Data), queueForUpdate);
+        }
+        else if (param.Type == eTypeName::v3)
+        {
+            target.Add(param.name, std::get<Vector3>(param.Data), queueForUpdate);
+        }
+        else if (param.Type == eTypeName::v4)
+        {
+            target.Add(param.name, std::get<Vector4>(param.Data), queueForUpdate);
+        }
+        else if (param.Type == eTypeName::m3)
+        {
+            target.Add(param.name, std::get<Matrix3>(param.Data), queueForUpdate);
+        }
+        else
+        {
+            target.Add(param.name, std::get<Matrix4>(param.Data), queueForUpdate);
+        }
+    }
+}
+
+void ConstantBuffer::ScheduleToUpdate()
+{
+    Renderer::QueueConstantBufferForUpdate(*this);
 }
 
 }

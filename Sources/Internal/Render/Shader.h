@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2017
+// Copyright (C) Aleksandr Vorontcov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -35,7 +35,7 @@ private:
     ShaderProgramHandle m_psHandle;
     VertexLayoutHandle m_vertexLayout;
     ShaderData m_data;
-    ShaderHandle m_handle; // [a_vorontsov] Separate handles for each define set?
+    ShaderHandle m_handle; // [a_vorontcov] Separate handles for each define set?
 
     friend class Material;
 };

@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2017
+// Copyright (C) Aleksandr Vorontcov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -27,12 +27,12 @@ static RenderAssetsManager m_renderAssetsManager;
 
 void GetAssetsPath()
 {
-    static constexpr uint32 pathSize = 512; // [a_vorontsov] So max path to assets can be only 512 chars which is bad. Handle it later.
+    static constexpr uint32 pathSize = 512; // [a_vorontcov] So max path to assets can be only 512 chars which is bad. Handle it later.
     WCHAR path[pathSize];
     DWORD size = GetModuleFileName(nullptr, path, pathSize);
     if (size == 0 || size == pathSize)
     {
-        throw std::exception(); // [a_vorontsov] Method failed or path was truncated.
+        throw std::exception(); // [a_vorontcov] Method failed or path was truncated.
     }
 
     WCHAR* lastSlash = wcsrchr(path, L'\\');

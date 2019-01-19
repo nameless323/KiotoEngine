@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov 2017.
+// Copyright (C) Aleksandr Vorontcov 2017.
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -22,18 +22,7 @@ RenderPass::RenderPass(const RenderPass& other)
     , m_priority(other.m_priority)
     , m_handle(other.m_handle)
     , m_renderTargetCount(other.m_renderTargetCount)
+    , m_passName(other.m_passName)
 {
-}
-
-RenderPass::RenderPass(RenderPass&& other)
-{
-    swap(*this, other);
-}
-
-RenderPass& RenderPass::operator= (RenderPass other)
-{
-    swap(*this, other);
-
-    return *this;
 }
 }

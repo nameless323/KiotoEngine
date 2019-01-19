@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2017
+// Copyright (C) Aleksandr Vorontcov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -18,7 +18,7 @@
 #include "Render/Renderer.h"
 
 #include "Render/Material.h"
-
+#include "Render/DX12/Buffers/EngineBuffers.h"
 
 #include "Render/Geometry/ParserFBX.h"
 
@@ -72,6 +72,7 @@ void Init()
     MeshLoader::Init();
     Renderer::GeometryGenerator::Init();
     WindowsApplication::Init(ApplicationInfo.HInstance, ApplicationInfo.NCmdShow, ApplicationInfo.WindowCapture);
+    Renderer::EngineBuffers::Init();
     Renderer::Init(Renderer::eRenderApi::DirectX12, 1024, 768);
 
     if (InitEngineCallback != nullptr)

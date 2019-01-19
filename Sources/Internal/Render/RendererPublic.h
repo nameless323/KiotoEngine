@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2017
+// Copyright (C) Aleksandr Vorontcov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -31,6 +31,7 @@ struct ShaderDefine
 constexpr uint32 InvalidHandle = -1;
 constexpr uint32 DefaultBackBufferHandle = InvalidHandle - 1;
 constexpr uint32 DefaultDepthStencilHandle = InvalidHandle - 2;
+constexpr uint8 MaxRenderTargetsCount = 8;
 
 template <typename T>
 struct SafeHandle

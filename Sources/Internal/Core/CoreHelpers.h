@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2017
+// Copyright (C) Aleksandr Vorontcov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -23,7 +23,7 @@ inline void SafeDelete(T*& ptr)
         delete ptr;
         ptr = nullptr;
     }
-    // [a_vorontsov] Anton Smetanin suggest to add some logs here in future.
+    // [a_vorontcov] Anton Smetanin suggest to add some logs here in future.
 }
 
 template <typename T>
@@ -34,7 +34,7 @@ inline void SafeDeleteArray(T*& ptr)
         delete[] ptr;
         ptr = nullptr;
     }
-    // [a_vorontsov] Anton Smetanin suggest to add some logs here in future
+    // [a_vorontcov] Anton Smetanin suggest to add some logs here in future
 }
 
 template <typename T>
@@ -48,7 +48,7 @@ inline uint64 StringToHash(const std::string& str)
     return StringHasher(str);
 }
 
-// [a_vorontsov] See https://stackoverflow.com/questions/18039723/c-trying-to-get-function-address-from-a-stdfunction for details.
+// [a_vorontcov] See https://stackoverflow.com/questions/18039723/c-trying-to-get-function-address-from-a-stdfunction for details.
 template<typename T, typename... U>
 uint64 GetFunctionAddress(std::function<T(U...)> f) 
 {

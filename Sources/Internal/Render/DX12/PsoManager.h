@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov 2017.
+// Copyright (C) Aleksandr Vorontcov 2017.
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -27,7 +27,7 @@ class PsoManager
 public:
     PsoManager() = default;
 
-    void BuildPipelineState(const StateDX& state, Material* mat, const RenderPass& pass, const RootSignatureManager& sigManager, TextureManagerDX12* textureManager, ShaderManagerDX12* shaderManager, VertexLayoutManagerDX12* vertexLayoutManager, DXGI_FORMAT backBufferFromat, DXGI_FORMAT defaultDepthStencilFormat);
+    void BuildPipelineState(const StateDX& state, Material* mat, const RenderPass* pass, const RootSignatureManager& sigManager, TextureManagerDX12* textureManager, ShaderManagerDX12* shaderManager, VertexLayoutManagerDX12* vertexLayoutManager, DXGI_FORMAT backBufferFromat, DXGI_FORMAT defaultDepthStencilFormat);
     ID3D12PipelineState* GetPipelineState(MaterialHandle matHandle, RenderPassHandle renderPassHandle);
 
 private:

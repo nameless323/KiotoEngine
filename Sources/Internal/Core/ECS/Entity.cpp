@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2017
+// Copyright (C) Aleksandr Vorontcov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -51,7 +51,7 @@ void Entity::RemoveComponent(Component* component)
 void Entity::AddComponent(Component* component)
 {
     if (component->GetEntity() != nullptr)
-        return; // [a_vorontsov] Do smth scary here.
+        return; // [a_vorontcov] Do smth scary here.
     component->SetEntity(this);
     m_components.push_back(component);
     if (component->GetType() == TransformComponent::GetTypeS())

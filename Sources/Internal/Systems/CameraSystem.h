@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2017
+// Copyright (C) Aleksandr Vorontcov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -9,6 +9,7 @@
 #include "Core/Core.h"
 
 #include "Core/ECS/SceneSystem.h"
+#include "Render/Camera.h"
 
 #include <vector>
 
@@ -29,17 +30,16 @@ public:
     KIOTO_API void Update(float32 dt) override;
     void Shutdown() override;
 
-    CameraComponent* GetMainCamera() const;
+    const Renderer::Camera* GetMainCamera() const;
 
 private:
-    void UpdateView(CameraComponent* t);
-    void UpdateProjection(CameraComponent* cam);
+    void UpdateView(CameraComponent* cam);
 
-    CameraComponent* m_mainCamera = nullptr;
+    Renderer::Camera* m_mainCamera = nullptr;
     std::vector<CameraComponent*> m_components;
 };
 
-inline CameraComponent* CameraSystem::GetMainCamera() const
+inline const Renderer::Camera* CameraSystem::GetMainCamera() const
 {
     return m_mainCamera;
 }

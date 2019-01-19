@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov 2018.
+// Copyright (C) Aleksandr Vorontcov 2018.
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -25,7 +25,7 @@ public:
     ~ConstantBufferManagerDX12();
     void RegisterMaterial(Material* material);
     void ProcessRegistrationQueue(const StateDX& state);
-    void RegisterConstantBuffer(ConstantBuffer* buffer, ConstantBufferSetHandle bufferSetHandle); // [a_vorontsov] -1 for internal buffers.
+    void RegisterConstantBuffer(ConstantBuffer* buffer, ConstantBufferSetHandle bufferSetHandle); // [a_vorontcov] -1 for internal buffers.
     void QueueConstantBufferForUpdate(ConstantBuffer& buffer);
     void ProcessBufferUpdates(UINT frameIndex);
 
@@ -53,6 +53,7 @@ private:
     std::map<ConstantBufferHandle, UploadBufferDX12*> m_internalBuffers;
     std::map<ConstantBufferSetHandle, std::vector<UploadBufferDX12*>> m_constantBufferSets;
     std::vector<ConstantBuffer*> m_updateQueues;
+    std::vector<ConstantBuffer*> m_buffersToResetUpdatedFramesCount;
     std::vector<TempCBData> m_registrationQueue;
 };
 }

@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2017
+// Copyright (C) Aleksandr Vorontcov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -11,16 +11,32 @@
 #include "Render/DX12/RendererDX12.h"
 #include "Systems/EventSystem/EngineEvents.h"
 #include "Systems/EventSystem/EventSystem.h"
+#include "Core/Timer/GlobalTimer.h"
 
 namespace Kioto::Renderer
 {
 namespace
 {
-RendererDX12* GameRenderer = nullptr; // [a_vorontsov] Not too cross-api for now.
+RendererDX12* GameRenderer = nullptr; // [a_vorontcov] Not too cross-api for now.
 
 uint16 m_height = 1024;
 uint16 m_width = 768;
 float32 m_aspect = 1.0f;
+
+Camera* m_mainCamera;
+
+ConstantBuffer m_timeBuffer; // [a_vorontcov] Find a better place.
+
+void UpdateTimeBuffer()
+{
+    float32 timeFromStart = static_cast<float32>(GlobalTimer::GetTimeFromStart());
+    m_timeBuffer.Set("Time", Vector4(timeFromStart / 20.0f, timeFromStart, timeFromStart * 2, timeFromStart * 3), false);
+    m_timeBuffer.Set("SinTime", Vector4(sin(timeFromStart / 4.0f), sin(timeFromStart / 2.0f), sin(timeFromStart), sin(timeFromStart * 2.0f)), false);
+    m_timeBuffer.Set("CosTime", Vector4(cos(timeFromStart / 4.0f), cos(timeFromStart / 2.0f), cos(timeFromStart), cos(timeFromStart * 2.0f)), false);
+    float32 dt = static_cast<float32>(GlobalTimer::GetDeltaTime());
+    float32 smoothDt = static_cast<float32>(GlobalTimer::GetSmoothDt());
+    m_timeBuffer.Set("DeltaTime", Vector4(dt, 1.0f / dt, smoothDt, 1.0f / smoothDt));
+}
 }
 
 void Init(eRenderApi api, uint16 width, uint16 height)
@@ -32,6 +48,11 @@ void Init(eRenderApi api, uint16 width, uint16 height)
     GameRenderer = new RendererDX12();
     if (api == eRenderApi::DirectX12)
         GameRenderer->Init(width, height);
+
+    EngineBuffers::GetTimeBufferCopy(m_timeBuffer);
+    m_timeBuffer.ComposeBufferData();
+    GameRenderer->RegisterConstantBuffer(m_timeBuffer);
+    GameRenderer->SetTimeBuffer(m_timeBuffer.GetHandle());
 }
 
 void Shutdown()
@@ -62,8 +83,9 @@ void ChangeFullScreenMode(bool fullScreen)
     GameRenderer->ChangeFullScreenMode(fullScreen);
 }
 
-void Update(float32 dt) // [a_vorontsov] TODO: set frame command buffers here.
+void Update(float32 dt) // [a_vorontcov] TODO: set frame command buffers here.
 {
+    UpdateTimeBuffer();
     GameRenderer->Update(dt);
 }
 
@@ -91,13 +113,8 @@ VertexLayoutHandle GenerateVertexLayout(const VertexLayout& layout)
 {
     return VertexLayoutHandle(InvalidHandle);
 
-    // [a_vorontsov] TODO;
+    // [a_vorontcov] TODO;
     //return GameRenderer->GenerateVertexLayout(layout);
-}
-
-void AddRenderPass(const RenderPass& renderPass)
-{
-    GameRenderer->AddRenderPass(renderPass);
 }
 
 TextureHandle GetCurrentBackBufferHandle()
@@ -139,19 +156,9 @@ void RegisterRenderAsset(Mesh* asset)
     GameRenderer->RegisterMesh(asset);
 }
 
-void BuildMaterialForPass(Material& mat, const RenderPass& pass)
+void BuildMaterialForPass(Material& mat, const RenderPass* pass)
 {
     GameRenderer->BuildMaterialForPass(mat, pass);
-}
-
-void AllocateRenderPacketList(RenderPassHandle handle)
-{
-    GameRenderer->AllocateRenderPacketList(handle);
-}
-
-void AddRenderPacket(RenderPassHandle handle, RenderPacket packet)
-{
-    GameRenderer->AddRenderPacket(handle, packet);
 }
 
 template <>
@@ -173,6 +180,31 @@ void RegisterTextureSet(TextureSet& set)
 void QueueTextureSetForUpdate(const TextureSet& set)
 {
     GameRenderer->QueueTextureSetForUpdate(set);
+}
+
+void SetMainCamera(Camera* camera)
+{
+    m_mainCamera = camera;
+}
+
+Camera* GetMainCamera()
+{
+    return m_mainCamera; // by reference? depends, think bout it
+}
+
+void SubmitRenderCommands(const std::vector<RenderCommand>& commandList)
+{
+    GameRenderer->SubmitRenderCommands(commandList);
+}
+
+void QueueConstantBufferForUpdate(ConstantBuffer& buffer)
+{
+    GameRenderer->QueueConstantBufferForUpdate(buffer);
+}
+
+void RegisterConstantBuffer(ConstantBuffer& buffer)
+{
+    GameRenderer->RegisterConstantBuffer(buffer);
 }
 
 template void RegisterRenderAsset<Texture>(Texture* asset);

@@ -187,6 +187,7 @@
     <ClInclude Include="Sources\Internal\Math\Vector2.h" />
     <ClInclude Include="Sources\Internal\Math\Vector3.h" />
     <ClInclude Include="Sources\Internal\Math\Vector4.h" />
+    <ClInclude Include="Sources\Internal\Render\Camera.h" />
     <ClInclude Include="Sources\Internal\Render\ConstantBuffer.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\Buffers\ConstantBufferManagerDX12.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\Buffers\DefaultHeapBuffer.h" />
@@ -220,10 +221,11 @@
     <ClInclude Include="Sources\Internal\Render\MaterialData.h" />
     <ClInclude Include="Sources\Internal\Render\PipelineState.h" />
     <ClInclude Include="Sources\Internal\Render\PipelineStateParams.h" />
+    <ClInclude Include="Sources\Internal\Render\RenderCommand.h" />
     <ClInclude Include="Sources\Internal\Render\Renderer.h" />
     <ClInclude Include="Sources\Internal\Render\RendererPublic.h" />
     <ClInclude Include="Sources\Internal\Render\RenderLayer.h" />
-    <ClInclude Include="Sources\Internal\Render\RenderPass\MainForwardPass.h" />
+    <ClInclude Include="Sources\Internal\Render\RenderPass\ForwardRenderPass.h" />
     <ClInclude Include="Sources\Internal\Render\RenderPass\RenderPass.h" />
     <ClInclude Include="Sources\Internal\Render\Shader.h" />
     <ClInclude Include="Sources\Internal\Render\ShaderData.h" />
@@ -256,6 +258,7 @@
     <ClCompile Include="Sources\Internal\Core\Timer\GlobalTimer.cpp" />
     <ClCompile Include="Sources\Internal\Core\WindowsApplication.cpp" />
     <ClCompile Include="Sources\Internal\AssetsSystem\AssetsSystem.cpp" />
+    <ClCompile Include="Sources\Internal\Render\Camera.cpp" />
     <ClCompile Include="Sources\Internal\Render\ConstantBuffer.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\Buffers\ConstantBufferManagerDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\Buffers\DefaultHeapBuffer.cpp" />
@@ -279,6 +282,7 @@
     <ClCompile Include="Sources\Internal\Render\Geometry\ParserFBX.cpp" />
     <ClCompile Include="Sources\Internal\Render\Material.cpp" />
     <ClCompile Include="Sources\Internal\Render\PipelineState.cpp" />
+    <ClCompile Include="Sources\Internal\Render\RenderCommand.cpp" />
     <ClCompile Include="Sources\Internal\Render\Renderer.cpp" />
     <ClCompile Include="Sources\Internal\Render\RenderPass\RenderPass.cpp" />
     <ClCompile Include="Sources\Internal\Render\Texture\TextureDX12.cpp" />

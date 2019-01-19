@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2017
+// Copyright (C) Aleksandr Vorontcov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -10,7 +10,7 @@
 #include <exception>
 #include <memory>
 
-// [a_vorontsov] To fwd decl.
+// [a_vorontcov] To fwd decl.
 #include "Render/DX12/Buffers/EngineBuffers.h"
 #include "Render/DX12/Buffers/UploadBuffer.h"
 #include "Render/DX12/Buffers/VertexBufferDX12.h"
@@ -65,25 +65,27 @@ public:
     void Shutdown();
     void Present();
     void Update(float32 dt);
-
-    void AddRenderPass(const RenderPass& renderPass);
-
+ 
     void RegisterTexture(Texture* texture);
     void RegisterShader(Shader* shader);
     void RegisterMaterial(Material* material);
-    void BuildMaterialForPass(Material& mat, const RenderPass& pass);
+    void BuildMaterialForPass(Material& mat, const RenderPass* pass);
     void RegisterMesh(Mesh* mesh);
 
     void RegisterRenderPass(RenderPass* renderPass);
-    void RegisterTextureSet(TextureSet& set);
 
+    void RegisterTextureSet(TextureSet& set);
     void QueueTextureSetForUpdate(const TextureSet& set);
 
-    void AllocateRenderPacketList(RenderPassHandle handle);
-    void AddRenderPacket(RenderPassHandle handle, RenderPacket packet);
+    void RegisterConstantBuffer(ConstantBuffer& buffer);
+    void QueueConstantBufferForUpdate(ConstantBuffer& buffer);
+
+    void SubmitRenderCommands(const std::vector<RenderCommand>& commandList);
 
     TextureHandle GetCurrentBackBufferHandle() const;
     TextureHandle GetDepthStencilHandle() const;
+
+    void SetTimeBuffer(ConstantBufferHandle handle);
 
 private:
     static constexpr uint32 PacketListPoolSize = 64;
@@ -111,23 +113,16 @@ private:
     void LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format);
 
     void LoadPipeline();
-    void UpdateTimeCB();
-    void UpdateRenderObjectCB();
-    void UpdatePassCB();
 
-    bool m_isTearingSupported = false; // [a_vorontsov] TODO: Properly handle when tearing is not supported.
+    bool m_isTearingSupported = false; // [a_vorontcov] TODO: Properly handle when tearing is not supported.
     UINT m_width = -1;
     UINT m_height = -1;
     bool m_isFullScreen = false;
 
-    EngineBuffers engineBuffers;
-    UploadBufferDX12* m_timeBuffer = nullptr;
-    UploadBufferDX12* m_passBuffer = nullptr;
-    UploadBufferDX12* m_renderObjectBuffer = nullptr;
+    ConstantBufferHandle m_currentTimeBuffer;
+    ConstantBufferHandle m_currentCameraBuffer;
 
-    std::vector<RenderPacketList> m_renderPacketListPool;
-    std::map<RenderPassHandle, RenderPacketList*> m_passesRenderPackets;
-    uint32 m_packetListPoolIndex = 0;
+    std::vector<RenderCommand> m_frameCommands;
 };
 
 inline TextureHandle RendererDX12::GetCurrentBackBufferHandle() const

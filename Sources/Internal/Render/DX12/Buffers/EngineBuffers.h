@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov 2017.
+// Copyright (C) Aleksandr Vorontcov 2017.
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -10,46 +10,24 @@
 #include "Math/Matrix4.h"
 #include "Math/Vector4.h"
 #include "Render/ConstantBuffer.h"
+#include <utility>
 
 namespace Kioto::Renderer
 {
-struct TimeConstantBuffer
+namespace EngineBuffers
 {
-    Vector4 Time; // [a_vorontsov] Time since start: (t / 20, t, t * 2, t * 3).
-    Vector4 SinTime; // [a_vorontsov] Sin of time: (t / 4, t / 2, t, t * 2).
-    Vector4 CosTime; // [a_vorontsov] Cos of time: (t / 4, t / 2, t, t * 2).
-    Vector4 DeltaTime; // [a_vorontsov] Delta time: (dt, 1 / dt, smoothDt, 1 / smoothDt).
-};
+constexpr uint16 EngineBuffersSpace = 1;
 
-struct RenderObjectBuffer
-{
-    Matrix4 ToWorld;
-    Matrix4 ToModel;
-};
+constexpr uint16 TimeBufferIndex = 0;
+constexpr uint16 CameraBufferIndex = 1;
 
-struct PassBuffer
-{
-    Matrix4 ViewProjection;
-    Matrix4 View;
-    Vector4 RTParams; // [a_vorontsov] x is the current render target width in pixels, y is the current render target height in pixels, z is (1.0 + 1.0 / width) and w is (1.0 + 1.0/height).
-    Vector3 ProjParams; // [a_vorontsov] x is the camera’s near, z is the camera’s far and w is 1/FarPlane.
-    float32 Pad0;
-    Vector3 CamWorldPosition;
-    float32 Pad1;
-};
+constexpr uint16 EngineBuffersCount = 2;
 
-struct MaterialBuffer
-{
-    Vector4 Albedo;
-};
+constexpr std::array<uint16, EngineBuffersCount> BufferIndices = {{ TimeBufferIndex, CameraBufferIndex }};
 
-class EngineBuffers
-{
-public:
-    void Init();
+void Init();
 
-    ConstantBuffer TimeCB{ 0, 1 };
-    ConstantBuffer RenderObjectCB{ 1, 1 };
-    ConstantBuffer PassCB{ 2, 1 };
+void GetTimeBufferCopy(ConstantBuffer& target);
+void GetCameraBufferCopy(ConstantBuffer& target);
 };
 }

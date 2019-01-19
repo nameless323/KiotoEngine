@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2017
+// Copyright (C) Aleksandr Vorontcov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -25,7 +25,7 @@ using float32 = float;
 using float64 = double;
 #endif
 
-// [a_vorontsov] Maybe in another header? Include <typeinfo> in every file is not so good idea.
+// [a_vorontcov] Maybe in another header? Include <typeinfo> in every file is not so good idea.
 ///
 /// Get parameter id. (RTTI internally).
 ///

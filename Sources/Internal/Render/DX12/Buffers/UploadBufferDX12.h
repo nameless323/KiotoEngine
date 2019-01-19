@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov 2018.
+// Copyright (C) Aleksandr Vorontcov 2018.
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -26,7 +26,7 @@ public:
     ~UploadBufferDX12();
 
     ID3D12Resource* GetResource() const;
-    void UploadData(uint32 frameIndex, const float32* data);
+    void UploadData(uint32 frameIndex, float32* data);
     const byte* const GetBufferStart() const;
     const byte* const GetBufferEnd() const;
     size_t GetFrameDataSize() const;
@@ -34,6 +34,12 @@ public:
     uint32 GetFramesCount() const;
 
     D3D12_GPU_VIRTUAL_ADDRESS GetFrameDataGpuAddress(uint32 frame) const;
+
+    void IncrementUpdatedFramesCount();
+    void DecrementUpdatedFramesCount();
+    void ResetUpdatedFramesCount();
+    uint32 GetUpdatedFramesCount() const;
+    bool IsUpdated() const;
 
     template <typename T>
     T GetHandle() const;
@@ -44,12 +50,39 @@ private:
     size_t m_rawDataSize = 0;
     size_t m_bufferSize = 0;
     uint32 m_framesCount = 0;
+    uint32 m_framesUpdated = 0;
     Microsoft::WRL::ComPtr<ID3D12Resource> m_resource;
     byte* m_data = nullptr;
     std::variant<ConstantBufferHandle> m_handle;
 
-    static constexpr uint32 GetConstantBufferByteSize(uint32 byteSize); // [a_vorontsov] Constant buffers must be 255 byte aligned.
+    static constexpr uint32 GetConstantBufferByteSize(uint32 byteSize); // [a_vorontcov] Constant buffers must be 255 byte aligned.
 };
+
+inline void UploadBufferDX12::IncrementUpdatedFramesCount()
+{
+    ++m_framesUpdated;
+}
+
+inline void UploadBufferDX12::DecrementUpdatedFramesCount()
+{
+    --m_framesUpdated;
+    m_framesUpdated = m_framesUpdated < 0 ? 0 : m_framesUpdated;
+}
+
+inline void UploadBufferDX12::ResetUpdatedFramesCount()
+{
+    m_framesUpdated = 0;
+}
+
+inline uint32 UploadBufferDX12::GetUpdatedFramesCount() const
+{
+    return m_framesUpdated;
+}
+
+inline bool UploadBufferDX12::IsUpdated() const
+{
+    return m_framesUpdated >= m_framesCount;
+}
 
 template <typename T>
 T UploadBufferDX12::GetHandle() const

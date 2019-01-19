@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov 2017.
+// Copyright (C) Aleksandr Vorontcov 2017.
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -43,7 +43,7 @@ private:
     Microsoft::WRL::ComPtr<ID3D12Resource> m_resource;
     byte* m_data = nullptr;
 
-    static constexpr uint32 GetConstantBufferByteSize(uint32 byteSize); // [a_vorontsov] Constant buffers must be 255 byte aligned.
+    static constexpr uint32 GetConstantBufferByteSize(uint32 byteSize); // [a_vorontcov] Constant buffers must be 255 byte aligned.
 };
 
 template <typename T>

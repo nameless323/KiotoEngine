@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2017
+// Copyright (C) Aleksandr Vorontcov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -142,7 +142,7 @@ inline Matrix4_<T> operator* (Matrix4_<T> m1, const Matrix4_<T>& m2)
 }
 
 template <typename T>
-inline Vector4_<T> operator* (const Vector4_<T>& v, const Matrix4_<T>& m) // [a_vorontsov] Yep, it will be more obvious if it method will be in Vector4.h, but I'm too lazy to handle cross headers.
+inline Vector4_<T> operator* (const Vector4_<T>& v, const Matrix4_<T>& m) // [a_vorontcov] Yep, it will be more obvious if it method will be in Vector4.h, but I'm too lazy to handle cross headers.
 {
     return {
                 v.x * m._00 + v.y * m._10 + v.z * m._20 + v.w * m._30,
@@ -196,7 +196,7 @@ Matrix4_<T>::Matrix4_(
 template <typename T>
 Matrix4_<T>& Matrix4_<T>::operator=(const Matrix4_<T>& other)
 {
-    _00 = other._00; _01 = other._01; _02 = other._02; _03 = other._03; // [a_vorontsov] TODO: memcpy maybe?
+    _00 = other._00; _01 = other._01; _02 = other._02; _03 = other._03; // [a_vorontcov] TODO: memcpy maybe?
     _10 = other._10; _11 = other._11; _12 = other._12; _13 = other._13;
     _20 = other._20; _21 = other._21; _22 = other._22; _23 = other._23;
     _30 = other._30; _31 = other._31; _32 = other._32; _33 = other._33;

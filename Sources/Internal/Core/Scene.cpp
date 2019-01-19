@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2017
+// Copyright (C) Aleksandr Vorontcov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -20,7 +20,7 @@ namespace Kioto
 
 Scene::Scene()
 {
-    // [a_vorontsov] 64 systems are enough for anyone.
+    // [a_vorontcov] 64 systems are enough for anyone.
     m_systems.reserve(64);
     m_entities.reserve(512);
 }
@@ -47,8 +47,8 @@ void Scene::Init()
     AddSystemInternal(transformSystem);
     m_cameraSystem = new CameraSystem();
     AddSystemInternal(m_cameraSystem);
-    RenderSystem* renderSystem = new RenderSystem();
-    AddSystemInternal(renderSystem);
+    m_renderSystem = new RenderSystem();
+    AddSystemInternal(m_renderSystem);
 
     for (auto system : m_systems)
         system->Init();
@@ -58,6 +58,7 @@ void Scene::Update(float32 dt)
 {
     for (auto system : m_systems)
         system->Update(GlobalTimer::GetDeltaTime());
+    m_renderSystem->Draw();
 }
 
 void Scene::Shutdown()
@@ -80,6 +81,8 @@ void Scene::RemoveSystem(SceneSystem* system)
         delete &(*it);
         m_systems.erase(it);
     }
+    m_cameraSystem = nullptr;
+    m_renderSystem = nullptr;
 }
 
 void Scene::AddEntity(Entity* entity)

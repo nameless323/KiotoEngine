@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2018
+// Copyright (C) Aleksandr Vorontcov. 2018
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -11,12 +11,13 @@
 #include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
 #include "Render/DX12/Shader/ShaderParser.h"
+#include "Render/DX12/Buffers/EngineBuffers.h"
 
 #include "AssetsSystem/AssetsSystem.h"
 
 namespace Kioto::Renderer
 {
-namespace ShaderParser // [a_vorontsov] Real parser via AST tree too time consuming for now.
+namespace ShaderParser // [a_vorontcov] Real parser via AST tree too time consuming for now.
 {
 
 std::vector<std::string> m_preprocessedHeaders;
@@ -442,6 +443,13 @@ std::vector<ConstantBuffer> GetConstantBuffers(const std::string& source)
             }
             if (!found || !indexAcqired)
                 throw "wtf";
+
+            if (space == EngineBuffers::EngineBuffersSpace) // [a_vorontcov] We force set engine buffers at the beggining of root signature.
+            {
+                cbStart = source.find("cbuffer ", closedBPos);
+                continue;
+            }
+
             res.emplace_back(index, space);
             TryParseParams(source, openBPos, closedBPos, res.back());
         }
@@ -525,7 +533,7 @@ TextureSet ParseTextures(std::string& source)
 
 std::string DXPreprocess(const std::string& source, const std::vector<ShaderDefine>* const defines)
 {
-    Microsoft::WRL::ComPtr<ID3DBlob> rr; // [a_vorontsov] TODO: dependence from dx compiler. Do better later.
+    Microsoft::WRL::ComPtr<ID3DBlob> rr; // [a_vorontcov] TODO: dependence from dx compiler. Do better later.
     Microsoft::WRL::ComPtr<ID3DBlob> err;
 
     const D3D_SHADER_MACRO* macroData = nullptr;

@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2018
+// Copyright (C) Aleksandr Vorontcov. 2018
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -19,7 +19,7 @@ struct ShaderData;
 class RootSignatureManager
 {
 public:
-    void CreateRootSignature(const StateDX& state, const ShaderData& parseResult, ShaderHandle handle);  // [a_vorontsov] Root sig and shader 1 to 1 connection.
+    void CreateRootSignature(const StateDX& state, const ShaderData& parseResult, ShaderHandle handle);  // [a_vorontcov] Root sig and shader 1 to 1 connection.
     ID3D12RootSignature* GetRootSignature(ShaderHandle handle) const;
 
 private:

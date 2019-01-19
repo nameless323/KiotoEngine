@@ -1,33 +1,62 @@
 //
-// Copyright (C) Alexandr Vorontsov 2017.
+// Copyright (C) Aleksandr Vorontcov 2017.
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
 #pragma once
 
 #include <Array>
+#include <vector>
 
 #include "Core/CoreTypes.h"
 #include "Math/Rect.h"
 #include "Render/RendererPublic.h"
+#include "Render/Camera.h"
+#include "Render/RenderCommand.h"
 
 namespace Kioto::Renderer
 {
-
-static constexpr uint8 MaxRenderTargetsCount = 8;
-
 enum PassPriority
 {
     MainPass = 100
 };
 
-class RenderPass // [a_vorontsov] Add render target and depth stencil resource state before and after.
+class RenderPass // [a_vorontcov] Add render target and depth stencil resource state before and after.
 {
 public:
-    RenderPass() = default;
-    RenderPass(RenderPass&& other);
+    RenderPass(std::string name)
+        : m_passName(name)
+    {
+    }
+
     RenderPass(const RenderPass& other);
-    RenderPass& operator= (RenderPass other);
+
+    virtual ~RenderPass() = default;
+
+    virtual void Setup()         // set all pass buffers
+    {
+        SetPassConstantBuffers();
+        SetCameraConstantBuffers();
+    }
+
+    virtual void CollectRenderData() abstract;
+    virtual void SubmitRenderData() abstract;
+    virtual void Cleanup() abstract; // cleanup all pass setups
+
+    void PushCommand(RenderCommand command)
+    {
+        m_commands.push_back(command);
+    }
+
+    const std::vector<RenderCommand>& GetRenderCommands() const
+    {
+        return m_commands;
+    }
+
+    void ClearCommands()
+    {
+        m_commands.clear();
+    }
 
     void SetScissor(const RectI& scissor);
     void SetViewport(const RectI& viewport);
@@ -55,23 +84,13 @@ public:
     uint8 GetRenderTargetCount() const;
     RenderPassHandle GetHandle() const;
 
-    friend void swap(RenderPass& l, RenderPass& r)
-    {
-        std::swap(l.m_scissor, r.m_scissor);
-        std::swap(l.m_viewport, r.m_viewport);
-        std::swap(l.m_clearColor, r.m_clearColor);
-        std::swap(l.m_clearDepth, r.m_clearDepth);
-        std::swap(l.m_clearDepthValue, r.m_clearDepthValue);
-        std::swap(l.m_clearStencil, r.m_clearStencil);
-        std::swap(l.m_clearStencilValue, r.m_clearStencilValue);
-        std::swap(l.m_renderTargetCount, r.m_renderTargetCount);
-        std::swap(l.m_handle, r.m_handle);
-        l.m_renderTargets.swap(r.m_renderTargets);
-        std::swap(l.m_depthStencil, r.m_depthStencil);
-        std::swap(l.m_priority, r.m_priority);
-    }
+    const std::string& GetPassName() const;
 
 private:
+    virtual void SetRenderTargets() abstract; // Set scissor, render targets, viewports
+    virtual void SetPassConstantBuffers() abstract;
+    virtual void SetCameraConstantBuffers() abstract;
+
     RectI m_scissor;
     RectI m_viewport;
     bool m_clearColor = true;
@@ -84,6 +103,9 @@ private:
     std::array<TextureHandle, MaxRenderTargetsCount> m_renderTargets;
     TextureHandle m_depthStencil;
     uint32 m_priority = PassPriority::MainPass;
+
+    std::string m_passName;
+    std::vector<RenderCommand> m_commands;
 };
 
 inline void RenderPass::SetScissor(const RectI& scissor)
@@ -204,5 +226,10 @@ inline uint8 RenderPass::GetRenderTargetCount() const
 inline RenderPassHandle RenderPass::GetHandle() const
 {
     return m_handle;
+}
+
+inline const std::string& RenderPass::GetPassName() const
+{
+    return m_passName;
 }
 }

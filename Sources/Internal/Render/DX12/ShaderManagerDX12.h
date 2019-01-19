@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2018
+// Copyright (C) Aleksandr Vorontcov. 2018
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 

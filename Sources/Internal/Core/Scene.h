@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2017
+// Copyright (C) Aleksandr Vorontcov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -15,6 +15,7 @@ namespace Kioto
 class SceneSystem;
 class Entity;
 class CameraSystem;
+class RenderSystem;
 class EventSystem;
 
 class Scene
@@ -85,9 +86,10 @@ public:
 private:
     void AddSystemInternal(SceneSystem* system);
 
-    std::vector<SceneSystem*> m_systems; // [a_vorontsov] TODO: linked list in custom arena? Also, maybe updatable system or smth like that, to not call useless update.
-    std::vector<Entity*> m_entities; // [a_vorontsov] Same as above.
+    std::vector<SceneSystem*> m_systems; // [a_vorontcov] TODO: linked list in custom arena? Also, maybe updatable system or smth like that, to not call useless update.
+    std::vector<Entity*> m_entities; // [a_vorontcov] Same as above.
     CameraSystem* m_cameraSystem = nullptr;
+    RenderSystem* m_renderSystem = nullptr;
 };
 
 template <typename T, typename>

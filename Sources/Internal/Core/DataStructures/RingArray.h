@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov 2017.
+// Copyright (C) Aleksandr Vorontcov 2017.
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -80,7 +80,7 @@ public:
         if (m_buffer.empty() || m_valsAdded == 0)
             return {};
         float32 valsToCount = static_cast<float32>(min(m_buffer.size(), m_valsAdded));
-        return static_cast<T>(m_sum * (1.0f / valsToCount)); // [a_vorontsov] 1.0f / valsToCount for cases when for T type div operation with scalar is undefined, but mul is well defined.
+        return static_cast<T>(m_sum * (1.0f / valsToCount)); // [a_vorontcov] 1.0f / valsToCount for cases when for T type div operation with scalar is undefined, but mul is well defined.
     }
 
     T GetMax(std::function<bool(const T&, const T&)> comparer = std::less<T>())

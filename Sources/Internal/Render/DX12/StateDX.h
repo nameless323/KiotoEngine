@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2018
+// Copyright (C) Aleksandr Vorontcov. 2018
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -26,7 +26,7 @@ struct StateDX
     Microsoft::WRL::ComPtr<ID3D12CommandQueue> CommandQueue;
 
     Microsoft::WRL::ComPtr<ID3D12Fence> Fence;
-    std::array<Microsoft::WRL::ComPtr<ID3D12CommandAllocator>, StateDX::FrameCount> CommandAllocators; // [a_vorontsov] For each render thread?
+    std::array<Microsoft::WRL::ComPtr<ID3D12CommandAllocator>, StateDX::FrameCount> CommandAllocators; // [a_vorontcov] For each render thread?
     Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> CommandList;
 };
 }

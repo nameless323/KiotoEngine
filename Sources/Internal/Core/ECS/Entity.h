@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2017
+// Copyright (C) Aleksandr Vorontcov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -36,7 +36,7 @@ public:
     void SetName(std::string name);
 
 private:
-    std::vector<Component*> m_components; // [a_vorontsov] Bad, bad thing...
+    std::vector<Component*> m_components; // [a_vorontcov] Bad, bad thing...
     std::string m_name = "Entity";
     TransformComponent* m_transform = nullptr;
 

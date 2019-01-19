@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2018
+// Copyright (C) Aleksandr Vorontcov. 2018
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -26,7 +26,7 @@ public:
     MeshDX12* Find(MeshHandle handle);
 
 private:
-    struct TempMeshData // [a_vorontsov] Dangerous stuff, rethink later.
+    struct TempMeshData // [a_vorontcov] Dangerous stuff, rethink later.
     {
         const byte* VertexData = nullptr;
         const byte* IndexData = nullptr;

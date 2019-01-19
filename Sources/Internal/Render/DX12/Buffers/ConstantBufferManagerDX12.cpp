@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov 2018.
+// Copyright (C) Aleksandr Vorontcov 2018.
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -15,6 +15,7 @@ namespace Kioto::Renderer
 ConstantBufferManagerDX12::ConstantBufferManagerDX12()
 {
     m_updateQueues.reserve(128);
+    m_buffersToResetUpdatedFramesCount.reserve(128);
     m_registrationQueue.reserve(128);
 }
 
@@ -56,35 +57,63 @@ void ConstantBufferManagerDX12::ProcessRegistrationQueue(const StateDX& state)
 
 void ConstantBufferManagerDX12::RegisterConstantBuffer(ConstantBuffer* buffer, ConstantBufferSetHandle bufferSetHandle)
 {
-    if (buffer->GetHandle() != InvalidHandle || !buffer->GetIsComposed())
+    if (buffer->GetHandle() != InvalidHandle)
         return;
-    auto it = m_constantBuffers.find(buffer->GetHandle());
+    auto it = m_constantBuffers.find(buffer->GetHandle()); // [a_vorontcov] We have this buffer registred.
     if (it != m_constantBuffers.cend())
         return;
+    for (auto& tmpBuf : m_registrationQueue)
+    {
+        if (tmpBuf.CBHandle == buffer->GetHandle())
+            return;
+    }
+
     ConstantBufferHandle bufHandle = GetNewHandle();
-    assert(buffer->GetIsComposed());
     buffer->SetHandle(bufHandle);
     m_registrationQueue.emplace_back(bufHandle, bufferSetHandle, buffer->GetDataSize(), buffer->GetBufferData());
+    QueueConstantBufferForUpdate(*buffer);
 }
 
 void ConstantBufferManagerDX12::QueueConstantBufferForUpdate(ConstantBuffer& buffer)
 {
-    auto it = std::find(m_updateQueues.begin(), m_updateQueues.end(), &buffer);
-    if (it != m_updateQueues.begin())
+    if (buffer.GetHandle() == InvalidHandle)
         return;
+
+    auto itr = std::find(m_buffersToResetUpdatedFramesCount.cbegin(), m_buffersToResetUpdatedFramesCount.cend(), &buffer);
+    if (itr == m_buffersToResetUpdatedFramesCount.cend())
+        m_buffersToResetUpdatedFramesCount.push_back(&buffer); // [a_vorontcov] TODO: Very questionable.
+
+    auto it = std::find(m_updateQueues.cbegin(), m_updateQueues.cend(), &buffer);
+    if (it != m_updateQueues.cend())
+        return;
+
     m_updateQueues.push_back(&buffer);
 }
 
 void ConstantBufferManagerDX12::ProcessBufferUpdates(UINT frameIndex)
 {
+    std::vector<ConstantBuffer*> intermediateQueue; // [a_vorontcov] TODO: Too ugly. Rethink.
+    intermediateQueue.reserve(m_updateQueues.size());
     for (auto& cb : m_updateQueues)
     {
         UploadBufferDX12* uploadBuf = FindBuffer(cb->GetHandle());
+
+        assert(cb->GetIsComposed());
         if (uploadBuf == nullptr)
             assert(false);
+
+        auto it = std::find(m_buffersToResetUpdatedFramesCount.cbegin(), m_buffersToResetUpdatedFramesCount.cend(), cb);
+        if (it != m_buffersToResetUpdatedFramesCount.cend())
+            uploadBuf->ResetUpdatedFramesCount();
+
         uploadBuf->UploadData(frameIndex, cb->GetBufferData());
+        uploadBuf->IncrementUpdatedFramesCount();
+        if (!uploadBuf->IsUpdated())
+            intermediateQueue.push_back(cb);
     }
+    m_buffersToResetUpdatedFramesCount.clear();
     m_updateQueues.clear();
+    m_updateQueues = std::move(intermediateQueue);
 }
 
 UploadBufferDX12* ConstantBufferManagerDX12::FindBuffer(ConstantBufferHandle handle) const

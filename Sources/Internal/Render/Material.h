@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2017
+// Copyright (C) Aleksandr Vorontcov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -30,7 +30,20 @@ public:
 
     Shader* GetShader() const;
     ShaderData& GetShaderData();
-    void BuildMaterialForPass(const RenderPass& pass);
+    void BuildMaterialForPass(const RenderPass* pass);
+
+    template<typename T>
+    ConstantBuffer::eReturnCode SetValueToBuffer(const std::string& name, T&& val)
+    {
+        ConstantBuffer::eReturnCode retCode = ConstantBuffer::eReturnCode::NotFound;
+        for (auto& cb : m_shaderData.constantBuffers)
+        {
+            auto code = cb.Set(name, std::forward<T>(val));
+            if (code == ConstantBuffer::eReturnCode::Ok)
+                retCode = ConstantBuffer::eReturnCode::Ok;
+        }
+        return retCode;
+    }
 
 private:
     std::string m_shaderPath;

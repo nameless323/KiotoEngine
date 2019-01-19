@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2017
+// Copyright (C) Aleksandr Vorontcov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -73,7 +73,7 @@ void GlobalTimer::SetTimeScale(float32 scale)
 #if _DEBUG
     if (scale < 0.0f)
     {
-        // [a_vorontsov] Some logging or assert here.
+        // [a_vorontcov] Some logging or assert here.
     }
 #endif
     TimeScale = scale;
@@ -86,7 +86,7 @@ SystemTime GlobalTimer::GetSystemTime()
     GetSystemTime(&st);
     return st;
 #else
-    return {}; // [a_vorontsov] TODO
+    return {}; // [a_vorontcov] TODO
 #endif
 }
 

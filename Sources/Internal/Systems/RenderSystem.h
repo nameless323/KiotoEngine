@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2017
+// Copyright (C) Aleksandr Vorontcov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -9,28 +9,37 @@
 #include "Core/Core.h"
 #include "Core/ECS/SceneSystem.h"
 #include "Render/Renderer.h"
-#include "Render/RenderPass/MainForwardPass.h"
+#include "Render/RenderPass/ForwardRenderPass.h"
 #include "AssetsSystem/AssetsSystem.h"
 
 namespace Kioto
 {
+
+constexpr uint32 MaxRenderPassesCount = 128;
+
 class RenderSystem : public SceneSystem
 {
 public:
-    RenderSystem() = default;
+    RenderSystem();
     ~RenderSystem() override = default;
 
     void Init() override;
     void OnEntityAdd(Entity* entity) override;
     void OnEntityRemove(Entity* entity) override;
     KIOTO_API void Update(float32 dt) override;
+    KIOTO_API void Draw();
     void Shutdown() override;
 
+    void AddRenderPass(Renderer::RenderPass* pass);
+    void RemoveRenderPass(Renderer::RenderPass* pass);
+
 private:
-    Renderer::MainForwardRenderPass m_renderPass;
-    std::string m_matPath = AssetsSystem::GetAssetFullPath("Materials\\Test.mt");
-    Renderer::Material* m_material = nullptr;
-    std::string m_meshPath = AssetsSystem::GetAssetFullPath(R"(Models\Teapot.fbx)");
-    Renderer::Mesh* m_mesh = nullptr;
+    std::vector<Renderer::RenderPass*> m_renderPasses;
+
 };
+
+inline RenderSystem::RenderSystem()
+{
+    m_renderPasses.reserve(MaxRenderPassesCount);
+}
 }

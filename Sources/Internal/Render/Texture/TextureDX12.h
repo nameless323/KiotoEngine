@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2017
+// Copyright (C) Aleksandr Vorontcov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -19,7 +19,7 @@ public:
     static DXGI_FORMAT ToDXGIFormat(eTextureFormat format);
 
     std::wstring Path;
-    Microsoft::WRL::ComPtr<ID3D12Resource> Resource = nullptr; // [a_vorontsov] Change to ResourceDX12.
+    Microsoft::WRL::ComPtr<ID3D12Resource> Resource = nullptr; // [a_vorontcov] Change to ResourceDX12.
     Microsoft::WRL::ComPtr<ID3D12Resource> UploadResource = nullptr;
 
     void Create(ID3D12Device* device, ID3D12GraphicsCommandList* commandList);

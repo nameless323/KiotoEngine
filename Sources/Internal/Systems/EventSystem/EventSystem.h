@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2017
+// Copyright (C) Aleksandr Vorontcov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -126,7 +126,7 @@ private:
         void* m_context = nullptr;
     };
 
-    std::map<EventType, std::vector<CallbackWrapper>> m_events; // [a_vorontsov] TODO: test on big amount of events for memory and performance. Maybe unordered map will be faster.
+    std::map<EventType, std::vector<CallbackWrapper>> m_events; // [a_vorontcov] TODO: test on big amount of events for memory and performance. Maybe unordered map will be faster.
 };
 
 template <typename T, void(T::* callback)(EventPtr)>

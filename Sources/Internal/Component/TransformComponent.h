@@ -1,5 +1,5 @@
 //
-// Copyright (C) Alexandr Vorontsov. 2017
+// Copyright (C) Aleksandr Vorontcov. 2017
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
@@ -48,7 +48,7 @@ private:
     void SetChildrenDirty();
 
     Vector3 m_worldPosition{};
-    Matrix4 m_worldRotation{}; // [a_vorontsov] TODO: quaternion.
+    Matrix4 m_worldRotation{}; // [a_vorontcov] TODO: quaternion.
 
     TransformComponent* m_parent = nullptr;
     std::vector<TransformComponent*> m_children;
