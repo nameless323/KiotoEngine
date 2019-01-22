@@ -227,6 +227,7 @@
     <ClInclude Include="Sources\Internal\Render\RenderLayer.h" />
     <ClInclude Include="Sources\Internal\Render\RenderPass\ForwardRenderPass.h" />
     <ClInclude Include="Sources\Internal\Render\RenderPass\RenderPass.h" />
+    <ClInclude Include="Sources\Internal\Render\ScopedGpuProfiler.h" />
     <ClInclude Include="Sources\Internal\Render\Shader.h" />
     <ClInclude Include="Sources\Internal\Render\ShaderData.h" />
     <ClInclude Include="Sources\Internal\Render\Texture\TextureManager.h" />
@@ -285,6 +286,7 @@
     <ClCompile Include="Sources\Internal\Render\RenderCommand.cpp" />
     <ClCompile Include="Sources\Internal\Render\Renderer.cpp" />
     <ClCompile Include="Sources\Internal\Render\RenderPass\RenderPass.cpp" />
+    <ClCompile Include="Sources\Internal\Render\ScopedGpuProfiler.cpp" />
     <ClCompile Include="Sources\Internal\Render\Texture\TextureDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\Texture\TextureManagerDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\Texture\TextureSet.cpp" />
