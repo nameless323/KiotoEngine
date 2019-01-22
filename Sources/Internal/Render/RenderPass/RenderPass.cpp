@@ -7,6 +7,8 @@
 
 #include "Render/RenderPass/RenderPass.h"
 
+#include "Render/Renderer.h"
+
 namespace Kioto::Renderer
 {
 RenderPass::RenderPass(const RenderPass& other)
@@ -25,4 +27,12 @@ RenderPass::RenderPass(const RenderPass& other)
     , m_passName(other.m_passName)
 {
 }
+
+void RenderPass::SubmitRenderData()
+{
+    PushCommand(RenderCommandHelpers::CreateEndGpuEventCommand());
+    Renderer::SubmitRenderCommands(GetRenderCommands());
+    ClearCommands();
+}
+
 }

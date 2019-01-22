@@ -43,7 +43,7 @@ RenderCommand CreateSetRenderTargetCommand(SetRenderTargetsCommand setRTCmd, Ren
     return command;
 }
 
-Renderer::RenderCommand CreatePassEndsCommand(RenderPass* pass)
+RenderCommand CreatePassEndsCommand(RenderPass* pass)
 {
     RenderCommand command;
     command.CommandType = eRenderCommandType::eEndRenderPass;
@@ -51,5 +51,38 @@ Renderer::RenderCommand CreatePassEndsCommand(RenderPass* pass)
 
     return command;
 }
+
+RenderCommand CreateBeginGpuEventCommand(std::string name)
+{
+    BeginGpuEventCommand cmd;
+    cmd.Name = std::move(name);
+
+    RenderCommand command;
+    command.CommandType = eRenderCommandType::eBeginGpuEvent;
+    command.Command = cmd;
+
+    return command;
+}
+
+RenderCommand CreateEndGpuEventCommand()
+{
+    RenderCommand command;
+    command.CommandType = eRenderCommandType::eEndGpuEvent;
+
+    return command;
+}
+
+RenderCommand CreateGpuMarkerCommand(std::string name)
+{
+    SetGpuMarkerCommand cmd;
+    cmd.Name = std::move(name);
+
+    RenderCommand command;
+    command.CommandType = eRenderCommandType::eSetGpuMarker;
+    command.Command = cmd;
+
+    return command;
+}
+
 
 }

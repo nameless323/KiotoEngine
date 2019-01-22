@@ -45,12 +45,6 @@ public:
 
         PushCommand(RenderCommandHelpers::CreatePassEndsCommand(this));
     }
-
-    virtual void SubmitRenderData() override
-    {
-        Renderer::SubmitRenderCommands(GetRenderCommands());
-        ClearCommands();
-    }
  
     virtual void Cleanup() override
     {

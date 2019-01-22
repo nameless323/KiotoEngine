@@ -13,6 +13,11 @@
 #include <string>
 #include <vector>
 
+
+
+#include "pix3.h"
+
+
 #include "AssetsSystem/AssetsSystem.h"
 #include "Core/FPSCounter.h"
 #include "Core/Timer/GlobalTimer.h"
@@ -345,6 +350,20 @@ void RendererDX12::Present()
             m_state.CommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
             m_state.CommandList->DrawIndexedInstanced(currGeometry->GetIndexCount(), 1, 0, 0, 0);
+        }
+        else if (cmd.CommandType == eRenderCommandType::eBeginGpuEvent)
+        {
+            const BeginGpuEventCommand& evCommand = std::get<BeginGpuEventCommand>(cmd.Command);
+            PIXBeginEvent(m_state.CommandList.Get(), PIX_COLOR(0, 0, 128), evCommand.Name.c_str());
+        }
+        else if (cmd.CommandType == eRenderCommandType::eEndGpuEvent)
+        {
+            PIXEndEvent(m_state.CommandList.Get());
+        }
+        else if (cmd.CommandType == eRenderCommandType::eSetGpuMarker)
+        {
+            const SetGpuMarkerCommand& smCommand = std::get<SetGpuMarkerCommand>(cmd.Command);
+            PIXBeginEvent(m_state.CommandList.Get(), PIX_COLOR(0, 0, 128), smCommand.Name.c_str());
         }
         else
         {

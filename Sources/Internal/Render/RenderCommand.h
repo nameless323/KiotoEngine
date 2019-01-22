@@ -21,6 +21,9 @@ enum class eRenderCommandType
     eSetRenderTargets,
     eSubmitConstantBuffer,
     eSubmitRenderPacket,
+    eBeginGpuEvent,
+    eEndGpuEvent,
+    eSetGpuMarker,
     eEndRenderPass
 };
 
@@ -126,10 +129,24 @@ struct SubmitRenderPacketCommand final
     RenderPacket Packet;
 };
 
+struct BeginGpuEventCommand
+{
+    std::string Name;
+};
+
+struct EndGpuEventCommand
+{
+};
+
+struct SetGpuMarkerCommand
+{
+    std::string Name;
+};
+
 struct RenderCommand
 {
     eRenderCommandType CommandType = eRenderCommandType::eInvalidCommand;
-    std::variant<SetRenderTargetsCommand, SubmitConstantBufferCommand, SubmitRenderPacketCommand> Command;
+    std::variant<SetRenderTargetsCommand, SubmitConstantBufferCommand, SubmitRenderPacketCommand, BeginGpuEventCommand, EndGpuEventCommand, SetGpuMarkerCommand> Command;
 
     std::string PassName; // [a_vorontcov] For debugging.
 };
@@ -144,5 +161,8 @@ RenderCommand CreateRenderPacketCommand(RenderPacket packet, RenderPass* pass);
 RenderCommand CreateSetRenderTargetCommand(SetRenderTargetsCommand setRTCmd, RenderPass* pass);
 RenderCommand CreateSetRenderTargetCommand(SetRenderTargetsCommand setRTCmd, RenderPass* pass);
 RenderCommand CreatePassEndsCommand(RenderPass* pass);
+RenderCommand CreateBeginGpuEventCommand(std::string name);
+RenderCommand CreateEndGpuEventCommand();
+RenderCommand CreateGpuMarkerCommand(std::string name);
 }
 }
