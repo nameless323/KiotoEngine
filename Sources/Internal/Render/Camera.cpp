@@ -12,7 +12,7 @@ Camera::Camera(bool createBuffer)
 {
     if (createBuffer)
     {
-        EngineBuffers::GetCameraBufferCopy(m_cameraBuffer); // [a_vorontcov] Reeeeeeeeeealy don't like it here.
+        EngineBuffers::GetCameraBufferCopy(m_cameraBuffer); // [a_vorontcov] TODO: Reeeeeeeeeealy don't like it here. Create some kind of manager.
         Renderer::RegisterConstantBuffer(m_cameraBuffer);
     }
 }

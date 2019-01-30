@@ -26,7 +26,7 @@ public:
     ~UploadBufferDX12();
 
     ID3D12Resource* GetResource() const;
-    void UploadData(uint32 frameIndex, float32* data);
+    void UploadData(uint32 frameIndex, const float32* data);
     const byte* const GetBufferStart() const;
     const byte* const GetBufferEnd() const;
     size_t GetFrameDataSize() const;

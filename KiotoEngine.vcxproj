@@ -200,6 +200,7 @@
     <ClInclude Include="Sources\Internal\Render\DX12\DXHelpers.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\Geometry\MeshDX12.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\MeshManagerDX12.h" />
+    <ClInclude Include="Sources\Internal\Render\DX12\PixProfiler.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\PsoManager.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\RendererDX12.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\RenderPacket.h" />
@@ -217,6 +218,7 @@
     <ClInclude Include="Sources\Internal\Render\Geometry\MeshLoader.h" />
     <ClInclude Include="Sources\Internal\Render\Geometry\MeshParser.h" />
     <ClInclude Include="Sources\Internal\Render\Geometry\ParserFBX.h" />
+    <ClInclude Include="Sources\Internal\Render\GpuProfiler.h" />
     <ClInclude Include="Sources\Internal\Render\Material.h" />
     <ClInclude Include="Sources\Internal\Render\MaterialData.h" />
     <ClInclude Include="Sources\Internal\Render\PipelineState.h" />
@@ -227,6 +229,7 @@
     <ClInclude Include="Sources\Internal\Render\RenderLayer.h" />
     <ClInclude Include="Sources\Internal\Render\RenderPass\ForwardRenderPass.h" />
     <ClInclude Include="Sources\Internal\Render\RenderPass\RenderPass.h" />
+    <ClInclude Include="Sources\Internal\Render\ScopedGpuProfiler.h" />
     <ClInclude Include="Sources\Internal\Render\Shader.h" />
     <ClInclude Include="Sources\Internal\Render\ShaderData.h" />
     <ClInclude Include="Sources\Internal\Render\Texture\TextureManager.h" />
@@ -285,6 +288,7 @@
     <ClCompile Include="Sources\Internal\Render\RenderCommand.cpp" />
     <ClCompile Include="Sources\Internal\Render\Renderer.cpp" />
     <ClCompile Include="Sources\Internal\Render\RenderPass\RenderPass.cpp" />
+    <ClCompile Include="Sources\Internal\Render\ScopedGpuProfiler.cpp" />
     <ClCompile Include="Sources\Internal\Render\Texture\TextureDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\Texture\TextureManagerDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\Texture\TextureSet.cpp" />
@@ -301,7 +305,17 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\NullGame\packages\WinPixEventRuntime.1.0.181206001\build\WinPixEventRuntime.targets" Condition="Exists('..\NullGame\packages\WinPixEventRuntime.1.0.181206001\build\WinPixEventRuntime.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\NullGame\packages\WinPixEventRuntime.1.0.181206001\build\WinPixEventRuntime.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\NullGame\packages\WinPixEventRuntime.1.0.181206001\build\WinPixEventRuntime.targets'))" />
+  </Target>
 </Project>

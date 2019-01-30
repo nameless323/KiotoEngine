@@ -346,6 +346,20 @@ void RendererDX12::Present()
 
             m_state.CommandList->DrawIndexedInstanced(currGeometry->GetIndexCount(), 1, 0, 0, 0);
         }
+        else if (cmd.CommandType == eRenderCommandType::eBeginGpuEvent)
+        {
+            const BeginGpuEventCommand& evCommand = std::get<BeginGpuEventCommand>(cmd.Command);
+            m_profiler.BeginGpuEvent(m_state.CommandList.Get(), evCommand.Name.c_str());
+        }
+        else if (cmd.CommandType == eRenderCommandType::eEndGpuEvent)
+        {
+            m_profiler.EndGpuEvent(m_state.CommandList.Get());
+        }
+        else if (cmd.CommandType == eRenderCommandType::eSetGpuMarker)
+        {
+            const SetGpuMarkerCommand& smCommand = std::get<SetGpuMarkerCommand>(cmd.Command);
+            m_profiler.SetMarker(m_state.CommandList.Get(), smCommand.Name.c_str());
+        }
         else
         {
             assert(false);

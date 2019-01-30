@@ -35,12 +35,14 @@ public:
 
     virtual void Setup()         // set all pass buffers
     {
+        PushCommand(RenderCommandHelpers::CreateBeginGpuEventCommand(m_passName));
         SetPassConstantBuffers();
         SetCameraConstantBuffers();
     }
 
     virtual void CollectRenderData() abstract;
-    virtual void SubmitRenderData() abstract;
+    virtual void SubmitRenderData();
+
     virtual void Cleanup() abstract; // cleanup all pass setups
 
     void PushCommand(RenderCommand command)
