@@ -12,6 +12,7 @@
 #include "Systems/EventSystem/EngineEvents.h"
 #include "Systems/EventSystem/EventSystem.h"
 #include "Core/Timer/GlobalTimer.h"
+#include "Render/DX12/PixProfiler.h"
 
 namespace Kioto::Renderer
 {

@@ -13,11 +13,6 @@
 #include <string>
 #include <vector>
 
-
-
-#include "pix3.h"
-
-
 #include "AssetsSystem/AssetsSystem.h"
 #include "Core/FPSCounter.h"
 #include "Core/Timer/GlobalTimer.h"
@@ -354,16 +349,16 @@ void RendererDX12::Present()
         else if (cmd.CommandType == eRenderCommandType::eBeginGpuEvent)
         {
             const BeginGpuEventCommand& evCommand = std::get<BeginGpuEventCommand>(cmd.Command);
-            PIXBeginEvent(m_state.CommandList.Get(), PIX_COLOR(0, 0, 128), evCommand.Name.c_str());
+            m_profiler.BeginGpuEvent(m_state.CommandList.Get(), evCommand.Name.c_str());
         }
         else if (cmd.CommandType == eRenderCommandType::eEndGpuEvent)
         {
-            PIXEndEvent(m_state.CommandList.Get());
+            m_profiler.EndGpuEvent(m_state.CommandList.Get());
         }
         else if (cmd.CommandType == eRenderCommandType::eSetGpuMarker)
         {
             const SetGpuMarkerCommand& smCommand = std::get<SetGpuMarkerCommand>(cmd.Command);
-            PIXBeginEvent(m_state.CommandList.Get(), PIX_COLOR(0, 0, 128), smCommand.Name.c_str());
+            m_profiler.SetMarker(m_state.CommandList.Get(), smCommand.Name.c_str());
         }
         else
         {

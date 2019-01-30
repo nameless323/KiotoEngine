@@ -200,6 +200,7 @@
     <ClInclude Include="Sources\Internal\Render\DX12\DXHelpers.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\Geometry\MeshDX12.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\MeshManagerDX12.h" />
+    <ClInclude Include="Sources\Internal\Render\DX12\PixProfiler.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\PsoManager.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\RendererDX12.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\RenderPacket.h" />
@@ -217,6 +218,7 @@
     <ClInclude Include="Sources\Internal\Render\Geometry\MeshLoader.h" />
     <ClInclude Include="Sources\Internal\Render\Geometry\MeshParser.h" />
     <ClInclude Include="Sources\Internal\Render\Geometry\ParserFBX.h" />
+    <ClInclude Include="Sources\Internal\Render\GpuProfiler.h" />
     <ClInclude Include="Sources\Internal\Render\Material.h" />
     <ClInclude Include="Sources\Internal\Render\MaterialData.h" />
     <ClInclude Include="Sources\Internal\Render\PipelineState.h" />

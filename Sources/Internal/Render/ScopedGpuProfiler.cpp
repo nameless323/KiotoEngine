@@ -11,7 +11,6 @@
 
 namespace Kioto::Renderer
 {
-
 ScopedGpuProfiler::ScopedGpuProfiler(RenderPass* pass, std::string name)
     : m_pass(pass)
 {
@@ -22,5 +21,4 @@ ScopedGpuProfiler::~ScopedGpuProfiler()
 {
     m_pass->PushCommand(RenderCommandHelpers::CreateEndGpuEventCommand());
 }
-
 }

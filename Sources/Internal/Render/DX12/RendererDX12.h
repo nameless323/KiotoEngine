@@ -32,6 +32,7 @@
 #include "Render/DX12/VertexLayoutManagerDX12.h"
 #include "Render/DX12/RenderPacket.h"
 #include "Render/DX12/Buffers/ConstantBufferManagerDX12.h"
+#include "Render/DX12/PixProfiler.h"
 
 namespace Kioto
 {
@@ -44,6 +45,7 @@ namespace Kioto::Renderer
 class Texture;
 class VertexLayout;
 class UploadBufferDX12;
+
 namespace ShaderParser
 {
 struct ShaderData;
@@ -123,6 +125,8 @@ private:
     ConstantBufferHandle m_currentCameraBuffer;
 
     std::vector<RenderCommand> m_frameCommands;
+
+    GpuProfiler<PixProfiler> m_profiler;
 };
 
 inline TextureHandle RendererDX12::GetCurrentBackBufferHandle() const
