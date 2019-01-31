@@ -14,9 +14,6 @@
 
 namespace Kioto
 {
-
-constexpr uint32 MaxRenderPassesCount = 128;
-
 class RenderSystem : public SceneSystem
 {
 public:
@@ -35,11 +32,5 @@ public:
 
 private:
     std::vector<Renderer::RenderPass*> m_renderPasses;
-
 };
-
-inline RenderSystem::RenderSystem()
-{
-    m_renderPasses.reserve(MaxRenderPassesCount);
-}
 }

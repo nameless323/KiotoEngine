@@ -12,7 +12,6 @@
 
 namespace Kioto
 {
-
 uint32 EventCallback::m_currentIndex = 0;
 constexpr uint32 EventsInitialCapacity = 128;
 
@@ -116,5 +115,4 @@ void EventSystem::Clear()
 {
     m_events.clear();
 }
-
 }

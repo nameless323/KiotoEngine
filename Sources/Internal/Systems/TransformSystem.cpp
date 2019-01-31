@@ -11,7 +11,6 @@
 
 namespace Kioto
 {
-
 TransformSystem::TransformSystem()
 {
     m_components.reserve(512);
@@ -59,5 +58,4 @@ void TransformSystem::ComposeMatricies(TransformComponent* t)
     m.SetTranslation(pos);
     t->SetToWorld(m);
 }
-
 }
