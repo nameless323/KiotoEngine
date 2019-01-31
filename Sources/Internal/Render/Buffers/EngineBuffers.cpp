@@ -5,7 +5,7 @@
 
 #include "stdafx.h"
 
-#include "Render/DX12/Buffers/EngineBuffers.h"
+#include "Render/Buffers/EngineBuffers.h"
 
 namespace Kioto::Renderer::EngineBuffers
 {

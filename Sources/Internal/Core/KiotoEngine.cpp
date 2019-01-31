@@ -13,14 +13,13 @@
 #include "Core/Scene.h"
 #include "Core/Timer/GlobalTimer.h"
 #include "Core/WindowsApplication.h"
+
+#include "Render/Buffers/EngineBuffers.h"
 #include "Render/Geometry/GeometryGenerator.h"
 #include "Render/Geometry/MeshLoader.h"
-#include "Render/Renderer.h"
-
-#include "Render/Material.h"
-#include "Render/DX12/Buffers/EngineBuffers.h"
-
 #include "Render/Geometry/ParserFBX.h"
+#include "Render/Material.h"
+#include "Render/Renderer.h"
 
 namespace Kioto
 {
@@ -113,6 +112,5 @@ void Resize(uint16 width, uint16 height, bool minimized)
 {
     Renderer::Resize(width, height, minimized);
 }
-
 }
 }

@@ -11,7 +11,7 @@
 #include <memory>
 
 // [a_vorontcov] To fwd decl.
-#include "Render/DX12/Buffers/EngineBuffers.h"
+#include "Render/Buffers/EngineBuffers.h"
 #include "Render/DX12/Buffers/UploadBuffer.h"
 #include "Render/DX12/Buffers/VertexBufferDX12.h"
 #include "Render/DX12/Buffers/IndexBufferDX12.h"

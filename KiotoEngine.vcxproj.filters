@@ -69,9 +69,6 @@
     <ClInclude Include="Sources\Internal\Render\DX12\Buffers\UploadBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\Internal\Render\DX12\Buffers\EngineBuffers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Sources\Internal\Math\Vector4.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -282,6 +279,9 @@
     <ClInclude Include="Sources\Internal\Render\DX12\PixProfiler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Sources\Internal\Render\Buffers\EngineBuffers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -380,9 +380,6 @@
     <ClCompile Include="Sources\Internal\Render\DX12\Buffers\UploadBufferDX12.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\Internal\Render\DX12\Buffers\EngineBuffers.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Sources\Internal\Render\Texture\TextureSet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -435,6 +432,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Sources\Internal\Render\ScopedGpuProfiler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Internal\Render\Buffers\EngineBuffers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -10,7 +10,7 @@
 #include "Render/DX12/Shader/ShaderParser.h"
 #include "Render/DX12/StateDX.h"
 
-#include "Render/DX12/Buffers/EngineBuffers.h"
+#include "Render/Buffers/EngineBuffers.h"
 
 namespace Kioto::Renderer
 {

@@ -191,7 +191,7 @@
     <ClInclude Include="Sources\Internal\Render\ConstantBuffer.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\Buffers\ConstantBufferManagerDX12.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\Buffers\DefaultHeapBuffer.h" />
-    <ClInclude Include="Sources\Internal\Render\DX12\Buffers\EngineBuffers.h" />
+    <ClInclude Include="Sources\Internal\Render\Buffers\EngineBuffers.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\Buffers\IndexBufferDX12.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\Buffers\ResourceDX12.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\Buffers\UploadBuffer.h" />
@@ -265,7 +265,7 @@
     <ClCompile Include="Sources\Internal\Render\ConstantBuffer.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\Buffers\ConstantBufferManagerDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\Buffers\DefaultHeapBuffer.cpp" />
-    <ClCompile Include="Sources\Internal\Render\DX12\Buffers\EngineBuffers.cpp" />
+    <ClCompile Include="Sources\Internal\Render\Buffers\EngineBuffers.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\Buffers\IndexBufferDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\Buffers\UploadBufferDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\Buffers\VertexBufferDX12.cpp" />

@@ -11,7 +11,6 @@
 
 namespace Kioto
 {
-
 Entity::Entity(const Entity& other)
 {
     for (auto component : other.m_components)
@@ -65,5 +64,4 @@ Component* Entity::GetComponent(uint64 componentTypeIndex) const
         return *it;
     return nullptr;
 }
-
 }

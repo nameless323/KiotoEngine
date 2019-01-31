@@ -14,7 +14,6 @@
 
 namespace Kioto
 {
-
 namespace KiotoCore
 {
 void Init();
@@ -26,7 +25,6 @@ void Resize(uint16 width, uint16 height, bool minimized);
 
 namespace WindowsApplication
 {
-
 namespace
 {
 const UINT WindowStyle = WS_OVERLAPPEDWINDOW;
@@ -223,6 +221,5 @@ void MessageError(LPTSTR lpszFunction)
     LocalFree(messageBuffer);
     LocalFree(displayBuffer);
 }
-
 }
 }

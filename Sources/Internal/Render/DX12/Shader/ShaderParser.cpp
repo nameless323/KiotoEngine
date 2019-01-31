@@ -11,7 +11,7 @@
 #include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
 #include "Render/DX12/Shader/ShaderParser.h"
-#include "Render/DX12/Buffers/EngineBuffers.h"
+#include "Render/Buffers/EngineBuffers.h"
 
 #include "AssetsSystem/AssetsSystem.h"
 
