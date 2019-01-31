@@ -78,5 +78,4 @@ inline Renderer::Camera& CameraComponent::GetCamera()
 {
     return m_camera;
 }
-
 }
