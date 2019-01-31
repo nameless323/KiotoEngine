@@ -7,11 +7,11 @@
 
 #include <fstream>
 
+#include <yaml-cpp/yaml.h>
+
 #include "AssetsSystem/AssetsSystem.h"
 #include "Core/CoreHelpers.h"
 #include "Render/Material.h"
-
-#include "yaml-cpp/yaml.h"
 
 namespace Kioto::AssetsSystem
 {

@@ -36,11 +36,14 @@ T* GetAsset(const std::string& assetPath);
 
 template <typename T>
 void UnloadAsset(T* asset);
+
 template <typename T>
 T* CreateUniqueCopy(const T* source);
 
+//////////////////////////////////////////////////////////////////////////
 static std::map<std::string, Asset*> m_assets;
 static std::vector<Asset*> m_dynamicAssets;
+//////////////////////////////////////////////////////////////////////////
 
 template <typename T>
 T* LoadAsset(const std::string& assetPath)
@@ -130,5 +133,4 @@ inline T* RenderAssetsManager::GetOrLoadAsset(const std::string path)
 }
 
 RenderAssetsManager* GetRenderAssetsManager();
-
 }

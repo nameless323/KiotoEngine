@@ -3,14 +3,13 @@
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
+#pragma once
+
 #include "Render/PipelineStateParams.h"
 #include "Render/RenderLayer.h"
 
-#pragma once
-
 namespace Kioto::RenderParamsConverter
 {
-
 template <typename T>
 T FromString(const std::string& s)
 {}
@@ -41,5 +40,4 @@ eStencilOp FromString<eStencilOp>(const std::string& s);
 
 template <>
 eStencilTest FromString<eStencilTest>(const std::string& s);
-
 }
