@@ -12,6 +12,7 @@
 #include "AssetsSystem/AssetsSystem.h"
 #include "AssetsSystem/RenderStateParamsConverter.h"
 #include "Render/Renderer.h"
+#include "Render/RenderPass/RenderPass.h"
 
 namespace Kioto::Renderer
 {

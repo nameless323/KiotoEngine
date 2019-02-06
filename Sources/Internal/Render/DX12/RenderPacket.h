@@ -5,9 +5,9 @@
 
 #pragma once
 
-#include "Render/RendererPublic.h"
-
 #include <vector>
+
+#include "Render/RendererPublic.h"
 
 namespace Kioto::Renderer
 {

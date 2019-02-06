@@ -5,6 +5,8 @@
 
 #include "stdafx.h"
 
+#include "AssetsSystem/AssetsSystem.h"
+
 #include "Math/Vector2.h"
 #include "Math/Vector3.h"
 #include "Math/Vector4.h"
@@ -13,13 +15,8 @@
 #include "Render/DX12/Shader/ShaderParser.h"
 #include "Render/Buffers/EngineBuffers.h"
 
-#include "AssetsSystem/AssetsSystem.h"
-
-namespace Kioto::Renderer
+namespace Kioto::Renderer::ShaderParser // [a_vorontcov] Real parser via AST tree too time consuming for now.
 {
-namespace ShaderParser // [a_vorontcov] Real parser via AST tree too time consuming for now.
-{
-
 std::vector<std::string> m_preprocessedHeaders;
 static constexpr uint16 m_maxDepth = 128;
 static constexpr uint8 m_floatLen = 5;
@@ -584,7 +581,5 @@ ShaderData ParseShaderFromString(std::string source, const std::vector<ShaderDef
 
     res.bufferSetHandle = InvalidHandle;
     return res;
-}
-
 }
 }

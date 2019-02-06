@@ -5,10 +5,10 @@
 
 #pragma once
 
-#include "Render/RendererPublic.h"
-
 #include <vector>
 #include <map>
+
+#include "Render/RendererPublic.h"
 
 namespace Kioto::Renderer
 {

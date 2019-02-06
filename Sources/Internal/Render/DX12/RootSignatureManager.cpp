@@ -5,16 +5,14 @@
 
 #include "stdafx.h"
 
-#include "Render/DX12/RootSignatureManager.h"
+#include "Render/Buffers/EngineBuffers.h"
 
+#include "Render/DX12/RootSignatureManager.h"
 #include "Render/DX12/Shader/ShaderParser.h"
 #include "Render/DX12/StateDX.h"
 
-#include "Render/Buffers/EngineBuffers.h"
-
 namespace Kioto::Renderer
 {
-
 void RootSignatureManager::CreateRootSignature(const StateDX& state, const ShaderData& parseResult, ShaderHandle handle)
 {
     using Microsoft::WRL::ComPtr;
@@ -84,5 +82,4 @@ ID3D12RootSignature* RootSignatureManager::GetRootSignature(ShaderHandle handle)
         return it->second.Get();
     return nullptr;
 }
-
 }

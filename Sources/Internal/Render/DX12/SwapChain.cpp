@@ -5,8 +5,8 @@
 
 #include "stdafx.h"
 
-#include "Render/DX12/SwapChain.h"
 #include "Core/WindowsApplication.h"
+#include "Render/DX12/SwapChain.h"
 #include "Render/RendererPublic.h"
 
 namespace Kioto::Renderer
@@ -122,5 +122,4 @@ void SwapChain::ProceedToNextFrame()
 {
     m_currentFrameIndex = (m_currentFrameIndex + 1) % StateDX::FrameCount;
 }
-
 }
