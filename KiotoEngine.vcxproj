@@ -191,7 +191,7 @@
     <ClInclude Include="Sources\Internal\Render\ConstantBuffer.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\Buffers\ConstantBufferManagerDX12.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\Buffers\DefaultHeapBuffer.h" />
-    <ClInclude Include="Sources\Internal\Render\DX12\Buffers\EngineBuffers.h" />
+    <ClInclude Include="Sources\Internal\Render\Buffers\EngineBuffers.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\Buffers\IndexBufferDX12.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\Buffers\ResourceDX12.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\Buffers\UploadBuffer.h" />
@@ -203,7 +203,7 @@
     <ClInclude Include="Sources\Internal\Render\DX12\PixProfiler.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\PsoManager.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\RendererDX12.h" />
-    <ClInclude Include="Sources\Internal\Render\DX12\RenderPacket.h" />
+    <ClInclude Include="Sources\Internal\Render\RenderPacket.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\RootSignatureManager.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\ShaderDX12.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\ShaderManagerDX12.h" />
@@ -265,7 +265,7 @@
     <ClCompile Include="Sources\Internal\Render\ConstantBuffer.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\Buffers\ConstantBufferManagerDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\Buffers\DefaultHeapBuffer.cpp" />
-    <ClCompile Include="Sources\Internal\Render\DX12\Buffers\EngineBuffers.cpp" />
+    <ClCompile Include="Sources\Internal\Render\Buffers\EngineBuffers.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\Buffers\IndexBufferDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\Buffers\UploadBufferDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\Buffers\VertexBufferDX12.cpp" />
@@ -287,6 +287,7 @@
     <ClCompile Include="Sources\Internal\Render\PipelineState.cpp" />
     <ClCompile Include="Sources\Internal\Render\RenderCommand.cpp" />
     <ClCompile Include="Sources\Internal\Render\Renderer.cpp" />
+    <ClCompile Include="Sources\Internal\Render\RenderPass\ForwardRenderPass.cpp" />
     <ClCompile Include="Sources\Internal\Render\RenderPass\RenderPass.cpp" />
     <ClCompile Include="Sources\Internal\Render\ScopedGpuProfiler.cpp" />
     <ClCompile Include="Sources\Internal\Render\Texture\TextureDX12.cpp" />

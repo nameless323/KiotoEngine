@@ -29,10 +29,12 @@ class Scene;
 /// Entry point of Kioto Engine. Call this function from your WinMain.
 ///
 KIOTO_API void KiotoMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int nCmdShow, std::wstring capture, std::function<void()> initEngineCallback = nullptr, std::function<void()> shutdownEngineCallback = nullptr);
+
 ///
 /// Set scene to engine.
 ///
 KIOTO_API void SetScene(Scene* scene);
+
 ///
 /// Get active scene.
 ///
@@ -54,7 +56,5 @@ void Update();
 void Shutdown();
 void ChangeFullscreenMode(bool fullScreen);
 void Resize(uint16 width, uint16 height, bool minimized);
-
 }
-
 }

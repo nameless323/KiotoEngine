@@ -11,7 +11,7 @@
 #include "Core/CoreTypes.h"
 #include "Math/Rect.h"
 #include "Render/RendererPublic.h"
-#include "Render/DX12/RenderPacket.h" // DX12?????
+#include "Render/RenderPacket.h"
 #include "Render/ScopedGpuProfiler.h"
 
 namespace Kioto::Renderer

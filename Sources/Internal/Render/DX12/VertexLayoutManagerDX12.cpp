@@ -11,7 +11,6 @@
 
 namespace Kioto::Renderer
 {
-
 void VertexLayoutManagerDX12::GenerateVertexLayout(const Shader* shader)
 {
     for (auto& l : m_inputLayouts)
@@ -38,5 +37,4 @@ const std::vector<D3D12_INPUT_ELEMENT_DESC>* VertexLayoutManagerDX12::FindVertex
         return nullptr;
     return &it->second.LayoutDX;
 }
-
 }

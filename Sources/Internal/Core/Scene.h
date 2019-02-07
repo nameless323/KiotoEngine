@@ -30,23 +30,28 @@ public:
     /// Init scene.
     ///
     KIOTO_API virtual void Init();
+
     ///
     /// Update scene.
     ///
     KIOTO_API virtual void Update(float32 dt);
+
     ///
     /// Shutdown scene.
     ///
     KIOTO_API virtual void Shutdown();
+
     ///
     /// Add system to the end of systems list.
     ///
     KIOTO_API void AddSystem(SceneSystem* system);
+
     ///
     /// Insert system before the system of type T in systems list. Returns success status.
     ///
     template <typename T, typename = std::enable_if_t<std::is_convertible_v<T*, SceneSystem*>>>
     bool AddSystemBefore(SceneSystem* system);
+
     ///
     /// Insert system after the system of type T in systems list. Returns success status.
     ///
@@ -58,6 +63,7 @@ public:
     ///
     template <typename T, typename = std::enable_if_t<std::is_convertible_v<T*, SceneSystem*>>>
     void RemoveSystem();
+
     ///
     /// Remove system from systems list.
     ///
@@ -73,6 +79,7 @@ public:
                         >
             >
     bool FindSystem(U* resultSystem) const;
+
     ///
     /// Get all scene systems.
     ///
@@ -149,5 +156,4 @@ inline const CameraSystem* Scene::GetCameraSystem() const
 {
     return m_cameraSystem;
 }
-
 }

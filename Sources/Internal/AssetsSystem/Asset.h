@@ -3,9 +3,9 @@
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
-#include <string>
-
 #pragma once
+
+#include <string>
 
 namespace Kioto
 {

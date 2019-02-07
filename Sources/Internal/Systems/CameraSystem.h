@@ -5,16 +5,20 @@
 
 #pragma once
 
+#include <vector>
+
 #include "Core/CoreTypes.h"
 #include "Core/Core.h"
 
 #include "Core/ECS/SceneSystem.h"
-#include "Render/Camera.h"
-
-#include <vector>
 
 namespace Kioto
 {
+namespace Renderer
+{
+class Camera;
+}
+
 class CameraComponent;
 class EventSystem;
 

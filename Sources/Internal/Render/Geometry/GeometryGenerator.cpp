@@ -12,11 +12,10 @@
 #include <map>
 
 #include "Render/Geometry/Mesh.h"
+#include "Render/VertexLayout.h"
 #include "Math/Vector2.h"
 #include "Math/Vector3.h"
 #include "Math/Vector4.h"
-
-#include "Render/VertexLayout.h"
 
 namespace Kioto::Renderer::GeometryGenerator
 {
@@ -915,5 +914,4 @@ Mesh* GetTube()
 {
     return m_tube;
 }
-
 }

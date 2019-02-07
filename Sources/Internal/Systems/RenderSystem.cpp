@@ -11,6 +11,15 @@
 
 namespace Kioto
 {
+namespace
+{
+constexpr uint32 MaxRenderPassesCount = 128;
+}
+
+RenderSystem::RenderSystem()
+{
+    m_renderPasses.reserve(MaxRenderPassesCount);
+}
 
 void RenderSystem::Init()
 {
@@ -19,12 +28,10 @@ void RenderSystem::Init()
 
 void RenderSystem::OnEntityAdd(Entity* entity)
 {
-
 }
 
 void RenderSystem::OnEntityRemove(Entity* entity)
 {
-
 }
 
 void RenderSystem::Update(float32 dt)
@@ -64,5 +71,4 @@ void RenderSystem::RemoveRenderPass(Renderer::RenderPass* pass)
     m_renderPasses.erase(std::remove(m_renderPasses.begin(), m_renderPasses.end(), pass), m_renderPasses.end());
     SafeDelete(pass);
 }
-
 }

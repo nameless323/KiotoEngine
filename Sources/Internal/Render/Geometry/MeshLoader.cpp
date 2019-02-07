@@ -7,10 +7,10 @@
 
 #include "Render/Geometry/Mesh.h"
 
+#include <map>
+
 #include "Render/Geometry/MeshParser.h"
 #include "Render/Geometry/ParserFBX.h"
-
-#include <map>
 
 namespace Kioto::MeshLoader
 {
@@ -45,4 +45,8 @@ void LoadMesh(Renderer::Mesh* src)
     it->second->ParseMesh(src);
 }
 
+Renderer::Mesh* LoadMesh(const std::string& path)
+{
+    return nullptr;
+}
 }

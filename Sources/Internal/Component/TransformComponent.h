@@ -5,12 +5,12 @@
 
 #pragma once
 
+#include <vector>
+
 #include "Core/CoreTypes.h"
 #include "Core/ECS/Component.h"
 #include "Math/Matrix4.h"
 #include "Math/Vector3.h"
-
-#include <vector>
 
 namespace Kioto
 {
@@ -39,13 +39,14 @@ public:
     Component* Clone() const override;
 
 private:
+    void SetDirty();
+    void RemoveDirty();
+    void SetChildrenDirty();
+
     Matrix4 m_toWorld = Matrix4::Identity;
     Matrix4 m_toParent = Matrix4::Identity;
     Matrix4 m_toModel = Matrix4::Identity;
     bool m_isDirty = false;
-    void SetDirty();
-    void RemoveDirty();
-    void SetChildrenDirty();
 
     Vector3 m_worldPosition{};
     Matrix4 m_worldRotation{}; // [a_vorontcov] TODO: quaternion.
@@ -144,5 +145,4 @@ inline void TransformComponent::SetChildrenDirty()
     for (auto c : m_children)
         c->SetDirty();
 }
-
 }

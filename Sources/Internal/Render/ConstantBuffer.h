@@ -5,6 +5,9 @@
 
 #pragma once
 
+#include <vector>
+#include <variant>
+
 #include "Core/CoreTypes.h"
 
 #include "Math/Vector2.h"
@@ -12,9 +15,6 @@
 #include "Math/Vector4.h"
 #include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
-
-#include <vector>
-#include <variant>
 
 #include "Render/RendererPublic.h"
 
@@ -74,7 +74,6 @@ public:
     void MakeShallowCopy(ConstantBuffer& target, bool queueForUpdate = true) const; // [a_vorontcov] Copies params, space and key.
 
 private:
-
     enum class eTypeName : byte
     {
         v1 = 1,
@@ -84,6 +83,7 @@ private:
         m3 = 9,
         m4 = 16
     };
+
     struct Param
     {
         std::string name;

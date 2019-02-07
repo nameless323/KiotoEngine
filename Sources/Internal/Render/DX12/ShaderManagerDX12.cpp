@@ -11,7 +11,6 @@
 
 namespace Kioto::Renderer
 {
-
 void ShaderManagerDX12::RegisterShader(Shader* shader)
 {
     auto it = m_shaders.find(shader->GetHandle());
@@ -61,5 +60,4 @@ ShaderDX12 ShaderManagerDX12::CompileDXShader(const Shader& shader, const std::s
     ThrowIfFailed(hr);
     return res;
 }
-
 }

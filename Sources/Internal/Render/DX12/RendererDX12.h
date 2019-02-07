@@ -10,29 +10,18 @@
 #include <exception>
 #include <memory>
 
-// [a_vorontcov] To fwd decl.
-#include "Render/DX12/Buffers/EngineBuffers.h"
-#include "Render/DX12/Buffers/UploadBuffer.h"
-#include "Render/DX12/Buffers/VertexBufferDX12.h"
-#include "Render/DX12/Buffers/IndexBufferDX12.h"
-#include "Render/DX12/Buffers/ResourceDX12.h"
-#include "Render/DX12/VertexLayoutDX12.h"
-#include "Render/DX12/ShaderDX12.h"
-#include "Render/DX12/ShaderManagerDX12.h"
+#include "Render/DX12/Buffers/ConstantBufferManagerDX12.h"
 #include "Render/DX12/MeshManagerDX12.h"
-#include "Render/Texture/TextureDX12.h"
-#include "Render/RendererPublic.h"
-#include "Render/RenderPass/RenderPass.h"
-#include "Render/Texture/TextureSet.h"
-#include "Render/Texture/TextureManagerDX12.h"
+#include "Render/DX12/PixProfiler.h"
+#include "Render/DX12/PsoManager.h"
+#include "Render/DX12/RootSignatureManager.h"
+#include "Render/DX12/ShaderManagerDX12.h"
 #include "Render/DX12/StateDX.h"
 #include "Render/DX12/SwapChain.h"
-#include "Render/DX12/RootSignatureManager.h"
-#include "Render/DX12/PsoManager.h"
 #include "Render/DX12/VertexLayoutManagerDX12.h"
-#include "Render/DX12/RenderPacket.h"
-#include "Render/DX12/Buffers/ConstantBufferManagerDX12.h"
-#include "Render/DX12/PixProfiler.h"
+#include "Render/RenderCommand.h"
+#include "Render/RendererPublic.h"
+#include "Render/Texture/TextureManagerDX12.h"
 
 namespace Kioto
 {
@@ -41,7 +30,6 @@ class Mesh;
 
 namespace Kioto::Renderer
 {
-
 class Texture;
 class VertexLayout;
 class UploadBufferDX12;
@@ -90,8 +78,15 @@ public:
     void SetTimeBuffer(ConstantBufferHandle handle);
 
 private:
-    static constexpr uint32 PacketListPoolSize = 64;
-    static constexpr uint32 PacketListSize = 4096;
+    void GetHardwareAdapter(IDXGIFactory4* factory, IDXGIAdapter1** adapter);
+    void WaitForGPU();
+    void LogAdapters();
+    void LogAdapterOutputs(IDXGIAdapter* adapter);
+    void LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format);
+    void LoadPipeline();
+
+    std::vector<RenderCommand> m_frameCommands;
+    GpuProfiler<PixProfiler> m_profiler;
 
     TextureManagerDX12 m_textureManager;
     StateDX m_state;
@@ -103,19 +98,6 @@ private:
     VertexLayoutManagerDX12 m_vertexLayoutManager;
     ConstantBufferManagerDX12 m_constantBufferManager;
 
-    std::unordered_map<uint32, ResourceDX12> m_resources;
-    std::array<std::vector<RenderPass>, StateDX::FrameCount> m_renderPasses;
-
-    ResourceDX12* FindDxResource(uint32 handle);
-    
-    void GetHardwareAdapter(IDXGIFactory4* factory, IDXGIAdapter1** adapter);
-    void WaitForGPU();
-    void LogAdapters();
-    void LogAdapterOutputs(IDXGIAdapter* adapter);
-    void LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format);
-
-    void LoadPipeline();
-
     bool m_isTearingSupported = false; // [a_vorontcov] TODO: Properly handle when tearing is not supported.
     UINT m_width = -1;
     UINT m_height = -1;
@@ -123,10 +105,6 @@ private:
 
     ConstantBufferHandle m_currentTimeBuffer;
     ConstantBufferHandle m_currentCameraBuffer;
-
-    std::vector<RenderCommand> m_frameCommands;
-
-    GpuProfiler<PixProfiler> m_profiler;
 };
 
 inline TextureHandle RendererDX12::GetCurrentBackBufferHandle() const

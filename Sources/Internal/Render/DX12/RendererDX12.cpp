@@ -7,35 +7,17 @@
 
 #include "Render/DX12/RendererDX12.h"
 
-#include "Sources/External/Dx12Helpers/DDSTextureLoader.h"
-
 #include <array>
 #include <string>
 #include <vector>
 
-#include "AssetsSystem/AssetsSystem.h"
-#include "Core/FPSCounter.h"
-#include "Core/Timer/GlobalTimer.h"
-#include "Core/WindowsApplication.h"
-#include "Math/Vector3.h"
-#include "Math/Vector4.h"
-#include "Render/Geometry/GeometryGenerator.h"
-#include "Render/VertexLayout.h"
-#include "Render/DX12/VertexLayoutDX12.h"
-#include "Render/DX12/Shader/ShaderParser.h"
-#include "Render/Material.h"
+#include "Sources/External/Dx12Helpers/DDSTextureLoader.h"
 
-#include "Component/CameraComponent.h"
-#include "Systems/CameraSystem.h"
-#include "Core/Scene.h"
-#include "Core/KiotoEngine.h" // [a_vorontcov] For now. TODO: render pass with render target and so on. This class shouldn't know 'bout camera and so on.
-
-#include "Render/DX12/Buffers/UploadBufferDX12.h"
-#include "Render/Texture/Texture.h"
-#include "Render/ShaderData.h"
-
-#include "Render/Geometry/Mesh.h"
+#include "Render/Buffers/EngineBuffers.h"
 #include "Render/DX12/Geometry/MeshDX12.h"
+#include "Render/Shader.h"
+#include "Render/Material.h"
+#include "Render/RenderPass/RenderPass.h"
 
 namespace Kioto::Renderer
 {
@@ -240,8 +222,6 @@ void RendererDX12::Resize(uint16 width, uint16 height)
     m_state.CommandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
 
     WaitForGPU();
-    for (auto& v : m_renderPasses)
-        v.clear();
 }
 
 void RendererDX12::Update(float32 dt)
@@ -375,7 +355,6 @@ void RendererDX12::Present()
     m_state.FenceValues[m_swapChain.GetCurrentFrameIndex()] = ++m_state.CurrentFence;
     m_state.CommandQueue->Signal(m_state.Fence.Get(), m_state.CurrentFence);
 
-    m_renderPasses[m_swapChain.GetCurrentFrameIndex()].clear();
     m_frameCommands.clear();
     m_currentCameraBuffer = InvalidHandle;
 
@@ -469,11 +448,6 @@ void RendererDX12::ChangeFullScreenMode(bool fullScreen)
     Resize(m_width, m_height);
 }
 
-ResourceDX12* RendererDX12::FindDxResource(uint32 handle)
-{
-    return nullptr;
-}
-
 void RendererDX12::RegisterTexture(Texture* texture)
 {
     m_textureManager.RegisterTexture(texture);
@@ -538,5 +512,4 @@ void RendererDX12::SetTimeBuffer(ConstantBufferHandle handle)
 {
     m_currentTimeBuffer = handle;
 }
-
 }

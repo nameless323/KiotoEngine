@@ -7,9 +7,8 @@
 
 #include <map>
 
-#include "Render/RendererPublic.h"
-
 #include "Render/DX12/VertexLayoutDX12.h"
+#include "Render/RendererPublic.h"
 
 namespace Kioto::Renderer
 {

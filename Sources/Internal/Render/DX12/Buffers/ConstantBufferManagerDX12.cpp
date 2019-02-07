@@ -11,7 +11,6 @@
 
 namespace Kioto::Renderer
 {
-
 ConstantBufferManagerDX12::ConstantBufferManagerDX12()
 {
     m_updateQueues.reserve(128);
@@ -129,5 +128,4 @@ const std::vector<UploadBufferDX12*>& ConstantBufferManagerDX12::FindBuffers(Con
     auto it = m_constantBufferSets.find(handle);
     return it->second;
 }
-
 }

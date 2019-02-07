@@ -3,6 +3,8 @@
 // Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
 //
 
+#pragma once
+
 #include "Core/CoreTypes.h"
 #include "Core/CoreHelpers.h"
 #include "Core/ECS/Component.h"
@@ -10,11 +12,8 @@
 #include "Render/Material.h"
 #include "Render/Geometry/Mesh.h"
 
-#pragma once
-
 namespace Kioto
 {
-
 class RenderComponent : public Component
 {
     DECLARE_COMPONENT(RenderComponent);
@@ -32,7 +31,7 @@ public:
     void SetMesh(Renderer::Mesh* mesh);
 
 private:
-    Renderer::Material * m_material = nullptr;
+    Renderer::Material* m_material = nullptr;
     Renderer::Mesh* m_mesh = nullptr;
 };
 
@@ -65,5 +64,4 @@ inline void RenderComponent::SetMesh(Renderer::Mesh* mesh)
     SafeDelete(m_mesh);
     m_mesh = mesh;
 }
-
 }

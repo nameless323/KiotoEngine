@@ -16,7 +16,6 @@
 
 namespace Kioto
 {
-
 CameraSystem::CameraSystem()
 {
     m_components.reserve(4);
@@ -87,5 +86,4 @@ void CameraSystem::UpdateView(CameraComponent* cam)
     Matrix4 m = cam->GetTransform()->GetToWorld();
     cam->GetCamera().SetView(m.InversedOrthonorm());
 }
-
 }

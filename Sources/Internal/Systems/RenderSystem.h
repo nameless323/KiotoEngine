@@ -8,14 +8,13 @@
 #include "Core/CoreTypes.h"
 #include "Core/Core.h"
 #include "Core/ECS/SceneSystem.h"
-#include "Render/Renderer.h"
-#include "Render/RenderPass/ForwardRenderPass.h"
-#include "AssetsSystem/AssetsSystem.h"
 
 namespace Kioto
 {
-
-constexpr uint32 MaxRenderPassesCount = 128;
+namespace Renderer
+{
+class RenderPass;
+}
 
 class RenderSystem : public SceneSystem
 {
@@ -35,11 +34,5 @@ public:
 
 private:
     std::vector<Renderer::RenderPass*> m_renderPasses;
-
 };
-
-inline RenderSystem::RenderSystem()
-{
-    m_renderPasses.reserve(MaxRenderPassesCount);
-}
 }

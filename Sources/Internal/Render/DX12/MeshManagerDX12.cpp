@@ -12,7 +12,6 @@
 
 namespace Kioto::Renderer
 {
-
 MeshManagerDX12::MeshManagerDX12()
 {
     m_meshQueue.reserve(256);
@@ -55,5 +54,4 @@ MeshDX12* MeshManagerDX12::Find(MeshHandle handle)
         return nullptr;
     return it->second;
 }
-
 }

@@ -90,9 +90,8 @@ SystemTime GlobalTimer::GetSystemTime()
 #endif
 }
 
-Kioto::float32 GetSmoothDt()
+float32 GetSmoothDt()
 {
     return DtValues.GetAverage();
 }
-
 }

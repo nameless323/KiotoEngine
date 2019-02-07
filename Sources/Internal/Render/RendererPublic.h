@@ -41,35 +41,43 @@ public:
     SafeHandle(uint32 handle) : m_handle(handle)
     {
     }
+
     SafeHandle(const SafeHandle& other)
     {
         this->m_handle = other.m_handle;
     }
+
     SafeHandle& operator=(const SafeHandle& other)
     {
         this->m_handle = other.m_handle;
         return *this;
     }
+
     bool operator== (const SafeHandle& other) const
     {
         return m_handle == other.m_handle;
     }
+
     bool operator!= (const SafeHandle& other) const
     {
         return !(*this == other);
     }
+
     bool operator> (const SafeHandle& other) const
     {
         return m_handle > other.m_handle;
     }
+
     bool operator< (const SafeHandle& other) const
     {
         return m_handle < other.m_handle;
     }
+
     bool operator<= (const SafeHandle& other) const
     {
         return !(m_handle > other.m_handle);
     }
+
     bool operator>= (const SafeHandle& other) const
     {
         return !(m_handle < other.m_handle);

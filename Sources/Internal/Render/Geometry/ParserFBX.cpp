@@ -14,7 +14,6 @@
 
 namespace Kioto
 {
-
 namespace
 {
 Vector4 FbxVector4ToKioto(const FbxVector4& vec)
@@ -390,5 +389,4 @@ void ParserFBX::ParseBinormal(Renderer::IntermediateMesh::Vertex* vertex, FbxMes
         vertex->Bitangent = binormal;
     }
 }
-
 }

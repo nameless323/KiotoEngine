@@ -17,10 +17,9 @@
 
 namespace Kioto
 {
-
 Scene::Scene()
 {
-    // [a_vorontcov] 64 systems are enough for anyone.
+    // [a_vorontcov] 64 systems are enough for everyone.
     m_systems.reserve(64);
     m_entities.reserve(512);
 }
@@ -107,5 +106,4 @@ void Scene::AddSystemInternal(SceneSystem* system)
 {
     m_systems.push_back(system);
 }
-
 }

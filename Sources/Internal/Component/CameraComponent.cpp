@@ -11,7 +11,6 @@
 
 namespace Kioto
 {
-
 CameraComponent::CameraComponent(float32 fovY, float32 aspect, float32 nearPlane, float32 farPlane)
 {
     m_camera.SetFovY(fovY);
@@ -33,5 +32,4 @@ void CameraComponent::SetEntity(Entity* entity)
     Component::SetEntity(entity);
     m_transform = GetEntity()->GetTransform();
 }
-
 }

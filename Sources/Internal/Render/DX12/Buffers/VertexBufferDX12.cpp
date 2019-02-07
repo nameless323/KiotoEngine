@@ -24,5 +24,4 @@ VertexBufferDX12::~VertexBufferDX12()
 {
     SafeDelete(m_buffer);
 }
-
 }

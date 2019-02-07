@@ -5,14 +5,14 @@
 
 #pragma once
 
-#include <Array>
+#include <array>
 #include <vector>
 
 #include "Core/CoreTypes.h"
 #include "Math/Rect.h"
-#include "Render/RendererPublic.h"
 #include "Render/Camera.h"
 #include "Render/RenderCommand.h"
+#include "Render/RendererPublic.h"
 
 namespace Kioto::Renderer
 {

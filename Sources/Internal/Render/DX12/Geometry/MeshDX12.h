@@ -5,9 +5,9 @@
 
 #pragma once
 
-#include "Render/RendererPublic.h"
-
 #include <d3d12.h>
+
+#include "Render/RendererPublic.h"
 
 namespace Kioto::Renderer
 {
@@ -55,5 +55,4 @@ inline uint32 MeshDX12::GetIndexCount() const
 {
     return m_indexCount;
 }
-
 }

@@ -4,7 +4,7 @@
 
 #include "Render/RendererPublic.h"
 #include "Render/Renderer.h"
-#include "Render/DX12/Buffers/EngineBuffers.h"
+#include "Render/Buffers/EngineBuffers.h"
 
 namespace Kioto::Renderer
 {

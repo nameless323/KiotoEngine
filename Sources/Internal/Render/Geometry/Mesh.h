@@ -66,14 +66,17 @@ public:
     /// Get position. Treating as Vector3 ptr.
     ///
     Vector3* GetPositionPtr(uint32 i); // [a_vorontcov] TODO: remember offsets and return direct.
+
     ///
     /// Get normal. Treating as Vector3 ptr.
     ///
     Vector3* GetNormalPtr(uint32 i);
+
     ///
     /// Get uv0. Treating as Vector2 ptr.
     ///
     Vector2* GetUv0Ptr(uint32 i);
+
     ///
     /// Get color. Treating as Vector4 ptr.
     ///
@@ -210,5 +213,4 @@ inline void Mesh::SetHandle(MeshHandle handle)
 {
     m_handle = handle;
 }
-
 }

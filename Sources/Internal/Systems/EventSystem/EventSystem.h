@@ -83,19 +83,24 @@ public:
 
     /// Raise event. Pass std::shared_ptr<Event>, event system will call all subscribed callbacks and pass shared ptr to callbacks.
     void RaiseEvent(EventPtr e);
+
     /// Subscribe to specific event. If you have this ptr you can pass it to context and you will be able to unsubscribe via Unsubscribe(this).
     void Subscribe(EventType eType, EventCallback callback, void* context = nullptr);
+
     /// Subscribe to specific event. Pass event type as template arg. If you have this ptr you can pass it to context and you will be able to unsubscribe via Unsubscribe(this).
     template <typename EvType, typename = std::enable_if_t<std::is_convertible_v<EvType*, Event*>>>
     void Subscribe(EventCallback callback, void* context = nullptr);
 
     /// Unsubscribe specific callback from specific event.
     void Unsubscribe(EventType eType, EventCallback callback);
+
     /// Unsubscribe specific callback from specific event. Pass event type as template arg.
     template <typename EvType, typename = std::enable_if_t<std::is_convertible_v<EvType*, Event*>>>
     void Unsubscribe(EventCallback callback);
+
     /// Uscubscribe from all events for specific context. See Subscribe doc.
     void Unsubscribe(void* context);
+
     /// Clear all events.
     void Clear();
 

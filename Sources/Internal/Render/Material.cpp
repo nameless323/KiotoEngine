@@ -12,6 +12,8 @@
 #include "AssetsSystem/AssetsSystem.h"
 #include "AssetsSystem/RenderStateParamsConverter.h"
 #include "Render/Renderer.h"
+#include "Render/RenderPass/RenderPass.h"
+#include "Render/Shader.h"
 
 namespace Kioto::Renderer
 {
@@ -75,5 +77,4 @@ void Material::BuildMaterialForPass(const RenderPass* pass)
     Renderer::BuildMaterialForPass(*this, pass);
     m_buildedPassesHandles.push_back(pass->GetHandle());
 }
-
 }

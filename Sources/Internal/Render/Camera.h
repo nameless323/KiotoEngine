@@ -32,54 +32,67 @@ public:
     /// Set camera field of view in Y in radians.
     ///
     void SetFovY(float32 fovY);
+
     ///
     /// Set camera field of view in Y in degrees.
     ///
     void SetFovYDeg(float32 fovY);
+
     ///
     /// Set camera distance to near plane.
     ///
     void SetNearPlane(float32 nearPlane);
+
     ///
     /// Set camera distance to far plane.
     ///
     void SetFarPlane(float32 farPlane);
+
     ///
     /// Set camera aspect ratio (width/height).
     ///
     void SetAspect(float32 aspect);
+
     ///
     /// Set if camera is orthographic.
     ///
     void SetOrthographic(bool ortho);
+
     ///
     /// Set if camera is main camera.
     ///
     void SetIsMain(bool isMain);
+
     ///
     /// Get camera field of view in Y in radians.
     ///
     float32 GetFovY() const;
+
     ///
     /// Get distance to near clipping plane.
     ///
     float32 GetNearPlane() const;
+
     ///
     /// Get distance to far clipping plane.
     ///
     float32 GetFarPlane() const;
+
     ///
     /// Get camera aspect ratio (width / height).
     ///
     float32 GetAspect() const;
+
     ///
     /// Get if camera is orthographic.
     ///
     bool GetOrthographic() const;
+
     ///
     /// Get height of near clipping plane.
     ///
     float32 GetNearPlaneHeight() const;
+
     ///
     /// Get height of far clipping plane.
     ///
@@ -91,10 +104,12 @@ public:
     /// Get camera view matrix.
     ///
     Matrix4 GetView() const;
+
     ///
     /// Get camera projection matrix.
     ///
     Matrix4 GetProjection() const;
+
     ///
     /// Get camera (view * projection) matrix.
     ///
@@ -127,7 +142,6 @@ private:
     float32 m_aspect = 1.0f;
     bool m_isOrtho = false;
 };
-
 
 inline void Camera::SetFovY(float32 fovY)
 {

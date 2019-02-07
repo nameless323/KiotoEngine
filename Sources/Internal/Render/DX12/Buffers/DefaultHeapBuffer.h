@@ -5,10 +5,10 @@
 
 #pragma once
 
-#include "Core/CoreTypes.h"
-
 #include <d3d12.h>
 #include <wrl.h>
+
+#include "Core/CoreTypes.h"
 
 namespace Kioto::Renderer
 {

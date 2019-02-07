@@ -5,11 +5,12 @@
 
 #include "stdafx.h"
 
-#include "Render/DX12/Buffers/EngineBuffers.h"
+#include "Render/Buffers/EngineBuffers.h"
+
+#include "Render/ConstantBuffer.h"
 
 namespace Kioto::Renderer::EngineBuffers
 {
-
 namespace
 {
 namespace TimeCBData
@@ -62,5 +63,4 @@ void GetCameraBufferCopy(ConstantBuffer& target)
     m_cameraBuffer.MakeShallowCopy(target, false);
     target.ComposeBufferData();
 }
-
 }

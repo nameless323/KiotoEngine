@@ -10,15 +10,12 @@
 #include "Core/Core.h"
 #include "Core/CoreTypes.h"
 #include "Render/RendererPublic.h"
-#include "Render/RenderPass/RenderPass.h"
-#include "Render/DX12/RenderPacket.h"
-#include "Render/Camera.h"
+#include "Render/RenderCommand.h"
 
-namespace Kioto
-{
-namespace Renderer
+namespace Kioto::Renderer
 {
 class VertexLayout;
+class Camera;
 
 enum class eRenderApi
 {
@@ -42,7 +39,7 @@ void QueueConstantBufferForUpdate(ConstantBuffer& buffer);
 
 template <typename T>
 void RegisterRenderAsset(T* asset);
-void RegisterRenderPass(RenderPass* renderPass); // [a_vorontcov] TODO: allocate passes and all packet lists in renderer and give them by request.
+void RegisterRenderPass(RenderPass* renderPass);
 void RegisterTextureSet(TextureSet& set);
 void RegisterConstantBuffer(ConstantBuffer& buffer);
 TextureHandle GetCurrentBackBufferHandle();
@@ -53,5 +50,4 @@ KIOTO_API float32 GetAspect();
 
 VertexLayoutHandle GenerateVertexLayout(const VertexLayout& layout);
 void BuildMaterialForPass(Material& mat, const RenderPass* pass);
-}
 }
