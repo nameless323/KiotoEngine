@@ -20,7 +20,6 @@ static const std::map<const eDataFormat, uint16> formats
     { eDataFormat::R8, 4 }
 };
 
-
 const VertexLayout VertexLayout::LayoutPos3Norm3Uv2
 {
     std::vector<VertexDesc>
@@ -164,5 +163,4 @@ bool VertexDesc::operator!=(const VertexDesc& other) const
 {
     return !(*this == other);
 }
-
 }

@@ -13,7 +13,6 @@
 
 namespace Kioto::Renderer
 {
-
 PipelineState PipelineState::FromYaml(const YAML::Node& config)
 {
     PipelineState pipelineState;
@@ -91,5 +90,4 @@ void PipelineState::Append(const YAML::Node& node, PipelineState& srcCfg)
     if (node["colorMask"] != nullptr)
         srcCfg.ColorMask = FromString<eColorMask>(node["colorMask"].as<std::string>());
 }
-
 }

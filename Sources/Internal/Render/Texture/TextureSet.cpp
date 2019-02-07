@@ -10,7 +10,6 @@
 
 namespace Kioto::Renderer
 {
-
 TextureSet::TextureSet(const TextureSet& other)
     : m_data(other.m_data)
     , m_maxOffset(other.m_maxOffset)
@@ -61,5 +60,4 @@ bool TextureSet::Find(const std::string& name, TextureSetData*& data)
     data = &(*it);
     return true;
 }
-
 }

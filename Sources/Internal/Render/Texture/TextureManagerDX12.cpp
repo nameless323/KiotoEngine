@@ -14,7 +14,6 @@
 
 namespace Kioto::Renderer
 {
-
 TextureManagerDX12::TextureManagerDX12()
 {
     m_textureQueue.reserve(64);
@@ -134,5 +133,4 @@ void TextureManagerDX12::ProcessTextureSetUpdates(const StateDX& state)
         UpdateTextureSetHeap(state, *texSet);
     m_textureSetUpdateQueue.clear();
 }
-
 }

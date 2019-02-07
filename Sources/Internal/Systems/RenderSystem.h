@@ -8,12 +8,14 @@
 #include "Core/CoreTypes.h"
 #include "Core/Core.h"
 #include "Core/ECS/SceneSystem.h"
-#include "Render/Renderer.h"
-#include "Render/RenderPass/ForwardRenderPass.h"
-#include "AssetsSystem/AssetsSystem.h"
 
 namespace Kioto
 {
+namespace Renderer
+{
+class RenderPass;
+}
+
 class RenderSystem : public SceneSystem
 {
 public:

@@ -11,10 +11,14 @@
 #include "Core/Core.h"
 
 #include "Core/ECS/SceneSystem.h"
-#include "Render/Camera.h"
 
 namespace Kioto
 {
+namespace Renderer
+{
+class Camera;
+}
+
 class CameraComponent;
 class EventSystem;
 

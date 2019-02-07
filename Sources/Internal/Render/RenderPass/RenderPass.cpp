@@ -34,5 +34,4 @@ void RenderPass::SubmitRenderData()
     Renderer::SubmitRenderCommands(GetRenderCommands());
     ClearCommands();
 }
-
 }

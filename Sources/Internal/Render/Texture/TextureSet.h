@@ -5,11 +5,11 @@
 
 #pragma once
 
+#include <string>
+
 #include "Core/CoreTypes.h"
 #include "Render/Texture/Texture.h"
 #include "Render/RendererPublic.h"
-
-#include <string>
 
 namespace Kioto::Renderer
 {

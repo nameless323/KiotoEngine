@@ -7,17 +7,17 @@
 
 #include <string>
 
-#include "Render/Texture/TextureSet.h"
-#include "Render/ConstantBuffer.h"
 #include "AssetsSystem/Asset.h"
 #include "Core/CoreTypes.h"
+#include "Render/ConstantBuffer.h"
 #include "Render/PipelineState.h"
-#include "Render/Shader.h"
-#include "Render/ShaderData.h"
 #include "Render/RendererPublic.h"
+#include "Render/ShaderData.h"
 
 namespace Kioto::Renderer
 {
+class Shader;
+
 class Material : public Asset
 {
 public:

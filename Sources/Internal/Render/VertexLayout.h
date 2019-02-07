@@ -11,7 +11,6 @@
 
 namespace Kioto::Renderer
 {
-
 enum class eVertexSemantic
 {
     Position,
@@ -105,5 +104,4 @@ inline uint32 VertexLayout::GetElementsCount() const
 {
     return static_cast<uint32>(m_verticesDesc.size());
 }
-
 }

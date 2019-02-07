@@ -13,6 +13,7 @@
 #include "Render/Material.h"
 #include "Render/PipelineState.h"
 #include "Render/RenderPass/RenderPass.h"
+#include "Render/Shader.h"
 #include "Render/Texture/TextureManagerDX12.h"
 #include "Render/Texture/TextureManagerDX12.h"
 #include "Render/Texture/TextureDX12.h"
