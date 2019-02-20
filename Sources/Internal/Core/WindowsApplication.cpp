@@ -160,8 +160,80 @@ LRESULT WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
         LPCREATESTRUCT pCreateStruct = reinterpret_cast<LPCREATESTRUCT>(lParam);
         SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pCreateStruct->lpCreateParams));
+
+        // [a_vorontcov] For now only keyboard, joystick and mouse.
+        RAWINPUTDEVICE rid[3];
+
+        rid[0].usUsagePage = 0x01;
+        rid[0].usUsage = 0x02; // [a_vorontcov] Mouse.
+        rid[0].dwFlags = 0;
+        rid[0].hwndTarget = hwnd;
+
+        rid[1].usUsagePage = 0x01;
+        rid[1].usUsage = 0x06; // [a_vorontcov] Keyboard.
+        rid[1].dwFlags = 0;
+        rid[1].hwndTarget = hwnd;
+
+        rid[2].usUsagePage = 0x01;
+        rid[2].usUsage = 0x04; // [a_vorontcov] Joystic.
+        rid[2].dwFlags = 0;
+        rid[2].hwndTarget = hwnd;
+
+        if (!RegisterRawInputDevices(rid, 3, sizeof(rid[0])))
+            assert(false && "Couldn't register input devices");
+        return 0;
     }
-    return 0;
+
+    case WM_INPUT:
+    {
+        UINT dwSize;
+        GetRawInputData((HRAWINPUT)lParam, RID_INPUT, NULL, &dwSize, sizeof(RAWINPUTHEADER));
+        LPBYTE lpb = new BYTE[dwSize];
+        if (lpb == NULL)
+            return 0;
+
+        if (GetRawInputData((HRAWINPUT)lParam, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER)) != dwSize)
+            OutputDebugString(TEXT("GetRawInputData doesn't return correct size! \n"));
+        RAWINPUT* raw = (RAWINPUT*)lpb;
+
+        //STRSAFE_LPWSTR szTempOutput = new WCHAR[STRSAFE_MAX_CCH];
+        if (raw->header.dwType == RIM_TYPEKEYBOARD)
+        {
+            /*HRESULT hResult = StringCchPrintf(szTempOutput, STRSAFE_MAX_CCH, TEXT(" Kbd: make=%04x Flags:%04x Reserved:%04x ExtraInformation:%08x, msg=%04x VK=%04x \n"),
+                raw->data.keyboard.MakeCode,
+                raw->data.keyboard.Flags,
+                raw->data.keyboard.Reserved,
+                raw->data.keyboard.ExtraInformation,
+                raw->data.keyboard.Message,
+                raw->data.keyboard.VKey);
+            if (FAILED(hResult))
+            {
+                // TODO: write error handler
+            }
+            OutputDebugString(szTempOutput);*/
+        }
+        else if (raw->header.dwType == RIM_TYPEMOUSE)
+        {
+            /*HRESULT hResult = StringCchPrintf(szTempOutput, STRSAFE_MAX_CCH, TEXT("Mouse: usFlags=%04x ulButtons=%04x usButtonFlags=%04x usButtonData=%04x ulRawButtons=%04x lLastX=%04x lLastY=%04x ulExtraInformation=%04x\r\n"),
+                raw->data.mouse.usFlags,
+                raw->data.mouse.ulButtons,
+                raw->data.mouse.usButtonFlags,
+                raw->data.mouse.usButtonData,
+                raw->data.mouse.ulRawButtons,
+                raw->data.mouse.lLastX,
+                raw->data.mouse.lLastY,
+                raw->data.mouse.ulExtraInformation);
+
+            if (FAILED(hResult))
+            {
+                // TODO: write error handler
+            }
+            OutputDebugString(szTempOutput);*/
+        }
+        SafeDeleteArray(lpb);
+        //SafeDeleteArray(szTempOutput);
+        return 0;
+    }
 
     case WM_KEYDOWN:
         return 0;
@@ -187,7 +259,7 @@ LRESULT WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_DESTROY:
         PostQuitMessage(0);
         return 0;
-
+   
     default:
         return DefWindowProc(hwnd, message, wParam, lParam);
     }
