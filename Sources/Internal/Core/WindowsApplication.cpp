@@ -11,6 +11,7 @@
 #include <Strsafe.h>
 
 #include "Core/CoreTypes.h"
+#include "Core/Input/Input.h"
 
 namespace Kioto
 {
@@ -199,6 +200,10 @@ LRESULT WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
         //STRSAFE_LPWSTR szTempOutput = new WCHAR[STRSAFE_MAX_CCH];
         if (raw->header.dwType == RIM_TYPEKEYBOARD)
         {
+            if ((raw->data.keyboard.Flags & RI_KEY_BREAK) != 0)
+                Input::SetButtonUp(static_cast<uint32>(raw->data.keyboard.VKey));
+            else if ((raw->data.keyboard.Flags & RI_KEY_MAKE) != 0)
+                Input::SetButtonDown(static_cast<uint32>(raw->data.keyboard.VKey));
             /*HRESULT hResult = StringCchPrintf(szTempOutput, STRSAFE_MAX_CCH, TEXT(" Kbd: make=%04x Flags:%04x Reserved:%04x ExtraInformation:%08x, msg=%04x VK=%04x \n"),
                 raw->data.keyboard.MakeCode,
                 raw->data.keyboard.Flags,
