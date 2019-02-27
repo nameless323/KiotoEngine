@@ -257,6 +257,7 @@
     <ClCompile Include="Sources\Internal\Core\ECS\Component.cpp" />
     <ClCompile Include="Sources\Internal\Core\ECS\Entity.cpp" />
     <ClCompile Include="Sources\Internal\Core\FPSCounter.cpp" />
+    <ClCompile Include="Sources\Internal\Core\Input\Input.cpp" />
     <ClCompile Include="Sources\Internal\Core\KiotoEngine.cpp" />
     <ClCompile Include="Sources\Internal\Core\Scene.cpp" />
     <ClCompile Include="Sources\Internal\Core\Timer\GlobalTimer.cpp" />

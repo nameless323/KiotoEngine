@@ -9,6 +9,10 @@
 
 namespace Kioto
 {
+std::array<bool, Input::MAX_INPUT_ARRAY_SIZE> Input::m_thisFrameInput = {}; // [a_vorontcov] Up - false, down - true.
+std::array<bool, Input::MAX_INPUT_ARRAY_SIZE> Input::m_prevFrameInput = {};
+std::array<bool, Input::MAX_INPUT_ARRAY_SIZE> Input::m_prevPrevFrameInput = {};
+
 void Input::SetButtonUp(uint32 keyCode)
 {
     m_thisFrameInput[keyCode] = false;
@@ -21,7 +25,7 @@ void Input::SetButtonDown(uint32 keyCode)
 
 void Input::Update()
 {
-    uint32 sizeInBytes = m_prevFrameInput.size() * sizeof(m_prevFrameInput[0]);
+    uint32 sizeInBytes = static_cast<uint32>(m_prevFrameInput.size() * sizeof(m_prevFrameInput[0]));
     memcpy(m_prevPrevFrameInput.data(), m_prevFrameInput.data(), sizeInBytes);
     memcpy(m_prevFrameInput.data(), m_thisFrameInput.data(), sizeInBytes);
 }

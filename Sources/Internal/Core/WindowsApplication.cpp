@@ -202,7 +202,7 @@ LRESULT WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             if ((raw->data.keyboard.Flags & RI_KEY_BREAK) != 0)
                 Input::SetButtonUp(static_cast<uint32>(raw->data.keyboard.VKey));
-            else if ((raw->data.keyboard.Flags & RI_KEY_MAKE) != 0)
+            else if (raw->data.keyboard.Flags == RI_KEY_MAKE)
                 Input::SetButtonDown(static_cast<uint32>(raw->data.keyboard.VKey));
             /*HRESULT hResult = StringCchPrintf(szTempOutput, STRSAFE_MAX_CCH, TEXT(" Kbd: make=%04x Flags:%04x Reserved:%04x ExtraInformation:%08x, msg=%04x VK=%04x \n"),
                 raw->data.keyboard.MakeCode,
@@ -219,6 +219,7 @@ LRESULT WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         else if (raw->header.dwType == RIM_TYPEMOUSE)
         {
+            //OutputDebugStringA(std::to_string(raw))
             /*HRESULT hResult = StringCchPrintf(szTempOutput, STRSAFE_MAX_CCH, TEXT("Mouse: usFlags=%04x ulButtons=%04x usButtonFlags=%04x usButtonData=%04x ulRawButtons=%04x lLastX=%04x lLastY=%04x ulExtraInformation=%04x\r\n"),
                 raw->data.mouse.usFlags,
                 raw->data.mouse.ulButtons,

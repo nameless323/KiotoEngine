@@ -8,6 +8,7 @@
 #include <array>
 
 #include "Core/CoreTypes.h"
+#include "Core/Core.h"
 
 namespace Kioto
 {
@@ -109,10 +110,10 @@ public:
     static void SetButtonUp(uint32 keyCode);
     static void SetButtonDown(uint32 keyCode);
     static void Update();
-    static bool GetButtonUp(eKeyCode keyCode);
-    static bool GetButtonDown(eKeyCode keyCode);
-    static bool GetIsButtonHeldDown(eKeyCode keyCode);
-    static bool GetButtonPressed(eKeyCode keyCode);
+    KIOTO_API static bool GetButtonUp(eKeyCode keyCode);
+    KIOTO_API static bool GetButtonDown(eKeyCode keyCode);
+    KIOTO_API static bool GetIsButtonHeldDown(eKeyCode keyCode);
+    KIOTO_API static bool GetButtonPressed(eKeyCode keyCode);
 
 private:
     static constexpr int MAX_INPUT_ARRAY_SIZE = 256; // [a_vorontcov] Yep, bit of wasting memory but whatever.
