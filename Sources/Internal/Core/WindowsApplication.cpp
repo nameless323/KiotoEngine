@@ -219,6 +219,14 @@ LRESULT WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         else if (raw->header.dwType == RIM_TYPEMOUSE)
         {
+            if (raw->data.mouse.usFlags & MOUSE_MOVE_RELATIVE)
+                Input::SetMouseMoveRelated(raw->data.mouse.lLastX, raw->data.mouse.lLastY);
+            if (raw->data.mouse.usFlags & MOUSE_MOVE_ABSOLUTE)
+                Input::SetMouseMoveAbsolute(raw->data.mouse.lLastX, raw->data.mouse.lLastY);
+            if (raw->data.mouse.usButtonFlags & RI_MOUSE_WHEEL)
+                Input::SetMouseWheel(raw->data.mouse.usButtonData);
+
+            Input::SetMouseFlags(static_cast<uint32>(raw->data.mouse.usButtonFlags));
             //OutputDebugStringA(std::to_string(raw))
             /*HRESULT hResult = StringCchPrintf(szTempOutput, STRSAFE_MAX_CCH, TEXT("Mouse: usFlags=%04x ulButtons=%04x usButtonFlags=%04x usButtonData=%04x ulRawButtons=%04x lLastX=%04x lLastY=%04x ulExtraInformation=%04x\r\n"),
                 raw->data.mouse.usFlags,

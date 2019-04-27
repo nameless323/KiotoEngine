@@ -104,11 +104,23 @@ enum class eKeyCode
     Count
 };
 
+enum class eMouseFlags
+{
+    MouseLeft = 0,
+    MouseRight = 1,
+    MouseMiddle = 2,
+    Count
+};
+
 class Input
 {
 public:
     static void SetButtonUp(uint32 keyCode);
     static void SetButtonDown(uint32 keyCode);
+    static void SetMouseMoveRelated(uint32 x, uint32 y);
+    static void SetMouseMoveAbsolute(uint32 x, uint32 y);
+    static void SetMouseWheel(uint32 v);
+    static void SetMouseFlags(uint32 flags);
     static void Update();
     KIOTO_API static bool GetButtonUp(eKeyCode keyCode);
     KIOTO_API static bool GetButtonDown(eKeyCode keyCode);
@@ -116,10 +128,22 @@ public:
     KIOTO_API static bool GetButtonPressed(eKeyCode keyCode);
 
 private:
-    static constexpr int MAX_INPUT_ARRAY_SIZE = 256; // [a_vorontcov] Yep, bit of wasting memory but whatever.
+    static constexpr uint32 MAX_INPUT_ARRAY_SIZE = 256; // [a_vorontcov] Yep, bit of wasting memory but whatever.
+    static constexpr uint32 MAX_MOUSE_ARRAY_SIZE = 3;
 
     static std::array<bool, MAX_INPUT_ARRAY_SIZE> m_thisFrameInput; // [a_vorontcov] Up - false, down - true.
     static std::array<bool, MAX_INPUT_ARRAY_SIZE> m_prevFrameInput;
     static std::array<bool, MAX_INPUT_ARRAY_SIZE> m_prevPrevFrameInput;
+
+    static std::array<bool, MAX_MOUSE_ARRAY_SIZE> m_thisFrameMouse; // [a_vorontcov] Up - false, down - true.
+    static std::array<bool, MAX_MOUSE_ARRAY_SIZE> m_prevFrameMouse;
+    static std::array<bool, MAX_MOUSE_ARRAY_SIZE> m_prevPrevFrameMouse;
+
+    static Vector2 m_thisFrameMousePosRelative;
+    static Vector2 m_thisFrameMousePosAbsolute;
+    static Vector2 m_mouseRelative;
+    static Vector2 m_mouseAbsolute;
+    static uint32 m_thisFrameMouseWheel;
+    static uint32 m_mouseWheel;
 };
 }
