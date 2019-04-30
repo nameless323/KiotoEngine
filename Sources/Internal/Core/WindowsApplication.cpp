@@ -219,10 +219,10 @@ LRESULT WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         else if (raw->header.dwType == RIM_TYPEMOUSE)
         {
-            if (raw->data.mouse.usFlags & MOUSE_MOVE_RELATIVE)
+            //if (raw->data.mouse.usFlags & MOUSE_MOVE_RELATIVE)
                 Input::SetMouseMoveRelated(raw->data.mouse.lLastX, raw->data.mouse.lLastY);
-            if (raw->data.mouse.usFlags & MOUSE_MOVE_ABSOLUTE)
-                Input::SetMouseMoveAbsolute(raw->data.mouse.lLastX, raw->data.mouse.lLastY);
+            //if (raw->data.mouse.usFlags & MOUSE_MOVE_ABSOLUTE)
+            //    Input::SetMouseMoveAbsolute(raw->data.mouse.lLastX, raw->data.mouse.lLastY);
             if (raw->data.mouse.usButtonFlags & RI_MOUSE_WHEEL)
                 Input::SetMouseWheel(raw->data.mouse.usButtonData);
 

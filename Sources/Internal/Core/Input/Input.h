@@ -117,15 +117,16 @@ class Input
 public:
     static void SetButtonUp(uint32 keyCode);
     static void SetButtonDown(uint32 keyCode);
-    static void SetMouseMoveRelated(uint32 x, uint32 y);
-    static void SetMouseMoveAbsolute(uint32 x, uint32 y);
-    static void SetMouseWheel(uint32 v);
+    static void SetMouseMoveRelated(int32 x, int32 y);
+    static void SetMouseWheel(int32 v);
     static void SetMouseFlags(uint32 flags);
     static void Update();
     KIOTO_API static bool GetButtonUp(eKeyCode keyCode);
     KIOTO_API static bool GetButtonDown(eKeyCode keyCode);
     KIOTO_API static bool GetIsButtonHeldDown(eKeyCode keyCode);
     KIOTO_API static bool GetButtonPressed(eKeyCode keyCode);
+    KIOTO_API static uint32 GetMouseWheel();
+    KIOTO_API static Vector2i GetMouseRelativePosition();
 
 private:
     static constexpr uint32 MAX_INPUT_ARRAY_SIZE = 256; // [a_vorontcov] Yep, bit of wasting memory but whatever.
@@ -139,10 +140,8 @@ private:
     static std::array<bool, MAX_MOUSE_ARRAY_SIZE> m_prevFrameMouse;
     static std::array<bool, MAX_MOUSE_ARRAY_SIZE> m_prevPrevFrameMouse;
 
-    static Vector2 m_thisFrameMousePosRelative;
-    static Vector2 m_thisFrameMousePosAbsolute;
-    static Vector2 m_mouseRelative;
-    static Vector2 m_mouseAbsolute;
+    static Vector2i m_thisFrameMousePosRelative;
+    static Vector2i m_mouseRelative;
     static uint32 m_thisFrameMouseWheel;
     static uint32 m_mouseWheel;
 };

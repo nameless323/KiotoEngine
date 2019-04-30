@@ -81,24 +81,25 @@ public:
     static const Vector3_<T> Right;
     static const Vector3_<T> Forward;
     static const Vector3_<T> Backward;
+    static const Vector3_<T> Zero;
 };
 
 template<typename T>
-inline Vector3_<T> operator+ (Vector3_<T> v1, const Vector3_<T>& v2)
+Vector3_<T> operator+ (Vector3_<T> v1, const Vector3_<T>& v2)
 {
     v1 += v2;
     return v1;
 }
 
 template<typename T>
-inline Vector3_<T> operator- (Vector3_<T> v1, const Vector3_<T>& v2)
+Vector3_<T> operator- (Vector3_<T> v1, const Vector3_<T>& v2)
 {
     v1 -= v2;
     return v1;
 }
 
 template<typename T>
-inline Vector3_<T> operator* (Vector3_<T> v, float32 t)
+Vector3_<T> operator* (Vector3_<T> v, float32 t)
 {
     v *= t;
     return v;
@@ -153,7 +154,7 @@ bool Vector3_<T>::operator!=(const Vector3_<T>& other) const
 }
 
 template <typename T>
-inline Vector3_<T>& Vector3_<T>::operator=(const Vector3_<T>& v)
+Vector3_<T>& Vector3_<T>::operator=(const Vector3_<T>& v)
 {
     x = v.x;
     y = v.y;
@@ -163,7 +164,7 @@ inline Vector3_<T>& Vector3_<T>::operator=(const Vector3_<T>& v)
 }
 
 template <typename T>
-inline Vector3_<T>& Vector3_<T>::operator+=(const Vector3_<T>& v)
+Vector3_<T>& Vector3_<T>::operator+=(const Vector3_<T>& v)
 {
     x += v.x;
     y += v.y;
@@ -173,7 +174,7 @@ inline Vector3_<T>& Vector3_<T>::operator+=(const Vector3_<T>& v)
 }
 
 template <typename T>
-inline Vector3_<T>& Vector3_<T>::operator-=(const Vector3_<T>& v)
+Vector3_<T>& Vector3_<T>::operator-=(const Vector3_<T>& v)
 {
     x -= v.x;
     y -= v.y;
@@ -183,7 +184,7 @@ inline Vector3_<T>& Vector3_<T>::operator-=(const Vector3_<T>& v)
 }
 
 template <typename T>
-inline Vector3_<T>& Vector3_<T>::operator*=(float32 t)
+Vector3_<T>& Vector3_<T>::operator*=(float32 t)
 {
     x *= t;
     y *= t;
@@ -193,27 +194,27 @@ inline Vector3_<T>& Vector3_<T>::operator*=(float32 t)
 }
 
 template <typename T>
-inline Vector3_<T> Vector3_<T>::operator-() const
+Vector3_<T> Vector3_<T>::operator-() const
 {
     return { -x, -y, -z};
 }
 
 #if _WIN32 || _WIN64
 template <typename T>
-inline Vector3_<T>::Vector3_(const DirectX::XMFLOAT3& v)
+Vector3_<T>::Vector3_(const DirectX::XMFLOAT3& v)
     : x(v.x), y(v.y), z(v.z)
 {
 }
 
 template <typename T>
-inline Vector3_<T>::operator DirectX::XMFLOAT3() const
+Vector3_<T>::operator DirectX::XMFLOAT3() const
 {
     return XMFLOAT3(x, y, z);
 }
 #endif
 
 template <typename T>
-inline float32 Vector3_<T>::SqrLength() const
+float32 Vector3_<T>::SqrLength() const
 {
     return x * x + y * y + z * z;
 }
@@ -225,7 +226,7 @@ inline float32 Vector3_<T>::Length() const
 }
 
 template <typename T>
-inline Vector3_<T>& Vector3_<T>::Normalize()
+Vector3_<T>& Vector3_<T>::Normalize()
 {
     float32 invLen = 1.f / Length(); // [a_vorontcov] Assert sqrLen > Epsilon * Epsilon maybe?
     x *= invLen;
@@ -235,46 +236,49 @@ inline Vector3_<T>& Vector3_<T>::Normalize()
 }
 
 template <typename T>
-inline Vector3_<T> Vector3_<T>::Normalized() const
+Vector3_<T> Vector3_<T>::Normalized() const
 {
     return Vector3_<T>::Normalized(*this);
 }
 
 template <typename T>
-inline Vector3_<T> Vector3_<T>::Normalized(Vector3_<T> v)
+Vector3_<T> Vector3_<T>::Normalized(Vector3_<T> v)
 {
     return v.Normalize();
 }
 
 template <typename T>
-inline T Vector3_<T>::Dot(const Vector3_<T>& v1, const Vector3_<T>& v2)
+T Vector3_<T>::Dot(const Vector3_<T>& v1, const Vector3_<T>& v2)
 {
     return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
 }
 
 template <typename T>
-inline Vector3_<T> Vector3_<T>::Cross(const Vector3_<T>& v1, const Vector3_<T>& v2)
+Vector3_<T> Vector3_<T>::Cross(const Vector3_<T>& v1, const Vector3_<T>& v2)
 {
     return { v1.y * v2.z - v2.y * v1.z, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x };
 }
 
 template <typename T>
-const Vector3_<T> Vector3_<T>::Up(0.0f, 1.0f, 0.0f);
+const Vector3_<T> Vector3_<T>::Up((T)0, (T)1, (T)0);
 
 template <typename T>
-const Vector3_<T> Vector3_<T>::Down(0.0f, -1.0f, 0.0f);
+const Vector3_<T> Vector3_<T>::Down((T)0, (T)-1, (T)0);
 
 template <typename T>
-const Vector3_<T> Vector3_<T>::Left(-1.0f, 0.0f, 0.0f);
+const Vector3_<T> Vector3_<T>::Left((T)-1, (T)0, (T)0);
 
 template <typename T>
-const Vector3_<T> Vector3_<T>::Right(1.0f, 0.0f, 0.0f);
+const Vector3_<T> Vector3_<T>::Right((T)1, (T)0, (T)0);
 
 template <typename T>
-const Vector3_<T> Vector3_<T>::Forward(0.0f, 0.0f, 1.0f);
+const Vector3_<T> Vector3_<T>::Forward((T)0, (T)0, (T)1);
 
 template <typename T>
-const Vector3_<T> Vector3_<T>::Backward(0.0f, 0.0f, -1.0f);
+const Vector3_<T> Vector3_<T>::Backward((T)0, (T)0, (T)-1);
+
+template <typename T>
+const Vector3_<T> Vector3_<T>::Zero((T)0, (T)0, (T)0);
 
 using Vector3 = Vector3_<float32>;
 using Vector3i = Vector3_<int32>;
