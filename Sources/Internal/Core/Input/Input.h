@@ -104,7 +104,7 @@ enum class eKeyCode
     Count
 };
 
-enum class eMouseFlags
+enum class eMouseCodes
 {
     MouseLeft = 0,
     MouseRight = 1,
@@ -115,18 +115,25 @@ enum class eMouseFlags
 class Input
 {
 public:
+    KIOTO_API static bool GetButtonUp(eKeyCode keyCode);
+    KIOTO_API static bool GetButtonDown(eKeyCode keyCode);
+    KIOTO_API static bool GetIsButtonHeldDown(eKeyCode keyCode);
+    KIOTO_API static bool GetButtonPressed(eKeyCode keyCode);
+
+    KIOTO_API static bool GetMouseUp(eMouseCodes keyCode);
+    KIOTO_API static bool GetMouseDown(eMouseCodes keyCode);
+    KIOTO_API static bool GetIsMouseHeldDown(eMouseCodes keyCode);
+    KIOTO_API static bool GetMousePressed(eMouseCodes keyCode);
+
+    KIOTO_API static uint32 GetMouseWheel();
+    KIOTO_API static Vector2i GetMouseRelativePosition();
+
     static void SetButtonUp(uint32 keyCode);
     static void SetButtonDown(uint32 keyCode);
     static void SetMouseMoveRelated(int32 x, int32 y);
     static void SetMouseWheel(int32 v);
     static void SetMouseFlags(uint32 flags);
     static void Update();
-    KIOTO_API static bool GetButtonUp(eKeyCode keyCode);
-    KIOTO_API static bool GetButtonDown(eKeyCode keyCode);
-    KIOTO_API static bool GetIsButtonHeldDown(eKeyCode keyCode);
-    KIOTO_API static bool GetButtonPressed(eKeyCode keyCode);
-    KIOTO_API static uint32 GetMouseWheel();
-    KIOTO_API static Vector2i GetMouseRelativePosition();
 
 private:
     static constexpr uint32 MAX_INPUT_ARRAY_SIZE = 256; // [a_vorontcov] Yep, bit of wasting memory but whatever.
