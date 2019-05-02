@@ -121,9 +121,9 @@ void Input::Update()
     memset(m_thisFrameInput.data(), 0, sizeInBytes);
 
     const uint32 sizeInBytesMouse = static_cast<uint32>(m_thisFrameMouse.size() * sizeof(m_thisFrameMouse[0]));
-    memcpy(m_prevPrevFrameMouse.data(), m_prevFrameMouse.data(), sizeInBytes);
-    memcpy(m_prevFrameMouse.data(), m_thisFrameMouse.data(), sizeInBytes);
-    memset(m_thisFrameMouse.data(), 0, sizeInBytes);
+    memcpy(m_prevPrevFrameMouse.data(), m_prevFrameMouse.data(), sizeInBytesMouse);
+    memcpy(m_prevFrameMouse.data(), m_thisFrameMouse.data(), sizeInBytesMouse);
+    memset(m_thisFrameMouse.data(), 0, sizeInBytesMouse);
 
     m_mouseRelative = m_thisFrameMousePosRelative;
     m_thisFrameMousePosRelative = Vector2i::Zero;
