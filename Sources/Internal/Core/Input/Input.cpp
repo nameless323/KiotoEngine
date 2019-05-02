@@ -20,8 +20,8 @@ std::array<bool, Input::MAX_MOUSE_ARRAY_SIZE> Input::m_prevPrevFrameMouse = {};
 Vector2i Input::m_thisFrameMousePosRelative = Vector2i(0, 0);
 Vector2i Input::m_mouseRelative = Vector2i(0, 0);
 
-uint32 Input::m_thisFrameMouseWheel = 0;
-uint32 Input::m_mouseWheel = 0;
+int32 Input::m_thisFrameMouseWheel = 0;
+int32 Input::m_mouseWheel = 0;
 
 bool Input::GetButtonUp(eKeyCode keyCode)
 {
@@ -67,9 +67,9 @@ bool Input::GetMousePressed(eMouseCodes keyCode)
     return !m_prevFrameMouse[index] && m_prevPrevFrameMouse[index];
 }
 
-uint32 Input::GetMouseWheel()
+eMouseWheelScroll Input::GetMouseWheel()
 {
-    return m_mouseWheel;
+    return static_cast<eMouseWheelScroll>(m_mouseWheel);
 }
 
 Vector2i Input::GetMouseRelativePosition()

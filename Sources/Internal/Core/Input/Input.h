@@ -112,6 +112,13 @@ enum class eMouseCodes
     Count
 };
 
+enum class eMouseWheelScroll : uint32
+{
+    ScrollUp = 120,
+    ScrollDown = 65416, // [a_vorontcov] Emperical way.
+    ScrollNone = 0
+};
+
 class Input
 {
 public:
@@ -125,7 +132,7 @@ public:
     KIOTO_API static bool GetIsMouseHeldDown(eMouseCodes keyCode);
     KIOTO_API static bool GetMousePressed(eMouseCodes keyCode);
 
-    KIOTO_API static uint32 GetMouseWheel();
+    KIOTO_API static eMouseWheelScroll GetMouseWheel();
     KIOTO_API static Vector2i GetMouseRelativePosition();
 
     static void SetButtonUp(uint32 keyCode);
@@ -149,7 +156,7 @@ private:
 
     static Vector2i m_thisFrameMousePosRelative;
     static Vector2i m_mouseRelative;
-    static uint32 m_thisFrameMouseWheel;
-    static uint32 m_mouseWheel;
+    static int32 m_thisFrameMouseWheel;
+    static int32 m_mouseWheel;
 };
 }
