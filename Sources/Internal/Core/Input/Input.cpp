@@ -47,24 +47,19 @@ bool Input::GetButtonPressed(eKeyCode keyCode)
 
 bool Input::GetMouseUp(eMouseCodes keyCode)
 {
-    return !m_prevFrameMouse[static_cast<uint32>(keyCode)];
+    const uint32 index = static_cast<uint32>(keyCode);
+    return !m_prevFrameMouse[index] && m_prevPrevFrameMouse[index];
 }
 
 bool Input::GetMouseDown(eMouseCodes keyCode)
 {
+    const uint32 index = static_cast<uint32>(keyCode);
+    return m_prevFrameMouse[index] && !m_prevPrevFrameMouse[index];
+}
+
+bool Input::GetMouseHeldDown(eMouseCodes keyCode)
+{
     return m_prevFrameMouse[static_cast<uint32>(keyCode)];
-}
-
-bool Input::GetIsMouseHeldDown(eMouseCodes keyCode)
-{
-    const uint32 index = static_cast<uint32>(keyCode);
-    return m_prevFrameMouse[index] && m_prevPrevFrameMouse[index];
-}
-
-bool Input::GetMousePressed(eMouseCodes keyCode)
-{
-    const uint32 index = static_cast<uint32>(keyCode);
-    return !m_prevFrameMouse[index] && m_prevPrevFrameMouse[index];
 }
 
 eMouseWheelScroll Input::GetMouseWheel()
@@ -99,6 +94,8 @@ void Input::SetMouseWheel(int32 v)
 
 void Input::SetMouseFlags(uint32 flags)
 {
+    //OutputDebugStringA(std::to_string(flags).c_str());
+    //OutputDebugStringA("\n");
     if (flags & RI_MOUSE_LEFT_BUTTON_DOWN)
         m_thisFrameMouse[static_cast<uint32>(eMouseCodes::MouseLeft)] = true;
     if (flags & RI_MOUSE_LEFT_BUTTON_UP)
@@ -118,12 +115,12 @@ void Input::Update()
     const uint32 sizeInBytes = static_cast<uint32>(m_prevFrameInput.size() * sizeof(m_prevFrameInput[0]));
     memcpy(m_prevPrevFrameInput.data(), m_prevFrameInput.data(), sizeInBytes);
     memcpy(m_prevFrameInput.data(), m_thisFrameInput.data(), sizeInBytes);
-    memset(m_thisFrameInput.data(), 0, sizeInBytes);
+    //memset(m_thisFrameInput.data(), 0, sizeInBytes);
 
     const uint32 sizeInBytesMouse = static_cast<uint32>(m_thisFrameMouse.size() * sizeof(m_thisFrameMouse[0]));
     memcpy(m_prevPrevFrameMouse.data(), m_prevFrameMouse.data(), sizeInBytesMouse);
     memcpy(m_prevFrameMouse.data(), m_thisFrameMouse.data(), sizeInBytesMouse);
-    memset(m_thisFrameMouse.data(), 0, sizeInBytesMouse);
+    //memset(m_thisFrameMouse.data(), 0, sizeInBytesMouse);
 
     m_mouseRelative = m_thisFrameMousePosRelative;
     m_thisFrameMousePosRelative = Vector2i::Zero;

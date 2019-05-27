@@ -129,8 +129,7 @@ public:
 
     KIOTO_API static bool GetMouseUp(eMouseCodes keyCode);
     KIOTO_API static bool GetMouseDown(eMouseCodes keyCode);
-    KIOTO_API static bool GetIsMouseHeldDown(eMouseCodes keyCode);
-    KIOTO_API static bool GetMousePressed(eMouseCodes keyCode);
+    KIOTO_API static bool GetMouseHeldDown(eMouseCodes keyCode);
 
     KIOTO_API static eMouseWheelScroll GetMouseWheel();
     KIOTO_API static Vector2i GetMouseRelativePosition();
