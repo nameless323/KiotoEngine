@@ -11,6 +11,13 @@
 
 namespace Logger
 {
+void SetSeparator(std::string separator)
+{
+    Separator = std::move(separator);
+}
+
+std::string Separator = ", ";
+
 template<typename TF>
 void WriteLog(std::stringstream& ss, const TF& f)
 {
@@ -21,7 +28,7 @@ void WriteLog(std::stringstream& ss, const TF& f)
 template<typename TF, typename ... TR>
 void WriteLog(std::stringstream& ss, const TF& f, const TR& ... rest)
 {
-    ss << f << ", ";
+    ss << f << sep;
     WriteLog(ss, rest ...);
 }
 
