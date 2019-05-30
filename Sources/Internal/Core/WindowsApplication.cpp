@@ -187,9 +187,11 @@ LRESULT WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     case WM_INPUT:
     {
+        // [a_vorontcov] Explanation of what's going on here - https://docs.microsoft.com/en-us/windows/desktop/inputdev/using-raw-input
+
         UINT dwSize;
         GetRawInputData((HRAWINPUT)lParam, RID_INPUT, NULL, &dwSize, sizeof(RAWINPUTHEADER));
-        LPBYTE lpb = new BYTE[dwSize];
+        LPBYTE lpb = new BYTE[dwSize]; // [a_vorontcov] TODO: Remove every frame reallocation here.
         if (lpb == NULL)
             return 0;
 
@@ -197,56 +199,24 @@ LRESULT WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
             OutputDebugString(TEXT("GetRawInputData doesn't return correct size! \n"));
         RAWINPUT* raw = (RAWINPUT*)lpb;
 
-        //STRSAFE_LPWSTR szTempOutput = new WCHAR[STRSAFE_MAX_CCH];
         if (raw->header.dwType == RIM_TYPEKEYBOARD)
         {
             if ((raw->data.keyboard.Flags & RI_KEY_BREAK) != 0)
                 Input::SetButtonUp(static_cast<uint32>(raw->data.keyboard.VKey));
             else if (raw->data.keyboard.Flags == RI_KEY_MAKE)
                 Input::SetButtonDown(static_cast<uint32>(raw->data.keyboard.VKey));
-            /*HRESULT hResult = StringCchPrintf(szTempOutput, STRSAFE_MAX_CCH, TEXT(" Kbd: make=%04x Flags:%04x Reserved:%04x ExtraInformation:%08x, msg=%04x VK=%04x \n"),
-                raw->data.keyboard.MakeCode,
-                raw->data.keyboard.Flags,
-                raw->data.keyboard.Reserved,
-                raw->data.keyboard.ExtraInformation,
-                raw->data.keyboard.Message,
-                raw->data.keyboard.VKey);
-            if (FAILED(hResult))
-            {
-                // TODO: write error handler
-            }
-            OutputDebugString(szTempOutput);*/
         }
         else if (raw->header.dwType == RIM_TYPEMOUSE)
         {
-            //if (raw->data.mouse.usFlags & MOUSE_MOVE_RELATIVE)
-                Input::SetMouseMoveRelated(raw->data.mouse.lLastX, raw->data.mouse.lLastY);
-            //if (raw->data.mouse.usFlags & MOUSE_MOVE_ABSOLUTE)
-            //    Input::SetMouseMoveAbsolute(raw->data.mouse.lLastX, raw->data.mouse.lLastY);
+            Input::SetMouseMoveRelated(raw->data.mouse.lLastX, raw->data.mouse.lLastY);
+
             if (raw->data.mouse.usButtonFlags & RI_MOUSE_WHEEL)
                 Input::SetMouseWheel(raw->data.mouse.usButtonData);
 
             if (static_cast<uint32>(raw->data.mouse.usButtonFlags) != 0)
                 Input::SetMouseFlags(static_cast<uint32>(raw->data.mouse.usButtonFlags));
-            //OutputDebugStringA(std::to_string(raw))
-            /*HRESULT hResult = StringCchPrintf(szTempOutput, STRSAFE_MAX_CCH, TEXT("Mouse: usFlags=%04x ulButtons=%04x usButtonFlags=%04x usButtonData=%04x ulRawButtons=%04x lLastX=%04x lLastY=%04x ulExtraInformation=%04x\r\n"),
-                raw->data.mouse.usFlags,
-                raw->data.mouse.ulButtons,
-                raw->data.mouse.usButtonFlags,
-                raw->data.mouse.usButtonData,
-                raw->data.mouse.ulRawButtons,
-                raw->data.mouse.lLastX,
-                raw->data.mouse.lLastY,
-                raw->data.mouse.ulExtraInformation);
-
-            if (FAILED(hResult))
-            {
-                // TODO: write error handler
-            }
-            OutputDebugString(szTempOutput);*/
         }
         SafeDeleteArray(lpb);
-        //SafeDeleteArray(szTempOutput);
         return 0;
     }
 
