@@ -125,7 +125,6 @@ public:
     KIOTO_API static bool GetButtonUp(eKeyCode keyCode);
     KIOTO_API static bool GetButtonDown(eKeyCode keyCode);
     KIOTO_API static bool GetIsButtonHeldDown(eKeyCode keyCode);
-    KIOTO_API static bool GetButtonPressed(eKeyCode keyCode);
 
     KIOTO_API static bool GetMouseUp(eMouseCodes keyCode);
     KIOTO_API static bool GetMouseDown(eMouseCodes keyCode);

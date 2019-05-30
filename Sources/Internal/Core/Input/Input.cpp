@@ -25,24 +25,19 @@ int32 Input::m_mouseWheel = 0;
 
 bool Input::GetButtonUp(eKeyCode keyCode)
 {
-    return !m_prevFrameInput[static_cast<uint32>(keyCode)];
+    const uint32 index = static_cast<uint32>(keyCode);
+    return !m_prevFrameInput[index] && m_prevPrevFrameInput[index];
 }
 
 bool Input::GetButtonDown(eKeyCode keyCode)
 {
-    return m_prevFrameInput[static_cast<uint32>(keyCode)];
+    const uint32 index = static_cast<uint32>(keyCode);
+    return m_prevFrameInput[index] && !m_prevPrevFrameInput[index];
 }
 
 bool Input::GetIsButtonHeldDown(eKeyCode keyCode)
 {
-    const uint32 index = static_cast<uint32>(keyCode);
-    return m_prevFrameInput[index] && m_prevPrevFrameInput[index];
-}
-
-bool Input::GetButtonPressed(eKeyCode keyCode)
-{
-    const uint32 index = static_cast<uint32>(keyCode);
-    return !m_prevFrameInput[index] && m_prevPrevFrameInput[index];
+    return m_prevFrameInput[static_cast<uint32>(keyCode)];
 }
 
 bool Input::GetMouseUp(eMouseCodes keyCode)
