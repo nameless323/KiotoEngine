@@ -11,6 +11,7 @@
 #include <Strsafe.h>
 
 #include "Core/CoreTypes.h"
+#include "Core/Input/Input.h"
 
 namespace Kioto
 {
@@ -160,8 +161,64 @@ LRESULT WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
         LPCREATESTRUCT pCreateStruct = reinterpret_cast<LPCREATESTRUCT>(lParam);
         SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pCreateStruct->lpCreateParams));
+
+        // [a_vorontcov] For now only keyboard, joystick and mouse.
+        RAWINPUTDEVICE rid[3];
+
+        rid[0].usUsagePage = 0x01;
+        rid[0].usUsage = 0x02; // [a_vorontcov] Mouse.
+        rid[0].dwFlags = 0;
+        rid[0].hwndTarget = hwnd;
+
+        rid[1].usUsagePage = 0x01;
+        rid[1].usUsage = 0x06; // [a_vorontcov] Keyboard.
+        rid[1].dwFlags = 0;
+        rid[1].hwndTarget = hwnd;
+
+        rid[2].usUsagePage = 0x01;
+        rid[2].usUsage = 0x04; // [a_vorontcov] Joystic.
+        rid[2].dwFlags = 0;
+        rid[2].hwndTarget = hwnd;
+
+        if (!RegisterRawInputDevices(rid, 3, sizeof(rid[0])))
+            assert(false && "Couldn't register input devices");
+        return 0;
     }
-    return 0;
+
+    case WM_INPUT:
+    {
+        // [a_vorontcov] Explanation of what's going on here - https://docs.microsoft.com/en-us/windows/desktop/inputdev/using-raw-input
+
+        UINT dwSize;
+        GetRawInputData((HRAWINPUT)lParam, RID_INPUT, NULL, &dwSize, sizeof(RAWINPUTHEADER));
+        LPBYTE lpb = new BYTE[dwSize]; // [a_vorontcov] TODO: Remove every frame reallocation here.
+        if (lpb == NULL)
+            return 0;
+
+        if (GetRawInputData((HRAWINPUT)lParam, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER)) != dwSize)
+            OutputDebugString(TEXT("GetRawInputData doesn't return correct size! \n"));
+        RAWINPUT* raw = (RAWINPUT*)lpb;
+
+        if (raw->header.dwType == RIM_TYPEKEYBOARD)
+        {
+            if ((raw->data.keyboard.Flags & RI_KEY_BREAK) != 0)
+                Input::SetButtonUp(static_cast<uint32>(raw->data.keyboard.VKey));
+            else if (raw->data.keyboard.Flags == RI_KEY_MAKE)
+                Input::SetButtonDown(static_cast<uint32>(raw->data.keyboard.VKey));
+        }
+        else if (raw->header.dwType == RIM_TYPEMOUSE)
+        {
+            Input::SetMouseMoveRelated(raw->data.mouse.lLastX, raw->data.mouse.lLastY);
+
+            if (raw->data.mouse.usButtonFlags & RI_MOUSE_WHEEL)
+                Input::SetMouseWheel(raw->data.mouse.usButtonData);
+
+            if (static_cast<uint32>(raw->data.mouse.usButtonFlags) != 0)
+                Input::SetMouseFlags(static_cast<uint32>(raw->data.mouse.usButtonFlags));
+        }
+        SafeDeleteArray(lpb);
+        return 0;
+    }
 
     case WM_KEYDOWN:
         return 0;
@@ -187,7 +244,7 @@ LRESULT WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_DESTROY:
         PostQuitMessage(0);
         return 0;
-
+   
     default:
         return DefWindowProc(hwnd, message, wParam, lParam);
     }

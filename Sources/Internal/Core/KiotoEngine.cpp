@@ -9,6 +9,7 @@
 
 #include "AssetsSystem/AssetsSystem.h"
 #include "Core/FPSCounter.h"
+#include "Core/Input/Input.h"
 #include "Core/KiotoEngine.h"
 #include "Core/Scene.h"
 #include "Core/Timer/GlobalTimer.h"
@@ -82,6 +83,7 @@ void Init()
 
 void Update()
 {
+    Input::Update();
     GlobalTimer::Tick();
     FPSCounter::Tick(GlobalTimer::GetDeltaTime());
     if (m_scene != nullptr)

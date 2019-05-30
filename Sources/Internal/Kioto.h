@@ -24,6 +24,7 @@
 #include <Math/Matrix4.h>
 
 #include <Render/Renderer.h>
+#include <Core/Input/Input.h>
 
 using Kioto::byte;
 using Kioto::int16;

@@ -37,6 +37,8 @@ public:
 
     bool operator== (const Vector2_<T>& other) const;
     bool operator!= (const Vector2_<T>& other) const;
+
+    static const Vector2_<T> Zero;
 };
 
 template <typename T>
@@ -86,6 +88,9 @@ bool Vector2_<T>::operator!=(const Vector2_<T>& other) const
 {
     return !(*this == other);
 }
+
+template <typename T>
+const Vector2_<T> Vector2_<T>::Zero((T)0, (T)0);
 
 using Vector2 = Vector2_<float32>;
 using Vector2i = Vector2_<int32>;
