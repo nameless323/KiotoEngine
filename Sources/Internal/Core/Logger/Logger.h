@@ -9,6 +9,8 @@
 
 #include <debugapi.h>
 
+namespace Logger
+{
 template<typename TF>
 void WriteLog(std::stringstream& ss, const TF& f)
 {
@@ -19,7 +21,7 @@ void WriteLog(std::stringstream& ss, const TF& f)
 template<typename TF, typename ... TR>
 void WriteLog(std::stringstream& ss, const TF& f, const TR& ... rest)
 {
-    ss << f;
+    ss << f << ", ";
     WriteLog(ss, rest ...);
 }
 
@@ -27,8 +29,9 @@ template<typename ... TR>
 void WriteLog(const char* file, int line, const TR& ... rest)
 {
     std::stringstream ss;
-    ss << file << "(" << line<< ")" << " | ";
+    ss << file << "(" << line << ")" << " | ";
     WriteLog(ss, rest...);
 }
+}
 
-#define LOG(...) WriteLog(__FILE__, __LINE__, __VA_ARGS__)
+#define LOG(...) Logger::WriteLog(__FILE__, __LINE__, __VA_ARGS__)
