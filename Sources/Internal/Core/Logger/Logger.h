@@ -9,7 +9,7 @@
 
 #include <debugapi.h>
 
-namespace Logger
+namespace Kioto::Logger
 {
 namespace Internal
 {
@@ -49,4 +49,4 @@ void ResetSeparator()
 }
 }
 
-#define LOG(...) Logger::Internal::WriteLog(__FILE__, __LINE__, __VA_ARGS__)
+#define LOG(...) Kioto::Logger::Internal::WriteLog(__FILE__, __LINE__, __VA_ARGS__)
