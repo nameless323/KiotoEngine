@@ -11,12 +11,9 @@
 
 namespace Logger
 {
-void SetSeparator(std::string separator)
+namespace Internal
 {
-    Separator = std::move(separator);
-}
-
-std::string Separator = ", ";
+std::string Separator = "";
 
 template<typename TF>
 void WriteLog(std::stringstream& ss, const TF& f)
@@ -28,7 +25,7 @@ void WriteLog(std::stringstream& ss, const TF& f)
 template<typename TF, typename ... TR>
 void WriteLog(std::stringstream& ss, const TF& f, const TR& ... rest)
 {
-    ss << f << sep;
+    ss << f << Separator;
     WriteLog(ss, rest ...);
 }
 
@@ -41,4 +38,15 @@ void WriteLog(const char* file, int line, const TR& ... rest)
 }
 }
 
-#define LOG(...) Logger::WriteLog(__FILE__, __LINE__, __VA_ARGS__)
+void SetSeparator(std::string separator)
+{
+    Internal::Separator = std::move(separator);
+}
+
+void ResetSeparator()
+{
+    Internal::Separator = "";
+}
+}
+
+#define LOG(...) Logger::Internal::WriteLog(__FILE__, __LINE__, __VA_ARGS__)
