@@ -175,6 +175,7 @@
     <ClInclude Include="Sources\Internal\Core\FPSCounter.h" />
     <ClInclude Include="Sources\Internal\Core\Input\Input.h" />
     <ClInclude Include="Sources\Internal\Core\KiotoEngine.h" />
+    <ClInclude Include="Sources\Internal\Core\Logger\Logger.h" />
     <ClInclude Include="Sources\Internal\Core\Scene.h" />
     <ClInclude Include="Sources\Internal\Core\Timer\GlobalTimer.h" />
     <ClInclude Include="Sources\Internal\Core\Timer\PerformanceTimer.h" />
