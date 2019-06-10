@@ -91,6 +91,10 @@ public:
     /// Get scale from the matrix.
     ///
     Vector3_<T> GetScale() const;
+    ///
+    /// Get matrix for setting into gpu constant buffer.
+    ///
+    Matrix4_<T> GetForGPU() const;
 
     Matrix4_<T>& operator*= (const Matrix4_<T>& m);
 
@@ -315,6 +319,12 @@ Vector3_<T> Matrix4_<T>::GetScale() const
         Vector3_<T>{ _00, _01, _02 }.Length(), 
         Vector3_<T>{ _10, _11, _12 }.Length(), 
         Vector3_<T>{ _20, _21, _22 }.Length());
+}
+
+template <typename T>
+Matrix4_<T> Matrix4_<T>::GetForGPU() const
+{
+    return Tranposed();
 }
 
 template <typename T>
