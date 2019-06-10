@@ -51,18 +51,15 @@ void ForwardRenderPass::Cleanup()
 
 void ForwardRenderPass::UpdateBuffer()
 {
-    static float32 angle = 0.0f;
-    //angle += GlobalTimer::GetDeltaTime();	
-    angle += 0.01f;
-    Matrix4 toWorld = Matrix4::BuildRotation(Vector3(1.0f, 1.0f, 0.0f).Normalize(), angle);
-    //toWorld = Matrix4::Identity();	
-    toWorld.SetTranslation({ 0.0f, 0.0f, 2.0f });
+    Matrix4 toWorld = Matrix4::Identity; //Matrix4::BuildRotation(Vector3(1.0f, 1.0f, 0.0f).Normalize(), angle);
+
+    toWorld.SetTranslation({ 1.0f, 0.0f, 2.0f });
 
     Matrix4 toModel;
     toWorld.Inversed(toModel);
 
-    m_material->SetValueToBuffer("ToModel", toModel.Tranposed());
-    m_material->SetValueToBuffer("ToWorld", toWorld.Tranposed());
+    m_material->SetValueToBuffer("ToModel", toModel.GetForGPU());
+    m_material->SetValueToBuffer("ToWorld", toWorld.GetForGPU());
 }
 
 void ForwardRenderPass::SetRenderTargets()
