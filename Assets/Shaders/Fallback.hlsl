@@ -84,21 +84,11 @@ struct vOut
 
 vOut vs(vIn i)
 {
-    float4x4 worldViewProj = ToWorld * ViewProjection;
     float4 pos = mul(float4(i.position.xyz, 1.0f), ToWorld);
     pos = mul(pos, ViewProjection);
-    float4 p = mul(float4(i.position.xyz, 1.0f), ToWorld);
     vOut o;
-    o.position = float4(i.position.xy, 0.2f, 1.0f);
-    o.position = float4(p.xy, 0.2f, 1.0f);
     o.position = pos;
 
-    o.dbg = float4(abs(worldViewProj._m00_m01_m02), 1.0f);
-    o.dbg.xyz = (pos.xyz / pos.w);
-    o.dbg.xyz = (pos.z / pos.w) > 1.0f;
-    float4x4 wv = ToWorld * View;
-    o.dbg = mul(float4(i.position, 1.0f), wv);
-    o.dbg = float4(0.0f, 0.0f, pos.z > 1.0f, 1.0f);
     o.dbg = float4(0.0f, 0.0f, i.position.x, 1.0f);
     o.normal = i.normal * 0.5f + 0.5f;
     o.uv = i.uv;
@@ -108,5 +98,5 @@ vOut vs(vIn i)
 float4 ps(vOut i) : SV_Target
 {
     //return float4(1, 0, 0, 1);
-    return Diffuse.Sample(LinearClampSampl, i.uv) * (SinTime.w * 0.5f + 0.5f);
+    return Diffuse.Sample(LinearClampSampl, i.uv);// * (SinTime.w * 0.5f + 0.5f);
 }
