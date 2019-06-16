@@ -10,7 +10,6 @@
 
 #include "Core/CoreTypes.h"
 #include "Math/Rect.h"
-#include "Render/Camera.h"
 #include "Render/RenderCommand.h"
 #include "Render/RendererPublic.h"
 
@@ -21,19 +20,22 @@ enum PassPriority
     MainPass = 100
 };
 
+class RenderObject;
+
 class RenderPass // [a_vorontcov] Add render target and depth stencil resource state before and after.
 {
 public:
     RenderPass(std::string name)
         : m_passName(name)
     {
+        m_renderObjects.resize(2048);
     }
 
     RenderPass(const RenderPass& other);
 
     virtual ~RenderPass() = default;
 
-    virtual void Setup()         // set all pass buffers
+    virtual void Setup() // set all pass buffers
     {
         PushCommand(RenderCommandHelpers::CreateBeginGpuEventCommand(m_passName));
         SetPassConstantBuffers();
@@ -72,6 +74,7 @@ public:
     void SetPriority(uint32 priority);
     void SetRenderTargetCount(uint8 count);
     void SetHandle(RenderPassHandle handle);
+    void SetRenderObjects(std::vector<RenderObject*> renderObjects);
 
     RectI GetScissor() const;
     RectI GetViewport() const;
@@ -108,6 +111,7 @@ private:
 
     std::string m_passName;
     std::vector<RenderCommand> m_commands;
+    std::vector<RenderObject*> m_renderObjects; // [a_vorontcov] TODO: think maybe just a pointer will be fine.
 };
 
 inline void RenderPass::SetScissor(const RectI& scissor)
@@ -169,6 +173,12 @@ inline void RenderPass::SetHandle(RenderPassHandle handle)
 {
     m_handle = handle;
 }
+
+inline void RenderPass::SetRenderObjects(std::vector<RenderObject*> renderObjects)
+{
+    m_renderObjects = std::move(renderObjects);
+}
+
 
 inline RectI RenderPass::GetScissor() const
 {

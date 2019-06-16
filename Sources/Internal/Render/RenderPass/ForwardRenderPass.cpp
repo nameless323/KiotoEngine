@@ -7,6 +7,7 @@
 
 #include "Render/RenderPass/ForwardRenderPass.h"
 
+#include "Render/Camera.h"
 #include "Render/Material.h"
 #include "Render/Renderer.h"
 #include "Render/RenderCommand.h"
@@ -18,8 +19,8 @@ namespace Kioto::Renderer
 ForwardRenderPass::ForwardRenderPass()
     : RenderPass("ForwardPass")
 {
-    m_material = AssetsSystem::GetRenderAssetsManager()->GetOrLoadAsset<Renderer::Material>(m_matPath);
-    m_mesh = AssetsSystem::GetRenderAssetsManager()->GetOrLoadAsset<Renderer::Mesh>(m_meshPath);
+    m_material = AssetsSystem::GetRenderAssetsManager()->GetOrLoadAsset<Material>(m_matPath);
+    m_mesh = AssetsSystem::GetRenderAssetsManager()->GetOrLoadAsset<Mesh>(m_meshPath);
 
     Renderer::RegisterRenderPass(this);
     SetRenderTargetCount(1);
@@ -32,7 +33,7 @@ void ForwardRenderPass::CollectRenderData()
     SetRenderTargets();
     UpdateBuffer();
 
-    Renderer::RenderPacket currPacket;
+    RenderPacket currPacket;
     currPacket.Material = m_material->GetHandle();
     currPacket.Shader = m_material->GetShader()->GetHandle();
     currPacket.TextureSet = m_material->GetShaderData().textureSet.GetHandle();

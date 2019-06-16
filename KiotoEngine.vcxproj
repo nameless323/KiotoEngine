@@ -205,6 +205,7 @@
     <ClInclude Include="Sources\Internal\Render\DX12\PixProfiler.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\PsoManager.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\RendererDX12.h" />
+    <ClInclude Include="Sources\Internal\Render\RenderObjecth.h" />
     <ClInclude Include="Sources\Internal\Render\RenderPacket.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\RootSignatureManager.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\ShaderDX12.h" />

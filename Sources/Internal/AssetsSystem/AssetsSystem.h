@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "Asset.h"
+#include "Render/Renderer.h"
 
 namespace Kioto::AssetsSystem // [a_vorontcov] Maybe to class and use with service locator.
 {
@@ -91,7 +92,7 @@ void UnloadAsset(T* asset)
 }
 
 template <typename T>
-void CreateUniqueCopy(const T* source)
+T CreateUniqueCopy(const T* source)
 {
     Asset* res = new T(*source);
     m_dynamicAssets.push_back(res);
