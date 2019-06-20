@@ -179,7 +179,6 @@ inline void RenderPass::SetRenderObjects(std::vector<RenderObject*> renderObject
     m_renderObjects = std::move(renderObjects);
 }
 
-
 inline RectI RenderPass::GetScissor() const
 {
     return m_scissor;

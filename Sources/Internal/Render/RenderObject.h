@@ -5,8 +5,6 @@
 
 #pragma once
 
-#include "Math/Matrix4.h"
-
 namespace Kioto::Renderer
 {
 class Material;
