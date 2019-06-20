@@ -288,7 +288,7 @@
     <ClInclude Include="Sources\Internal\Core\Logger\Logger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\Internal\Render\RenderObjecth.h">
+    <ClInclude Include="Sources\Internal\Render\RenderObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -91,7 +91,7 @@ public:
 
     const std::string& GetPassName() const;
 
-private:
+protected:
     virtual void SetRenderTargets() abstract; // Set scissor, render targets, viewports
     virtual void SetPassConstantBuffers() abstract;
     virtual void SetCameraConstantBuffers() abstract;

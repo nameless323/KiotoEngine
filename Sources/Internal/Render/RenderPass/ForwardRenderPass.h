@@ -22,19 +22,5 @@ private:
     void SetRenderTargets() override;
     void SetPassConstantBuffers() override;
     void SetCameraConstantBuffers() override;
- 
-    void UpdateBuffer();
-
-    std::string m_matPath = AssetsSystem::GetAssetFullPath("Materials\\Test.mt");
-    Material* m_material = nullptr;
-    Material* m_materialCopy = nullptr;
-    std::string m_meshPath = AssetsSystem::GetAssetFullPath(R"(Models\Teapot.fbx)");
-    Mesh* m_mesh = nullptr;
-    Mesh* m_meshCopy = nullptr;
-
-    /*std::string m_spherePath = AssetsSystem::GetAssetFullPath(R"(Models\Sphere.fbx)");
-    std::string m_matPath = AssetsSystem::GetAssetFullPath("Materials\\TestRed.mt");
-    Renderer::Material* m_materialRed = nullptr;
-    Renderer::Mesh* m_meshSphere = nullptr;*/
 };
 }

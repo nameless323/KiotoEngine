@@ -54,8 +54,13 @@ void TransformSystem::Update(float32 dt)
 void TransformSystem::ComposeMatricies(TransformComponent* t)
 {
     const Vector3& pos = t->GetWorldPosition();
-    Matrix4 m = t->GetWorldRotation();
-    m.SetTranslation(pos);
-    t->SetToWorld(m);
+    Matrix4 toWorld = t->GetWorldRotation();
+    toWorld.SetTranslation(pos);
+    t->SetToWorld(toWorld);
+
+    Matrix4 toModel{};
+    assert(toWorld.Inversed(toModel));
+
+    t->SetToModel(toModel);
 }
 }

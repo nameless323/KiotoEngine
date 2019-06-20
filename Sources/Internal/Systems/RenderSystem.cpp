@@ -12,7 +12,7 @@
 #include "Core/ECS/Entity.h"
 #include "Render/Geometry/Mesh.h"
 #include "Render/Material.h"
-#include "Render/RenderObjecth.h"
+#include "Render/RenderObject.h"
 #include "Render/RenderPass/ForwardRenderPass.h"
 
 namespace Kioto

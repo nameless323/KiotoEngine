@@ -49,7 +49,7 @@ private:
     bool m_isDirty = false;
 
     Vector3 m_worldPosition{};
-    Matrix4 m_worldRotation{}; // [a_vorontcov] TODO: quaternion.
+    Matrix4 m_worldRotation = Matrix4::Identity; // [a_vorontcov] TODO: quaternion.
 
     TransformComponent* m_parent = nullptr;
     std::vector<TransformComponent*> m_children;
