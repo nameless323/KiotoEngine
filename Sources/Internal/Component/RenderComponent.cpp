@@ -9,12 +9,6 @@
 
 namespace Kioto
 {
-RenderComponent::~RenderComponent()
-{
-    SafeDelete(m_material);
-    SafeDelete(m_mesh);
-}
-
 Component* RenderComponent::Clone() const
 {
     return new RenderComponent();

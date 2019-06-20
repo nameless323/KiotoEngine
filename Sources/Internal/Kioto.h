@@ -15,6 +15,7 @@
 
 #include <Core/ECS/Component.h>
 #include <Component/CameraComponent.h>
+#include <Component/RenderComponent.h>
 #include <Component/TransformComponent.h>
 
 #include <Math/MathHelpers.h>

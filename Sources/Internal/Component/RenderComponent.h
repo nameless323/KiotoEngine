@@ -14,54 +14,65 @@
 
 namespace Kioto
 {
+namespace Renderer
+{
+class RenderObject;
+}
+
 class RenderComponent : public Component
 {
     DECLARE_COMPONENT(RenderComponent);
 
 public:
     KIOTO_API RenderComponent() = default;
-    KIOTO_API ~RenderComponent();
+    KIOTO_API ~RenderComponent() = default;
 
     Component* Clone() const override;
 
     void SetMaterial(const std::string& path);
-    void SetMaterial(Renderer::Material* material);
+    void SetMesh(const std::string& path);
 
-    void SetMesh(const Renderer::Mesh& mesh);
-    void SetMesh(Renderer::Mesh* mesh);
+    const std::string& GetMaterial() const;
+    const std::string& GetMesh() const;
+
+    void SetRenderObject(Renderer::RenderObject* renderObject);
+    Renderer::RenderObject* GetRenderObject() const;
 
 private:
-    Renderer::Material* m_material = nullptr;
-    Renderer::Mesh* m_mesh = nullptr;
+    std::string m_materialPath = "";
+    std::string m_meshPath = "";
+
+    Renderer::RenderObject* m_renderObject = nullptr;
 };
 
 inline void RenderComponent::SetMaterial(const std::string& path)
 {
-    SafeDelete(m_material); // [a_vorontcov] Too fragile. TODO: all material work via asset system.
-    m_material = new Renderer::Material(path);
+    m_materialPath = path;
 }
 
-inline void RenderComponent::SetMaterial(Renderer::Material* material)
+inline void RenderComponent::SetMesh(const std::string& path)
 {
-    if (m_material == material)
-        return;
-    SafeDelete(m_material);
-    m_material = material;
+    m_meshPath = path;
 }
 
-inline void RenderComponent::SetMesh(const Renderer::Mesh& mesh)
+inline const std::string& RenderComponent::GetMaterial() const
 {
-    if (m_mesh == &mesh)
-        return;
-    SafeDelete(m_mesh);
-    m_mesh = new Renderer::Mesh(mesh);
+    return m_materialPath;
 }
 
-inline void RenderComponent::SetMesh(Renderer::Mesh* mesh)
+inline const std::string& RenderComponent::GetMesh() const
 {
-    if (m_mesh == mesh)
-        return;
-    SafeDelete(m_mesh);
-    m_mesh = mesh;
+    return m_meshPath;
 }
+
+inline void RenderComponent::SetRenderObject(Renderer::RenderObject* renderObject)
+{
+    m_renderObject = renderObject;
+}
+
+inline Renderer::RenderObject* RenderComponent::GetRenderObject() const
+{
+    return m_renderObject;
+}
+
 }

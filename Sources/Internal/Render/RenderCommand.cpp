@@ -3,6 +3,7 @@
 #include "Render/RenderCommand.h"
 
 #include "Render/RenderPass/RenderPass.h"
+#include "Render/ConstantBuffer.h"
 
 namespace Kioto::Renderer::RenderCommandHelpers
 {

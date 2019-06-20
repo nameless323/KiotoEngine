@@ -14,7 +14,10 @@ namespace Kioto
 namespace Renderer
 {
 class RenderPass;
+class RenderObject;
 }
+
+class RenderComponent;
 
 class RenderSystem : public SceneSystem
 {
@@ -34,5 +37,7 @@ public:
 
 private:
     std::vector<Renderer::RenderPass*> m_renderPasses;
+    std::vector<Renderer::RenderObject*> m_renderObjects;
+    std::vector<RenderComponent*> m_components;
 };
 }
