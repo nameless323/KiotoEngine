@@ -35,6 +35,9 @@ public:
     TextureDX12* GetDepthStencil();
     TextureDX12* GetCurrentBackBuffer();
 
+    D3D12_CPU_DESCRIPTOR_HANDLE GetCpuDescriptorHandleForHeapStart() const;
+    D3D12_GPU_DESCRIPTOR_HANDLE GetGpuDescriptorHandleForHeapStart() const;
+
     void Present(); // proceed to nex.
     void ProceedToNextFrame();
 
@@ -104,5 +107,15 @@ inline TextureDX12* SwapChain::GetDepthStencil()
 inline TextureDX12* SwapChain::GetCurrentBackBuffer()
 {
     return &m_backBuffers[m_swapChain->GetCurrentBackBufferIndex()];
+}
+
+inline D3D12_CPU_DESCRIPTOR_HANDLE SwapChain::GetCpuDescriptorHandleForHeapStart() const
+{
+    return m_rtvHeap->GetCPUDescriptorHandleForHeapStart();
+}
+
+inline D3D12_GPU_DESCRIPTOR_HANDLE SwapChain::GetGpuDescriptorHandleForHeapStart() const
+{
+    return m_rtvHeap->GetGPUDescriptorHandleForHeapStart();
 }
 }

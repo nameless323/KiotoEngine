@@ -159,6 +159,14 @@
   <ItemGroup>
     <ClInclude Include="Sources\External\Dx12Helpers\d3dx12.h" />
     <ClInclude Include="Sources\External\Dx12Helpers\DDSTextureLoader.h" />
+    <ClInclude Include="Sources\External\IMGUI\imconfig.h" />
+    <ClInclude Include="Sources\External\IMGUI\imgui.h" />
+    <ClInclude Include="Sources\External\IMGUI\imgui_impl_dx12.h" />
+    <ClInclude Include="Sources\External\IMGUI\imgui_impl_win32.h" />
+    <ClInclude Include="Sources\External\IMGUI\imgui_internal.h" />
+    <ClInclude Include="Sources\External\IMGUI\imstb_rectpack.h" />
+    <ClInclude Include="Sources\External\IMGUI\imstb_textedit.h" />
+    <ClInclude Include="Sources\External\IMGUI\imstb_truetype.h" />
     <ClInclude Include="Sources\Internal\AssetsSystem\Asset.h" />
     <ClInclude Include="Sources\Internal\AssetsSystem\RenderStateParamsConverter.h" />
     <ClInclude Include="Sources\Internal\Component\CameraComponent.h" />
@@ -252,6 +260,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Sources\External\Dx12Helpers\DDSTextureLoader.cpp" />
+    <ClCompile Include="Sources\External\IMGUI\imgui.cpp" />
+    <ClCompile Include="Sources\External\IMGUI\imgui_demo.cpp" />
+    <ClCompile Include="Sources\External\IMGUI\imgui_draw.cpp" />
+    <ClCompile Include="Sources\External\IMGUI\imgui_impl_dx12.cpp" />
+    <ClCompile Include="Sources\External\IMGUI\imgui_impl_win32.cpp" />
+    <ClCompile Include="Sources\External\IMGUI\imgui_widgets.cpp" />
     <ClCompile Include="Sources\Internal\AssetsSystem\RenderStateParamsConverter.cpp" />
     <ClCompile Include="Sources\Internal\Component\CameraComponent.cpp" />
     <ClCompile Include="Sources\Internal\Component\RenderComponent.cpp" />

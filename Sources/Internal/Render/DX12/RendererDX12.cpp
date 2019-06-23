@@ -12,7 +12,11 @@
 #include <vector>
 
 #include "Sources/External/Dx12Helpers/DDSTextureLoader.h"
+#include "Sources/External/IMGUI/imgui.h"
+#include "Sources/External/IMGUI/imgui_impl_dx12.h"
+#include "Sources/External/IMGUI/imgui_impl_win32.h"
 
+#include "Core/WindowsApplication.h"
 #include "Render/Buffers/EngineBuffers.h"
 #include "Render/DX12/Geometry/MeshDX12.h"
 #include "Render/Shader.h"
@@ -45,6 +49,7 @@ D3D12_VIEWPORT DXViewportFromKioto(const RectI& source)
 }
 }
 
+static ID3D12DescriptorHeap*        g_pd3dSrvDescHeap = NULL;
 RendererDX12::RendererDX12()
 {
 }
@@ -108,6 +113,24 @@ void RendererDX12::Init(uint16 width, uint16 height)
 
     LoadPipeline();
     Resize(width, height);
+
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    ImGui::StyleColorsDark();
+    ImGui_ImplWin32_Init(WindowsApplication::GetHWND());
+    
+    {
+        D3D12_DESCRIPTOR_HEAP_DESC desc = {};
+        desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+        desc.NumDescriptors = 1;
+        desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+        m_state.Device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&g_pd3dSrvDescHeap));
+    }
+
+    ImGui_ImplDX12_Init(m_state.Device.Get(), StateDX::FrameCount, m_swapChain.GetBackBufferFormat(), g_pd3dSrvDescHeap->GetCPUDescriptorHandleForHeapStart(),
+        g_pd3dSrvDescHeap->GetGPUDescriptorHandleForHeapStart());
 
 #ifdef _DEBUG
     LogAdapters();
@@ -230,8 +253,30 @@ void RendererDX12::Update(float32 dt)
 
 void RendererDX12::Present()
 {
+    ImGui_ImplDX12_NewFrame();
+    ImGui_ImplWin32_NewFrame();
+    ImGui::NewFrame();
+
     m_state.CommandAllocators[m_swapChain.GetCurrentFrameIndex()]->Reset();
     m_state.CommandList->Reset(m_state.CommandAllocators[m_swapChain.GetCurrentFrameIndex()].Get(), nullptr);
+
+
+    static float f = 0.0f;
+    static int counter = 0;
+
+    ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+
+    ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+    
+    ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+
+    if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+        counter++;
+    ImGui::SameLine();
+    ImGui::Text("counter = %d", counter);
+
+    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+    ImGui::End();
 
     m_textureManager.ProcessRegistationQueue(m_state);
     m_textureManager.ProcessTextureSetUpdates(m_state);
@@ -346,6 +391,20 @@ void RendererDX12::Present()
         }
 
     }
+    D3D12_RESOURCE_BARRIER barrier = {};
+    barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+    barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+    barrier.Transition.pResource = m_swapChain.GetCurrentBackBuffer()->Resource.Get();
+    barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+    barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
+    barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
+    m_state.CommandList->ResourceBarrier(1, &barrier);
+    m_state.CommandList->SetDescriptorHeaps(1, &g_pd3dSrvDescHeap);
+    ImGui::Render();
+    ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), m_state.CommandList.Get());
+    barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
+    barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
+    m_state.CommandList->ResourceBarrier(1, &barrier);
 
     m_state.CommandList->Close();
     ID3D12CommandList* cmdLists[] = { m_state.CommandList.Get() };
