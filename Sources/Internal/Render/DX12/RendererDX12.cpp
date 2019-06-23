@@ -228,6 +228,9 @@ void RendererDX12::Resize(uint16 width, uint16 height)
 {
     if (m_width == width && m_height == height)
         return;
+
+    ImGui_ImplDX12_InvalidateDeviceObjects();
+
     m_width = width;
     m_height = height;
 
@@ -243,6 +246,8 @@ void RendererDX12::Resize(uint16 width, uint16 height)
     ThrowIfFailed(m_state.CommandList->Close());
     ID3D12CommandList* cmdLists[] = { m_state.CommandList.Get() };
     m_state.CommandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
+
+    ImGui_ImplDX12_CreateDeviceObjects();
 
     WaitForGPU();
 }

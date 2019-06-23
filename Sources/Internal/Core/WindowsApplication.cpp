@@ -7,6 +7,8 @@
 
 #include "Core/WindowsApplication.h"
 
+#include "Sources/External/IMGUI/imgui_impl_win32.h"
+
 #include <functional>
 #include <Strsafe.h>
 
@@ -155,6 +157,9 @@ HWND GetHWND()
 
 LRESULT WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+    ImGui_ImplWin32_WndProcHandler(hwnd, message, wParam, lParam);
+    //    return true;
+
     switch (message)
     {
     case WM_CREATE:
