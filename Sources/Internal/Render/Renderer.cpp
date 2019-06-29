@@ -7,6 +7,8 @@
 
 #include "Render/Renderer.h"
 
+#include "IMGUI/imgui.h"
+
 #include "Core/CoreHelpers.h"
 #include "Core/Timer/GlobalTimer.h"
 #include "Render/Buffers/EngineBuffers.h"
@@ -93,6 +95,10 @@ void Update(float32 dt) // [a_vorontcov] TODO: set frame command buffers here.
 {
     UpdateTimeBuffer();
     GameRenderer->Update(dt);
+
+    ImGui::Begin("Renderer.cpp::Update(float dt)");
+    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+    ImGui::End();
 }
 
 void Present()
