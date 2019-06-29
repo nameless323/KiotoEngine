@@ -55,6 +55,7 @@ public:
     void Shutdown();
     void Present();
     void Update(float32 dt);
+    void StartFrame();
  
     void RegisterTexture(Texture* texture);
     void RegisterShader(Shader* shader);

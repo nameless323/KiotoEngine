@@ -29,6 +29,8 @@
 
 #include <Core/Logger/Logger.h>
 
+#include <IMGUI/imgui.h>
+
 using Kioto::byte;
 using Kioto::int16;
 using Kioto::uint16;

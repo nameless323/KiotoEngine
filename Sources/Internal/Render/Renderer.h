@@ -25,6 +25,7 @@ enum class eRenderApi
 void Init(eRenderApi api, uint16 width, uint16 height);
 void Shutdown();
 void Resize(uint16 width, uint16 height, bool minimized);
+void StartFrame();
 void Update(float32 dt);
 void Present();
 void ChangeFullScreenMode(bool fullScreen);

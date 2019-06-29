@@ -79,6 +79,11 @@ void Resize(uint16 width, uint16 height, bool minimized)
     GameRenderer->Resize(width, height);
 }
 
+void StartFrame()
+{
+    GameRenderer->StartFrame();
+}
+
 void ChangeFullScreenMode(bool fullScreen)
 {
     GameRenderer->ChangeFullScreenMode(fullScreen);
