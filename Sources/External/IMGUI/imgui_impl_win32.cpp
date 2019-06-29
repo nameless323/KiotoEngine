@@ -50,7 +50,7 @@ static bool                 g_HasGamepad = false;
 static bool                 g_WantUpdateHasGamepad = true;
 
 // Functions
-bool    ImGui_ImplWin32_Init(void* hwnd)
+bool    ImGuiImplWinInit(void* hwnd)
 {
     if (!::QueryPerformanceFrequency((LARGE_INTEGER *)&g_TicksPerSecond))
         return false;
@@ -91,7 +91,7 @@ bool    ImGui_ImplWin32_Init(void* hwnd)
     return true;
 }
 
-void    ImGui_ImplWin32_Shutdown()
+void    ImGuiImplWinShutdown()
 {
     g_hWnd = (HWND)0;
 }
@@ -200,7 +200,7 @@ static void ImGui_ImplWin32_UpdateGamepads()
     }
 }
 
-void    ImGui_ImplWin32_NewFrame()
+void    ImGuiImplWinNewFrame()
 {
     ImGuiIO& io = ImGui::GetIO();
     IM_ASSERT(io.Fonts->IsBuilt() && "Font atlas not built! It is generally built by the renderer back-end. Missing call to renderer _NewFrame() function? e.g. ImGui_ImplOpenGL3_NewFrame().");
@@ -253,7 +253,7 @@ void    ImGui_ImplWin32_NewFrame()
 // Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
 // PS: In this Win32 handler, we use the capture API (GetCapture/SetCapture/ReleaseCapture) to be able to read mouse coordinates when dragging mouse outside of our window bounds.
 // PS: We treat DBLCLK messages as regular mouse down messages, so this code will work on windows classes that have the CS_DBLCLKS flag set. Our own example app code doesn't set this flag.
-IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+IMGUI_IMPL_API LRESULT ImGuiImplWinWndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     if (ImGui::GetCurrentContext() == NULL)
         return 0;

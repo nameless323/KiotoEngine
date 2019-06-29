@@ -119,7 +119,7 @@ static void ImGui_ImplDX12_SetupRenderState(ImDrawData* draw_data, ID3D12Graphic
 
 // Render function
 // (this used to be set in io.RenderDrawListsFn and called by ImGui::Render(), but you can now call this directly from your main loop)
-void ImGui_ImplDX12_RenderDrawData(ImDrawData* draw_data, ID3D12GraphicsCommandList* ctx)
+void ImGuiImplDX12RenderDrawData(ImDrawData* draw_data, ID3D12GraphicsCommandList* ctx)
 {
     // Avoid rendering when minimized
     if (draw_data->DisplaySize.x <= 0.0f || draw_data->DisplaySize.y <= 0.0f)
@@ -386,12 +386,12 @@ static void ImGui_ImplDX12_CreateFontsTexture()
     io.Fonts->TexID = (ImTextureID)g_hFontSrvGpuDescHandle.ptr;
 }
 
-bool    ImGui_ImplDX12_CreateDeviceObjects()
+bool    ImGuiImplDX12CreateDeviceObjects()
 {
     if (!g_pd3dDevice)
         return false;
     if (g_pPipelineState)
-        ImGui_ImplDX12_InvalidateDeviceObjects();
+        ImGuiImplDX12InvalidateDeviceObjects();
 
     // Create the root signature
     {
@@ -584,7 +584,7 @@ bool    ImGui_ImplDX12_CreateDeviceObjects()
     return true;
 }
 
-void    ImGui_ImplDX12_InvalidateDeviceObjects()
+void    ImGuiImplDX12InvalidateDeviceObjects()
 {
     if (!g_pd3dDevice)
         return;
@@ -603,7 +603,7 @@ void    ImGui_ImplDX12_InvalidateDeviceObjects()
     }
 }
 
-bool ImGui_ImplDX12_Init(ID3D12Device* device, int num_frames_in_flight, DXGI_FORMAT rtv_format,
+bool ImGuiImplDX12Init(ID3D12Device* device, int num_frames_in_flight, DXGI_FORMAT rtv_format,
                          D3D12_CPU_DESCRIPTOR_HANDLE font_srv_cpu_desc_handle, D3D12_GPU_DESCRIPTOR_HANDLE font_srv_gpu_desc_handle)
 {
     // Setup back-end capabilities flags
@@ -632,9 +632,9 @@ bool ImGui_ImplDX12_Init(ID3D12Device* device, int num_frames_in_flight, DXGI_FO
     return true;
 }
 
-void ImGui_ImplDX12_Shutdown()
+void ImGuiImplDX12Shutdown()
 {
-    ImGui_ImplDX12_InvalidateDeviceObjects();
+    ImGuiImplDX12InvalidateDeviceObjects();
     delete[] g_pFrameResources;
     g_pFrameResources = NULL;
     g_pd3dDevice = NULL;
@@ -644,8 +644,8 @@ void ImGui_ImplDX12_Shutdown()
     g_frameIndex = UINT_MAX;
 }
 
-void ImGui_ImplDX12_NewFrame()
+void ImGuiImplDX12NewFrame()
 {
     if (!g_pPipelineState)
-        ImGui_ImplDX12_CreateDeviceObjects();
+        ImGuiImplDX12CreateDeviceObjects();
 }

@@ -157,8 +157,7 @@ HWND GetHWND()
 
 LRESULT WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    ImGui_ImplWin32_WndProcHandler(hwnd, message, wParam, lParam);
-    //    return true;
+    ImGuiImplWinWndProcHandler(hwnd, message, wParam, lParam);
 
     switch (message)
     {
@@ -249,7 +248,7 @@ LRESULT WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_DESTROY:
         PostQuitMessage(0);
         return 0;
-   
+
     default:
         return DefWindowProc(hwnd, message, wParam, lParam);
     }
