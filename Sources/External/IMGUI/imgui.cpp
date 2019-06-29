@@ -191,7 +191,7 @@ CODE
      // TODO: Load TTF/OTF fonts if you don't want to use the default font.
 
      // Initialize helper Platform and Renderer bindings (here we are using imgui_impl_win32 and imgui_impl_dx11)
-     ImGuiImplWinInit(hwnd);
+     ImplWinInit(hwnd);
      ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dDeviceContext);
 
      // Application main loop
@@ -199,7 +199,7 @@ CODE
      {
          // Feed inputs to dear imgui, start new frame
          ImGui_ImplDX11_NewFrame();
-         ImGuiImplWinNewFrame();
+         ImplWinNewFrame();
          ImGui::NewFrame();
 
          // Any application code here
@@ -213,7 +213,7 @@ CODE
 
      // Shutdown
      ImGui_ImplDX11_Shutdown();
-     ImGuiImplWinShutdown();
+     ImplWinShutdown();
      ImGui::DestroyContext();
 
  HOW A SIMPLE APPLICATION MAY LOOK LIKE:
@@ -639,7 +639,7 @@ CODE
          OpenGL:     ImTextureID = GLuint                       (see ImGui_ImplGlfwGL3_RenderDrawData() function in imgui_impl_glfw_gl3.cpp)
          DirectX9:   ImTextureID = LPDIRECT3DTEXTURE9           (see ImGui_ImplDX9_RenderDrawData()     function in imgui_impl_dx9.cpp)
          DirectX11:  ImTextureID = ID3D11ShaderResourceView*    (see ImGui_ImplDX11_RenderDrawData()    function in imgui_impl_dx11.cpp)
-         DirectX12:  ImTextureID = D3D12_GPU_DESCRIPTOR_HANDLE  (see ImGuiImplDX12RenderDrawData()    function in imgui_impl_dx12.cpp)
+         DirectX12:  ImTextureID = D3D12_GPU_DESCRIPTOR_HANDLE  (see ImplDX12RenderDrawData()    function in imgui_impl_dx12.cpp)
 
       For example, in the OpenGL example binding we store raw OpenGL texture identifier (GLuint) inside ImTextureID.
       Whereas in the DirectX11 example binding we store a pointer to ID3D11ShaderResourceView inside ImTextureID, which is a higher-level structure

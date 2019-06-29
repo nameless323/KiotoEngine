@@ -157,7 +157,7 @@ HWND GetHWND()
 
 LRESULT WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    ImGuiImplWinWndProcHandler(hwnd, message, wParam, lParam);
+    ImGui::ImplWinWndProcHandler(hwnd, message, wParam, lParam);
 
     switch (message)
     {

@@ -46,6 +46,8 @@ static ID3D12Resource*              g_pFontTextureResource = NULL;
 static D3D12_CPU_DESCRIPTOR_HANDLE  g_hFontSrvCpuDescHandle = {};
 static D3D12_GPU_DESCRIPTOR_HANDLE  g_hFontSrvGpuDescHandle = {};
 
+namespace ImGui
+{
 struct FrameResources
 {
     ID3D12Resource*     IndexBuffer;
@@ -74,10 +76,10 @@ static void ImGui_ImplDX12_SetupRenderState(ImDrawData* draw_data, ID3D12Graphic
         float B = draw_data->DisplayPos.y + draw_data->DisplaySize.y;
         float mvp[4][4] =
         {
-            { 2.0f/(R-L),   0.0f,           0.0f,       0.0f },
-            { 0.0f,         2.0f/(T-B),     0.0f,       0.0f },
+            { 2.0f / (R - L),   0.0f,           0.0f,       0.0f },
+            { 0.0f,         2.0f / (T - B),     0.0f,       0.0f },
             { 0.0f,         0.0f,           0.5f,       0.0f },
-            { (R+L)/(L-R),  (T+B)/(B-T),    0.5f,       1.0f },
+            { (R + L) / (L - R),  (T + B) / (B - T),    0.5f,       1.0f },
         };
         memcpy(&vertex_constant_buffer.mvp, mvp, sizeof(mvp));
     }
@@ -119,7 +121,7 @@ static void ImGui_ImplDX12_SetupRenderState(ImDrawData* draw_data, ID3D12Graphic
 
 // Render function
 // (this used to be set in io.RenderDrawListsFn and called by ImGui::Render(), but you can now call this directly from your main loop)
-void ImGuiImplDX12RenderDrawData(ImDrawData* draw_data, ID3D12GraphicsCommandList* ctx)
+void ImplDX12RenderDrawData(ImDrawData* draw_data, ID3D12GraphicsCommandList* ctx)
 {
     // Avoid rendering when minimized
     if (draw_data->DisplaySize.x <= 0.0f || draw_data->DisplaySize.y <= 0.0f)
@@ -298,7 +300,7 @@ static void ImGui_ImplDX12_CreateFontsTexture()
         hr = uploadBuffer->Map(0, &range, &mapped);
         IM_ASSERT(SUCCEEDED(hr));
         for (int y = 0; y < height; y++)
-            memcpy((void*) ((uintptr_t) mapped + y * uploadPitch), pixels + y * width * 4, width * 4);
+            memcpy((void*)((uintptr_t)mapped + y * uploadPitch), pixels + y * width * 4, width * 4);
         uploadBuffer->Unmap(0, &range);
 
         D3D12_TEXTURE_COPY_LOCATION srcLocation = {};
@@ -318,10 +320,10 @@ static void ImGui_ImplDX12_CreateFontsTexture()
         D3D12_RESOURCE_BARRIER barrier = {};
         barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
         barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-        barrier.Transition.pResource   = pTexture;
+        barrier.Transition.pResource = pTexture;
         barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
         barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
-        barrier.Transition.StateAfter  = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+        barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 
         ID3D12Fence* fence = NULL;
         hr = g_pd3dDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
@@ -331,8 +333,8 @@ static void ImGui_ImplDX12_CreateFontsTexture()
         IM_ASSERT(event != NULL);
 
         D3D12_COMMAND_QUEUE_DESC queueDesc = {};
-        queueDesc.Type     = D3D12_COMMAND_LIST_TYPE_DIRECT;
-        queueDesc.Flags    = D3D12_COMMAND_QUEUE_FLAG_NONE;
+        queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+        queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
         queueDesc.NodeMask = 1;
 
         ID3D12CommandQueue* cmdQueue = NULL;
@@ -353,7 +355,7 @@ static void ImGui_ImplDX12_CreateFontsTexture()
         hr = cmdList->Close();
         IM_ASSERT(SUCCEEDED(hr));
 
-        cmdQueue->ExecuteCommandLists(1, (ID3D12CommandList* const*) &cmdList);
+        cmdQueue->ExecuteCommandLists(1, (ID3D12CommandList* const*)&cmdList);
         hr = cmdQueue->Signal(fence, 1);
         IM_ASSERT(SUCCEEDED(hr));
 
@@ -386,12 +388,12 @@ static void ImGui_ImplDX12_CreateFontsTexture()
     io.Fonts->TexID = (ImTextureID)g_hFontSrvGpuDescHandle.ptr;
 }
 
-bool    ImGuiImplDX12CreateDeviceObjects()
+bool    ImplDX12CreateDeviceObjects()
 {
     if (!g_pd3dDevice)
         return false;
     if (g_pPipelineState)
-        ImGuiImplDX12InvalidateDeviceObjects();
+        ImplDX12InvalidateDeviceObjects();
 
     // Create the root signature
     {
@@ -584,7 +586,7 @@ bool    ImGuiImplDX12CreateDeviceObjects()
     return true;
 }
 
-void    ImGuiImplDX12InvalidateDeviceObjects()
+void    ImplDX12InvalidateDeviceObjects()
 {
     if (!g_pd3dDevice)
         return;
@@ -598,13 +600,13 @@ void    ImGuiImplDX12InvalidateDeviceObjects()
     for (UINT i = 0; i < g_numFramesInFlight; i++)
     {
         FrameResources* fr = &g_pFrameResources[i];
-        if (fr->IndexBuffer)  { fr->IndexBuffer->Release();  fr->IndexBuffer = NULL; }
+        if (fr->IndexBuffer) { fr->IndexBuffer->Release();  fr->IndexBuffer = NULL; }
         if (fr->VertexBuffer) { fr->VertexBuffer->Release(); fr->VertexBuffer = NULL; }
     }
 }
 
-bool ImGuiImplDX12Init(ID3D12Device* device, int num_frames_in_flight, DXGI_FORMAT rtv_format,
-                         D3D12_CPU_DESCRIPTOR_HANDLE font_srv_cpu_desc_handle, D3D12_GPU_DESCRIPTOR_HANDLE font_srv_gpu_desc_handle)
+bool ImplDX12Init(ID3D12Device* device, int num_frames_in_flight, DXGI_FORMAT rtv_format,
+    D3D12_CPU_DESCRIPTOR_HANDLE font_srv_cpu_desc_handle, D3D12_GPU_DESCRIPTOR_HANDLE font_srv_gpu_desc_handle)
 {
     // Setup back-end capabilities flags
     ImGuiIO& io = ImGui::GetIO();
@@ -632,9 +634,9 @@ bool ImGuiImplDX12Init(ID3D12Device* device, int num_frames_in_flight, DXGI_FORM
     return true;
 }
 
-void ImGuiImplDX12Shutdown()
+void ImplDX12Shutdown()
 {
-    ImGuiImplDX12InvalidateDeviceObjects();
+    ImplDX12InvalidateDeviceObjects();
     delete[] g_pFrameResources;
     g_pFrameResources = NULL;
     g_pd3dDevice = NULL;
@@ -644,8 +646,9 @@ void ImGuiImplDX12Shutdown()
     g_frameIndex = UINT_MAX;
 }
 
-void ImGuiImplDX12NewFrame()
+void ImplDX12NewFrame()
 {
     if (!g_pPipelineState)
-        ImGuiImplDX12CreateDeviceObjects();
+        ImplDX12CreateDeviceObjects();
+}
 }

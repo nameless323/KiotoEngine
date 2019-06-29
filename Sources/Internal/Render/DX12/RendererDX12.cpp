@@ -119,7 +119,7 @@ void RendererDX12::Init(uint16 width, uint16 height)
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
     ImGui::StyleColorsDark();
-    ImGuiImplWinInit(WindowsApplication::GetHWND());
+    ImGui::ImplWinInit(WindowsApplication::GetHWND());
     {
         D3D12_DESCRIPTOR_HEAP_DESC desc = {};
         desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
@@ -128,7 +128,7 @@ void RendererDX12::Init(uint16 width, uint16 height)
         m_state.Device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&g_pd3dSrvDescHeap));
     }
 
-    ImGuiImplDX12Init(m_state.Device.Get(), StateDX::FrameCount, m_swapChain.GetBackBufferFormat(), g_pd3dSrvDescHeap->GetCPUDescriptorHandleForHeapStart(),
+    ImGui::ImplDX12Init(m_state.Device.Get(), StateDX::FrameCount, m_swapChain.GetBackBufferFormat(), g_pd3dSrvDescHeap->GetCPUDescriptorHandleForHeapStart(),
         g_pd3dSrvDescHeap->GetGPUDescriptorHandleForHeapStart());
 
 #ifdef _DEBUG
@@ -228,7 +228,7 @@ void RendererDX12::Resize(uint16 width, uint16 height)
     if (m_width == width && m_height == height)
         return;
 
-    ImGuiImplDX12InvalidateDeviceObjects();
+    ImGui::ImplDX12InvalidateDeviceObjects();
 
     m_width = width;
     m_height = height;
@@ -246,7 +246,7 @@ void RendererDX12::Resize(uint16 width, uint16 height)
     ID3D12CommandList* cmdLists[] = { m_state.CommandList.Get() };
     m_state.CommandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
 
-    ImGuiImplDX12CreateDeviceObjects();
+    ImGui::ImplDX12CreateDeviceObjects();
 
     WaitForGPU();
 }
@@ -257,8 +257,8 @@ void RendererDX12::Update(float32 dt)
 
 void RendererDX12::StartFrame()
 {
-    ImGuiImplDX12NewFrame();
-    ImGuiImplWinNewFrame();
+    ImGui::ImplDX12NewFrame();
+    ImGui::ImplWinNewFrame();
     ImGui::NewFrame();
 }
 
@@ -390,7 +390,7 @@ void RendererDX12::Present()
     m_state.CommandList->ResourceBarrier(1, &barrier);
     m_state.CommandList->SetDescriptorHeaps(1, &g_pd3dSrvDescHeap);
     ImGui::Render();
-    ImGuiImplDX12RenderDrawData(ImGui::GetDrawData(), m_state.CommandList.Get());
+    ImGui::ImplDX12RenderDrawData(ImGui::GetDrawData(), m_state.CommandList.Get());
     barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
     barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
     m_state.CommandList->ResourceBarrier(1, &barrier);
