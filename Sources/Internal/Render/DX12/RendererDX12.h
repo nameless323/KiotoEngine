@@ -56,7 +56,7 @@ public:
     void Present();
     void Update(float32 dt);
     void StartFrame();
- 
+
     void RegisterTexture(Texture* texture);
     void RegisterShader(Shader* shader);
     void RegisterMaterial(Material* material);
@@ -79,6 +79,9 @@ public:
     void SetTimeBuffer(ConstantBufferHandle handle);
 
 private:
+    void InitImGui();
+    void RenderImGui();
+    void ShutdownImGui();
     void GetHardwareAdapter(IDXGIFactory4* factory, IDXGIAdapter1** adapter);
     void WaitForGPU();
     void LogAdapters();
@@ -106,6 +109,8 @@ private:
 
     ConstantBufferHandle m_currentTimeBuffer;
     ConstantBufferHandle m_currentCameraBuffer;
+
+    ID3D12DescriptorHeap* m_imguiDescriptorHeap = nullptr;
 };
 
 inline TextureHandle RendererDX12::GetCurrentBackBufferHandle() const

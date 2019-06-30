@@ -49,7 +49,6 @@ D3D12_VIEWPORT DXViewportFromKioto(const RectI& source)
 }
 }
 
-static ID3D12DescriptorHeap*        g_pd3dSrvDescHeap = NULL;
 RendererDX12::RendererDX12()
 {
 }
@@ -114,22 +113,7 @@ void RendererDX12::Init(uint16 width, uint16 height)
     LoadPipeline();
     Resize(width, height);
 
-
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO();
-    ImGui::StyleColorsDark();
-    ImGui::ImplWinInit(WindowsApplication::GetHWND());
-    {
-        D3D12_DESCRIPTOR_HEAP_DESC desc = {};
-        desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-        desc.NumDescriptors = 1;
-        desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-        m_state.Device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&g_pd3dSrvDescHeap));
-    }
-
-    ImGui::ImplDX12Init(m_state.Device.Get(), StateDX::FrameCount, m_swapChain.GetBackBufferFormat(), g_pd3dSrvDescHeap->GetCPUDescriptorHandleForHeapStart(),
-        g_pd3dSrvDescHeap->GetGPUDescriptorHandleForHeapStart());
+    InitImGui();
 
 #ifdef _DEBUG
     LogAdapters();
@@ -158,12 +142,56 @@ void RendererDX12::Shutdown()
     if (!m_isTearingSupported)
         ThrowIfFailed(m_swapChain.SetFullscreenState(false, nullptr));
 
+    ShutdownImGui();
 #ifdef _DEBUG
     ComPtr<IDXGIDebug1> dxgiDebug;
     if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&dxgiDebug))))
         dxgiDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_FLAGS(DXGI_DEBUG_RLO_SUMMARY | DXGI_DEBUG_RLO_IGNORE_INTERNAL));
 #endif
     OutputDebugStringA("************************Shutdown\n");
+}
+
+void RendererDX12::InitImGui()
+{
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGui::StyleColorsDark();
+    ImGui::ImplWinInit(WindowsApplication::GetHWND());
+    {
+        D3D12_DESCRIPTOR_HEAP_DESC desc = {};
+        desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+        desc.NumDescriptors = 1;
+        desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+        m_state.Device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&m_imguiDescriptorHeap));
+    }
+
+    ImGui::ImplDX12Init(m_state.Device.Get(), StateDX::FrameCount, m_swapChain.GetBackBufferFormat(), m_imguiDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),
+        m_imguiDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+}
+
+void RendererDX12::RenderImGui()
+{
+    D3D12_RESOURCE_BARRIER barrier = {};
+    barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+    barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+    barrier.Transition.pResource = m_swapChain.GetCurrentBackBuffer()->Resource.Get();
+    barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+    barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
+    barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
+    m_state.CommandList->ResourceBarrier(1, &barrier);
+    m_state.CommandList->SetDescriptorHeaps(1, &m_imguiDescriptorHeap);
+    ImGui::Render();
+    ImGui::ImplDX12RenderDrawData(ImGui::GetDrawData(), m_state.CommandList.Get());
+    barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
+    barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
+    m_state.CommandList->ResourceBarrier(1, &barrier);
+}
+
+void RendererDX12::ShutdownImGui()
+{
+    ImGui::ImplDX12Shutdown();
+    ImGui::ImplWinShutdown();
+    ImGui::DestroyContext();
 }
 
 void RendererDX12::GetHardwareAdapter(IDXGIFactory4* factory, IDXGIAdapter1** adapter)
@@ -380,20 +408,8 @@ void RendererDX12::Present()
         }
 
     }
-    D3D12_RESOURCE_BARRIER barrier = {};
-    barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-    barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-    barrier.Transition.pResource = m_swapChain.GetCurrentBackBuffer()->Resource.Get();
-    barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-    barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
-    barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
-    m_state.CommandList->ResourceBarrier(1, &barrier);
-    m_state.CommandList->SetDescriptorHeaps(1, &g_pd3dSrvDescHeap);
-    ImGui::Render();
-    ImGui::ImplDX12RenderDrawData(ImGui::GetDrawData(), m_state.CommandList.Get());
-    barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
-    barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
-    m_state.CommandList->ResourceBarrier(1, &barrier);
+
+    RenderImGui();
 
     m_state.CommandList->Close();
     ID3D12CommandList* cmdLists[] = { m_state.CommandList.Get() };
