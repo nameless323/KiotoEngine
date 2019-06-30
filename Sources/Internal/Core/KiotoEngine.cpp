@@ -86,6 +86,7 @@ void Update()
     Input::Update();
     GlobalTimer::Tick();
     FPSCounter::Tick(GlobalTimer::GetDeltaTime());
+    Renderer::StartFrame();
     if (m_scene != nullptr)
         m_scene->Update(GlobalTimer::GetDeltaTime());
     Renderer::Update(GlobalTimer::GetDeltaTime());
