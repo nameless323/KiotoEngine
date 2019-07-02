@@ -37,8 +37,17 @@ void CameraComponent::SetEntity(Entity* entity)
 
 void CameraComponent::Save(YAML::Emitter& out) const
 {
-    out << YAML::Key << "Component";
-    out << YAML::Value << GetTypeS();
-    out << YAML::Comment(GetTypeName());
+    BEGIN_COMPONENT_SERIALIZARION();
+    out << YAML::Key << "Cam.View" << YAML::Value << m_camera.GetView();
+    out << YAML::Key << "Cam.Proj" << YAML::Value << m_camera.GetProjection();
+    out << YAML::Key << "Cam.VP" << YAML::Value << m_camera.GetVP();
+    out << YAML::Key << "Cam.FOV_Y" << YAML::Value << m_camera.GetFovY();
+    out << YAML::Key << "Cam.Near" << YAML::Value << m_camera.GetNearPlane();
+    out << YAML::Key << "Cam.Far" << YAML::Value << m_camera.GetFarPlane();
+    out << YAML::Key << "Cam.NearHeight" << YAML::Value << m_camera.GetNearPlaneHeight();
+    out << YAML::Key << "Cam.FarHeight" << YAML::Value << m_camera.GetFarPlaneHeight();
+    out << YAML::Key << "Cam.Aspect" << YAML::Value << m_camera.GetAspect();
+    out << YAML::Key << "Cam.Ortho" << YAML::Value << m_camera.GetOrthographic();
+    END_COMPONENT_SERIALIZATION();
 }
 }

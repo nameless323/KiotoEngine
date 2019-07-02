@@ -18,17 +18,11 @@ Component* RenderComponent::Clone() const
 
 void RenderComponent::Save(YAML::Emitter& out) const
 {
-    out << YAML::Key << "Component";
-    out << YAML::Value << GetTypeS();
-    out << YAML::Comment(GetTypeName());
+    BEGIN_COMPONENT_SERIALIZARION();
 
-    out << YAML::Key << "Data";
-    out << YAML::Value << YAML::BeginMap;
-    out << YAML::Key << "MatPath";
-    out << YAML::Value << m_materialPath;
-    out << YAML::Key << "MeshPath";
-    out << YAML::Value << m_meshPath;
+    out << YAML::Key << "MatPath" << YAML::Value << m_materialPath;
+    out << YAML::Key << "MeshPath" << YAML::Value << m_meshPath;
 
-    out << YAML::EndMap;
+    END_COMPONENT_SERIALIZATION();
 }
 }

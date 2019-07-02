@@ -37,6 +37,16 @@ KIOTO_API static const std::string& GetTypeName() \
     return name; \
 }
 
+#define BEGIN_COMPONENT_SERIALIZARION() \
+out << YAML::Key << "Component"; \
+out << YAML::Value << GetTypeS(); \
+out << YAML::Comment(GetTypeName()); \
+out << YAML::Key << "Data"; \
+out << YAML::Value << YAML::BeginMap
+
+#define END_COMPONENT_SERIALIZATION() \
+out << YAML::EndMap
+
 class Component
 {
 public:
