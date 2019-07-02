@@ -65,22 +65,27 @@ void SetScene(Scene* scene)
 void SaveScene(std::string path)
 {
     YAML::Emitter out;
-    out << YAML::BeginSeq;
-    std::map<std::string, float> vers = { { "version", 0.09f } };
-    out << vers;
+    out << YAML::BeginMap;
+    out << YAML::Key << "Version" << YAML::Value << 0.09f;
+    out << YAML::Key << "Scene";
+    out << YAML::Value << YAML::BeginMap;
     m_scene->Save(out);
 
-    out << YAML::EndSeq;
+    out << YAML::EndMap;
+    out << YAML::EndMap;
     std::fstream fstream;
     fstream.open(path, std::fstream::out | std::fstream::trunc);
     fstream << out.c_str();
     fstream.close();
-
 }
 
 void LoadScene(std::string path)
 {
-    
+    YAML::Node config = YAML::LoadFile(path);
+    float32 version = -1.0f;
+
+    if (config["Version"] != nullptr)
+        version = config["Version"].as<float32>();
 }
 
 Scene* GetScene()

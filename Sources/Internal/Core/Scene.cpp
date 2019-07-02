@@ -113,7 +113,6 @@ void Scene::AddSystemInternal(SceneSystem* system)
 
 void Scene::Save(YAML::Emitter& out) const
 {
-    out << YAML::BeginMap;
     out << YAML::Key << "SceneName";
     out << YAML::Value << m_name;
 
@@ -122,8 +121,6 @@ void Scene::Save(YAML::Emitter& out) const
 
     for (auto entity : m_entities)
         entity->Save(out);
-
-    out << YAML::EndMap;
 
     out << YAML::EndMap;
 }
