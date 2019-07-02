@@ -189,6 +189,7 @@
     <ClInclude Include="Sources\Internal\Core\Timer\PerformanceTimer.h" />
     <ClInclude Include="Sources\Internal\Core\WindowsApplication.h" />
     <ClInclude Include="Sources\Internal\AssetsSystem\AssetsSystem.h" />
+    <ClInclude Include="Sources\Internal\Core\Yaml\YamlParser.h" />
     <ClInclude Include="Sources\Internal\Kioto.h" />
     <ClInclude Include="Sources\Internal\Math\MathHelpers.h" />
     <ClInclude Include="Sources\Internal\Math\Matrix3.h" />

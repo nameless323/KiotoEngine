@@ -7,6 +7,8 @@
 
 #include "Component/TransformComponent.h"
 
+#include "Core/Yaml/YamlParser.h"
+
 namespace Kioto
 {
 Component* TransformComponent::Clone() const
@@ -22,5 +24,12 @@ Component* TransformComponent::Clone() const
     t->m_worldRotation = m_worldRotation;
 
     return t;
+}
+
+void TransformComponent::Save(YAML::Emitter& out) const
+{
+    out << YAML::Key << "Component";
+    out << YAML::Value << GetTypeS();
+    out << YAML::Comment(GetTypeName());
 }
 }

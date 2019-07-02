@@ -15,9 +15,13 @@
 #include "Systems/TransformSystem.h"
 #include "Systems/RenderSystem.h"
 
+
+#include "Core/Yaml/YamlParser.h"
+
 namespace Kioto
 {
-Scene::Scene()
+Scene::Scene(std::string name)
+    : m_name(name)
 {
     // [a_vorontcov] 64 systems are enough for everyone.
     m_systems.reserve(64);
@@ -106,4 +110,22 @@ void Scene::AddSystemInternal(SceneSystem* system)
 {
     m_systems.push_back(system);
 }
+
+void Scene::Save(YAML::Emitter& out) const
+{
+    out << YAML::BeginMap;
+    out << YAML::Key << "SceneName";
+    out << YAML::Value << m_name;
+
+    out << YAML::Key << "Entities";
+    out << YAML::Value << YAML::BeginMap;
+
+    for (auto entity : m_entities)
+        entity->Save(out);
+
+    out << YAML::EndMap;
+
+    out << YAML::EndMap;
+}
+
 }

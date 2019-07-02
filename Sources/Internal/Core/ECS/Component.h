@@ -10,6 +10,11 @@
 
 #include <functional>
 
+namespace YAML
+{
+class Emitter;
+}
+
 namespace Kioto
 {
 class Entity;
@@ -25,6 +30,11 @@ KIOTO_API static uint64 GetTypeS() \
     static std::hash<std::string> stringHasher; \
     static uint64 hash = stringHasher(#type); \
     return hash; \
+} \
+KIOTO_API static const std::string& GetTypeName() \
+{ \
+    static std::string name = #type; \
+    return name; \
 }
 
 class Component
@@ -35,6 +45,8 @@ public:
     KIOTO_API Entity* GetEntity() const;
     KIOTO_API virtual Component* Clone() const abstract;
     KIOTO_API virtual uint64 GetType() const;
+
+    virtual void Save(YAML::Emitter& out) const abstract;
 
 protected:
     virtual void SetEntity(Entity* entity);

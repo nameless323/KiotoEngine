@@ -35,6 +35,8 @@ public:
     const std::string& GetName() const;
     void SetName(std::string name);
 
+    void Save(YAML::Emitter& out) const;
+
 private:
     std::vector<Component*> m_components; // [a_vorontcov] Bad, bad thing...
     std::string m_name = "Entity";

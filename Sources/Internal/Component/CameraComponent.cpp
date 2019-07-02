@@ -9,6 +9,8 @@
 
 #include "Core/ECS/Entity.h"
 
+#include "Core/Yaml/YamlParser.h"
+
 namespace Kioto
 {
 CameraComponent::CameraComponent(float32 fovY, float32 aspect, float32 nearPlane, float32 farPlane)
@@ -31,5 +33,12 @@ void CameraComponent::SetEntity(Entity* entity)
 {
     Component::SetEntity(entity);
     m_transform = GetEntity()->GetTransform();
+}
+
+void CameraComponent::Save(YAML::Emitter& out) const
+{
+    out << YAML::Key << "Component";
+    out << YAML::Value << GetTypeS();
+    out << YAML::Comment(GetTypeName());
 }
 }

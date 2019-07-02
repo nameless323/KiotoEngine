@@ -38,6 +38,8 @@ public:
 
     Component* Clone() const override;
 
+    void Save(YAML::Emitter& out) const override;
+
 private:
     void SetDirty();
     void RemoveDirty();

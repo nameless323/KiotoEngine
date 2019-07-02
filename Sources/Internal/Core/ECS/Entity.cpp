@@ -9,6 +9,8 @@
 
 #include "Core/CoreHelpers.h"
 
+#include "Core/Yaml/YamlParser.h"
+
 namespace Kioto
 {
 Entity::Entity(const Entity& other)
@@ -63,5 +65,18 @@ Component* Entity::GetComponent(uint64 componentTypeIndex) const
     if (it != m_components.end())
         return *it;
     return nullptr;
+}
+
+void Entity::Save(YAML::Emitter& out) const
+{
+    out << YAML::Key << "Entity";
+    out << YAML::Value << m_name;
+    out << YAML::Key << "Components";
+    out << YAML::Value << YAML::BeginMap;
+
+    for (auto component : m_components)
+        component->Save(out);
+
+    out << YAML::EndMap;
 }
 }

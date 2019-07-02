@@ -38,6 +38,8 @@ public:
     void SetRenderObject(Renderer::RenderObject* renderObject);
     Renderer::RenderObject* GetRenderObject() const;
 
+    void Save(YAML::Emitter& out) const override;
+
 private:
     std::string m_materialPath = "";
     std::string m_meshPath = "";
