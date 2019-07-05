@@ -7,6 +7,7 @@
 
 #include "Core/CoreTypes.h"
 #include "Core/Core.h"
+#include "Core/ECS/ComponentFactory.h"
 
 #include <functional>
 
@@ -39,12 +40,15 @@ KIOTO_API static const std::string& GetTypeName() \
 
 #define BEGIN_COMPONENT_SERIALIZARION() \
 out << YAML::Key << "Component"; \
+out << YAML::Value << YAML::BeginMap; \
+out << YAML::Key << "Type"; \
 out << YAML::Value << GetTypeS(); \
 out << YAML::Comment(GetTypeName()); \
 out << YAML::Key << "Data"; \
 out << YAML::Value << YAML::BeginMap
 
 #define END_COMPONENT_SERIALIZATION() \
+out << YAML::EndMap; \
 out << YAML::EndMap
 
 class Component

@@ -70,6 +70,8 @@ Component* Entity::GetComponent(uint64 componentTypeIndex) const
 void Entity::Save(YAML::Emitter& out) const
 {
     out << YAML::Key << "Entity";
+    out << YAML::Value << YAML::BeginMap;
+    out << YAML::Key << "Name";
     out << YAML::Value << m_name;
     out << YAML::Key << "Components";
     out << YAML::Value << YAML::BeginMap;
@@ -78,5 +80,11 @@ void Entity::Save(YAML::Emitter& out) const
         component->Save(out);
 
     out << YAML::EndMap;
+    out << YAML::EndMap;
+}
+
+void Entity::Load(const YAML::Node& in)
+{
+    std::string name = in["Name"].as<std::string>();
 }
 }

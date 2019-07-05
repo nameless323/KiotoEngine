@@ -65,6 +65,7 @@ private:
 
     friend class CameraSystem;
 };
+REGISTER_COMPONENT(CameraComponent);
 
 inline const TransformComponent* CameraComponent::GetTransform() const
 {

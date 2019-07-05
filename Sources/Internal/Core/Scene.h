@@ -12,6 +12,7 @@
 
 namespace YAML
 {
+class Node;
 class Emitter;
 }
 
@@ -96,6 +97,7 @@ public:
     KIOTO_API const CameraSystem* GetCameraSystem() const;
 
     void Save(YAML::Emitter& out) const;
+    void Load(const YAML::Node& in) const;
 
 private:
     void AddSystemInternal(SceneSystem* system);

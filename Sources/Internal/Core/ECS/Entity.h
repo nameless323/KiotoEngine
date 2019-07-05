@@ -11,6 +11,11 @@
 #include "Core/ECS/Component.h"
 #include "Component/TransformComponent.h"
 
+namespace YAML 
+{
+class Node;
+}
+
 namespace Kioto
 {
 class Entity
@@ -36,6 +41,7 @@ public:
     void SetName(std::string name);
 
     void Save(YAML::Emitter& out) const;
+    void Load(const YAML::Node& in);
 
 private:
     std::vector<Component*> m_components; // [a_vorontcov] Bad, bad thing...

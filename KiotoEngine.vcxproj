@@ -177,6 +177,7 @@
     <ClInclude Include="Sources\Internal\Core\CoreTypes.h" />
     <ClInclude Include="Sources\Internal\Core\DataStructures\RingArray.h" />
     <ClInclude Include="Sources\Internal\Core\ECS\Component.h" />
+    <ClInclude Include="Sources\Internal\Core\ECS\ComponentFactory.h" />
     <ClInclude Include="Sources\Internal\Core\ECS\Entity.h" />
     <ClInclude Include="Sources\Internal\Core\ECS\SceneSystem.h" />
     <ClInclude Include="Sources\Internal\Core\ECS\System.h" />

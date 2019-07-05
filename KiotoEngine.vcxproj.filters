@@ -318,6 +318,9 @@
     <ClInclude Include="Sources\Internal\Core\Yaml\YamlParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Sources\Internal\Core\ECS\ComponentFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

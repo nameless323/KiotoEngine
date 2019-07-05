@@ -125,4 +125,23 @@ void Scene::Save(YAML::Emitter& out) const
     out << YAML::EndMap;
 }
 
+void Scene::Load(const YAML::Node& in) const
+{
+    if (in["Entities"] != nullptr)
+    {
+        /*for (uint32 it = 0; it < in["Entities"].size(); ++it)
+        {
+            Entity* e = new Entity();
+            YAML::Node node = in["Entities"];
+            e->Load(in["Entities"][0]);
+        }*/
+        YAML::Node characterType = in["Entities"];
+        for (YAML::const_iterator it = characterType.begin(); it != characterType.end(); ++it)
+        {
+            Entity* e = new Entity();
+            e->Load(it->second);
+        }
+    }
+}
+
 }

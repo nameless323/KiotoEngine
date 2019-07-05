@@ -86,6 +86,16 @@ void LoadScene(std::string path)
 
     if (config["Version"] != nullptr)
         version = config["Version"].as<float32>();
+
+    if (config["Scene"] != nullptr)
+    {
+        YAML::Node sceneNode = config["Scene"];
+        if (sceneNode["SceneName"] != nullptr)
+        {
+            Scene* scene = new Scene(sceneNode["SceneName"].as<std::string>());
+            scene->Load(sceneNode);
+        }
+    }
 }
 
 Scene* GetScene()

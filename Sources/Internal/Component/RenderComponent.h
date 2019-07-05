@@ -46,6 +46,7 @@ private:
 
     Renderer::RenderObject* m_renderObject = nullptr;
 };
+REGISTER_COMPONENT(RenderComponent);
 
 inline void RenderComponent::SetMaterial(const std::string& path)
 {

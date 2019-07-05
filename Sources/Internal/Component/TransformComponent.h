@@ -58,6 +58,7 @@ private:
 
     friend class TransformSystem;
 };
+REGISTER_COMPONENT(TransformComponent);
 
 inline bool TransformComponent::GetDirty() const
 {
