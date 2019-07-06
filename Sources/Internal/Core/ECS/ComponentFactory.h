@@ -18,7 +18,7 @@ class Component;
 class ComponentFactory
 {
 public:
-    KIOTO_API static ComponentFactory Instance()
+    KIOTO_API static ComponentFactory& Instance()
     {
         static ComponentFactory i;
         return i;
@@ -45,7 +45,7 @@ public:
     ComponentRegistrator()
     {
         uint64 i = T::GetTypeS();
-        ComponentFactory::Instance().m_componentsMap[T::GetTypeS()] = &Create;
+        ComponentFactory::Instance().m_componentsMap.insert(std::make_pair(T::GetTypeS(), &Create));
     }
 
 private:
