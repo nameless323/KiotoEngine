@@ -38,6 +38,9 @@ public:
 
     Component* Clone() const override;
 
+    void Serialize(YAML::Emitter& out) const override;
+    void Deserialize(const YAML::Node& in) override;
+
 private:
     void SetDirty();
     void RemoveDirty();
@@ -56,6 +59,7 @@ private:
 
     friend class TransformSystem;
 };
+REGISTER_COMPONENT(TransformComponent);
 
 inline bool TransformComponent::GetDirty() const
 {

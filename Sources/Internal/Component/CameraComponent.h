@@ -51,6 +51,9 @@ public:
 
     Renderer::Camera& GetCamera();
 
+    void Serialize(YAML::Emitter& out) const override;
+    void Deserialize(const YAML::Node& in) override;
+
 protected:
     void SetEntity(Entity* entity) override;
 
@@ -63,6 +66,7 @@ private:
 
     friend class CameraSystem;
 };
+REGISTER_COMPONENT(CameraComponent);
 
 inline const TransformComponent* CameraComponent::GetTransform() const
 {

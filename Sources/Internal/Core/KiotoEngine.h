@@ -40,6 +40,9 @@ KIOTO_API void SetScene(Scene* scene);
 ///
 KIOTO_API Scene* GetScene();
 
+KIOTO_API void SaveScene(std::string path);
+KIOTO_API void LoadScene(std::string path);
+
 namespace KiotoCore
 {
 struct ApplicationInfoData

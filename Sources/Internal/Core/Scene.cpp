@@ -15,9 +15,13 @@
 #include "Systems/TransformSystem.h"
 #include "Systems/RenderSystem.h"
 
+
+#include "Core/Yaml/YamlParser.h"
+
 namespace Kioto
 {
-Scene::Scene()
+Scene::Scene(std::string name)
+    : m_name(name)
 {
     // [a_vorontcov] 64 systems are enough for everyone.
     m_systems.reserve(64);
@@ -62,6 +66,12 @@ void Scene::Update(float32 dt)
 
 void Scene::Shutdown()
 {
+    for (auto system : m_systems)
+    {
+        system->Shutdown();
+        SafeDelete(system);
+    }
+    m_systems.clear();
     OutputDebugStringA("Shutdown scene");
 }
 
@@ -102,8 +112,47 @@ void Scene::RemoveEntity(Entity* entity)
     }
 }
 
+Entity* Scene::FindEntity(const std::string& name) const
+{
+    for (auto entity : m_entities)
+    {
+        if (entity->GetName() == name)
+            return entity;
+    }
+    return nullptr;
+}
+
 void Scene::AddSystemInternal(SceneSystem* system)
 {
     m_systems.push_back(system);
 }
+
+void Scene::Serialize(YAML::Emitter& out) const
+{
+    out << YAML::Key << "SceneName";
+    out << YAML::Value << m_name;
+
+    out << YAML::Key << "Entities";
+    out << YAML::Value << YAML::BeginMap;
+
+    for (auto entity : m_entities)
+        entity->Serialize(out);
+
+    out << YAML::EndMap;
+}
+
+void Scene::Deserialize(const YAML::Node& in)
+{
+    if (in["Entities"] != nullptr)
+    {
+        YAML::Node characterType = in["Entities"];
+        for (YAML::const_iterator it = characterType.begin(); it != characterType.end(); ++it)
+        {
+            Entity* e = new Entity();
+            e->Deserialize(it->second);
+            AddEntity(e);
+        }
+    }
+}
+
 }

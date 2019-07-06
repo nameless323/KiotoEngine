@@ -10,6 +10,12 @@
 
 #include <vector>
 
+namespace YAML
+{
+class Node;
+class Emitter;
+}
+
 namespace Kioto
 {
 class SceneSystem;
@@ -21,7 +27,7 @@ class EventSystem;
 class Scene
 {
 public:
-    KIOTO_API Scene();
+    KIOTO_API Scene(std::string name);
     Scene(const Scene& scene) = delete;
     Scene& operator=(Scene scene) = delete;
     KIOTO_API virtual ~Scene();
@@ -87,8 +93,12 @@ public:
 
     KIOTO_API void AddEntity(Entity* entity);
     KIOTO_API void RemoveEntity(Entity* entity);
+    KIOTO_API Entity* FindEntity(const std::string& name) const;
 
     KIOTO_API const CameraSystem* GetCameraSystem() const;
+
+    void Serialize(YAML::Emitter& out) const;
+    void Deserialize(const YAML::Node& in);
 
 private:
     void AddSystemInternal(SceneSystem* system);
@@ -97,6 +107,8 @@ private:
     std::vector<Entity*> m_entities; // [a_vorontcov] Same as above.
     CameraSystem* m_cameraSystem = nullptr;
     RenderSystem* m_renderSystem = nullptr;
+
+    std::string m_name = "";
 };
 
 template <typename T, typename>

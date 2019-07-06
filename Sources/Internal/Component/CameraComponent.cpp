@@ -9,6 +9,8 @@
 
 #include "Core/ECS/Entity.h"
 
+#include "Core/Yaml/YamlParser.h"
+
 namespace Kioto
 {
 CameraComponent::CameraComponent(float32 fovY, float32 aspect, float32 nearPlane, float32 farPlane)
@@ -31,5 +33,34 @@ void CameraComponent::SetEntity(Entity* entity)
 {
     Component::SetEntity(entity);
     m_transform = GetEntity()->GetTransform();
+}
+
+void CameraComponent::Serialize(YAML::Emitter& out) const
+{
+    out << YAML::Key << "Cam.View" << YAML::Value << m_camera.GetView();
+    out << YAML::Key << "Cam.FOV_Y" << YAML::Value << m_camera.GetFovY();
+    out << YAML::Key << "Cam.Near" << YAML::Value << m_camera.GetNearPlane();
+    out << YAML::Key << "Cam.Far" << YAML::Value << m_camera.GetFarPlane();
+    out << YAML::Key << "Cam.Aspect" << YAML::Value << m_camera.GetAspect();
+    out << YAML::Key << "Cam.Ortho" << YAML::Value << m_camera.GetOrthographic();
+    out << YAML::Key << "IsMain" << YAML::Value << m_isMainRT;
+}
+
+void CameraComponent::Deserialize(const YAML::Node& in)
+{
+    if (in["Cam.View"] != nullptr)
+        m_camera.SetView(in["Cam.View"].as<Matrix4>());
+    if (in["Cam.FOV_Y"] != nullptr)
+        m_camera.SetFovY(in["Cam.FOV_Y"].as<float32>());
+    if (in["Cam.Near"] != nullptr)
+        m_camera.SetNearPlane(in["Cam.Near"].as<float32>());
+    if (in["Cam.Far"] != nullptr)
+        m_camera.SetFarPlane(in["Cam.Far"].as<float32>());
+    if (in["Cam.Aspect"] != nullptr)
+        m_camera.SetAspect(in["Cam.Aspect"].as<float32>());
+    if (in["Cam.Ortho"] != nullptr)
+        m_camera.SetOrthographic(in["Cam.Ortho"].as<bool>());
+    if (in["IsMain"] != nullptr)
+        m_isMainRT = in["IsMain"].as<bool>();
 }
 }

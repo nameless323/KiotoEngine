@@ -22,6 +22,10 @@
 #include "Render/Material.h"
 #include "Render/Renderer.h"
 
+
+#include <yaml-cpp/yaml.h>
+#include <fstream>
+
 namespace Kioto
 {
 Scene* m_scene = nullptr;
@@ -56,6 +60,43 @@ void SetScene(Scene* scene)
     }
     m_scene = scene;
     m_scene->Init();
+}
+
+void SaveScene(std::string path)
+{
+    YAML::Emitter out;
+    out << YAML::BeginMap;
+    out << YAML::Key << "Version" << YAML::Value << 0.09f;
+    out << YAML::Key << "Scene";
+    out << YAML::Value << YAML::BeginMap;
+    m_scene->Serialize(out);
+
+    out << YAML::EndMap;
+    out << YAML::EndMap;
+    std::fstream fstream;
+    fstream.open(path, std::fstream::out | std::fstream::trunc);
+    fstream << out.c_str();
+    fstream.close();
+}
+
+void LoadScene(std::string path)
+{
+    YAML::Node config = YAML::LoadFile(path);
+    float32 version = -1.0f;
+
+    if (config["Version"] != nullptr)
+        version = config["Version"].as<float32>();
+
+    if (config["Scene"] != nullptr)
+    {
+        YAML::Node sceneNode = config["Scene"];
+        if (sceneNode["SceneName"] != nullptr)
+        {
+            Scene* scene = new Scene(sceneNode["SceneName"].as<std::string>());
+            SetScene(scene);
+            scene->Deserialize(sceneNode);
+        }
+    }
 }
 
 Scene* GetScene()

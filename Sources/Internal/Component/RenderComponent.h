@@ -38,12 +38,16 @@ public:
     void SetRenderObject(Renderer::RenderObject* renderObject);
     Renderer::RenderObject* GetRenderObject() const;
 
+    void Serialize(YAML::Emitter& out) const override;
+    void Deserialize(const YAML::Node& in) override;
+
 private:
     std::string m_materialPath = "";
     std::string m_meshPath = "";
 
     Renderer::RenderObject* m_renderObject = nullptr;
 };
+REGISTER_COMPONENT(RenderComponent);
 
 inline void RenderComponent::SetMaterial(const std::string& path)
 {
