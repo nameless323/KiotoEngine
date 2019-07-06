@@ -66,6 +66,11 @@ void Scene::Update(float32 dt)
 
 void Scene::Shutdown()
 {
+    for (auto system : m_systems)
+    {
+        system->Shutdown();
+        SafeDelete(system);
+    }
     OutputDebugStringA("Shutdown scene");
 }
 
@@ -104,6 +109,16 @@ void Scene::RemoveEntity(Entity* entity)
         for (auto system : m_systems)
             system->OnEntityAdd(entity);
     }
+}
+
+Entity* Scene::FindEntity(const std::string& name) const
+{
+    for (auto entity : m_entities)
+    {
+        if (entity->GetName() == name)
+            return entity;
+    }
+    return nullptr;
 }
 
 void Scene::AddSystemInternal(SceneSystem* system)

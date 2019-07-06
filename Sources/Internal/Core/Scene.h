@@ -93,6 +93,7 @@ public:
 
     KIOTO_API void AddEntity(Entity* entity);
     KIOTO_API void RemoveEntity(Entity* entity);
+    KIOTO_API Entity* FindEntity(const std::string& name) const;
 
     KIOTO_API const CameraSystem* GetCameraSystem() const;
 

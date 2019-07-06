@@ -43,6 +43,7 @@ void CameraComponent::Save(YAML::Emitter& out) const
     out << YAML::Key << "Cam.Far" << YAML::Value << m_camera.GetFarPlane();
     out << YAML::Key << "Cam.Aspect" << YAML::Value << m_camera.GetAspect();
     out << YAML::Key << "Cam.Ortho" << YAML::Value << m_camera.GetOrthographic();
+    out << YAML::Key << "IsMain" << YAML::Value << m_isMainRT;
 }
 
 void CameraComponent::Load(const YAML::Node& in)
@@ -59,5 +60,7 @@ void CameraComponent::Load(const YAML::Node& in)
         m_camera.SetAspect(in["Cam.Aspect"].as<float32>());
     if (in["Cam.Ortho"] != nullptr)
         m_camera.SetOrthographic(in["Cam.Ortho"].as<bool>());
+    if (in["IsMain"] != nullptr)
+        m_isMainRT = in["IsMain"].as<bool>();
 }
 }

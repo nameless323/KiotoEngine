@@ -47,5 +47,6 @@ void TransformComponent::Load(const YAML::Node& in)
         m_worldPosition = in["WorldPosition"].as<Vector3>();
     if (in["WorldRotation"] != nullptr)
         m_worldRotation = in["WorldRotation"].as<Matrix4>();
+    m_isDirty = true;
 }
 }

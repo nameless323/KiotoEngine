@@ -93,8 +93,8 @@ void LoadScene(std::string path)
         if (sceneNode["SceneName"] != nullptr)
         {
             Scene* scene = new Scene(sceneNode["SceneName"].as<std::string>());
-            scene->Load(sceneNode);
             SetScene(scene);
+            scene->Load(sceneNode);
         }
     }
 }
