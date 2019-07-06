@@ -39,6 +39,7 @@ public:
     Component* Clone() const override;
 
     void Save(YAML::Emitter& out) const override;
+    void Load(const YAML::Node& in) override;
 
 private:
     void SetDirty();

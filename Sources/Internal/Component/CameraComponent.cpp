@@ -37,17 +37,27 @@ void CameraComponent::SetEntity(Entity* entity)
 
 void CameraComponent::Save(YAML::Emitter& out) const
 {
-    BEGIN_COMPONENT_SERIALIZARION();
     out << YAML::Key << "Cam.View" << YAML::Value << m_camera.GetView();
-    out << YAML::Key << "Cam.Proj" << YAML::Value << m_camera.GetProjection();
-    out << YAML::Key << "Cam.VP" << YAML::Value << m_camera.GetVP();
     out << YAML::Key << "Cam.FOV_Y" << YAML::Value << m_camera.GetFovY();
     out << YAML::Key << "Cam.Near" << YAML::Value << m_camera.GetNearPlane();
     out << YAML::Key << "Cam.Far" << YAML::Value << m_camera.GetFarPlane();
-    out << YAML::Key << "Cam.NearHeight" << YAML::Value << m_camera.GetNearPlaneHeight();
-    out << YAML::Key << "Cam.FarHeight" << YAML::Value << m_camera.GetFarPlaneHeight();
     out << YAML::Key << "Cam.Aspect" << YAML::Value << m_camera.GetAspect();
     out << YAML::Key << "Cam.Ortho" << YAML::Value << m_camera.GetOrthographic();
-    END_COMPONENT_SERIALIZATION();
+}
+
+void CameraComponent::Load(const YAML::Node& in)
+{
+    if (in["Cam.View"] != nullptr)
+        m_camera.SetView(in["Cam.View"].as<Matrix4>());
+    if (in["Cam.FOV_Y"] != nullptr)
+        m_camera.SetFovY(in["Cam.FOV_Y"].as<float32>());
+    if (in["Cam.Near"] != nullptr)
+        m_camera.SetNearPlane(in["Cam.Near"].as<float32>());
+    if (in["Cam.Far"] != nullptr)
+        m_camera.SetFarPlane(in["Cam.Far"].as<float32>());
+    if (in["Cam.Aspect"] != nullptr)
+        m_camera.SetAspect(in["Cam.Aspect"].as<float32>());
+    if (in["Cam.Ortho"] != nullptr)
+        m_camera.SetOrthographic(in["Cam.Ortho"].as<bool>());
 }
 }

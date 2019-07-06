@@ -13,6 +13,7 @@
 
 namespace YAML
 {
+class Node;
 class Emitter;
 }
 
@@ -32,35 +33,30 @@ KIOTO_API static uint64 GetTypeS() \
     static uint64 hash = stringHasher(#type); \
     return hash; \
 } \
-KIOTO_API static const std::string& GetTypeName() \
+KIOTO_API const std::string& GetTypeName() const override \
+{ \
+    static std::string name = type::GetTypeNameS(); \
+    return name; \
+} \
+KIOTO_API static const std::string& GetTypeNameS() \
 { \
     static std::string name = #type; \
     return name; \
 }
 
-#define BEGIN_COMPONENT_SERIALIZARION() \
-out << YAML::Key << "Component"; \
-out << YAML::Value << YAML::BeginMap; \
-out << YAML::Key << "Type"; \
-out << YAML::Value << GetTypeS(); \
-out << YAML::Comment(GetTypeName()); \
-out << YAML::Key << "Data"; \
-out << YAML::Value << YAML::BeginMap
-
-#define END_COMPONENT_SERIALIZATION() \
-out << YAML::EndMap; \
-out << YAML::EndMap
-
 class Component
 {
 public:
+    KIOTO_API Component() = default;
     KIOTO_API virtual ~Component() = default;
 
     KIOTO_API Entity* GetEntity() const;
     KIOTO_API virtual Component* Clone() const abstract;
     KIOTO_API virtual uint64 GetType() const;
+    KIOTO_API virtual const std::string& GetTypeName() const;
 
     virtual void Save(YAML::Emitter& out) const abstract;
+    virtual void Load(const YAML::Node& in) abstract;
 
 protected:
     virtual void SetEntity(Entity* entity);
@@ -79,5 +75,10 @@ inline Entity* Component::GetEntity() const
 inline uint64 Component::GetType() const 
 {
     return -1;
+}
+
+inline const std::string& Component::GetTypeName() const
+{
+    return this->GetTypeName();
 }
 }

@@ -52,6 +52,7 @@ public:
     Renderer::Camera& GetCamera();
 
     void Save(YAML::Emitter& out) const override;
+    void Load(const YAML::Node& in) override;
 
 protected:
     void SetEntity(Entity* entity) override;

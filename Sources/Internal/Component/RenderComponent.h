@@ -39,6 +39,7 @@ public:
     Renderer::RenderObject* GetRenderObject() const;
 
     void Save(YAML::Emitter& out) const override;
+    void Load(const YAML::Node& in) override;
 
 private:
     std::string m_materialPath = "";

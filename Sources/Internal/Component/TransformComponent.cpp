@@ -28,14 +28,24 @@ Component* TransformComponent::Clone() const
 
 void TransformComponent::Save(YAML::Emitter& out) const
 {
-    BEGIN_COMPONENT_SERIALIZARION();
-
     out << YAML::Key << "ToWorld" << YAML::Value << m_toWorld;
     out << YAML::Key << "ToParent" << YAML::Value << m_toParent;
     out << YAML::Key << "ToModel" << YAML::Value << m_toModel;
     out << YAML::Key << "WorldPosition" << YAML::Value << m_worldPosition;
     out << YAML::Key << "WorldRotation" << YAML::Value << m_worldRotation;
+}
 
-    END_COMPONENT_SERIALIZATION();
+void TransformComponent::Load(const YAML::Node& in)
+{
+    if (in["ToWorld"] != nullptr)
+        m_toWorld = in["ToWorld"].as<Matrix4>();
+    if (in["ToParent"] != nullptr)
+        m_toParent = in["ToParent"].as<Matrix4>();
+    if (in["ToModel"] != nullptr)
+        m_toModel = in["ToModel"].as<Matrix4>();
+    if (in["WorldPosition"] != nullptr)
+        m_worldPosition = in["WorldPosition"].as<Vector3>();
+    if (in["WorldRotation"] != nullptr)
+        m_worldRotation = in["WorldRotation"].as<Matrix4>();
 }
 }

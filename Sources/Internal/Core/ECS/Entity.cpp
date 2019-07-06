@@ -77,7 +77,20 @@ void Entity::Save(YAML::Emitter& out) const
     out << YAML::Value << YAML::BeginMap;
 
     for (auto component : m_components)
+    {
+        out << YAML::Key << "Component";
+        out << YAML::Value << YAML::BeginMap;
+        out << YAML::Key << "Type";
+        out << YAML::Value << component->GetType();
+        out << YAML::Comment(component->GetTypeName());
+        out << YAML::Key << "Data";
+        out << YAML::Value << YAML::BeginMap;
+
         component->Save(out);
+
+        out << YAML::EndMap;
+        out << YAML::EndMap;
+    }
 
     out << YAML::EndMap;
     out << YAML::EndMap;
@@ -85,6 +98,25 @@ void Entity::Save(YAML::Emitter& out) const
 
 void Entity::Load(const YAML::Node& in)
 {
-    std::string name = in["Name"].as<std::string>();
+    if (in["Name"] != nullptr)
+    {
+        const std::string name = in["Name"].as<std::string>();
+        SetName(name);
+    }
+    if (in["Components"] != nullptr)
+    {
+        YAML::Node components = in["Components"];
+        for (YAML::const_iterator it = components.begin(); it != components.end(); ++it)
+        {
+            YAML::Node component = it->second;
+            if (component["Type"] != nullptr && component["Data"] != nullptr)
+            {
+                const uint64 type = component["Type"].as<uint64>();
+                Component* newComponent = ComponentFactory::Instance().CreateComponent(type);
+                newComponent->Load(component["Data"]);
+                AddComponent(newComponent);
+            }
+        }
+    }
 }
 }

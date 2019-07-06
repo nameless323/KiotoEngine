@@ -125,7 +125,7 @@ void Scene::Save(YAML::Emitter& out) const
     out << YAML::EndMap;
 }
 
-void Scene::Load(const YAML::Node& in) const
+void Scene::Load(const YAML::Node& in)
 {
     if (in["Entities"] != nullptr)
     {
@@ -140,6 +140,7 @@ void Scene::Load(const YAML::Node& in) const
         {
             Entity* e = new Entity();
             e->Load(it->second);
+            AddEntity(e);
         }
     }
 }
