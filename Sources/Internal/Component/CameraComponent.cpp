@@ -35,7 +35,7 @@ void CameraComponent::SetEntity(Entity* entity)
     m_transform = GetEntity()->GetTransform();
 }
 
-void CameraComponent::Save(YAML::Emitter& out) const
+void CameraComponent::Serialize(YAML::Emitter& out) const
 {
     out << YAML::Key << "Cam.View" << YAML::Value << m_camera.GetView();
     out << YAML::Key << "Cam.FOV_Y" << YAML::Value << m_camera.GetFovY();
@@ -46,7 +46,7 @@ void CameraComponent::Save(YAML::Emitter& out) const
     out << YAML::Key << "IsMain" << YAML::Value << m_isMainRT;
 }
 
-void CameraComponent::Load(const YAML::Node& in)
+void CameraComponent::Deserialize(const YAML::Node& in)
 {
     if (in["Cam.View"] != nullptr)
         m_camera.SetView(in["Cam.View"].as<Matrix4>());

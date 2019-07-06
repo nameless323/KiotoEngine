@@ -40,8 +40,8 @@ public:
     const std::string& GetName() const;
     void SetName(std::string name);
 
-    void Save(YAML::Emitter& out) const;
-    void Load(const YAML::Node& in);
+    void Serialize(YAML::Emitter& out) const;
+    void Deserialize(const YAML::Node& in);
 
 private:
     std::vector<Component*> m_components; // [a_vorontcov] Bad, bad thing...

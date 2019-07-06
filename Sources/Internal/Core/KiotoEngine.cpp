@@ -69,7 +69,7 @@ void SaveScene(std::string path)
     out << YAML::Key << "Version" << YAML::Value << 0.09f;
     out << YAML::Key << "Scene";
     out << YAML::Value << YAML::BeginMap;
-    m_scene->Save(out);
+    m_scene->Serialize(out);
 
     out << YAML::EndMap;
     out << YAML::EndMap;
@@ -94,7 +94,7 @@ void LoadScene(std::string path)
         {
             Scene* scene = new Scene(sceneNode["SceneName"].as<std::string>());
             SetScene(scene);
-            scene->Load(sceneNode);
+            scene->Deserialize(sceneNode);
         }
     }
 }

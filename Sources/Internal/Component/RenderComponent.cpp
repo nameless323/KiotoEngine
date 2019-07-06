@@ -16,13 +16,13 @@ Component* RenderComponent::Clone() const
     return new RenderComponent();
 }
 
-void RenderComponent::Save(YAML::Emitter& out) const
+void RenderComponent::Serialize(YAML::Emitter& out) const
 {
     out << YAML::Key << "MatPath" << YAML::Value << m_materialPath;
     out << YAML::Key << "MeshPath" << YAML::Value << m_meshPath;
 }
 
-void RenderComponent::Load(const YAML::Node& in)
+void RenderComponent::Deserialize(const YAML::Node& in)
 {
     if (in["MatPath"] != nullptr)
         m_materialPath = in["MatPath"].as<std::string>();

@@ -26,7 +26,7 @@ Component* TransformComponent::Clone() const
     return t;
 }
 
-void TransformComponent::Save(YAML::Emitter& out) const
+void TransformComponent::Serialize(YAML::Emitter& out) const
 {
     out << YAML::Key << "ToWorld" << YAML::Value << m_toWorld;
     out << YAML::Key << "ToParent" << YAML::Value << m_toParent;
@@ -35,7 +35,7 @@ void TransformComponent::Save(YAML::Emitter& out) const
     out << YAML::Key << "WorldRotation" << YAML::Value << m_worldRotation;
 }
 
-void TransformComponent::Load(const YAML::Node& in)
+void TransformComponent::Deserialize(const YAML::Node& in)
 {
     if (in["ToWorld"] != nullptr)
         m_toWorld = in["ToWorld"].as<Matrix4>();

@@ -55,8 +55,8 @@ public:
     KIOTO_API virtual uint64 GetType() const;
     KIOTO_API virtual const std::string& GetTypeName() const;
 
-    virtual void Save(YAML::Emitter& out) const abstract;
-    virtual void Load(const YAML::Node& in) abstract;
+    virtual void Serialize(YAML::Emitter& out) const abstract;
+    virtual void Deserialize(const YAML::Node& in) abstract;
 
 protected:
     virtual void SetEntity(Entity* entity);

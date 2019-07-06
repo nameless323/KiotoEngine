@@ -71,6 +71,7 @@ void Scene::Shutdown()
         system->Shutdown();
         SafeDelete(system);
     }
+    m_systems.clear();
     OutputDebugStringA("Shutdown scene");
 }
 
@@ -126,7 +127,7 @@ void Scene::AddSystemInternal(SceneSystem* system)
     m_systems.push_back(system);
 }
 
-void Scene::Save(YAML::Emitter& out) const
+void Scene::Serialize(YAML::Emitter& out) const
 {
     out << YAML::Key << "SceneName";
     out << YAML::Value << m_name;
@@ -135,26 +136,20 @@ void Scene::Save(YAML::Emitter& out) const
     out << YAML::Value << YAML::BeginMap;
 
     for (auto entity : m_entities)
-        entity->Save(out);
+        entity->Serialize(out);
 
     out << YAML::EndMap;
 }
 
-void Scene::Load(const YAML::Node& in)
+void Scene::Deserialize(const YAML::Node& in)
 {
     if (in["Entities"] != nullptr)
     {
-        /*for (uint32 it = 0; it < in["Entities"].size(); ++it)
-        {
-            Entity* e = new Entity();
-            YAML::Node node = in["Entities"];
-            e->Load(in["Entities"][0]);
-        }*/
         YAML::Node characterType = in["Entities"];
         for (YAML::const_iterator it = characterType.begin(); it != characterType.end(); ++it)
         {
             Entity* e = new Entity();
-            e->Load(it->second);
+            e->Deserialize(it->second);
             AddEntity(e);
         }
     }

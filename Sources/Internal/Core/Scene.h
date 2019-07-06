@@ -97,8 +97,8 @@ public:
 
     KIOTO_API const CameraSystem* GetCameraSystem() const;
 
-    void Save(YAML::Emitter& out) const;
-    void Load(const YAML::Node& in);
+    void Serialize(YAML::Emitter& out) const;
+    void Deserialize(const YAML::Node& in);
 
 private:
     void AddSystemInternal(SceneSystem* system);

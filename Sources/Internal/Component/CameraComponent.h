@@ -51,8 +51,8 @@ public:
 
     Renderer::Camera& GetCamera();
 
-    void Save(YAML::Emitter& out) const override;
-    void Load(const YAML::Node& in) override;
+    void Serialize(YAML::Emitter& out) const override;
+    void Deserialize(const YAML::Node& in) override;
 
 protected:
     void SetEntity(Entity* entity) override;

@@ -67,7 +67,7 @@ Component* Entity::GetComponent(uint64 componentTypeIndex) const
     return nullptr;
 }
 
-void Entity::Save(YAML::Emitter& out) const
+void Entity::Serialize(YAML::Emitter& out) const
 {
     out << YAML::Key << "Entity";
     out << YAML::Value << YAML::BeginMap;
@@ -86,7 +86,7 @@ void Entity::Save(YAML::Emitter& out) const
         out << YAML::Key << "Data";
         out << YAML::Value << YAML::BeginMap;
 
-        component->Save(out);
+        component->Serialize(out);
 
         out << YAML::EndMap;
         out << YAML::EndMap;
@@ -96,7 +96,7 @@ void Entity::Save(YAML::Emitter& out) const
     out << YAML::EndMap;
 }
 
-void Entity::Load(const YAML::Node& in)
+void Entity::Deserialize(const YAML::Node& in)
 {
     if (in["Name"] != nullptr)
     {
@@ -113,7 +113,7 @@ void Entity::Load(const YAML::Node& in)
             {
                 const uint64 type = component["Type"].as<uint64>();
                 Component* newComponent = ComponentFactory::Instance().CreateComponent(type);
-                newComponent->Load(component["Data"]);
+                newComponent->Deserialize(component["Data"]);
                 AddComponent(newComponent);
             }
         }
