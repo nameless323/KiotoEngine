@@ -37,15 +37,15 @@ void TransformComponent::Serialize(YAML::Emitter& out) const
 
 void TransformComponent::Deserialize(const YAML::Node& in)
 {
-    if (in["ToWorld"] != nullptr)
+    if (in["ToWorld"])
         m_toWorld = in["ToWorld"].as<Matrix4>();
-    if (in["ToParent"] != nullptr)
+    if (in["ToParent"])
         m_toParent = in["ToParent"].as<Matrix4>();
-    if (in["ToModel"] != nullptr)
+    if (in["ToModel"])
         m_toModel = in["ToModel"].as<Matrix4>();
-    if (in["WorldPosition"] != nullptr)
+    if (in["WorldPosition"])
         m_worldPosition = in["WorldPosition"].as<Vector3>();
-    if (in["WorldRotation"] != nullptr)
+    if (in["WorldRotation"])
         m_worldRotation = in["WorldRotation"].as<Matrix4>();
     m_isDirty = true;
 }

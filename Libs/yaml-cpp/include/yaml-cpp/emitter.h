@@ -7,18 +7,23 @@
 #pragma once
 #endif
 
+#include <cmath>
 #include <cstddef>
+#include <limits>
 #include <memory>
 #include <sstream>
 #include <string>
+#include <type_traits>
 
 #include "yaml-cpp/binary.h"
 #include "yaml-cpp/dll.h"
 #include "yaml-cpp/emitterdef.h"
 #include "yaml-cpp/emittermanip.h"
-#include "yaml-cpp/noncopyable.h"
 #include "yaml-cpp/null.h"
 #include "yaml-cpp/ostream_wrapper.h"
+
+#pragma warning(push)
+#pragma warning(disable : 26812)
 
 namespace YAML {
 class Binary;
@@ -28,10 +33,12 @@ struct _Null;
 namespace YAML {
 class EmitterState;
 
-class YAML_CPP_API Emitter : private noncopyable {
+class YAML_CPP_API Emitter {
  public:
   Emitter();
   explicit Emitter(std::ostream& stream);
+  Emitter(const Emitter&) = delete;
+  Emitter& operator=(const Emitter&) = delete;
   ~Emitter();
 
   // output
@@ -152,7 +159,27 @@ inline Emitter& Emitter::WriteStreamable(T value) {
 
   std::stringstream stream;
   SetStreamablePrecision<T>(stream);
-  stream << value;
+
+  bool special = false;
+  if (std::is_floating_point<T>::value) {
+    if ((std::numeric_limits<T>::has_quiet_NaN ||
+         std::numeric_limits<T>::has_signaling_NaN) &&
+        isnan(value)) {
+      special = true;
+      stream << ".nan";
+    } else if (std::numeric_limits<T>::has_infinity && std::isinf(value)) {
+      special = true;
+      if (std::signbit(value)) {
+        stream << "-.inf";
+      } else {
+        stream << ".inf";
+      }
+    }
+  }
+
+  if (!special) {
+    stream << value;
+  }
   m_stream << stream.str();
 
   StartedScalar();
@@ -249,6 +276,8 @@ inline Emitter& operator<<(Emitter& emitter, _Indent indent) {
 inline Emitter& operator<<(Emitter& emitter, _Precision precision) {
   return emitter.SetLocalPrecision(precision);
 }
-}
+}  // namespace YAML
 
 #endif  // EMITTER_H_62B23520_7C8E_11DE_8A39_0800200C9A66
+
+#pragma warning(pop)

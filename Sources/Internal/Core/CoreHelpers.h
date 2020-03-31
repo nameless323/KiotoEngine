@@ -7,6 +7,8 @@
 
 #include <string>
 #include <functional>
+#include <locale>
+#include <codecvt>
 
 namespace Kioto
 {
@@ -59,7 +61,9 @@ uint64 GetFunctionAddress(std::function<T(U...)> f)
 
 inline std::string WstrToStr(std::wstring s)
 {
-    return { s.begin(), s.end() };
+
+    return "";
+    //return std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(s);
 }
 
 inline std::wstring StrToWstr(std::string s)

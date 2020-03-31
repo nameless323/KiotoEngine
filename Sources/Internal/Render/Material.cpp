@@ -31,9 +31,9 @@ Material::Material(const std::string& path)
     YAML::Node config = YAML::LoadFile(path);
     float32 version = -1.0f;
 
-    if (config["version"] != nullptr)
+    if (config["version"])
         version = config["version"].as<float32>();
-    if (config["shader"] != nullptr)
+    if (config["shader"])
     {
         m_shaderPath = config["shader"].as<std::string>();
         std::string shaderPath = AssetsSystem::GetAssetFullPath(m_shaderPath);
@@ -50,7 +50,7 @@ Material::Material(const std::string& path)
         cb.ComposeBufferData();
 
     PipelineState::Append(config, m_shaderData.pipelineState);
-    if (config["textures"] != nullptr)
+    if (config["textures"])
     {
         YAML::Node texNodes = config["textures"];
         auto it = texNodes.begin();

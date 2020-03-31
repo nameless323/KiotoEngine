@@ -48,19 +48,19 @@ void CameraComponent::Serialize(YAML::Emitter& out) const
 
 void CameraComponent::Deserialize(const YAML::Node& in)
 {
-    if (in["Cam.View"] != nullptr)
+    if (in["Cam.View"])
         m_camera.SetView(in["Cam.View"].as<Matrix4>());
-    if (in["Cam.FOV_Y"] != nullptr)
+    if (in["Cam.FOV_Y"])
         m_camera.SetFovY(in["Cam.FOV_Y"].as<float32>());
-    if (in["Cam.Near"] != nullptr)
+    if (in["Cam.Near"])
         m_camera.SetNearPlane(in["Cam.Near"].as<float32>());
-    if (in["Cam.Far"] != nullptr)
+    if (in["Cam.Far"])
         m_camera.SetFarPlane(in["Cam.Far"].as<float32>());
-    if (in["Cam.Aspect"] != nullptr)
+    if (in["Cam.Aspect"])
         m_camera.SetAspect(in["Cam.Aspect"].as<float32>());
-    if (in["Cam.Ortho"] != nullptr)
+    if (in["Cam.Ortho"])
         m_camera.SetOrthographic(in["Cam.Ortho"].as<bool>());
-    if (in["IsMain"] != nullptr)
+    if (in["IsMain"])
         m_isMainRT = in["IsMain"].as<bool>();
 }
 }

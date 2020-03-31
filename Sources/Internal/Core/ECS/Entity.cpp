@@ -19,7 +19,7 @@ Entity::Entity(const Entity& other)
         AddComponent(component->Clone());
 }
 
-Entity::Entity(Entity&& other)
+Entity::Entity(Entity&& other) noexcept
 {
     using std::swap;
     swap(*this, other);
@@ -98,18 +98,18 @@ void Entity::Serialize(YAML::Emitter& out) const
 
 void Entity::Deserialize(const YAML::Node& in)
 {
-    if (in["Name"] != nullptr)
+    if (in["Name"])
     {
         const std::string name = in["Name"].as<std::string>();
         SetName(name);
     }
-    if (in["Components"] != nullptr)
+    if (in["Components"])
     {
         YAML::Node components = in["Components"];
         for (YAML::const_iterator it = components.begin(); it != components.end(); ++it)
         {
             YAML::Node component = it->second;
-            if (component["Type"] != nullptr && component["Data"] != nullptr)
+            if (component["Type"] && component["Data"])
             {
                 const uint64 type = component["Type"].as<uint64>();
                 Component* newComponent = ComponentFactory::Instance().CreateComponent(type);
