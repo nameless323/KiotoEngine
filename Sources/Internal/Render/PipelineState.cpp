@@ -28,66 +28,66 @@ PipelineState PipelineState::FromYaml(const std::string& config)
 void PipelineState::Append(const YAML::Node& node, PipelineState& srcCfg)
 {
     using namespace RenderParamsConverter;
-    if (node["renderLayer"] != nullptr)
+    if (node["renderLayer"])
         srcCfg.LayerType = FromString<eRenderLayerType>(node["renderLayer"].as<std::string>());
-    if (node["fill"] != nullptr)
+    if (node["fill"])
         srcCfg.Fill = FromString<eFillMode>(node["fill"].as<std::string>());
-    if (node["cull"] != nullptr)
+    if (node["cull"])
         srcCfg.Cull = FromString<eCullMode>(node["cull"].as<std::string>());
-    if (node["windingCCW"] != nullptr)
+    if (node["windingCCW"])
         srcCfg.WindingCCW = node["windingCCW"].as<bool>();
-    if (node["depthStencil"] != nullptr)
+    if (node["depthStencil"])
     {
         YAML::Node dsNode = node["depthStencil"];
-        if (dsNode["enableDepth"] != nullptr)
+        if (dsNode["enableDepth"])
             srcCfg.EnableDepth = dsNode["enableDepth"].as<bool>();
-        if (dsNode["enableStencil"] != nullptr)
+        if (dsNode["enableStencil"])
             srcCfg.EnableStencill = dsNode["enableStencil"].as<bool>();
-        if (dsNode["ZTest"] != nullptr)
+        if (dsNode["ZTest"])
             srcCfg.Ztest = FromString<eZTest>(dsNode["ZTest"].as<std::string>());
-        if (dsNode["ZWrite"] != nullptr)
+        if (dsNode["ZWrite"])
             srcCfg.Zwrite = dsNode["ZWrite"].as<bool>();
-        if (dsNode["writeMask"] != nullptr)
+        if (dsNode["writeMask"])
             srcCfg.StencilWriteMask = static_cast<uint8>(std::stoul(dsNode["writeMask"].as<std::string>(), 0, 0));
-        if (dsNode["readMask"] != nullptr)
+        if (dsNode["readMask"])
             srcCfg.StencilReadMask = static_cast<uint8>(std::stoul(dsNode["readMask"].as<std::string>(), 0, 0));
 
-        if (dsNode["stencilFront"] != nullptr)
+        if (dsNode["stencilFront"])
         {
             YAML::Node frontNode = dsNode["stencilFront"];
-            if (frontNode["fail"] != nullptr)
+            if (frontNode["fail"])
                 srcCfg.FrontFaceStencilDesc.StencilFailOp = FromString<eStencilOp>(frontNode["fail"].as<std::string>());
-            if (frontNode["ZFfail"] != nullptr)
+            if (frontNode["ZFfail"])
                 srcCfg.FrontFaceStencilDesc.StencilDepthFailOp = FromString<eStencilOp>(frontNode["ZFfail"].as<std::string>());
-            if (frontNode["pass"] != nullptr)
+            if (frontNode["pass"])
                 srcCfg.FrontFaceStencilDesc.StencilPassOp = FromString<eStencilOp>(frontNode["pass"].as<std::string>());
-            if (frontNode["func"] != nullptr)
+            if (frontNode["func"])
                 srcCfg.FrontFaceStencilDesc.StencilFunc = FromString<eStencilTest>(frontNode["func"].as<std::string>());
         }
-        if (dsNode["stencilBack"] != nullptr)
+        if (dsNode["stencilBack"])
         {
             YAML::Node backNode = dsNode["stencilBack"];
-            if (backNode["fail"] != nullptr)
+            if (backNode["fail"])
                 srcCfg.BackFaceStencilDesc.StencilFailOp = FromString<eStencilOp>(backNode["fail"].as<std::string>());
-            if (backNode["ZFfail"] != nullptr)
+            if (backNode["ZFfail"])
                 srcCfg.BackFaceStencilDesc.StencilDepthFailOp = FromString<eStencilOp>(backNode["ZFfail"].as<std::string>());
-            if (backNode["pass"] != nullptr)
+            if (backNode["pass"])
                 srcCfg.BackFaceStencilDesc.StencilPassOp = FromString<eStencilOp>(backNode["pass"].as<std::string>());
-            if (backNode["func"] != nullptr)
+            if (backNode["func"])
                 srcCfg.BackFaceStencilDesc.StencilFunc = FromString<eStencilTest>(backNode["func"].as<std::string>());
         }
     }
-    if (node["blending"] != nullptr)
+    if (node["blending"])
     {
         YAML::Node bNode = node["blending"];
-        if (bNode["blendOp"] != nullptr)
+        if (bNode["blendOp"])
             srcCfg.BlendOp = FromString<eBlendOps>(bNode["blendOp"].as<std::string>());
-        if (bNode["srcBlend"] != nullptr)
+        if (bNode["srcBlend"])
             srcCfg.SrcBlend = FromString<eBlendModes>(bNode["srcBlend"].as<std::string>());
-        if (bNode["dstBlend"] != nullptr)
+        if (bNode["dstBlend"])
             srcCfg.DstBlend = FromString<eBlendModes>(bNode["dstBlend"].as<std::string>());
     }
-    if (node["colorMask"] != nullptr)
+    if (node["colorMask"])
         srcCfg.ColorMask = FromString<eColorMask>(node["colorMask"].as<std::string>());
 }
 }

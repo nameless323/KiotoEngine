@@ -84,13 +84,13 @@ void LoadScene(std::string path)
     YAML::Node config = YAML::LoadFile(path);
     float32 version = -1.0f;
 
-    if (config["Version"] != nullptr)
+    if (config["Version"])
         version = config["Version"].as<float32>();
 
-    if (config["Scene"] != nullptr)
+    if (config["Scene"])
     {
         YAML::Node sceneNode = config["Scene"];
-        if (sceneNode["SceneName"] != nullptr)
+        if (sceneNode["SceneName"])
         {
             Scene* scene = new Scene(sceneNode["SceneName"].as<std::string>());
             SetScene(scene);

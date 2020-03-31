@@ -23,7 +23,7 @@ class Entity
 public:
     KIOTO_API Entity() = default;
     KIOTO_API Entity(const Entity& other);
-    KIOTO_API Entity(Entity&& other);
+    KIOTO_API Entity(Entity&& other) noexcept;
     KIOTO_API Entity& operator=(Entity other);
     KIOTO_API virtual ~Entity();
 

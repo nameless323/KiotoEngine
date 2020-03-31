@@ -143,7 +143,7 @@ void Scene::Serialize(YAML::Emitter& out) const
 
 void Scene::Deserialize(const YAML::Node& in)
 {
-    if (in["Entities"] != nullptr)
+    if (in["Entities"])
     {
         YAML::Node characterType = in["Entities"];
         for (YAML::const_iterator it = characterType.begin(); it != characterType.end(); ++it)

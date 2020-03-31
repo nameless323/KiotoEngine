@@ -59,7 +59,7 @@ void Init()
         throw "Assets Config not found. Please read the Readme file.";
 
     YAML::Node config = YAML::LoadFile(configPath);
-    if (config["enginePath"] != nullptr)
+    if (config["enginePath"])
     {
         std::string path = config["enginePath"].as<std::string>();
         path += "\\Assets\\";

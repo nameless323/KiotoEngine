@@ -24,9 +24,9 @@ void RenderComponent::Serialize(YAML::Emitter& out) const
 
 void RenderComponent::Deserialize(const YAML::Node& in)
 {
-    if (in["MatPath"] != nullptr)
+    if (in["MatPath"])
         m_materialPath = in["MatPath"].as<std::string>();
-    if (in["MeshPath"] != nullptr)
+    if (in["MeshPath"])
         m_meshPath = in["MeshPath"].as<std::string>();
 }
 }

@@ -19,6 +19,9 @@
 #include "yaml-cpp/node/ptr.h"
 #include "yaml-cpp/node/type.h"
 
+#pragma warning(push)
+#pragma warning(disable : 26812)
+
 namespace YAML {
 namespace detail {
 class node;
@@ -108,20 +111,22 @@ class YAML_CPP_API node_data {
   std::string m_scalar;
 
   // sequence
-  typedef std::vector<node*> node_seq;
+  using node_seq = std::vector<node *>;
   node_seq m_sequence;
 
   mutable std::size_t m_seqSize;
 
   // map
-  typedef std::vector<std::pair<node*, node*>> node_map;
+  using node_map = std::vector<std::pair<node*, node*>>;
   node_map m_map;
 
-  typedef std::pair<node*, node*> kv_pair;
-  typedef std::list<kv_pair> kv_pairs;
+  using kv_pair = std::pair<node*, node*>;
+  using kv_pairs = std::list<kv_pair>;
   mutable kv_pairs m_undefinedPairs;
 };
 }
 }
 
 #endif  // VALUE_DETAIL_NODE_DATA_H_62B23520_7C8E_11DE_8A39_0800200C9A66
+
+#pragma warning(pop)

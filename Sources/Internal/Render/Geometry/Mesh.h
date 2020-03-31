@@ -138,7 +138,7 @@ inline T* Mesh::GetVertexElementPtr(uint32 i, eVertexSemantic semantic, uint8 se
     const VertexDesc* e = m_layout.FindElement(semantic, semanticIndex);
     if (e == nullptr)
         return nullptr;
-    return reinterpret_cast<T*>(m_vertexData + m_layout.GetVertexStride() * i + e->Offset);
+    return reinterpret_cast<T*>(m_vertexData + static_cast<uint64>(m_layout.GetVertexStride()) * static_cast<uint64>(i) + e->Offset);
 }
 
 inline Vector3* Mesh::GetPositionPtr(uint32 i)
