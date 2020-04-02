@@ -167,6 +167,10 @@
     <ClInclude Include="Sources\External\IMGUI\imstb_rectpack.h" />
     <ClInclude Include="Sources\External\IMGUI\imstb_textedit.h" />
     <ClInclude Include="Sources\External\IMGUI\imstb_truetype.h" />
+    <ClInclude Include="Sources\External\TinyGLTF\json.hpp" />
+    <ClInclude Include="Sources\External\TinyGLTF\stb_image.h" />
+    <ClInclude Include="Sources\External\TinyGLTF\stb_image_write.h" />
+    <ClInclude Include="Sources\External\TinyGLTF\tiny_gltf.h" />
     <ClInclude Include="Sources\Internal\AssetsSystem\Asset.h" />
     <ClInclude Include="Sources\Internal\AssetsSystem\RenderStateParamsConverter.h" />
     <ClInclude Include="Sources\Internal\Component\CameraComponent.h" />
