@@ -219,6 +219,7 @@
     <ClInclude Include="Sources\Internal\Render\DX12\PixProfiler.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\PsoManager.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\RendererDX12.h" />
+    <ClInclude Include="Sources\Internal\Render\Geometry\ParserGLTF.h" />
     <ClInclude Include="Sources\Internal\Render\RenderObject.h" />
     <ClInclude Include="Sources\Internal\Render\RenderPacket.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\RootSignatureManager.h" />
@@ -307,6 +308,7 @@
     <ClCompile Include="Sources\Internal\Render\Geometry\Mesh.cpp" />
     <ClCompile Include="Sources\Internal\Render\Geometry\MeshLoader.cpp" />
     <ClCompile Include="Sources\Internal\Render\Geometry\ParserFBX.cpp" />
+    <ClCompile Include="Sources\Internal\Render\Geometry\ParserGLTF.cpp" />
     <ClCompile Include="Sources\Internal\Render\Material.cpp" />
     <ClCompile Include="Sources\Internal\Render\PipelineState.cpp" />
     <ClCompile Include="Sources\Internal\Render\RenderCommand.cpp" />

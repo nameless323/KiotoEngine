@@ -11,6 +11,7 @@
 
 #include "Render/Geometry/MeshParser.h"
 #include "Render/Geometry/ParserFBX.h"
+#include "Render/Geometry/ParserGLTF.h"
 
 namespace Kioto::MeshLoader
 {
@@ -18,18 +19,27 @@ namespace
 {
 std::map<std::string, MeshParser*> MeshParsers;
 static const std::string fbxExt = ".fbx";
+static const std::string gltfExt = ".glb";
 }
 
 void Init()
 {
     MeshParsers[fbxExt] = new ParserFBX();
     MeshParsers[fbxExt]->Init();
+
+    MeshParsers[gltfExt] = new ParserGLTF();
+    MeshParsers[gltfExt]->Init();
 }
 
 void Shutdown()
 {
     MeshParsers[fbxExt]->Shutdown();
     SafeDelete(MeshParsers[fbxExt]);
+
+    MeshParsers[gltfExt]->Shutdown();
+    SafeDelete(MeshParsers[gltfExt]);
+
+    MeshParsers.clear();
 }
 
 void LoadMesh(Renderer::Mesh* src)
