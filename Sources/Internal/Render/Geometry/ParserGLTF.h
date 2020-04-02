@@ -4,6 +4,11 @@
 
 #include "Render/Geometry/MeshParser.h"
 
+namespace tinygltf
+{
+    class Model;
+}
+
 namespace Kioto
 {
     namespace Renderer
@@ -21,5 +26,6 @@ namespace Kioto
         void ParseMesh(Renderer::Mesh* dst) override;
 
     private:
+        bool LoadModel(const std::string& path, tinygltf::Model& model);
     };
 }

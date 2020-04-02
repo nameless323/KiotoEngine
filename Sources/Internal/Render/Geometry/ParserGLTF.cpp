@@ -2,6 +2,8 @@
 
 #include "Render/Geometry/ParserGLTF.h"
 
+#include "Core/Logger/Logger.h"
+
 #define TINYGLTF_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -13,13 +15,10 @@ namespace Kioto
 {
     void ParserGLTF::Init()
     {
-        static int i = 0;
-        ++i;
     }
 
     void ParserGLTF::Shutdown()
     {
-
     }
 
     Renderer::Mesh* ParserGLTF::ParseMesh(const std::string& path)
@@ -31,4 +30,30 @@ namespace Kioto
     {
 
     }
+
+    bool ParserGLTF::LoadModel(const std::string& path, tinygltf::Model& model)
+    {
+        tinygltf::TinyGLTF loader;
+        std::string err;
+        std::string warn;
+
+        bool res = loader.LoadBinaryFromFile(&model, &err, &warn, path.c_str());
+        if (!warn.empty())
+        {
+            LOG("WARN: ", warn);
+        }
+
+        if (!err.empty())
+        {
+            LOG("ERR: ", err);
+        }
+
+        if (!res)
+            LOG("Failed to load glTF: ", path);
+        else
+            LOG("Loaded glTF: ", path);
+
+        return res;
+    }
+
 }

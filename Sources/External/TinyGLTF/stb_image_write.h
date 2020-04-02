@@ -157,6 +157,9 @@ LICENSE
 
 #include <stdlib.h>
 
+#pragma warning(push)
+#pragma warning(disable : 4996)
+
 // if STB_IMAGE_WRITE_STATIC causes problems, try defining STBIWDEF to 'inline' or 'static inline'
 #ifndef STBIWDEF
 #ifdef STB_IMAGE_WRITE_STATIC
@@ -1530,6 +1533,8 @@ STBIWDEF int stbi_write_jpg(char const *filename, int x, int y, int comp, const 
       return 0;
 }
 #endif
+
+#pragma warning(pop)
 
 #endif // STB_IMAGE_WRITE_IMPLEMENTATION
 
