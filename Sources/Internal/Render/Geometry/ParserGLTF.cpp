@@ -93,12 +93,25 @@ namespace Kioto
                 if (accessor.type != TINYGLTF_TYPE_SCALAR)
                     size = accessor.type;
 
-                uint32 elementSize = size * 4;
+                uint32 elementByteSize = size * 4;
 
-                int vaa = -1;
-                if (attrib.first.compare("POSITION") == 0) vaa = 0;
-                if (attrib.first.compare("NORMAL") == 0) vaa = 1;
-                if (attrib.first.compare("TEXCOORD_0") == 0) vaa = 2;
+                std::vector<Vector3> positions;
+                if (attrib.first.compare("POSITION") == 0)
+                {
+                    size_t elemNumber = byteLength / byteStride;
+                    const byte* bufferStart = bufferData + byteOffset;
+                    for (size_t i = 0; i < elemNumber; ++i)
+                    {
+                        float32 x = *(reinterpret_cast<const float32*>(bufferStart + size_t(byteStride) * size_t(i) + 0));
+                        float32 y = *(reinterpret_cast<const float32*>(bufferStart + size_t(byteStride) * size_t(i) + 4));
+                        float32 z = *(reinterpret_cast<const float32*>(bufferStart + size_t(byteStride) * size_t(i) + 8));
+                        positions.push_back({ x, y, z });
+                    }
+                }
+                if (attrib.first.compare("NORMAL") == 0)
+                    int iad = 0;
+                //if (attrib.first.compare("NORMAL") == 0) vaa = 1;
+                //if (attrib.first.compare("TEXCOORD_0") == 0) vaa = 2;
                 /*if (vaa > -1) {
                     glEnableVertexAttribArray(vaa);
                     glVertexAttribPointer(vaa, size, accessor.componentType,
