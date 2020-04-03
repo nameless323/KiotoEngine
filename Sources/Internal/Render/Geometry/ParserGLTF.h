@@ -7,6 +7,8 @@
 namespace tinygltf
 {
     class Model;
+    class Node;
+    struct Mesh;
 }
 
 namespace Kioto
@@ -27,5 +29,7 @@ namespace Kioto
 
     private:
         bool LoadModel(const std::string& path, tinygltf::Model& model);
+        void ParseModelNodes(const tinygltf::Model& model, const tinygltf::Node& node);
+        void ParseGLTFMesh(const tinygltf::Model& model, const tinygltf::Mesh& mesh);
     };
 }
