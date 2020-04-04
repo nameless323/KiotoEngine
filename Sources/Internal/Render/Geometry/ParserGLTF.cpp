@@ -15,6 +15,15 @@
 
 namespace Kioto
 {
+    namespace
+    {
+        template <typename T>
+        T GetElementFromBuffer(const byte* bufferStart, uint32 byteStride, size_t elemIndex, uint32 offsetInElem = 0)
+        {
+            return *(reinterpret_cast<const T*>(bufferStart + size_t(byteStride) * size_t(elemIndex) + offsetInElem));
+        }
+    }
+
     void ParserGLTF::Init()
     {
     }
@@ -35,9 +44,7 @@ namespace Kioto
 
         const tinygltf::Scene& scene = model.scenes[model.defaultScene];
         for (int node : scene.nodes)
-        {
             ParseModelNodes(model, model.nodes[node], dst);
-        }
     }
 
     bool ParserGLTF::LoadModel(const std::string& path, tinygltf::Model& model)
@@ -82,102 +89,105 @@ namespace Kioto
 
         for (size_t i = 0; i < mesh.primitives.size(); ++i)
         {
-            tinygltf::Primitive primitive = mesh.primitives[i];            
+            tinygltf::Primitive primitive = mesh.primitives[i];
 
-            for (auto& attrib : primitive.attributes)
-            {
-                tinygltf::Accessor accessor = model.accessors[attrib.second];
-                const tinygltf::BufferView& bufferView = model.bufferViews[accessor.bufferView];
-
-                const tinygltf::Buffer& buffer = model.buffers[bufferView.buffer];
-                const byte* bufferData = &model.buffers[bufferView.buffer].data.at(0);
-                size_t byteOffset = bufferView.byteOffset;
-                size_t byteLength = bufferView.byteLength;
-
-                uint32 byteStride = accessor.ByteStride(bufferView);
-                size_t elemNumber = byteLength / byteStride;
-                if (resMesh.Vertices.size() == 0)
-                    resMesh.Vertices.resize(elemNumber);
-                assert(resMesh.Vertices.size() == elemNumber);
-
-                uint32 size = 1;
-                if (accessor.type != TINYGLTF_TYPE_SCALAR)
-                    size = accessor.type;
-
-                uint32 elementByteSize = size * 4;
-
-                std::vector<Vector3> positions;
-                if (attrib.first.compare("POSITION") == 0)
-                {
-                    resMesh.LayoutMask |= Renderer::IntermediateMesh::Position;
-                    const byte* bufferStart = bufferData + byteOffset;
-                    for (size_t i = 0; i < elemNumber; ++i)
-                    {
-                        float32 x = *(reinterpret_cast<const float32*>(bufferStart + size_t(byteStride) * size_t(i) + 0));
-                        float32 y = *(reinterpret_cast<const float32*>(bufferStart + size_t(byteStride) * size_t(i) + 4));
-                        float32 z = *(reinterpret_cast<const float32*>(bufferStart + size_t(byteStride) * size_t(i) + 8));
-                        resMesh.Vertices[i].Pos = { x, y, z, 0.0f };
-                    }
-                }
-                else if (attrib.first.compare("NORMAL") == 0)
-                {
-                    resMesh.LayoutMask |= Renderer::IntermediateMesh::Normal;
-                    const byte* bufferStart = bufferData + byteOffset;
-                    for (size_t i = 0; i < elemNumber; ++i)
-                    {
-                        float32 x = *(reinterpret_cast<const float32*>(bufferStart + size_t(byteStride) * size_t(i) + 0));
-                        float32 y = *(reinterpret_cast<const float32*>(bufferStart + size_t(byteStride) * size_t(i) + 4));
-                        float32 z = *(reinterpret_cast<const float32*>(bufferStart + size_t(byteStride) * size_t(i) + 8));
-                        resMesh.Vertices[i].Norm = { x, y, z, 0.0f };
-                    }
-                }
-                else if (attrib.first.compare("TEXCOORD_0") == 0)
-                {
-                    resMesh.LayoutMask |= Renderer::IntermediateMesh::UV0;
-                    const byte* bufferStart = bufferData + byteOffset;
-                    for (size_t i = 0; i < elemNumber; ++i)
-                    {
-                        float32 u = *(reinterpret_cast<const float32*>(bufferStart + size_t(byteStride) * size_t(i) + 0));
-                        float32 v = *(reinterpret_cast<const float32*>(bufferStart + size_t(byteStride) * size_t(i) + 4));
-                        resMesh.Vertices[i].Uv.push_back({ u, v });
-                    }
-                }
-                else
-                    assert(false);
-            }
-
-            tinygltf::Accessor indexAccessor = model.accessors[primitive.indices];
-
-            const tinygltf::BufferView& indexView = model.bufferViews[indexAccessor.bufferView];
-            const byte* indexBufferData = &model.buffers[indexView.buffer].data.at(0);
-            size_t indexByteOffset = indexView.byteOffset;
-            size_t indexByteLength = indexView.byteLength;
-
-            uint32 indexByteStride = indexAccessor.ByteStride(indexView);
-            if (indexByteStride == 2)
-            {
-                for (size_t i = 0; i < indexAccessor.count; ++i)
-                {
-                    const byte* bufferStart = indexBufferData + indexByteOffset;
-                    int16 index = *(reinterpret_cast<const int16*>(bufferStart + size_t(indexByteStride) * size_t(i)));
-                    resMesh.Indices.push_back(index);
-                }
-            }
-            else if (indexByteStride == 4)
-            {
-                for (size_t i = 0; i < indexAccessor.count; ++i)
-                {
-                    const byte* bufferStart = indexBufferData + indexByteOffset;
-                    int32 index = *(reinterpret_cast<const int32*>(bufferStart + size_t(indexByteStride) * size_t(i)));
-                    resMesh.Indices.push_back(index);
-                }
-            }
-            else
-                assert(false);
+            ParseVertices(model, mesh, primitive, resMesh.Vertices, resMesh.LayoutMask);
+            ParseIndices(model, mesh, primitive, resMesh.Indices);
         }
 
         dst->FromIntermediateMesh(resMesh);
         // [a_vorontcov] You can also find image part of the parsing here https://github.com/syoyo/tinygltf/blob/master/examples/basic/main.cpp
     }
 
+    void ParserGLTF::ParseVertices(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const tinygltf::Primitive& primitive, std::vector<Renderer::IntermediateMesh::Vertex>& vertices, uint32& layoutMask)
+    {
+        for (auto& attrib : primitive.attributes)
+        {
+            tinygltf::Accessor accessor = model.accessors[attrib.second];
+            const tinygltf::BufferView& bufferView = model.bufferViews[accessor.bufferView];
+
+            const tinygltf::Buffer& buffer = model.buffers[bufferView.buffer];
+            const byte* bufferData = &model.buffers[bufferView.buffer].data.at(0);
+            const byte* bufferStart = bufferData + bufferView.byteOffset;
+
+            size_t elemCount = accessor.count;
+            if (vertices.empty())
+                vertices.resize(elemCount);
+            assert(vertices.size() == elemCount);
+
+            // [a_vorontcov] TODO: don't assume the elem length in the buffer. i.e. UV can be more than 2 floats.
+            //uint32 size = 1;
+            //if (accessor.type != TINYGLTF_TYPE_SCALAR)
+            //    size = accessor.type;
+
+            uint32 byteStride = accessor.ByteStride(bufferView);
+            if (attrib.first.compare("POSITION") == 0)
+            {
+                layoutMask |= Renderer::IntermediateMesh::Position;
+                for (size_t i = 0; i < elemCount; ++i)
+                {
+                    float32 x = GetElementFromBuffer<float32>(bufferStart, byteStride, i, 0);
+                    float32 y = GetElementFromBuffer<float32>(bufferStart, byteStride, i, 4);
+                    float32 z = GetElementFromBuffer<float32>(bufferStart, byteStride, i, 8);
+                    vertices[i].Pos = { x, y, z, 0.0f };
+                }
+            }
+            else if (attrib.first.compare("NORMAL") == 0)
+            {
+                layoutMask |= Renderer::IntermediateMesh::Normal;
+                for (size_t i = 0; i < elemCount; ++i)
+                {
+                    float32 x = GetElementFromBuffer<float32>(bufferStart, byteStride, i, 0);
+                    float32 y = GetElementFromBuffer<float32>(bufferStart, byteStride, i, 4);
+                    float32 z = GetElementFromBuffer<float32>(bufferStart, byteStride, i, 8);
+                    vertices[i].Norm = { x, y, z, 0.0f };
+                }
+            }
+            else if (attrib.first.compare("TEXCOORD_0") == 0)
+            {
+                layoutMask |= Renderer::IntermediateMesh::UV0;
+                for (size_t i = 0; i < elemCount; ++i)
+                {
+                    float32 u = GetElementFromBuffer<float32>(bufferStart, byteStride, i, 0);
+                    float32 v = GetElementFromBuffer<float32>(bufferStart, byteStride, i, 4);
+                    vertices[i].Uv.push_back({ u, v });
+                }
+            }
+            else
+                assert(false);
+        }
+    }
+
+    void ParserGLTF::ParseIndices(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const tinygltf::Primitive& primitive, std::vector<uint32>& indices)
+    {
+        tinygltf::Accessor indexAccessor = model.accessors[primitive.indices];
+        indices.reserve(indexAccessor.count);
+
+        const tinygltf::BufferView& indexView = model.bufferViews[indexAccessor.bufferView];
+        const byte* bufferData = &model.buffers[indexView.buffer].data.at(0);
+        size_t byteOffset = indexView.byteOffset;
+        size_t byteLength = indexView.byteLength;
+
+        uint32 byteStride = indexAccessor.ByteStride(indexView);
+        if (byteStride == 2)
+        {
+            for (size_t i = 0; i < indexAccessor.count; ++i)
+            {
+                const byte* bufferStart = bufferData + byteOffset;
+                int16 index = GetElementFromBuffer<int16>(bufferStart, byteStride, i);
+                indices.push_back(index);
+            }
+        }
+        else if (byteStride == 4)
+        {
+            for (size_t i = 0; i < indexAccessor.count; ++i)
+            {
+                const byte* bufferStart = bufferData + byteOffset;
+                int32 index = GetElementFromBuffer<int32>(bufferStart, byteStride, i);
+                indices.push_back(index);
+            }
+        }
+        else
+            assert(false);
+    }
 }
