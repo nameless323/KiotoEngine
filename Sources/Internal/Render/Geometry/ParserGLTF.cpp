@@ -82,8 +82,7 @@ namespace Kioto
 
         for (size_t i = 0; i < mesh.primitives.size(); ++i)
         {
-            tinygltf::Primitive primitive = mesh.primitives[i];
-            tinygltf::Accessor indexAccessor = model.accessors[primitive.indices];
+            tinygltf::Primitive primitive = mesh.primitives[i];            
 
             for (auto& attrib : primitive.attributes)
             {
@@ -99,6 +98,7 @@ namespace Kioto
                 size_t elemNumber = byteLength / byteStride;
                 if (resMesh.Vertices.size() == 0)
                     resMesh.Vertices.resize(elemNumber);
+                assert(resMesh.Vertices.size() == elemNumber);
 
                 uint32 size = 1;
                 if (accessor.type != TINYGLTF_TYPE_SCALAR)
@@ -145,8 +145,37 @@ namespace Kioto
                 else
                     assert(false);
             }
+
+            tinygltf::Accessor indexAccessor = model.accessors[primitive.indices];
+
+            const tinygltf::BufferView& indexView = model.bufferViews[indexAccessor.bufferView];
+            const byte* indexBufferData = &model.buffers[indexView.buffer].data.at(0);
+            size_t indexByteOffset = indexView.byteOffset;
+            size_t indexByteLength = indexView.byteLength;
+
+            uint32 indexByteStride = indexAccessor.ByteStride(indexView);
+            if (indexByteStride == 2)
+            {
+                for (size_t i = 0; i < indexAccessor.count; ++i)
+                {
+                    const byte* bufferStart = indexBufferData + indexByteOffset;
+                    int16 index = *(reinterpret_cast<const int16*>(bufferStart + size_t(indexByteStride) * size_t(i)));
+                    resMesh.Indices.push_back(index);
+                }
+            }
+            else if (indexByteStride == 4)
+            {
+                for (size_t i = 0; i < indexAccessor.count; ++i)
+                {
+                    const byte* bufferStart = indexBufferData + indexByteOffset;
+                    int32 index = *(reinterpret_cast<const int32*>(bufferStart + size_t(indexByteStride) * size_t(i)));
+                    resMesh.Indices.push_back(index);
+                }
+            }
+            else
+                assert(false);
         }
-        resMesh.Indexate();
+
         dst->FromIntermediateMesh(resMesh);
         // [a_vorontcov] You can also find image part of the parsing here https://github.com/syoyo/tinygltf/blob/master/examples/basic/main.cpp
     }
