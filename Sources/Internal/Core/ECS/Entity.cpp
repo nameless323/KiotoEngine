@@ -1,8 +1,3 @@
-//
-// Copyright (C) Aleksandr Vorontcov. 2017
-// Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
-//
-
 #include "stdafx.h"
 
 #include "Core/ECS/Entity.h"
@@ -52,7 +47,7 @@ void Entity::RemoveComponent(Component* component)
 void Entity::AddComponent(Component* component)
 {
     if (component->GetEntity() != nullptr)
-        return; // [a_vorontcov] Do smth scary here.
+        return; // [a_vorontcov] TODO: Do something scary here.
     component->SetEntity(this);
     m_components.push_back(component);
     if (component->GetType() == TransformComponent::GetTypeS())
