@@ -1,8 +1,3 @@
-//
-// Copyright (C) Aleksandr Vorontcov. 2017
-// Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
-//
-
 #pragma once
 
 #include <string>
@@ -17,6 +12,7 @@ namespace Kioto::AssetsSystem // [a_vorontcov] Maybe to class and use with servi
 void Init();
 void Shutdown();
 std::string GetAssetFullPath(const std::string& assetName);
+std::string GetFileExtension(const std::string& path); // [a_vorontsov] Propagating everywhere, all users should include AssetsSystem. Maybe move at a better place?
 bool CheckIfFileExist(const std::wstring& path);
 bool CheckIfFileExist(const std::string& path);
 std::string ReadFileAsString(const std::string& path);

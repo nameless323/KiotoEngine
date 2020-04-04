@@ -9,8 +9,10 @@
 
 #include <map>
 
+#include "AssetsSystem/AssetsSystem.h"
 #include "Render/Geometry/MeshParser.h"
 #include "Render/Geometry/ParserFBX.h"
+#include "Render/Geometry/ParserGLTF.h"
 
 namespace Kioto::MeshLoader
 {
@@ -18,27 +20,35 @@ namespace
 {
 std::map<std::string, MeshParser*> MeshParsers;
 static const std::string fbxExt = ".fbx";
+static const std::string gltfExt = ".glb";
+static const std::string gltfTxtExt = ".gltf";
 }
 
 void Init()
 {
     MeshParsers[fbxExt] = new ParserFBX();
     MeshParsers[fbxExt]->Init();
+
+    MeshParsers[gltfExt] = new ParserGLTF();
+    MeshParsers[gltfExt]->Init();
+
+    MeshParsers[gltfTxtExt] = MeshParsers[gltfTxtExt];
 }
 
 void Shutdown()
 {
     MeshParsers[fbxExt]->Shutdown();
     SafeDelete(MeshParsers[fbxExt]);
+
+    MeshParsers[gltfExt]->Shutdown();
+    SafeDelete(MeshParsers[gltfExt]);
+
+    MeshParsers.clear();
 }
 
 void LoadMesh(Renderer::Mesh* src)
 {
-    std::string& path = src->GetAssetPath();
-    size_t lastPeriod = path.find_last_of('.');
-    if (lastPeriod == std::string::npos)
-        assert(false);
-    std::string ext = path.substr(lastPeriod);
+    std::string ext = AssetsSystem::GetFileExtension(src->GetAssetPath());
     auto it = MeshParsers.find(ext);
     if (it == MeshParsers.end())
         assert(false);

@@ -321,6 +321,21 @@
     <ClInclude Include="Sources\Internal\Core\ECS\ComponentFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Sources\External\TinyGLTF\tiny_gltf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\External\TinyGLTF\json.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\External\TinyGLTF\stb_image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\External\TinyGLTF\stb_image_write.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Internal\Render\Geometry\ParserGLTF.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -498,6 +513,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Sources\External\IMGUI\imgui_widgets.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Internal\Render\Geometry\ParserGLTF.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

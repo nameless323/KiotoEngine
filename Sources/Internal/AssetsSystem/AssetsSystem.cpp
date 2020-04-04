@@ -51,6 +51,14 @@ std::string GetAssetFullPath(const std::string& assetName)
     return AssetsPath + assetName;
 }
 
+std::string GetFileExtension(const std::string& path)
+{
+    size_t lastPeriod = path.find_last_of('.');
+    if (lastPeriod == std::string::npos)
+        assert(false);
+    return path.substr(lastPeriod);
+}
+
 void Init()
 {
 #if _DEBUG
@@ -146,4 +154,5 @@ bool CheckIfAssetLoaded(const std::string& assetPath)
     auto it = m_assets.find(assetPath);
     return it != m_assets.end();
 }
+
 }
