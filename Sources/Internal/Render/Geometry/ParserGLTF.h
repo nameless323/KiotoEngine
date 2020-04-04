@@ -29,7 +29,7 @@ namespace Kioto
 
     private:
         bool LoadModel(const std::string& path, tinygltf::Model& model);
-        void ParseModelNodes(const tinygltf::Model& model, const tinygltf::Node& node);
-        void ParseGLTFMesh(const tinygltf::Model& model, const tinygltf::Mesh& mesh);
+        void ParseModelNodes(const tinygltf::Model& model, const tinygltf::Node& node, Renderer::Mesh* dst);
+        void ParseGLTFMesh(const tinygltf::Model& model, const tinygltf::Mesh& mesh, Renderer::Mesh* dst);
     };
 }

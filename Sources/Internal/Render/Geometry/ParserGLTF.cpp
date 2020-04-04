@@ -4,6 +4,7 @@
 
 #include "AssetsSystem/AssetsSystem.h"
 #include "Core/Logger/Logger.h"
+#include "Render/Geometry/IntermediateMesh.h"
 
 #define TINYGLTF_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
@@ -35,7 +36,7 @@ namespace Kioto
         const tinygltf::Scene& scene = model.scenes[model.defaultScene];
         for (int node : scene.nodes)
         {
-            ParseModelNodes(model, model.nodes[node]);
+            ParseModelNodes(model, model.nodes[node], dst);
         }
     }
 
@@ -68,15 +69,17 @@ namespace Kioto
         return res;
     }
 
-    void ParserGLTF::ParseModelNodes(const tinygltf::Model& model, const tinygltf::Node& node)
+    void ParserGLTF::ParseModelNodes(const tinygltf::Model& model, const tinygltf::Node& node, Renderer::Mesh* dst)
     {
-        ParseGLTFMesh(model, model.meshes[node.mesh]);
-        for (int i : node.children)
-            ParseModelNodes(model, model.nodes[i]);
+        ParseGLTFMesh(model, model.meshes[node.mesh], dst);
+        for (int i : node.children) // [a_vorontsov] Not really supported at the moment...
+            ParseModelNodes(model, model.nodes[i], dst);
     }
 
-    void ParserGLTF::ParseGLTFMesh(const tinygltf::Model& model, const tinygltf::Mesh& mesh)
+    void ParserGLTF::ParseGLTFMesh(const tinygltf::Model& model, const tinygltf::Mesh& mesh, Renderer::Mesh* dst)
     {
+        Renderer::IntermediateMesh resMesh;
+
         for (size_t i = 0; i < mesh.primitives.size(); ++i)
         {
             tinygltf::Primitive primitive = mesh.primitives[i];
@@ -93,6 +96,9 @@ namespace Kioto
                 size_t byteLength = bufferView.byteLength;
 
                 uint32 byteStride = accessor.ByteStride(bufferView);
+                size_t elemNumber = byteLength / byteStride;
+                if (resMesh.Vertices.size() == 0)
+                    resMesh.Vertices.resize(elemNumber);
 
                 uint32 size = 1;
                 if (accessor.type != TINYGLTF_TYPE_SCALAR)
@@ -103,30 +109,45 @@ namespace Kioto
                 std::vector<Vector3> positions;
                 if (attrib.first.compare("POSITION") == 0)
                 {
-                    size_t elemNumber = byteLength / byteStride;
+                    resMesh.LayoutMask |= Renderer::IntermediateMesh::Position;
                     const byte* bufferStart = bufferData + byteOffset;
                     for (size_t i = 0; i < elemNumber; ++i)
                     {
                         float32 x = *(reinterpret_cast<const float32*>(bufferStart + size_t(byteStride) * size_t(i) + 0));
                         float32 y = *(reinterpret_cast<const float32*>(bufferStart + size_t(byteStride) * size_t(i) + 4));
                         float32 z = *(reinterpret_cast<const float32*>(bufferStart + size_t(byteStride) * size_t(i) + 8));
-                        positions.push_back({ x, y, z });
+                        resMesh.Vertices[i].Pos = { x, y, z, 0.0f };
                     }
                 }
-                if (attrib.first.compare("NORMAL") == 0)
-                    int iad = 0;
-                //if (attrib.first.compare("NORMAL") == 0) vaa = 1;
-                //if (attrib.first.compare("TEXCOORD_0") == 0) vaa = 2;
-                /*if (vaa > -1) {
-                    glEnableVertexAttribArray(vaa);
-                    glVertexAttribPointer(vaa, size, accessor.componentType,
-                        accessor.normalized ? GL_TRUE : GL_FALSE,
-                        byteStride, BUFFER_OFFSET(accessor.byteOffset));
+                else if (attrib.first.compare("NORMAL") == 0)
+                {
+                    resMesh.LayoutMask |= Renderer::IntermediateMesh::Normal;
+                    const byte* bufferStart = bufferData + byteOffset;
+                    for (size_t i = 0; i < elemNumber; ++i)
+                    {
+                        float32 x = *(reinterpret_cast<const float32*>(bufferStart + size_t(byteStride) * size_t(i) + 0));
+                        float32 y = *(reinterpret_cast<const float32*>(bufferStart + size_t(byteStride) * size_t(i) + 4));
+                        float32 z = *(reinterpret_cast<const float32*>(bufferStart + size_t(byteStride) * size_t(i) + 8));
+                        resMesh.Vertices[i].Norm = { x, y, z, 0.0f };
+                    }
+                }
+                else if (attrib.first.compare("TEXCOORD_0") == 0)
+                {
+                    resMesh.LayoutMask |= Renderer::IntermediateMesh::UV0;
+                    const byte* bufferStart = bufferData + byteOffset;
+                    for (size_t i = 0; i < elemNumber; ++i)
+                    {
+                        float32 u = *(reinterpret_cast<const float32*>(bufferStart + size_t(byteStride) * size_t(i) + 0));
+                        float32 v = *(reinterpret_cast<const float32*>(bufferStart + size_t(byteStride) * size_t(i) + 4));
+                        resMesh.Vertices[i].Uv.push_back({ u, v });
+                    }
                 }
                 else
-                    std::cout << "vaa missing: " << attrib.first << std::endl;*/
+                    assert(false);
             }
         }
+        resMesh.Indexate();
+        dst->FromIntermediateMesh(resMesh);
         // [a_vorontcov] You can also find image part of the parsing here https://github.com/syoyo/tinygltf/blob/master/examples/basic/main.cpp
     }
 
