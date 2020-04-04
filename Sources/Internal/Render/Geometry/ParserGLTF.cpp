@@ -2,6 +2,7 @@
 
 #include "Render/Geometry/ParserGLTF.h"
 
+#include "AssetsSystem/AssetsSystem.h"
 #include "Core/Logger/Logger.h"
 
 #define TINYGLTF_IMPLEMENTATION
@@ -44,16 +45,20 @@ namespace Kioto
         std::string err;
         std::string warn;
 
-        bool res = loader.LoadBinaryFromFile(&model, &err, &warn, path.c_str());
+        bool res = false;
+        std::string ext = AssetsSystem::GetFileExtension(path);
+        if (ext == ".glb")
+            res = loader.LoadBinaryFromFile(&model, &err, &warn, path.c_str());
+        else if (ext == ".gltf")
+            res = loader.LoadASCIIFromFile(&model, &err, &warn, path.c_str());
+        else
+            assert(false);
+
         if (!warn.empty())
-        {
             LOG("WARN: ", warn);
-        }
 
         if (!err.empty())
-        {
             LOG("ERR: ", err);
-        }
 
         if (!res)
             LOG("Failed to load glTF: ", path);
@@ -122,6 +127,7 @@ namespace Kioto
                     std::cout << "vaa missing: " << attrib.first << std::endl;*/
             }
         }
+        // [a_vorontcov] You can also find image part of the parsing here https://github.com/syoyo/tinygltf/blob/master/examples/basic/main.cpp
     }
 
 }
