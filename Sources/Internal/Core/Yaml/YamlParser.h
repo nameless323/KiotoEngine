@@ -1,8 +1,3 @@
-//
-// Copyright (C) Aleksandr Vorontcov. 2019
-// Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
-//
-
 // [a_vorontcov] TODO:!!!!!!!!!!!!!!!!! rethink. it won't work for a binary case. need one way to serialize/deserialize
 
 #pragma once
