@@ -29,6 +29,8 @@ enum class eDataFormat
 
 struct SemanticDesc
 {
+    // [a_vorontcov] Semantic index is for cases when we have couple of the same semantic names. Like TEXCOORD, the name is always TEXCOORD, but index varies from 0 to 8 let's say.
+    // Offset - offset in bytes in vertex
     SemanticDesc(eVertexSemantic semantic, uint8 semanticIndex, eDataFormat format, uint16 offset)
         : Offset(offset), Semantic(semantic), SemanticIndex(semanticIndex), Format(format)
     {}
