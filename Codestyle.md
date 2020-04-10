@@ -7,15 +7,6 @@ Kioto engine codestyle.
 ### Branches
 The main repository branch is master. You can create pull request to master, get at least one reviewer to approve and your branch will be merged into master soon.
 
-### License
-License info should be at the beggining of each .cpp and .h file.
-```cpp
-//
-// Copyright (C) Author1, Author2. year
-// Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
-//
-```
-
 #### Indentation
 Tabs are never used, we use 4 spaces instead.
 
@@ -236,11 +227,6 @@ Use Allman indentation style (see example).
 #### Example
 The following example shows properly formatted code.
 ```cpp
-//
-// Copyright (C) Author1, Author2. year
-// Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
-//
-
 #pragma once
 
 #include <vector>
@@ -290,10 +276,6 @@ T MyClass::TemplateFun(T t)
 }
 
 // .cpp
-//
-// Copyright (C) Author1, Author2. year
-// Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
-//
 
 #include "Source/Folder/MyClass.h"
 

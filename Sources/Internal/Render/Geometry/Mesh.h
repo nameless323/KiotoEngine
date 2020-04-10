@@ -1,8 +1,3 @@
-//
-// Copyright (C) Aleksandr Vorontcov. 2017
-// Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
-//
-
 #pragma once
 
 #include "AssetsSystem/Asset.h"
@@ -135,7 +130,7 @@ template <typename T>
 inline T* Mesh::GetVertexElementPtr(uint32 i, eVertexSemantic semantic, uint8 semanticIndex)
 {
     assert(i < m_vertexCount);
-    const VertexDesc* e = m_layout.FindElement(semantic, semanticIndex);
+    const SemanticDesc* e = m_layout.FindElement(semantic, semanticIndex);
     if (e == nullptr)
         return nullptr;
     return reinterpret_cast<T*>(m_vertexData + static_cast<uint64>(m_layout.GetVertexStride()) * static_cast<uint64>(i) + e->Offset);
@@ -163,7 +158,7 @@ inline Vector4* Mesh::GetColorPtr(uint32 i)
 
 inline eDataFormat Mesh::GetVertexElementFormat(eVertexSemantic semantic, uint8 semanticIndex) const
 {
-    const VertexDesc* e = m_layout.FindElement(semantic, semanticIndex);
+    const SemanticDesc* e = m_layout.FindElement(semantic, semanticIndex);
     if (e == nullptr)
         return eDataFormat::UNKNOWN;
     return e->Format;

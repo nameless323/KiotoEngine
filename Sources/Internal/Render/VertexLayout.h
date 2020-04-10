@@ -1,8 +1,3 @@
-//
-// Copyright (C) Aleksandr Vorontcov. 2017
-// Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
-//
-
 #pragma once
 
 #include <vector>
@@ -32,14 +27,16 @@ enum class eDataFormat
     MATRIX4x4
 };
 
-struct VertexDesc
+struct SemanticDesc
 {
-    VertexDesc(eVertexSemantic semantic, uint8 semanticIndex, eDataFormat format, uint16 offset)
+    // [a_vorontcov] Semantic index is for cases when we have couple of the same semantic names. Like TEXCOORD, the name is always TEXCOORD, but index varies from 0 to 8 let's say.
+    // Offset - offset in bytes in vertex
+    SemanticDesc(eVertexSemantic semantic, uint8 semanticIndex, eDataFormat format, uint16 offset)
         : Offset(offset), Semantic(semantic), SemanticIndex(semanticIndex), Format(format)
     {}
 
-    bool operator==(const VertexDesc& other) const;
-    bool operator!=(const VertexDesc& other) const;
+    bool operator==(const SemanticDesc& other) const;
+    bool operator!=(const SemanticDesc& other) const;
 
     uint16 Offset = 0;
     eVertexSemantic Semantic = eVertexSemantic::Position;
@@ -51,7 +48,7 @@ class VertexLayout
 {
 public:
     VertexLayout() = default;
-    VertexLayout(std::vector<VertexDesc> desc);
+    VertexLayout(std::vector<SemanticDesc> desc);
     VertexLayout(const VertexLayout& other);
     VertexLayout(VertexLayout&& other);
     VertexLayout& operator=(VertexLayout other);
@@ -60,15 +57,15 @@ public:
 
     void AddElement(eVertexSemantic semantic, uint8 semanticIndex, eDataFormat format);
     void Clear();
-    std::vector<VertexDesc> GetElements() const;
-    const VertexDesc* FindElement(eVertexSemantic semantic, uint8 semanticIndex) const;
+    std::vector<SemanticDesc> GetElements() const;
+    const SemanticDesc* FindElement(eVertexSemantic semantic, uint8 semanticIndex) const;
     uint32 GetVertexStride() const;
-    const VertexDesc& GetElement(uint32 i) const;
+    const SemanticDesc& GetElement(uint32 i) const;
     uint32 GetElementsCount() const;
 
     friend void swap(VertexLayout& l, VertexLayout& r)
     {
-        l.m_verticesDesc.swap(r.m_verticesDesc);
+        l.m_semanticsDesc.swap(r.m_semanticsDesc);
         std::swap(l.m_totalOffset, r.m_totalOffset);
     }
 
@@ -80,13 +77,13 @@ public:
     static const VertexLayout LayoutPos3Uv2;
 
 private:
-    std::vector<VertexDesc> m_verticesDesc;
+    std::vector<SemanticDesc> m_semanticsDesc;
     uint32 m_totalOffset = 0;
 };
 
-inline std::vector<VertexDesc> VertexLayout::GetElements() const
+inline std::vector<SemanticDesc> VertexLayout::GetElements() const
 {
-    return m_verticesDesc;
+    return m_semanticsDesc;
 }
 
 inline uint32 VertexLayout::GetVertexStride() const
@@ -94,14 +91,14 @@ inline uint32 VertexLayout::GetVertexStride() const
     return m_totalOffset;
 }
 
-inline const VertexDesc& VertexLayout::GetElement(uint32 i) const
+inline const SemanticDesc& VertexLayout::GetElement(uint32 i) const
 {
-    assert(i < m_verticesDesc.size());
-    return m_verticesDesc[i];
+    assert(i < m_semanticsDesc.size());
+    return m_semanticsDesc[i];
 }
 
 inline uint32 VertexLayout::GetElementsCount() const
 {
-    return static_cast<uint32>(m_verticesDesc.size());
+    return static_cast<uint32>(m_semanticsDesc.size());
 }
 }

@@ -1,8 +1,3 @@
-//
-// Copyright (C) Aleksandr Vorontcov. 2017
-// Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
-//
-
 // Example of usage
 // class EventTst
 // {
@@ -22,7 +17,7 @@
 //         eSystem->Unsubscribe(this);
 //     }
 //     EventSystem* eSystem = nullptr;
-//     EventCallback clbk = EventCallback::MakeCallback<EventTstA, &EventTst::EventFun>(this);
+//     EventCallback clbk = EventCallback::MakeCallback<EventTst, &EventTst::EventFun>(this);
 // };
 // 
 // auto ePtr = std::make_shared<OnEntityAddEvent>();
@@ -87,7 +82,7 @@ public:
     /// Subscribe to specific event. If you have this ptr you can pass it to context and you will be able to unsubscribe via Unsubscribe(this).
     void Subscribe(EventType eType, EventCallback callback, void* context = nullptr);
 
-    /// Subscribe to specific event. Pass event type as template arg. If you have this ptr you can pass it to context and you will be able to unsubscribe via Unsubscribe(this).
+    /// Subscribe to specific event. Pass event type as template arg. If you have "this" ptr you can pass it to context and you will be able to unsubscribe via Unsubscribe(this).
     template <typename EvType, typename = std::enable_if_t<std::is_convertible_v<EvType*, Event*>>>
     void Subscribe(EventCallback callback, void* context = nullptr);
 

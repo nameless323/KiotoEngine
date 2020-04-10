@@ -1,8 +1,3 @@
-//
-// Copyright (C) Aleksandr Vorontcov. 2017
-// Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
-//
-
 #include "stdafx.h"
 
 #include "Render/Renderer.h"
@@ -20,7 +15,8 @@ namespace Kioto::Renderer
 {
 namespace
 {
-RendererDX12* GameRenderer = nullptr; // [a_vorontcov] Not too cross-api for now.
+RendererDX12* GameRenderer = nullptr; // [a_vorontcov] Not too cross-api for now. 
+                                      // TODO: no need for inheritance, just define the function like in namespace and #ifdef platforms (ps who cares about non dx12 anyway :) )
 
 uint16 m_height = 1024;
 uint16 m_width = 768;

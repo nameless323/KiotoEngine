@@ -1,8 +1,3 @@
-//
-// Copyright (C) Aleksandr Vorontcov. 2017
-// Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
-//
-
 #pragma once
 
 #include <string>
@@ -25,7 +20,7 @@ inline void SafeDelete(T*& ptr)
         delete ptr;
         ptr = nullptr;
     }
-    // [a_vorontcov] Anton Smetanin suggest to add some logs here in future.
+    // [a_vorontcov] Maybe add some logs here in future.
 }
 
 template <typename T>
@@ -36,7 +31,7 @@ inline void SafeDeleteArray(T*& ptr)
         delete[] ptr;
         ptr = nullptr;
     }
-    // [a_vorontcov] Anton Smetanin suggest to add some logs here in future
+    // [a_vorontcov] Maybe add some logs here in future
 }
 
 template <typename T>

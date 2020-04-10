@@ -1,7 +1,3 @@
-//
-// Copyright (C) Aleksandr Vorontcov. 2017
-// Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
-//
 // Adapted from http://wiki.unity3d.com/index.php/ProceduralPrimitives
 
 #include "stdafx.h"

@@ -1,8 +1,3 @@
-//
-// Copyright (C) Aleksandr Vorontcov. 2019
-// Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
-//
-
 #pragma once
 
 #include "Core/Core.h"
@@ -57,11 +52,6 @@ public:
     /// Set if camera is orthographic.
     ///
     void SetOrthographic(bool ortho);
-
-    ///
-    /// Set if camera is main camera.
-    ///
-    void SetIsMain(bool isMain);
 
     ///
     /// Get camera field of view in Y in radians.

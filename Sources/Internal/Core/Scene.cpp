@@ -1,8 +1,3 @@
-//
-// Copyright (C) Aleksandr Vorontcov. 2017
-// Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
-//
-
 #include "stdafx.h"
 
 #include "Core/Scene.h"
@@ -14,7 +9,6 @@
 #include "Systems/EventSystem/EventSystem.h"
 #include "Systems/TransformSystem.h"
 #include "Systems/RenderSystem.h"
-
 
 #include "Core/Yaml/YamlParser.h"
 
@@ -90,8 +84,6 @@ void Scene::RemoveSystem(SceneSystem* system)
         delete &(*it);
         m_systems.erase(it);
     }
-    m_cameraSystem = nullptr;
-    m_renderSystem = nullptr;
 }
 
 void Scene::AddEntity(Entity* entity)

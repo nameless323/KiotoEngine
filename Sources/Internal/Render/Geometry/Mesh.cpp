@@ -103,13 +103,13 @@ void Mesh::FromIntermediateMesh(const IntermediateMesh& iMesh)
             for (uint32 i = 0; i < m_vertexCount; ++i)
                 *GetVertexElementPtr<Vector3>(i, Renderer::eVertexSemantic::Bitangent, 0) = iMesh.Vertices[i].Bitangent.GetVec3();
         }
-        else if (const Renderer::VertexDesc& desc = m_layout.GetElement(vElem); desc.Semantic == Renderer::eVertexSemantic::Texcoord)
+        else if (const Renderer::SemanticDesc& desc = m_layout.GetElement(vElem); desc.Semantic == Renderer::eVertexSemantic::Texcoord)
         {
             uint32 texSemIndex = desc.SemanticIndex;
             for (uint32 i = 0; i < m_vertexCount; ++i)
                 *GetVertexElementPtr<Vector2>(i, Renderer::eVertexSemantic::Texcoord, texSemIndex) = iMesh.Vertices[i].Uv[texSemIndex];
         }
-        else if (const Renderer::VertexDesc& desc = m_layout.GetElement(vElem); desc.Semantic == Renderer::eVertexSemantic::Color)
+        else if (const Renderer::SemanticDesc& desc = m_layout.GetElement(vElem); desc.Semantic == Renderer::eVertexSemantic::Color)
         {
             uint32 texSemIndex = desc.SemanticIndex;
             for (uint32 i = 0; i < m_vertexCount; ++i)
