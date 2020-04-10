@@ -1,8 +1,3 @@
-//
-// Copyright (C) Aleksandr Vorontcov. 2018
-// Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
-//
-
 #include "stdafx.h"
 
 #include "Render/DX12/Geometry/MeshDX12.h"
