@@ -215,6 +215,11 @@ void RegisterConstantBuffer(ConstantBuffer& buffer)
     GameRenderer->RegisterConstantBuffer(buffer);
 }
 
+void RegisterRenderObject(RenderObject& renderObject)
+{
+    GameRenderer->RegisterRenderObject(renderObject);
+}
+
 template void RegisterRenderAsset<Texture>(Texture* asset);
 template void RegisterRenderAsset<Shader>(Shader* asset);
 template void RegisterRenderAsset<Mesh>(Mesh* asset);

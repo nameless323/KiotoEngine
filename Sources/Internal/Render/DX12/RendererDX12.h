@@ -59,6 +59,7 @@ public:
     void RegisterMesh(Mesh* mesh);
 
     void RegisterRenderPass(RenderPass* renderPass);
+    void RegisterRenderObject(RenderObject& renderObject);
 
     void RegisterTextureSet(TextureSet& set);
     void QueueTextureSetForUpdate(const TextureSet& set);

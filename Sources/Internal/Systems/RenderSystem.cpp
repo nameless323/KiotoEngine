@@ -7,6 +7,7 @@
 #include "Core/ECS/Entity.h"
 #include "Render/Geometry/Mesh.h"
 #include "Render/Material.h"
+#include "Render/Shader.h"
 #include "Render/RenderObject.h"
 #include "Render/RenderPass/ForwardRenderPass.h"
 
@@ -31,21 +32,30 @@ void RenderSystem::Init()
 
 void RenderSystem::OnEntityAdd(Entity* entity)
 {
-    RenderComponent* rc = entity->GetComponent<RenderComponent>();
-    if (rc == nullptr)
+    RenderComponent* renderComponent = entity->GetComponent<RenderComponent>();
+    if (renderComponent == nullptr)
         return;
 
     Renderer::RenderObject* ro = new Renderer::RenderObject();
-    std::string material = AssetsSystem::GetAssetFullPath(rc->GetMaterial());
-    std::string mesh = AssetsSystem::GetAssetFullPath(rc->GetMesh());
-    assert(!material.empty() && !mesh.empty());
+    std::string materialName = AssetsSystem::GetAssetFullPath(renderComponent->GetMaterial());
+    std::string meshName = AssetsSystem::GetAssetFullPath(renderComponent->GetMesh());
+    assert(!materialName.empty() && !meshName.empty());
 
-    ro->SetMaterial(AssetsSystem::GetRenderAssetsManager()->GetOrLoadAsset<Renderer::Material>(material));
-    ro->SetMesh(AssetsSystem::GetRenderAssetsManager()->GetOrLoadAsset<Renderer::Mesh>(mesh));
+    Renderer::Material* material = AssetsSystem::GetRenderAssetsManager()->GetOrLoadAsset<Renderer::Material>(materialName);
+    ro->SetMaterial(material);
+    Renderer::RenderObjectBufferLayout& roBufferLayout = ro->GetRenderObjectBufferLayout();
+    roBufferLayout.constantBuffers = material->GetShader()->CreateLayoutTemplateShalowCopy();
 
-    rc->SetRenderObject(ro);
+    for (auto& cb : roBufferLayout.constantBuffers)
+        cb.ComposeBufferData();
 
-    m_components.push_back(rc);
+    ro->SetMesh(AssetsSystem::GetRenderAssetsManager()->GetOrLoadAsset<Renderer::Mesh>(meshName));
+
+    Renderer::RegisterRenderObject(*ro);
+
+    renderComponent->SetRenderObject(ro);
+
+    m_components.push_back(renderComponent);
 }
 
 void RenderSystem::OnEntityRemove(Entity* entity)

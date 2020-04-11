@@ -20,8 +20,14 @@ public:
 
     void SetHandle(ShaderHandle handle);
     ShaderHandle GetHandle() const;
+
     const ShaderData& GetShaderData() const;
     void SetShaderData(const ShaderData& data);
+
+    const ShaderBufferLayoutTemplate& GetBufferLayoutTemplate() const;
+    void SetBufferLayoutTemplate(const ShaderBufferLayoutTemplate& layoutTemplate);
+    ShaderBufferLayoutTemplate CreateLayoutTemplateShalowCopy() const;
+
     const std::string& GetShaderString() const;
 
 private:
@@ -30,6 +36,7 @@ private:
     ShaderProgramHandle m_psHandle;
     VertexLayoutHandle m_vertexLayout;
     ShaderData m_data;
+    ShaderBufferLayoutTemplate m_bufferLayoutTemplate;
     ShaderHandle m_handle; // [a_vorontcov] Separate handles for each define set?
 
     friend class Material;
@@ -59,4 +66,24 @@ inline const std::string& Shader::GetShaderString() const
 {
     return m_shader;
 }
+
+inline const ShaderBufferLayoutTemplate& Shader::GetBufferLayoutTemplate() const
+{
+    return m_bufferLayoutTemplate;
+}
+
+inline void Shader::SetBufferLayoutTemplate(const ShaderBufferLayoutTemplate& layoutTemplate)
+{
+    m_bufferLayoutTemplate = layoutTemplate;
+}
+
+inline ShaderBufferLayoutTemplate Shader::CreateLayoutTemplateShalowCopy() const
+{
+    ShaderBufferLayoutTemplate res;
+    res.resize(m_bufferLayoutTemplate.size());
+    for (size_t i = 0; i < m_bufferLayoutTemplate.size(); ++i)
+        m_bufferLayoutTemplate[i].MakeShallowCopy(res[i]);
+    return res;
+}
+
 }

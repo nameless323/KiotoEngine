@@ -12,7 +12,10 @@ void ShaderManagerDX12::RegisterShader(Shader* shader)
     if (it != m_shaders.cend())
         return;
     shader->SetHandle(GetNewHandle());
-    shader->SetShaderData(ShaderParser::ParseShaderFromString(shader->GetShaderString(), nullptr));
+    ShaderDataAndBufferLayout dataAndLayout = ShaderParser::ParseShaderFromString(shader->GetShaderString(), nullptr);
+    shader->SetShaderData(dataAndLayout.first); // [a_vorontcov] TODO:: Move it?
+    shader->SetBufferLayoutTemplate(dataAndLayout.second);
+
     std::vector<ShaderDX12> shadersDX;
     if (shader->GetShaderData().shaderPrograms & uint8(ShaderProgramType::Vertex))
         shadersDX.push_back(CompileDXShader(*shader, "vs", "vs_5_1"));

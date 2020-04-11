@@ -1,8 +1,3 @@
-//
-// Copyright (C) Aleksandr Vorontcov. 2018
-// Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
-//
-
 #pragma once
 
 #include "Render/ConstantBuffer.h"
@@ -19,15 +14,23 @@ enum class ShaderProgramType
     Fragment = 1 << 1
 };
 
+using ShaderBufferLayoutTemplate = std::vector<ConstantBuffer>;
+
 struct ShaderData
 {
     std::string output;
     VertexLayout vertexLayout;
     PipelineState pipelineState;
     TextureSet textureSet;
+    uint8 shaderPrograms = 0;
+};
+
+using ShaderDataAndBufferLayout = std::pair<ShaderData, ShaderBufferLayoutTemplate>;
+
+struct RenderObjectBufferLayout
+{
     std::vector<ConstantBuffer> constantBuffers;
     ConstantBufferSet bufferSet;
     ConstantBufferSetHandle bufferSetHandle;
-    uint8 shaderPrograms = 0;
 };
 }

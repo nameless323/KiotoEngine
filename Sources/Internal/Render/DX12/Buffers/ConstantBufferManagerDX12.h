@@ -10,7 +10,7 @@
 namespace Kioto::Renderer
 {
 class ConstantBuffer;
-class Material;
+class RenderObject;
 struct StateDX;
 
 class ConstantBufferManagerDX12
@@ -18,7 +18,7 @@ class ConstantBufferManagerDX12
 public:
     ConstantBufferManagerDX12();
     ~ConstantBufferManagerDX12();
-    void RegisterMaterial(Material* material);
+    void RegisterRenderObject(RenderObject& renderObject);
     void ProcessRegistrationQueue(const StateDX& state);
     void RegisterConstantBuffer(ConstantBuffer* buffer, ConstantBufferSetHandle bufferSetHandle); // [a_vorontcov] -1 for internal buffers.
     void QueueConstantBufferForUpdate(ConstantBuffer& buffer);

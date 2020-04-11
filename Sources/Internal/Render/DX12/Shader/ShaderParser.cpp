@@ -402,10 +402,10 @@ void TryParseParams(const std::string& source, size_t start, size_t end, Constan
     }
 }
 
-std::vector<ConstantBuffer> GetConstantBuffers(const std::string& source)
+ShaderBufferLayoutTemplate GetConstantBuffers(const std::string& source)
 {
     size_t cbStart = source.find("cbuffer ", 0);
-    std::vector<ConstantBuffer> res;
+    ShaderBufferLayoutTemplate res;
     res.reserve(8);
     while (cbStart != std::string::npos)
     {
@@ -554,27 +554,27 @@ std::string DXPreprocess(const std::string& source, const std::vector<ShaderDefi
     return std::string(reinterpret_cast<char*>(rr->GetBufferPointer()));
 }
 
-ShaderData ParseShader(const std::string& path, const std::vector<ShaderDefine>* const defines)
+ShaderDataAndBufferLayout ParseShader(const std::string& path, const std::vector<ShaderDefine>* const defines)
 {
     std::string shaderStr = AssetsSystem::ReadFileAsString(path);
     return ParseShaderFromString(shaderStr, defines);
 }
 
-ShaderData ParseShaderFromString(std::string source, const std::vector<ShaderDefine>* const defines)
+ShaderDataAndBufferLayout ParseShaderFromString(std::string source, const std::vector<ShaderDefine>* const defines)
 {
-    ShaderData res;
+    ShaderData data;
     m_preprocessedHeaders.clear();
     source = UnfoldIncludes(source, 0);
-    res.pipelineState = GetPipelineState(source);
-    res.textureSet = ParseTextures(source);
+    data.pipelineState = GetPipelineState(source);
+    data.textureSet = ParseTextures(source);
     source = DXPreprocess(source, defines);
-    res.shaderPrograms = GetAvaliableShaderProgTypes(source);
+    data.shaderPrograms = GetAvaliableShaderProgTypes(source);
     OutputDebugStringA(source.c_str());
-    res.vertexLayout = GetVertexLayout(source);
-    res.constantBuffers = GetConstantBuffers(source);
-    res.output = source;
+    data.vertexLayout = GetVertexLayout(source);
+    data.output = source;
 
-    res.bufferSetHandle = InvalidHandle;
-    return res;
+    ShaderBufferLayoutTemplate layoutTemplate = GetConstantBuffers(source);
+
+    return { data, layoutTemplate };
 }
 }

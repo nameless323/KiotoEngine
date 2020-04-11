@@ -8,7 +8,7 @@
 
 namespace Kioto::Renderer
 {
-void RootSignatureManager::CreateRootSignature(const StateDX& state, const ShaderData& parseResult, ShaderHandle handle)
+void RootSignatureManager::CreateRootSignature(const StateDX& state, const ShaderData& shaderData, const ShaderBufferLayoutTemplate& bufferLayoutTemplate, ShaderHandle handle)
 {
     using Microsoft::WRL::ComPtr;
 
@@ -21,15 +21,15 @@ void RootSignatureManager::CreateRootSignature(const StateDX& state, const Shade
         rootParams.push_back(std::move(param));
     }
 
-    for (size_t i = 0; i < parseResult.constantBuffers.size(); ++i)
+    for (size_t i = 0; i < bufferLayoutTemplate.size(); ++i)
     {
         CD3DX12_ROOT_PARAMETER1 param;
-        param.InitAsConstantBufferView(parseResult.constantBuffers[i].GetIndex(), parseResult.constantBuffers[i].GetSpace());
+        param.InitAsConstantBufferView(bufferLayoutTemplate[i].GetIndex(), bufferLayoutTemplate[i].GetSpace());
         rootParams.push_back(std::move(param));
     }
     std::vector<D3D12_DESCRIPTOR_RANGE1> ranges; // [a_vorontcov] Careful, table remembers pointer to range.
-    ranges.reserve(parseResult.textureSet.GetTexturesCount());
-    if (parseResult.textureSet.GetTexturesCount() > 0)
+    ranges.reserve(shaderData.textureSet.GetTexturesCount());
+    if (shaderData.textureSet.GetTexturesCount() > 0)
     {
         ranges.emplace_back();
         D3D12_DESCRIPTOR_RANGE1* texRange = &ranges.back();

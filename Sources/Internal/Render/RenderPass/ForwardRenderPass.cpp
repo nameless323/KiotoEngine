@@ -28,8 +28,8 @@ void ForwardRenderPass::CollectRenderData()
         Mesh* mesh = ro->GetMesh();
         mat->BuildMaterialForPass(this);
 
-        mat->SetValueToBuffer("ToModel", ro->GetToModel()->GetForGPU()); // [a_vorontcov] TODO: Move to render object?
-        mat->SetValueToBuffer("ToWorld", ro->GetToWorld()->GetForGPU());
+        ro->SetValueToBuffer("ToModel", ro->GetToModel()->GetForGPU()); // [a_vorontcov] TODO: Move to render object?
+        ro->SetValueToBuffer("ToWorld", ro->GetToWorld()->GetForGPU());
 
         RenderPacket currPacket = {};
         currPacket.Material = mat->GetHandle();
@@ -37,7 +37,7 @@ void ForwardRenderPass::CollectRenderData()
         currPacket.TextureSet = mat->GetShaderData().textureSet.GetHandle();
         currPacket.Mesh = mesh->GetHandle();
         currPacket.Pass = GetHandle();
-        currPacket.CBSet = mat->GetShaderData().bufferSetHandle;
+        currPacket.CBSet = ro->GetRenderObjectBufferLayout().bufferSetHandle;
 
         PushCommand(RenderCommandHelpers::CreateRenderPacketCommand(currPacket, this));
     }
