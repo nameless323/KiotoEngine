@@ -38,11 +38,9 @@ Material::Material(const std::string& path)
     {
         throw "Wtf";
     }
-    m_shaderData = m_shader->m_data;
+    m_shaderData = m_shader->m_data; // [a_vorontcov] TODO:: Think if copy of shader data is necesary here
     if (m_shaderData.textureSet.GetTexturesCount() > 0)
         Renderer::RegisterTextureSet(m_shaderData.textureSet);
-    for (auto& cb : m_shaderData.constantBuffers)
-        cb.ComposeBufferData();
 
     PipelineState::Append(config, m_shaderData.pipelineState);
     if (config["textures"])

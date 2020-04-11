@@ -515,7 +515,7 @@ void RendererDX12::RegisterTexture(Texture* texture)
 void RendererDX12::RegisterShader(Shader* shader)
 {
     m_shaderManager.RegisterShader(shader);
-    m_rootSignatureManager.CreateRootSignature(m_state, shader->GetShaderData(), shader->GetHandle());
+    m_rootSignatureManager.CreateRootSignature(m_state, shader->GetShaderData(), shader->GetBufferLayoutTemplate(), shader->GetHandle());
     m_vertexLayoutManager.GenerateVertexLayout(shader);
 }
 
@@ -529,7 +529,6 @@ void RendererDX12::BuildMaterialForPass(Material& mat, const RenderPass* pass)
 void RendererDX12::RegisterMaterial(Material* material)
 {
     material->SetHandle(GetNewHandle());
-    m_constantBufferManager.RegisterMaterial(material);
 }
 
 void RendererDX12::RegisterRenderPass(RenderPass* renderPass)
@@ -571,4 +570,10 @@ void RendererDX12::SetTimeBuffer(ConstantBufferHandle handle)
 {
     m_currentTimeBuffer = handle;
 }
+
+void RendererDX12::RegisterRenderObject(RenderObject& renderObject)
+{
+    m_constantBufferManager.RegisterRenderObject(renderObject);
+}
+
 }

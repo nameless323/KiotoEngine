@@ -11,6 +11,7 @@ namespace Kioto::Renderer
 {
 class VertexLayout;
 class Camera;
+class RenderObject;
 
 enum class eRenderApi
 {
@@ -38,6 +39,7 @@ void RegisterRenderAsset(T* asset);
 void RegisterRenderPass(RenderPass* renderPass);
 void RegisterTextureSet(TextureSet& set);
 void RegisterConstantBuffer(ConstantBuffer& buffer);
+void RegisterRenderObject(RenderObject& renderObject);
 TextureHandle GetCurrentBackBufferHandle();
 TextureHandle GetDepthStencilHandle();
 KIOTO_API uint16 GetWidth();

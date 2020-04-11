@@ -2,7 +2,7 @@
 
 #include "Render/DX12/Buffers/ConstantBufferManagerDX12.h"
 #include "Render/DX12/StateDX.h"
-#include "Render/Material.h"
+#include "Render/RenderObject.h"
 
 namespace Kioto::Renderer
 {
@@ -24,16 +24,17 @@ ConstantBufferManagerDX12::~ConstantBufferManagerDX12()
     m_internalBuffers.clear();
 }
 
-void ConstantBufferManagerDX12::RegisterMaterial(Material* material)
+void ConstantBufferManagerDX12::RegisterRenderObject(RenderObject& renderObject)
 {
-    auto it = m_constantBufferSets.find(material->GetShaderData().bufferSetHandle);
-    if (it != m_constantBufferSets.end() && material->GetShaderData().bufferSetHandle != InvalidHandle)
+    RenderObjectBufferLayout& bufferLayout = renderObject.GetRenderObjectBufferLayout();
+    auto it = m_constantBufferSets.find(bufferLayout.bufferSetHandle);
+    if (it != m_constantBufferSets.end() && bufferLayout.bufferSetHandle != InvalidHandle)
         return;
     ConstantBufferSetHandle setHandle = GetNewHandle();
-    material->GetShaderData().bufferSetHandle = setHandle;
-    for (size_t i = 0; i < material->GetShaderData().constantBuffers.size(); ++i)
+    bufferLayout.bufferSetHandle = setHandle;
+    for (size_t i = 0; i < bufferLayout.constantBuffers.size(); ++i)
     {
-        RegisterConstantBuffer(&material->GetShaderData().constantBuffers[i], setHandle);
+        RegisterConstantBuffer(&bufferLayout.constantBuffers[i], setHandle);
     }
 }
 

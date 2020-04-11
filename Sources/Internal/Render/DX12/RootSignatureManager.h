@@ -5,16 +5,16 @@
 #include <wrl/client.h>
 
 #include "Render/RendererPublic.h"
+#include "Render/ShaderData.h"
 
 namespace Kioto::Renderer
 {
 struct StateDX;
-struct ShaderData;
 
 class RootSignatureManager
 {
 public:
-    void CreateRootSignature(const StateDX& state, const ShaderData& parseResult, ShaderHandle handle);  // [a_vorontcov] Root sig and shader 1 to 1 connection.
+    void CreateRootSignature(const StateDX& state, const ShaderData& shaderData, const ShaderBufferLayoutTemplate& bufferLayoutTemplate, ShaderHandle handle);  // [a_vorontcov] Root sig and shader 1 to 1 connection.
     ID3D12RootSignature* GetRootSignature(ShaderHandle handle) const;
 
 private:
