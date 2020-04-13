@@ -28,6 +28,18 @@ Material::Material(const std::string& path)
 
     if (config["version"])
         version = config["version"].as<float32>();
+
+    if (config["passes"])
+    {
+        YAML::Node characterType = config["passes"];
+        for (YAML::const_iterator it = characterType.begin(); it != characterType.end(); ++it)
+        {
+            DeserializeRenderPassConfig(it->second);
+        }
+    }
+    else
+        assert(false);
+
     if (config["shader"])
     {
         m_shaderPath = config["shader"].as<std::string>();
@@ -43,19 +55,7 @@ Material::Material(const std::string& path)
         Renderer::RegisterTextureSet(m_shaderData.textureSet);
 
     PipelineState::Append(config, m_shaderData.pipelineState);
-    if (config["textures"])
-    {
-        YAML::Node texNodes = config["textures"];
-        auto it = texNodes.begin();
-        for (; it != texNodes.end(); ++it)
-        {
-            std::string name = it->first.as<std::string>();
-            std::string path = it->second.as<std::string>();
-            std::string fullPath = AssetsSystem::GetAssetFullPath(path);
-            Texture* tex = AssetsSystem::GetRenderAssetsManager()->GetOrLoadAsset<Texture>(fullPath);
-            m_shaderData.textureSet.SetTexture(name, tex);
-        }
-    }
+    
 }
 
 Material::~Material()
@@ -70,4 +70,32 @@ void Material::BuildMaterialForPass(const RenderPass* pass)
     Renderer::BuildMaterialForPass(*this, pass);
     m_buildedPassesHandles.push_back(pass->GetHandle());
 }
+
+void Material::DeserializeRenderPassConfig(const YAML::Node& pass)
+{
+    assert(pass["name"]);
+    std::string passName = pass["name"].as<std::string>();
+
+    assert(pass["pipelineConfig"]);
+    PipelineState state = PipelineState::FromYaml(pass["pipelineConfig"].as<std::string>());
+
+    assert(pass["shader"]);
+    std::string shaderPath = AssetsSystem::GetAssetFullPath(pass["shader"].as<std::string>());
+    m_shader = AssetsSystem::GetRenderAssetsManager()->GetOrLoadAsset<Shader>(shaderPath);
+
+    if (pass["textures"])
+    {
+        YAML::Node texNodes = pass["textures"];
+        auto it = texNodes.begin();
+        for (; it != texNodes.end(); ++it)
+        {
+            std::string name = it->first.as<std::string>();
+            std::string path = it->second.as<std::string>();
+            std::string fullPath = AssetsSystem::GetAssetFullPath(path);
+            Texture* tex = AssetsSystem::GetRenderAssetsManager()->GetOrLoadAsset<Texture>(fullPath);
+            m_shaderData.textureSet.SetTexture(name, tex);
+        }
+    }
+}
+
 }

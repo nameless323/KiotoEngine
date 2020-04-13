@@ -28,11 +28,13 @@ public:
     void BuildMaterialForPass(const RenderPass* pass);
 
 private:
-    std::string m_shaderPath;
-    Shader* m_shader = nullptr;
-    ShaderData m_shaderData;
+    void DeserializeRenderPassConfig(const YAML::Node& pass);
+
+    ShaderData m_shaderData; <-- remove from here, move to render object
     MaterialHandle m_handle;
 
+    // [a_vorontcov] For each pass contains appropriate pipeline state
+    std::unordered_map<std::string, PipelineState> m_materialPipelineStates;
     std::vector<RenderPassHandle> m_buildedPassesHandles;
 };
 

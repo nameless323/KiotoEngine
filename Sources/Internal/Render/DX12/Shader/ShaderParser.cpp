@@ -273,19 +273,6 @@ VertexLayout GetVertexLayout(const std::string& source)
     return res;
 }
 
-PipelineState GetPipelineState(std::string& source)
-{
-    size_t stateStart = source.find("PIPELINE_DESCR:");
-    size_t stateEnd = source.find("PIPELINE_DESCR_END;");
-    if (stateStart == std::string::npos || stateEnd == std::string::npos)
-        return PipelineState();
-    std::string stateStr = source.substr(stateStart + 15, stateEnd - stateStart - 15);
-    source.erase(stateStart, stateEnd - stateStart + 19);
-
-    PipelineState state = PipelineState::FromYaml(stateStr);
-    return state;
-}
-
 bool TryParseConstantBufferIndex(const std::string& source, size_t pos, size_t bound, uint16& index, uint16& space)
 {
     if (source.substr(pos, 8) == "register")
@@ -565,7 +552,6 @@ ShaderDataAndBufferLayout ParseShaderFromString(std::string source, const std::v
     ShaderData data;
     m_preprocessedHeaders.clear();
     source = UnfoldIncludes(source, 0);
-    data.pipelineState = GetPipelineState(source);
     data.textureSet = ParseTextures(source);
     source = DXPreprocess(source, defines);
     data.shaderPrograms = GetAvaliableShaderProgTypes(source);
