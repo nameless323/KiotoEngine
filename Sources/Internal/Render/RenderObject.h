@@ -31,6 +31,9 @@ public:
     void ComposeAllConstantBuffers();
     void RegisterAllTextureSets();
 
+    const RenderObjectBufferLayout& GetBufferLayout(const PassName& passName);
+    const TextureSet& GetTextureSet(const PassName& passName);
+
     template<typename T>
     ConstantBuffer::eReturnCode SetValueToBuffer(const std::string& name, T&& val, const PassName& passName)
     {
@@ -135,6 +138,18 @@ inline void RenderObject::RegisterAllTextureSets()
         assert(m_textureSets.count(passName) == 0);
         m_textureSets[passName] = std::move(set);
     }
+}
+
+inline const RenderObjectBufferLayout& RenderObject::GetBufferLayout(const PassName& passName)
+{
+    assert(m_renderObjectBuffers.count(passName) == 1);
+    return m_renderObjectBuffers.at(passName);
+}
+
+inline const TextureSet& RenderObject::GetTextureSet(const PassName& passName)
+{
+    assert(m_textureSets.count(passName) == 1);
+    return m_textureSets.at(passName);
 }
 
 }
