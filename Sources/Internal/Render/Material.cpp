@@ -39,23 +39,6 @@ Material::Material(const std::string& path)
     }
     else
         assert(false);
-
-    if (config["shader"])
-    {
-        m_shaderPath = config["shader"].as<std::string>();
-        std::string shaderPath = AssetsSystem::GetAssetFullPath(m_shaderPath);
-        m_shader = AssetsSystem::GetRenderAssetsManager()->GetOrLoadAsset<Shader>(shaderPath);
-    }
-    else
-    {
-        throw "Wtf";
-    }
-    m_shaderData = m_shader->m_data; // [a_vorontcov] TODO:: Think if copy of shader data is necesary here
-    if (m_shaderData.textureSet.GetTexturesCount() > 0)
-        Renderer::RegisterTextureSet(m_shaderData.textureSet);
-
-    PipelineState::Append(config, m_shaderData.pipelineState);
-    
 }
 
 Material::~Material()
@@ -81,21 +64,19 @@ void Material::DeserializeRenderPassConfig(const YAML::Node& pass)
 
     assert(pass["shader"]);
     std::string shaderPath = AssetsSystem::GetAssetFullPath(pass["shader"].as<std::string>());
-    m_shader = AssetsSystem::GetRenderAssetsManager()->GetOrLoadAsset<Shader>(shaderPath);
+    state.Shader = AssetsSystem::GetRenderAssetsManager()->GetOrLoadAsset<Shader>(shaderPath);
+
+    std::vector<TextureAssetDescription> texDescriptions;
 
     if (pass["textures"])
     {
         YAML::Node texNodes = pass["textures"];
         auto it = texNodes.begin();
         for (; it != texNodes.end(); ++it)
-        {
-            std::string name = it->first.as<std::string>();
-            std::string path = it->second.as<std::string>();
-            std::string fullPath = AssetsSystem::GetAssetFullPath(path);
-            Texture* tex = AssetsSystem::GetRenderAssetsManager()->GetOrLoadAsset<Texture>(fullPath);
-            m_shaderData.textureSet.SetTexture(name, tex);
-        }
+            texDescriptions.emplace_back(TextureAssetDescription{ it->first.as<std::string>(), it->second.as<std::string>() });
     }
+    m_materialPipelineStates[passName] = std::move(state);
+    m_textures[passName] = std::move(texDescriptions);
 }
 
 }
