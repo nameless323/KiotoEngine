@@ -43,12 +43,6 @@ void RenderSystem::OnEntityAdd(Entity* entity)
 
     Renderer::Material* material = AssetsSystem::GetRenderAssetsManager()->GetOrLoadAsset<Renderer::Material>(materialName);
     ro->SetMaterial(material);
-    Renderer::RenderObjectBufferLayout& roBufferLayout = ro->GetRenderObjectBufferLayout();
-    roBufferLayout.constantBuffers = material->GetShader()->CreateLayoutTemplateShalowCopy();
-
-    for (auto& cb : roBufferLayout.constantBuffers)
-        cb.ComposeBufferData();
-
     ro->SetMesh(AssetsSystem::GetRenderAssetsManager()->GetOrLoadAsset<Renderer::Mesh>(meshName));
 
     Renderer::RegisterRenderObject(*ro);

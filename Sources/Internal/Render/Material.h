@@ -33,6 +33,12 @@ public:
 
     void BuildMaterialForPass(const RenderPass* pass);
 
+    const PipelineState& GetPipelineState(const PassName& passName) const;
+    const std::unordered_map<PassName, PipelineState>& GetPipelineStates() const;
+
+    const std::vector<TextureAssetDescription>& GetTextureAssetDescriptions(const PassName& passName) const;
+    const std::unordered_map<PassName, std::vector<TextureAssetDescription>>& GetTextureAssetDescriptions() const;
+
 private:
     void DeserializeRenderPassConfig(const YAML::Node& pass);
 
