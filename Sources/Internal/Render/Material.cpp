@@ -60,7 +60,8 @@ void Material::DeserializeRenderPassConfig(const YAML::Node& pass)
     std::string passName = pass["name"].as<std::string>();
 
     assert(pass["pipelineConfig"]);
-    PipelineState state = PipelineState::FromYaml(pass["pipelineConfig"].as<std::string>());
+    std::string pipelineConfigPath = AssetsSystem::GetAssetFullPath(pass["pipelineConfig"].as<std::string>());
+    PipelineState state = PipelineState::FromYaml(pipelineConfigPath);
 
     assert(pass["shader"]);
     std::string shaderPath = AssetsSystem::GetAssetFullPath(pass["shader"].as<std::string>());

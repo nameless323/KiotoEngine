@@ -1,3 +1,3 @@
 version: 0.01
-parent: PipelineConfigs\\Default.pcfg
+parent: "PipelineConfigs\\Default.pcfg"
 fill: Wireframe

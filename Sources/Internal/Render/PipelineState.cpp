@@ -3,6 +3,7 @@
 #include "yaml-cpp/yaml.h"
 
 #include "AssetsSystem/RenderStateParamsConverter.h"
+#include "AssetsSystem/AssetsSystem.h"
 #include "Core/CoreTypes.h"
 #include "Render/PipelineState.h"
 
@@ -11,14 +12,17 @@ namespace Kioto::Renderer
 void PipelineState::FromYaml(const YAML::Node& config, PipelineState& dstConfig)
 {
     if (config["parent"])
-        FromYaml(YAML::Load(config["parent"].as<std::string>()), dstConfig);
+    {
+        std::string parentPath = AssetsSystem::GetAssetFullPath(config["parent"].as<std::string>());
+        FromYaml(YAML::LoadFile(parentPath), dstConfig);
+    }
     Append(config, dstConfig);
 }
 
 PipelineState PipelineState::FromYaml(const std::string& config)
 {
     PipelineState pipelineState;
-    FromYaml(YAML::Load(config), pipelineState);
+    FromYaml(YAML::LoadFile(config), pipelineState);
     return pipelineState;
 }
 
