@@ -13,7 +13,7 @@
 namespace Kioto::Renderer
 {
 ForwardRenderPass::ForwardRenderPass()
-    : RenderPass("ForwardPass")
+    : RenderPass("Forward")
 {
     Renderer::RegisterRenderPass(this);
     SetRenderTargetCount(1);
