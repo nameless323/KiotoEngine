@@ -30,9 +30,7 @@ namespace Kioto::Renderer
             const PassName& passName = textureAssetDescriptionsForPasses.first;
             PipelineState& state = m_material->GetPipelineState(passName);
             Shader* shader = state.Shader;
-            //TextureSet set;
-            m_textureSets[passName] = {};
-            TextureSet& set = m_textureSets[passName];
+            TextureSet set;
             for (auto& texDescr : textureAssetDescriptionsForPasses.second)
             {
                 std::string fullPath = AssetsSystem::GetAssetFullPath(texDescr.Path);
@@ -41,12 +39,13 @@ namespace Kioto::Renderer
                 uint16 texOffset = shaderTextureSet.GetTextureOffset(texDescr.Name);
                 set.AddTexture(texDescr.Name, texOffset, tex);
             }
-            if (set.GetTexturesCount() > 0)
+            assert(m_textureSets.count(passName) == 0);
+            m_textureSets[passName] = std::move(set);
+            if (m_textureSets[passName].GetTexturesCount() > 0)
             {
-                Renderer::RegisterTextureSet(set);
-                Renderer::QueueTextureSetForUpdate(set);
+                Renderer::RegisterTextureSet(m_textureSets[passName]);
+                Renderer::QueueTextureSetForUpdate(m_textureSets[passName]);
             }
-            //assert(m_textureSets.count(passName) == 0);
         }
     }
 }
