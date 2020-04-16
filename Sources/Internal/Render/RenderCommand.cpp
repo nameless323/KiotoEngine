@@ -18,7 +18,7 @@ RenderCommand CreateConstantBufferCommand(const ConstantBuffer& buffer, RenderPa
     command.CommandType = eRenderCommandType::eSubmitConstantBuffer;
     command.Command = cbCmd;
 
-    command.PassName = pass->GetPassName();
+    command.PassName = pass->GetName();
 
     return command;
 }
@@ -48,7 +48,7 @@ RenderCommand CreatePassEndsCommand(RenderPass* pass)
 {
     RenderCommand command;
     command.CommandType = eRenderCommandType::eEndRenderPass;
-    command.PassName = pass->GetPassName();
+    command.PassName = pass->GetName();
 
     return command;
 }

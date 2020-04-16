@@ -79,18 +79,18 @@ void Material::DeserializeRenderPassConfig(const YAML::Node& pass)
     m_textures[passName] = std::move(texDescriptions);
 }
 
-inline const PipelineState& Material::GetPipelineState(const PassName& passName) const
+const PipelineState& Material::GetPipelineState(const PassName& passName) const
 {
     assert(m_materialPipelineStates.count(passName) == 1);
     return m_materialPipelineStates.at(passName);
 }
 
-inline const std::unordered_map<PassName, PipelineState>& Material::GetPipelineStates() const
+const std::unordered_map<PassName, PipelineState>& Material::GetPipelineStates() const
 {
     return m_materialPipelineStates;
 }
 
-inline const std::vector<TextureAssetDescription>& Material::GetTextureAssetDescriptions(const PassName& passName) const
+const std::vector<TextureAssetDescription>& Material::GetTextureAssetDescriptions(const PassName& passName) const
 {
     assert(m_textures.count(passName) == 1);
     return m_textures.at(passName);

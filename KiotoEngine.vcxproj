@@ -316,6 +316,7 @@
     <ClCompile Include="Sources\Internal\Render\RenderPass\ForwardRenderPass.cpp" />
     <ClCompile Include="Sources\Internal\Render\RenderPass\RenderPass.cpp" />
     <ClCompile Include="Sources\Internal\Render\ScopedGpuProfiler.cpp" />
+    <ClCompile Include="Sources\Internal\Render\RenderObject.cpp" />
     <ClCompile Include="Sources\Internal\Render\Texture\TextureDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\Texture\TextureManagerDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\Texture\TextureSet.cpp" />

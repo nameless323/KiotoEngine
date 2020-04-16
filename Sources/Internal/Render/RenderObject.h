@@ -2,7 +2,6 @@
 
 #include "Render/ShaderData.h"
 
-// [a_vorontcov] TODO: Split to h/cpp
 namespace Kioto::Renderer
 {
 using PassName = std::string;
@@ -33,6 +32,8 @@ public:
 
     const RenderObjectBufferLayout& GetBufferLayout(const PassName& passName);
     const TextureSet& GetTextureSet(const PassName& passName);
+    const std::unordered_map<PassName, RenderObjectBufferLayout>& GetBuffersLayouts() const;
+    std::unordered_map<PassName, RenderObjectBufferLayout>& GetBuffersLayouts();
 
     template<typename T>
     ConstantBuffer::eReturnCode SetValueToBuffer(const std::string& name, T&& val, const PassName& passName)
@@ -52,7 +53,7 @@ private:
     Material* m_material = nullptr;
     Mesh* m_mesh = nullptr;
     std::unordered_map<PassName, RenderObjectBufferLayout> m_renderObjectBuffers;
-    std::unordered_map<PassName, TextureSet> m_textureSets;
+    std::unordered_map<PassName, TextureSet> m_textureSets; // [a_vorontcov] Buffers are unique for ro, but texture set is more a material thing. but does it matter for bindless textures and for this engine at all?
 
     const Matrix4* m_toWorld = nullptr;
     const Matrix4* m_toModel = nullptr;
@@ -103,43 +104,6 @@ inline const Matrix4* RenderObject::GetToModel() const
     return m_toModel;
 }
 
-inline void RenderObject::ComposeAllConstantBuffers()
-{
-    for (auto& pipelines : m_material->GetPipelineStates())
-    {
-        Shader* shader = pipelines.second.Shader;
-        RenderObjectBufferLayout bufferLayout;
-
-        bufferLayout.constantBuffers = shader->CreateLayoutTemplateShalowCopy();
-
-        for (auto& cb : bufferLayout.constantBuffers)
-            cb.ComposeBufferData();
-
-        assert(m_renderObjectBuffers.count(pipelines.first) == 0);
-        m_renderObjectBuffers[pipelines.first] = std::move(bufferLayout);
-    }
-}
-
-inline void RenderObject::RegisterAllTextureSets()
-{
-    for (auto& textureAssetDescriptionsForPasses : m_material->GetTextureAssetDescriptions())
-    {
-        const PassName& passName = textureAssetDescriptionsForPasses.first;
-        const PipelineState& state = m_material->GetPipelineState(passName);
-        TextureSet set;
-        for (auto& texDescr : textureAssetDescriptionsForPasses.second)
-        {
-            std::string fullPath = AssetsSystem::GetAssetFullPath(texDescr.Path);
-            Texture* tex = AssetsSystem::GetRenderAssetsManager()->GetOrLoadAsset<Texture>(fullPath);
-            set.SetTexture(texDescr.Name, tex);
-        }
-        if (set.GetTexturesCount() > 0)
-            Renderer::RegisterTextureSet(set);
-        assert(m_textureSets.count(passName) == 0);
-        m_textureSets[passName] = std::move(set);
-    }
-}
-
 inline const RenderObjectBufferLayout& RenderObject::GetBufferLayout(const PassName& passName)
 {
     assert(m_renderObjectBuffers.count(passName) == 1);
@@ -150,6 +114,16 @@ inline const TextureSet& RenderObject::GetTextureSet(const PassName& passName)
 {
     assert(m_textureSets.count(passName) == 1);
     return m_textureSets.at(passName);
+}
+
+inline const std::unordered_map<PassName, RenderObjectBufferLayout>& RenderObject::GetBuffersLayouts() const
+{
+    return m_renderObjectBuffers;
+}
+
+inline std::unordered_map<PassName, RenderObjectBufferLayout>& RenderObject::GetBuffersLayouts()
+{
+    return m_renderObjectBuffers;
 }
 
 }

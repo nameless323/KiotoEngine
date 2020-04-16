@@ -139,9 +139,11 @@ D3D12_DEPTH_STENCIL_DESC ParseDepthStencil(const PipelineState& state)
 
 D3D12_GRAPHICS_PIPELINE_STATE_DESC ParsePipelineState(Material* mat, const RenderPass* pass, const RootSignatureManager& sigManager, TextureManagerDX12* textureManager, ShaderManagerDX12* shaderManager, VertexLayoutManagerDX12* vertexLayoutManager, DXGI_FORMAT backBufferFromat, DXGI_FORMAT defaultDepthStencilFormat)
 {
+    const PipelineState& state = mat->GetPipelineState(pass->GetName());
+
     D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};
-    desc.pRootSignature = sigManager.GetRootSignature(mat->GetShader()->GetHandle());
-    const auto& shaders = shaderManager->GetDxShaders(mat->GetShader()->GetHandle());
+    desc.pRootSignature = sigManager.GetRootSignature(state.Shader->GetHandle());
+    const auto& shaders = shaderManager->GetDxShaders(state.Shader->GetHandle());
     for (const auto& shader : *shaders)
     {
         if (shader.GetType() == ShaderProgramType::Fragment)
@@ -149,9 +151,8 @@ D3D12_GRAPHICS_PIPELINE_STATE_DESC ParsePipelineState(Material* mat, const Rende
         else if (shader.GetType() == ShaderProgramType::Vertex)
             desc.VS = shader.GetBytecode();
     }
-    auto currentLayout = vertexLayoutManager->FindVertexLayout(mat->GetShader()->GetHandle());
+    auto currentLayout = vertexLayoutManager->FindVertexLayout(state.Shader->GetHandle());
     desc.InputLayout = { currentLayout->data(), static_cast<UINT>(currentLayout->size()) };
-    const PipelineState& state = mat->GetShaderData().pipelineState;
     desc.RasterizerState = ParseRasterizerDesc(state);
     desc.BlendState = ParseBlendState(state);
     desc.DepthStencilState = ParseDepthStencil(state);
