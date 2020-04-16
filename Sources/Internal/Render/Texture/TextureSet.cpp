@@ -34,6 +34,7 @@ TextureSet::eReturnCode TextureSet::AddTexture(const std::string& name, uint16 o
     newElem.Texture = texture;
     newElem.Offset = offset;
     m_data.push_back(std::move(newElem));
+
     return eReturnCode::Ok;
 }
 
@@ -55,4 +56,14 @@ bool TextureSet::Find(const std::string& name, TextureSetData*& data)
     data = &(*it);
     return true;
 }
+
+uint16 TextureSet::GetTextureOffset(const std::string& name) const
+{
+    // [a_vorontcov] TODO: Refactor -> Find
+    auto it = std::find_if(m_data.begin(), m_data.end(), [&name](const TextureSetData& d) { return d.Name == name; });
+    if (it == m_data.end())
+        return -1;
+    return it->Offset;
+}
+
 }

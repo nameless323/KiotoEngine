@@ -34,6 +34,7 @@ public:
     void BuildMaterialForPass(const RenderPass* pass);
 
     const PipelineState& GetPipelineState(const PassName& passName) const;
+    PipelineState& GetPipelineState(const PassName& passName);
     const std::unordered_map<PassName, PipelineState>& GetPipelineStates() const;
 
     const std::vector<TextureAssetDescription>& GetTextureAssetDescriptions(const PassName& passName) const;

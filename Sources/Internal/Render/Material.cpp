@@ -86,6 +86,12 @@ const PipelineState& Material::GetPipelineState(const PassName& passName) const
     return m_materialPipelineStates.at(passName);
 }
 
+PipelineState& Material::GetPipelineState(const PassName& passName)
+{
+    assert(m_materialPipelineStates.count(passName) == 1);
+    return m_materialPipelineStates.at(passName);
+}
+
 const std::unordered_map<PassName, PipelineState>& Material::GetPipelineStates() const
 {
     return m_materialPipelineStates;

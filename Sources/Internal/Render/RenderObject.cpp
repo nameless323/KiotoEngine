@@ -28,18 +28,25 @@ namespace Kioto::Renderer
         for (auto& textureAssetDescriptionsForPasses : m_material->GetTextureAssetDescriptions())
         {
             const PassName& passName = textureAssetDescriptionsForPasses.first;
-            const PipelineState& state = m_material->GetPipelineState(passName);
-            TextureSet set;
+            PipelineState& state = m_material->GetPipelineState(passName);
+            Shader* shader = state.Shader;
+            //TextureSet set;
+            m_textureSets[passName] = {};
+            TextureSet& set = m_textureSets[passName];
             for (auto& texDescr : textureAssetDescriptionsForPasses.second)
             {
                 std::string fullPath = AssetsSystem::GetAssetFullPath(texDescr.Path);
                 Texture* tex = AssetsSystem::GetRenderAssetsManager()->GetOrLoadAsset<Texture>(fullPath);
-                set.SetTexture(texDescr.Name, tex);
+                const TextureSet& shaderTextureSet = shader->GetShaderData().textureSet; // [a_vorontcov] TODO: move this shit with shader to material
+                uint16 texOffset = shaderTextureSet.GetTextureOffset(texDescr.Name);
+                set.AddTexture(texDescr.Name, texOffset, tex);
             }
             if (set.GetTexturesCount() > 0)
+            {
                 Renderer::RegisterTextureSet(set);
-            assert(m_textureSets.count(passName) == 0);
-            m_textureSets[passName] = std::move(set);
+                Renderer::QueueTextureSetForUpdate(set);
+            }
+            //assert(m_textureSets.count(passName) == 0);
         }
     }
 }
