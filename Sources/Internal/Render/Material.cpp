@@ -73,8 +73,11 @@ void Material::DeserializeRenderPassConfig(const YAML::Node& pass)
     {
         YAML::Node texNodes = pass["textures"];
         auto it = texNodes.begin();
+        std::string texName = it->first.as<std::string>();
+        uint16 texOffset = state.Shader->GetShaderData().textureSet.GetTextureOffset(texName);
+        assert(texOffset != -1);
         for (; it != texNodes.end(); ++it)
-            texDescriptions.emplace_back(TextureAssetDescription{ it->first.as<std::string>(), it->second.as<std::string>() });
+            texDescriptions.emplace_back(TextureAssetDescription{ std::move(texName), it->second.as<std::string>(), texOffset });
     }
     m_materialPipelineStates[passName] = std::move(state);
     m_textures[passName] = std::move(texDescriptions);

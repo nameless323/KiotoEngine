@@ -17,6 +17,7 @@ struct TextureAssetDescription
 {
     std::string Name;
     std::string Path;
+    uint16 Offset = -1;
 };
 
 using PassName = std::string;

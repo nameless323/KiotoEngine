@@ -35,14 +35,13 @@ namespace Kioto::Renderer
             {
                 std::string fullPath = AssetsSystem::GetAssetFullPath(texDescr.Path);
                 Texture* tex = AssetsSystem::GetRenderAssetsManager()->GetOrLoadAsset<Texture>(fullPath);
-                const TextureSet& shaderTextureSet = shader->GetShaderData().textureSet; // [a_vorontcov] TODO: move this shit with shader to material
-                uint16 texOffset = shaderTextureSet.GetTextureOffset(texDescr.Name);
-                set.AddTexture(texDescr.Name, texOffset, tex);
+                set.AddTexture(texDescr.Name, texDescr.Offset, tex);
             }
             assert(m_textureSets.count(passName) == 0);
             m_textureSets[passName] = std::move(set);
             if (m_textureSets[passName].GetTexturesCount() > 0)
             {
+                // [a_vorontcov] TODO: easy to mess up. rethink
                 Renderer::RegisterTextureSet(m_textureSets[passName]);
                 Renderer::QueueTextureSetForUpdate(m_textureSets[passName]);
             }
