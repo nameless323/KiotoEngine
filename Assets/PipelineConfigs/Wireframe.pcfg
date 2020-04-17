@@ -1,3 +1,8 @@
 version: 0.01
 parent: "PipelineConfigs\\Default.pcfg"
 fill: Wireframe
+depthStencil:
+    enableDepth: true
+    enableStencil: false
+    ZTest: LEqual
+    ZWrite: false

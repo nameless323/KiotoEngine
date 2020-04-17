@@ -10,6 +10,7 @@
 #include "Render/Shader.h"
 #include "Render/RenderObject.h"
 #include "Render/RenderPass/ForwardRenderPass.h"
+#include "Render/RenderPass/WireframeRenderPass.h"
 
 namespace Kioto
 {
@@ -28,6 +29,7 @@ RenderSystem::RenderSystem()
 void RenderSystem::Init()
 {
     AddRenderPass(new Renderer::ForwardRenderPass());
+    AddRenderPass(new Renderer::WireframeRenderPass());
 }
 
 void RenderSystem::OnEntityAdd(Entity* entity)
