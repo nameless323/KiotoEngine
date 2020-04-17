@@ -28,34 +28,17 @@ Material::Material(const std::string& path)
 
     if (config["version"])
         version = config["version"].as<float32>();
-    if (config["shader"])
-    {
-        m_shaderPath = config["shader"].as<std::string>();
-        std::string shaderPath = AssetsSystem::GetAssetFullPath(m_shaderPath);
-        m_shader = AssetsSystem::GetRenderAssetsManager()->GetOrLoadAsset<Shader>(shaderPath);
-    }
-    else
-    {
-        throw "Wtf";
-    }
-    m_shaderData = m_shader->m_data; // [a_vorontcov] TODO:: Think if copy of shader data is necesary here
-    if (m_shaderData.textureSet.GetTexturesCount() > 0)
-        Renderer::RegisterTextureSet(m_shaderData.textureSet);
 
-    PipelineState::Append(config, m_shaderData.pipelineState);
-    if (config["textures"])
+    if (config["passes"])
     {
-        YAML::Node texNodes = config["textures"];
-        auto it = texNodes.begin();
-        for (; it != texNodes.end(); ++it)
+        YAML::Node characterType = config["passes"];
+        for (YAML::const_iterator it = characterType.begin(); it != characterType.end(); ++it)
         {
-            std::string name = it->first.as<std::string>();
-            std::string path = it->second.as<std::string>();
-            std::string fullPath = AssetsSystem::GetAssetFullPath(path);
-            Texture* tex = AssetsSystem::GetRenderAssetsManager()->GetOrLoadAsset<Texture>(fullPath);
-            m_shaderData.textureSet.SetTexture(name, tex);
+            DeserializeRenderPassConfig(it->second);
         }
     }
+    else
+        assert(false);
 }
 
 Material::~Material()
@@ -70,4 +53,62 @@ void Material::BuildMaterialForPass(const RenderPass* pass)
     Renderer::BuildMaterialForPass(*this, pass);
     m_buildedPassesHandles.push_back(pass->GetHandle());
 }
+
+void Material::DeserializeRenderPassConfig(const YAML::Node& pass)
+{
+    assert(pass["name"]);
+    std::string passName = pass["name"].as<std::string>();
+
+    assert(pass["pipelineConfig"]);
+    std::string pipelineConfigPath = AssetsSystem::GetAssetFullPath(pass["pipelineConfig"].as<std::string>());
+    PipelineState state = PipelineState::FromYaml(pipelineConfigPath);
+
+    assert(pass["shader"]);
+    std::string shaderPath = AssetsSystem::GetAssetFullPath(pass["shader"].as<std::string>());
+    state.Shader = AssetsSystem::GetRenderAssetsManager()->GetOrLoadAsset<Shader>(shaderPath);
+
+    std::vector<TextureAssetDescription> texDescriptions;
+
+    if (pass["textures"])
+    {
+        YAML::Node texNodes = pass["textures"];
+        auto it = texNodes.begin();
+        std::string texName = it->first.as<std::string>();
+        uint16 texOffset = state.Shader->GetShaderData().textureSet.GetTextureOffset(texName);
+        assert(texOffset != -1);
+        for (; it != texNodes.end(); ++it)
+            texDescriptions.emplace_back(TextureAssetDescription{ std::move(texName), it->second.as<std::string>(), texOffset });
+    }
+    m_materialPipelineStates[passName] = std::move(state);
+    m_textures[passName] = std::move(texDescriptions);
+}
+
+const PipelineState& Material::GetPipelineState(const PassName& passName) const
+{
+    assert(m_materialPipelineStates.count(passName) == 1);
+    return m_materialPipelineStates.at(passName);
+}
+
+PipelineState& Material::GetPipelineState(const PassName& passName)
+{
+    assert(m_materialPipelineStates.count(passName) == 1);
+    return m_materialPipelineStates.at(passName);
+}
+
+const std::unordered_map<PassName, PipelineState>& Material::GetPipelineStates() const
+{
+    return m_materialPipelineStates;
+}
+
+const std::vector<TextureAssetDescription>& Material::GetTextureAssetDescriptions(const PassName& passName) const
+{
+    assert(m_textures.count(passName) == 1);
+    return m_textures.at(passName);
+}
+
+const std::unordered_map<PassName, std::vector<TextureAssetDescription>>& Material::GetTextureAssetDescriptions() const
+{
+    return m_textures;
+}
+
 }

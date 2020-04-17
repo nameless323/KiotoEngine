@@ -1,43 +1,8 @@
-//
-// Copyright (C) Alexandr Vorontsov. 2017
-// Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
-//
-
 #include "Include\tst2.hlsl"
 #include "Include\tst3.hlsl"
 #include "Include\tst1.hlsl"
 #include "Include\tst3.hlsl"
 #include "Include\tst3.hlsl"
-
-PIPELINE_DESCR:
-renderLayer: Opaque
-fill: Solid
-cull: Back
-windingCCW: true
-depthStencil:
-    enableDepth: true
-    enableStencil: false
-    ZTest: LEqual
-    ZWrite: true
-    writeMask: 0xF
-    readMask: 0xF
-    stencilFront:
-        fail: Zero
-        ZFfail: Zero
-        pass: Zero
-        func: Never
-    stencilBack:
-        fail: Zero
-        ZFfail: Zero
-        pass: Zero
-        func: Never
-blending:
-    blendOp: Add
-    srcBlend: Zero
-    dstBlend: Zero
-colorMask: All
-PIPELINE_DESCR_END;
-
 
 cbuffer cbEngineBuffer : register(b0, space1)
 {

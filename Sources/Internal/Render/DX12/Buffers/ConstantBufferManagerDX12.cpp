@@ -26,15 +26,19 @@ ConstantBufferManagerDX12::~ConstantBufferManagerDX12()
 
 void ConstantBufferManagerDX12::RegisterRenderObject(RenderObject& renderObject)
 {
-    RenderObjectBufferLayout& bufferLayout = renderObject.GetRenderObjectBufferLayout();
-    auto it = m_constantBufferSets.find(bufferLayout.bufferSetHandle);
-    if (it != m_constantBufferSets.end() && bufferLayout.bufferSetHandle != InvalidHandle)
-        return;
-    ConstantBufferSetHandle setHandle = GetNewHandle();
-    bufferLayout.bufferSetHandle = setHandle;
-    for (size_t i = 0; i < bufferLayout.constantBuffers.size(); ++i)
+    std::unordered_map<std::string, RenderObjectBufferLayout>& bufferLayouts = renderObject.GetBuffersLayouts();
+    for (auto& layoutElem : bufferLayouts)
     {
-        RegisterConstantBuffer(&bufferLayout.constantBuffers[i], setHandle);
+        RenderObjectBufferLayout& bufferLayout = layoutElem.second;
+        auto it = m_constantBufferSets.find(bufferLayout.bufferSetHandle);
+        if (it != m_constantBufferSets.end() && bufferLayout.bufferSetHandle != InvalidHandle)
+            continue;;
+        ConstantBufferSetHandle setHandle = GetNewHandle();
+        bufferLayout.bufferSetHandle = setHandle;
+        for (size_t i = 0; i < bufferLayout.constantBuffers.size(); ++i)
+        {
+            RegisterConstantBuffer(&bufferLayout.constantBuffers[i], setHandle);
+        }
     }
 }
 

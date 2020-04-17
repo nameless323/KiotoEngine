@@ -518,6 +518,9 @@
     <ClCompile Include="Sources\Internal\Render\Geometry\ParserGLTF.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Sources\Internal\Render\RenderObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

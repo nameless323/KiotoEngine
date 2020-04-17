@@ -30,7 +30,9 @@ struct PipelineState
     bool EnableDepth = false;
     bool WindingCCW = true;
 
-    static PipelineState FromYaml(const YAML::Node& config);
+    Shader* Shader = nullptr;
+
+    static void FromYaml(const YAML::Node& config, PipelineState& dstConfig);
     static PipelineState FromYaml(const std::string& config);
     static void Append(const YAML::Node& node, PipelineState& initConfig);
 };

@@ -84,7 +84,7 @@ public:
     uint8 GetRenderTargetCount() const;
     RenderPassHandle GetHandle() const;
 
-    const std::string& GetPassName() const;
+    const std::string& GetName() const;
 
 protected:
     virtual void SetRenderTargets() abstract; // Set scissor, render targets, viewports
@@ -234,7 +234,7 @@ inline RenderPassHandle RenderPass::GetHandle() const
     return m_handle;
 }
 
-inline const std::string& RenderPass::GetPassName() const
+inline const std::string& RenderPass::GetName() const
 {
     return m_passName;
 }

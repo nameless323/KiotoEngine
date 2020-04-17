@@ -13,6 +13,15 @@ namespace Kioto::Renderer
 {
 class Shader;
 
+struct TextureAssetDescription
+{
+    std::string Name;
+    std::string Path;
+    uint16 Offset = -1;
+};
+
+using PassName = std::string;
+
 class Material : public Asset
 {
 public:
@@ -23,15 +32,24 @@ public:
     void SetHandle(MaterialHandle handle);
     MaterialHandle GetHandle() const;
 
-    Shader* GetShader() const;
-    ShaderData& GetShaderData();
     void BuildMaterialForPass(const RenderPass* pass);
 
+    const PipelineState& GetPipelineState(const PassName& passName) const;
+    PipelineState& GetPipelineState(const PassName& passName);
+    const std::unordered_map<PassName, PipelineState>& GetPipelineStates() const;
+
+    const std::vector<TextureAssetDescription>& GetTextureAssetDescriptions(const PassName& passName) const;
+    const std::unordered_map<PassName, std::vector<TextureAssetDescription>>& GetTextureAssetDescriptions() const;
+
 private:
-    std::string m_shaderPath;
-    Shader* m_shader = nullptr;
-    ShaderData m_shaderData;
+    void DeserializeRenderPassConfig(const YAML::Node& pass);
+
     MaterialHandle m_handle;
+
+    // [a_vorontcov] For each pass contains appropriate pipeline state
+    std::unordered_map<PassName, PipelineState> m_materialPipelineStates;
+    // [a_vorontcov] All textures for each pass
+    std::unordered_map<PassName, std::vector<TextureAssetDescription>> m_textures;
 
     std::vector<RenderPassHandle> m_buildedPassesHandles;
 };
@@ -44,15 +62,5 @@ inline void Material::SetHandle(MaterialHandle handle)
 inline MaterialHandle Material::GetHandle() const
 {
     return m_handle;
-}
-
-inline Shader* Material::GetShader() const
-{
-    return m_shader;
-}
-
-inline ShaderData& Material::GetShaderData()
-{
-    return m_shaderData;
 }
 }

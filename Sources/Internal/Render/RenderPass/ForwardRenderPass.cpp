@@ -13,7 +13,7 @@
 namespace Kioto::Renderer
 {
 ForwardRenderPass::ForwardRenderPass()
-    : RenderPass("ForwardPass")
+    : RenderPass("Forward")
 {
     Renderer::RegisterRenderPass(this);
     SetRenderTargetCount(1);
@@ -28,16 +28,16 @@ void ForwardRenderPass::CollectRenderData()
         Mesh* mesh = ro->GetMesh();
         mat->BuildMaterialForPass(this);
 
-        ro->SetValueToBuffer("ToModel", ro->GetToModel()->GetForGPU()); // [a_vorontcov] TODO: Move to render object?
-        ro->SetValueToBuffer("ToWorld", ro->GetToWorld()->GetForGPU());
+        ro->SetValueToBuffer("ToModel", ro->GetToModel()->GetForGPU(), m_passName);// [a_vorontcov] TODO: Move to render object?
+        ro->SetValueToBuffer("ToWorld", ro->GetToWorld()->GetForGPU(), m_passName);
 
         RenderPacket currPacket = {};
         currPacket.Material = mat->GetHandle();
-        currPacket.Shader = mat->GetShader()->GetHandle();
-        currPacket.TextureSet = mat->GetShaderData().textureSet.GetHandle();
+        currPacket.Shader = mat->GetPipelineState(m_passName).Shader->GetHandle();
+        currPacket.TextureSet = ro->GetTextureSet(m_passName).GetHandle();
         currPacket.Mesh = mesh->GetHandle();
         currPacket.Pass = GetHandle();
-        currPacket.CBSet = ro->GetRenderObjectBufferLayout().bufferSetHandle;
+        currPacket.CBSet = ro->GetBufferLayout(m_passName).bufferSetHandle;
 
         PushCommand(RenderCommandHelpers::CreateRenderPacketCommand(currPacket, this));
     }

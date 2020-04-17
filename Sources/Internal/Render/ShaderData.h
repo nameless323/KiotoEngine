@@ -20,7 +20,6 @@ struct ShaderData
 {
     std::string output;
     VertexLayout vertexLayout;
-    PipelineState pipelineState;
     TextureSet textureSet;
     uint8 shaderPrograms = 0;
 };
