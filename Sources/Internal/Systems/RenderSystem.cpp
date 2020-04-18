@@ -10,6 +10,7 @@
 #include "Render/Shader.h"
 #include "Render/RenderObject.h"
 #include "Render/RenderPass/ForwardRenderPass.h"
+#include "Render/RenderPass/WireframeRenderPass.h"
 
 namespace Kioto
 {
@@ -21,6 +22,7 @@ constexpr uint32 MaxRenderPassesCount = 128;
 RenderSystem::RenderSystem()
 {
     m_renderPasses.reserve(MaxRenderPassesCount);
+    m_activePasses.reserve(MaxRenderPassesCount);
     m_renderObjects.reserve(2048);
     m_components.reserve(2048);
 }
@@ -28,6 +30,7 @@ RenderSystem::RenderSystem()
 void RenderSystem::Init()
 {
     AddRenderPass(new Renderer::ForwardRenderPass());
+    AddRenderPass(new Renderer::WireframeRenderPass());
 }
 
 void RenderSystem::OnEntityAdd(Entity* entity)
@@ -77,14 +80,20 @@ void RenderSystem::Update(float32 dt)
         ro->SetToModel(tc->GetToModel());
         m_renderObjects.push_back(ro); // [a_vorontcov] TODO: Don't like copying this around.
     }
-
+    m_activePasses.clear();
     for (auto pass : m_renderPasses)
+    {
+        if (pass->ConfigureInputsAndOutputs())
+            m_activePasses.push_back(pass);
+    }
+
+    for (auto pass : m_activePasses)
     {
         pass->SetRenderObjects(m_renderObjects);
         pass->Setup();
     }
 
-    for (auto pass : m_renderPasses)
+    for (auto pass : m_activePasses)
     {
         pass->CollectRenderData();
         pass->Cleanup();
@@ -94,7 +103,7 @@ void RenderSystem::Update(float32 dt)
 
 void RenderSystem::Draw()
 {
-    for (auto pass : m_renderPasses)
+    for (auto pass : m_activePasses)
     {
         pass->SubmitRenderData();
     }
@@ -102,6 +111,7 @@ void RenderSystem::Draw()
 
 void RenderSystem::Shutdown()
 {
+    m_activePasses.clear();
     for (auto it : m_renderPasses)
         SafeDelete(it);
     m_renderPasses.clear();

@@ -9,6 +9,4 @@ passes:
     renderPass: 
         name: "Wireframe"
         pipelineConfig: "PipelineConfigs\\Wireframe.pcfg"
-        shader: "Shaders\\Fallback.hlsl"
-        textures:
-            Diffuse : "Textures\\rick_and_morty.dds"
+        shader: "Shaders\\Wireframe.hlsl"

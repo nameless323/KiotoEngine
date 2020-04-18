@@ -24,9 +24,6 @@
     <ClInclude Include="Sources\Internal\Core\Core.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\Internal\Core\KiotoEngine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Sources\Internal\Core\WindowsApplication.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -336,6 +333,18 @@
     <ClInclude Include="Sources\Internal\Render\Geometry\ParserGLTF.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Sources\Internal\Render\RenderPass\WireframeRenderPass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Internal\Systems\DebugSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Internal\Core\KiotoEngine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Internal\Render\RenderSettings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -519,6 +528,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Sources\Internal\Render\RenderObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Internal\Render\RenderPass\WireframeRenderPass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Internal\Systems\DebugSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

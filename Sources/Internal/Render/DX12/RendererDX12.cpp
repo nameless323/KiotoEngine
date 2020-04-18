@@ -335,8 +335,10 @@ void RendererDX12::Present()
 
             m_state.CommandList->RSSetScissorRects(1, &DXRectFromKioto(srtCommand.Scissor));
             m_state.CommandList->RSSetViewports(1, &DXViewportFromKioto(srtCommand.Viewport));
-            m_state.CommandList->ClearRenderTargetView(currentRenderTarget->GetCPUHandle(), DirectX::Colors::Aqua, 0, nullptr);
-            m_state.CommandList->ClearDepthStencilView(currentDS->GetCPUHandle(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+            if (srtCommand.ClearColor)
+                m_state.CommandList->ClearRenderTargetView(currentRenderTarget->GetCPUHandle(), DirectX::Colors::DarkGray, 0, nullptr);
+            if (srtCommand.ClearDepth)
+                m_state.CommandList->ClearDepthStencilView(currentDS->GetCPUHandle(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
             m_state.CommandList->OMSetRenderTargets(1, &currentRenderTarget->GetCPUHandle(), false, &currentDS->GetCPUHandle());
         }
@@ -369,11 +371,14 @@ void RendererDX12::Present()
             for (size_t i = engineBuffersCount; i < buffersCount; ++i)
                 m_state.CommandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(i), bufferList[i - engineBuffersCount]->GetFrameDataGpuAddress(m_swapChain.GetCurrentFrameIndex()));
 
-            ID3D12DescriptorHeap* currHeap = m_textureManager.GetTextureHeap(packet.TextureSet);
-            ID3D12DescriptorHeap* descHeap[] = { currHeap };
-            m_state.CommandList->SetDescriptorHeaps(_countof(descHeap), descHeap);
+            ID3D12DescriptorHeap* currTexDescriptorHeap = m_textureManager.GetTextureHeap(packet.TextureSet);
+            if (currTexDescriptorHeap != nullptr) // [a_vorontcov] TODO: No difference if one messed up with texset or if there is no textures for the draw. Not good at all. Rethink.
+            {
+                ID3D12DescriptorHeap* descHeap[] = { currTexDescriptorHeap };
+                m_state.CommandList->SetDescriptorHeaps(_countof(descHeap), descHeap);
 
-            m_state.CommandList->SetGraphicsRootDescriptorTable(static_cast<UINT>(buffersCount), currHeap->GetGPUDescriptorHandleForHeapStart()); // [a_vorontcov] 3??? maybe enginebuffercount + bufferListSize?
+                m_state.CommandList->SetGraphicsRootDescriptorTable(static_cast<UINT>(buffersCount), currTexDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+            }
 
             MeshDX12* currGeometry = m_meshManager.Find(packet.Mesh);
 

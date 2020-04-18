@@ -10,6 +10,8 @@
 #include "Core/CoreTypes.h"
 #include "Core/Input/Input.h"
 
+#include "Render/RenderSettings.h"
+
 namespace Kioto
 {
 namespace KiotoCore
@@ -19,6 +21,7 @@ void Update();
 void Shutdown();
 void ChangeFullscreenMode(bool fullScreen);
 void Resize(uint16 width, uint16 height, bool minimized);
+Kioto::RenderSettings& GetRenderSettings();
 }
 
 namespace WindowsApplication
@@ -50,7 +53,8 @@ bool Init(HINSTANCE hInstance, int32 nCmdShow, std::wstring caption)
     windowClass.lpszClassName = caption.c_str();
     RegisterClassEx(&windowClass);
 
-    RECT windowRect = { 0, 0, 1024, 768 };
+    Vector2i resolution = KiotoCore::GetRenderSettings().Resolution;
+    RECT windowRect = { 0, 0, resolution.x, resolution.y };
     if (!AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE))
         return false;
 
