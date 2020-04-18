@@ -21,7 +21,7 @@
 #include "Render/Geometry/ParserFBX.h"
 #include "Render/Material.h"
 #include "Render/Renderer.h"
-
+#include "Render/RenderSettings.h"
 
 #include <yaml-cpp/yaml.h>
 #include <fstream>
@@ -35,6 +35,7 @@ std::function<void()> ShutdownEngineCallback = nullptr;
 namespace KiotoCore
 {
 ApplicationInfoData ApplicationInfo;
+Kioto::RenderSettings RenderSettings;
 }
 
 void KiotoMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int nCmdShow, std::wstring capture, std::function<void()> initEngineCallback, std::function<void()> shutdownEngineCallback)
@@ -114,7 +115,7 @@ void Init()
     Renderer::GeometryGenerator::Init();
     WindowsApplication::Init(ApplicationInfo.HInstance, ApplicationInfo.NCmdShow, ApplicationInfo.WindowCapture);
     Renderer::EngineBuffers::Init();
-    Renderer::Init(Renderer::eRenderApi::DirectX12, 1024, 768);
+    Renderer::Init(Renderer::eRenderApi::DirectX12, RenderSettings.Resolution.x, RenderSettings.Resolution.y);
 
     if (InitEngineCallback != nullptr)
         InitEngineCallback();
@@ -155,6 +156,11 @@ void ChangeFullscreenMode(bool fullScreen)
 void Resize(uint16 width, uint16 height, bool minimized)
 {
     Renderer::Resize(width, height, minimized);
+}
+
+Kioto::RenderSettings& GetRenderSettings()
+{
+    return RenderSettings;
 }
 }
 }

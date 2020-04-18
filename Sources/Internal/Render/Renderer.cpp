@@ -18,8 +18,8 @@ namespace
 RendererDX12* GameRenderer = nullptr; // [a_vorontcov] Not too cross-api for now. 
                                       // TODO: no need for inheritance, just define the function like in namespace and #ifdef platforms (ps who cares about non dx12 anyway :) )
 
-uint16 m_height = 1024;
-uint16 m_width = 768;
+uint16 m_height = -1;
+uint16 m_width = -1;
 float32 m_aspect = 1.0f;
 
 Camera* m_mainCamera;
@@ -92,7 +92,7 @@ void Update(float32 dt) // [a_vorontcov] TODO: set frame command buffers here.
     UpdateTimeBuffer();
     GameRenderer->Update(dt);
 
-    ImGui::Begin("Renderer.cpp::Update(float dt)");
+    ImGui::Begin("Render stats || Renderer.cpp::Update(float dt)");
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
     ImGui::End();
 }

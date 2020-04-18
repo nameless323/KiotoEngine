@@ -185,6 +185,7 @@
     <ClInclude Include="Sources\Internal\Core\ECS\Entity.h" />
     <ClInclude Include="Sources\Internal\Core\ECS\SceneSystem.h" />
     <ClInclude Include="Sources\Internal\Core\ECS\System.h" />
+    <ClInclude Include="Sources\Internal\Render\RenderSettings.h" />
     <ClInclude Include="Sources\Internal\Core\FPSCounter.h" />
     <ClInclude Include="Sources\Internal\Core\Input\Input.h" />
     <ClInclude Include="Sources\Internal\Core\KiotoEngine.h" />
@@ -258,6 +259,7 @@
     <ClInclude Include="Sources\Internal\Render\Texture\TextureDX12.h" />
     <ClInclude Include="Sources\Internal\Render\VertexLayout.h" />
     <ClInclude Include="Sources\Internal\Systems\CameraSystem.h" />
+    <ClInclude Include="Sources\Internal\Systems\DebugSystem.h" />
     <ClInclude Include="Sources\Internal\Systems\EventSystem\EngineEvents.h" />
     <ClInclude Include="Sources\Internal\Systems\EventSystem\Event.h" />
     <ClInclude Include="Sources\Internal\Systems\EventSystem\EventSystem.h" />
@@ -324,6 +326,7 @@
     <ClCompile Include="Sources\Internal\Render\Texture\TextureSet.cpp" />
     <ClCompile Include="Sources\Internal\Render\VertexLayout.cpp" />
     <ClCompile Include="Sources\Internal\Systems\CameraSystem.cpp" />
+    <ClCompile Include="Sources\Internal\Systems\DebugSystem.cpp" />
     <ClCompile Include="Sources\Internal\Systems\EventSystem\EngineEvents.cpp" />
     <ClCompile Include="Sources\Internal\Systems\EventSystem\EventSystem.cpp" />
     <ClCompile Include="Sources\Internal\Systems\RenderSystem.cpp" />
