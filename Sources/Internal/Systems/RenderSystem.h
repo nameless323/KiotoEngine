@@ -32,6 +32,7 @@ public:
 
 private:
     std::vector<Renderer::RenderPass*> m_renderPasses;
+    std::vector<Renderer::RenderPass*> m_activePasses;
     std::vector<Renderer::RenderObject*> m_renderObjects;
     std::vector<RenderComponent*> m_components;
 };

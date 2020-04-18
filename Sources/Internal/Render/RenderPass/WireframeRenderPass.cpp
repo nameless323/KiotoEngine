@@ -2,12 +2,14 @@
 
 #include "Render/RenderPass/WireframeRenderPass.h"
 
+#include "Core/KiotoEngine.h"
 #include "Render/Camera.h"
 #include "Render/Material.h"
 #include "Render/Renderer.h"
 #include "Render/RenderCommand.h"
 #include "Render/RenderObject.h"
 #include "Render/RenderPacket.h"
+#include "Render/RenderSettings.h"
 #include "Render/Shader.h"
 
 namespace Kioto::Renderer
@@ -51,6 +53,7 @@ namespace Kioto::Renderer
 
     void WireframeRenderPass::SetRenderTargets()
     {
+        bool isWireframe = KiotoCore::GetRenderSettings().RenderMode == RenderSettings::RenderModeOptions::Wireframe;
         SetRenderTargetsCommand cmd;
         cmd.SetRenderTargets(Renderer::DefaultBackBufferHandle);
         cmd.RenderTargetCount = GetRenderTargetCount();
@@ -58,10 +61,10 @@ namespace Kioto::Renderer
 
         cmd.Viewport = { 0, 0, Renderer::GetWidth(), Renderer::GetHeight() };
         cmd.Scissor = { 0, 0, Renderer::GetWidth(), Renderer::GetHeight() };
-        cmd.ClearDepth = false;
+        cmd.ClearDepth = isWireframe;
         cmd.ClearDepthValue = 0.0f;
-        cmd.ClearColor = false;
-        cmd.ClearStencil = false;
+        cmd.ClearColor = isWireframe;
+        cmd.ClearStencil = isWireframe;
         cmd.ClearStencilValue = 0;
 
         PushCommand(RenderCommandHelpers::CreateSetRenderTargetCommand(cmd, this));
@@ -76,4 +79,14 @@ namespace Kioto::Renderer
     {
         PushCommand(RenderCommandHelpers::CreateConstantBufferCommand(Renderer::GetMainCamera()->GetConstantBuffer(), this));
     }
+
+    bool WireframeRenderPass::ConfigureInputsAndOutputs()
+    {
+        const RenderSettings& settings = KiotoCore::GetRenderSettings();
+        if (settings.RenderMode == RenderSettings::RenderModeOptions::Wireframe
+            || settings.RenderMode == RenderSettings::RenderModeOptions::FinalAndWireframe)
+            return true;
+        return false;
+    }
+
 }

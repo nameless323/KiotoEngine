@@ -10,7 +10,8 @@ class ForwardRenderPass : public RenderPass
 public:
     ForwardRenderPass();
 
-    void CollectRenderData() override; 
+    bool ConfigureInputsAndOutputs() override;
+    void CollectRenderData() override;
     void Cleanup() override;
 
 private:

@@ -2,12 +2,14 @@
 
 #include "Render/RenderPass/ForwardRenderPass.h"
 
+#include "Core/KiotoEngine.h"
 #include "Render/Camera.h"
 #include "Render/Material.h"
 #include "Render/Renderer.h"
 #include "Render/RenderCommand.h"
 #include "Render/RenderObject.h"
 #include "Render/RenderPacket.h"
+#include "Render/RenderSettings.h"
 #include "Render/Shader.h"
 
 namespace Kioto::Renderer
@@ -76,4 +78,14 @@ void ForwardRenderPass::SetCameraConstantBuffers()
 {
     PushCommand(RenderCommandHelpers::CreateConstantBufferCommand(Renderer::GetMainCamera()->GetConstantBuffer(), this));
 }
+
+bool ForwardRenderPass::ConfigureInputsAndOutputs()
+{
+    const RenderSettings& settings = KiotoCore::GetRenderSettings();
+    if (settings.RenderMode == RenderSettings::RenderModeOptions::Final
+        || settings.RenderMode == RenderSettings::RenderModeOptions::FinalAndWireframe)
+        return true;
+    return false;
+}
+
 }

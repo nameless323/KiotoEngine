@@ -30,6 +30,10 @@ public:
 
     virtual ~RenderPass() = default;
 
+    // Describe what resources pass get for input and what resources it writes.
+    // Return true - pass will be executed in the current frame. false - otherwise.
+    virtual bool ConfigureInputsAndOutputs() abstract;
+
     virtual void Setup() // set all pass buffers
     {
         PushCommand(RenderCommandHelpers::CreateBeginGpuEventCommand(m_passName));
