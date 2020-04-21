@@ -33,7 +33,7 @@ void RootSignatureManager::CreateRootSignature(const StateDX& state, const Shade
     {
         ranges.emplace_back();
         D3D12_DESCRIPTOR_RANGE1* texRange = &ranges.back();
-        texRange->NumDescriptors = 1;
+        texRange->NumDescriptors = shaderData.textureSet.GetTexturesCount();
         texRange->BaseShaderRegister = 0;
         texRange->OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
         texRange->Flags = D3D12_DESCRIPTOR_RANGE_FLAG_NONE;
