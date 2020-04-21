@@ -70,7 +70,7 @@ inline constexpr DXGI_FORMAT IndexFormatToDXGI(eIndexFormat format)
 ///
 /// Get predefined static samplers.
 ///
-inline std::array<const CD3DX12_STATIC_SAMPLER_DESC, 1> GetStaticSamplers()
+inline std::array<const CD3DX12_STATIC_SAMPLER_DESC, 2> GetStaticSamplers()
 {
     const CD3DX12_STATIC_SAMPLER_DESC linearClamp(
         0,
@@ -78,6 +78,12 @@ inline std::array<const CD3DX12_STATIC_SAMPLER_DESC, 1> GetStaticSamplers()
         D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
         D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
         D3D12_TEXTURE_ADDRESS_MODE_CLAMP);
-    return { linearClamp };
+    const CD3DX12_STATIC_SAMPLER_DESC linearWrap(
+        1,
+        D3D12_FILTER_MIN_MAG_MIP_LINEAR,
+        D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+        D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+        D3D12_TEXTURE_ADDRESS_MODE_WRAP);
+    return { linearClamp, linearWrap };
 }
 }

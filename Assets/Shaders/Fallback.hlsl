@@ -1,6 +1,5 @@
 #include "Include\EngineBuffers.hlsl"
 
-SamplerState LinearClampSampl : register(s0);
 [_IN_] Texture2D Diffuse : register(t0);
 [_IN_] Texture2D Mask : register(t1);
 
@@ -40,5 +39,5 @@ vOut vs(vIn i)
 
 float4 ps(vOut i) : SV_Target
 {
-    return Diffuse.Sample(LinearClampSampl, i.uv) * Mask.Sample(LinearClampSampl, i.uv);// * (SinTime.w * 0.5f + 0.5f);
+    return Diffuse.Sample(LinearClampSampler, i.uv) * Mask.Sample(LinearClampSampler, i.uv);// * (SinTime.w * 0.5f + 0.5f);
 }

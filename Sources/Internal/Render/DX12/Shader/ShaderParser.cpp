@@ -555,7 +555,7 @@ ShaderDataAndBufferLayout ParseShaderFromString(std::string source, const std::v
     data.textureSet = ParseTextures(source);
     source = DXPreprocess(source, defines);
     data.shaderPrograms = GetAvaliableShaderProgTypes(source);
-    OutputDebugStringA(source.c_str());
+    //OutputDebugStringA(source.c_str());
     data.vertexLayout = GetVertexLayout(source);
     data.output = source;
 

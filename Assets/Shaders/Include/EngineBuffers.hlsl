@@ -16,3 +16,6 @@ cbuffer cbCameraBuffer : register(b1, space1)
     float3 CamWorldPosition;
     float Pad1;
 };
+
+SamplerState LinearClampSampler : register(s0);
+SamplerState LinearWrapSampler : register(s1);
