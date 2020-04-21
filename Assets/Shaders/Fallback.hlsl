@@ -2,6 +2,7 @@
 
 SamplerState LinearClampSampl : register(s0);
 [_IN_] Texture2D Diffuse : register(t0);
+[_IN_] Texture2D Mask : register(t1);
 
 cbuffer cbRenderObjectBuffer : register(b0, space0)
 {
@@ -39,5 +40,5 @@ vOut vs(vIn i)
 
 float4 ps(vOut i) : SV_Target
 {
-    return Diffuse.Sample(LinearClampSampl, i.uv);// * (SinTime.w * 0.5f + 0.5f);
+    return Diffuse.Sample(LinearClampSampl, i.uv) * Mask.Sample(LinearClampSampl, i.uv);// * (SinTime.w * 0.5f + 0.5f);
 }
