@@ -9,20 +9,16 @@
 #include "Render/Material.h"
 #include "Render/Shader.h"
 #include "Render/RenderObject.h"
+#include "Render/RenderOptions.h"
 #include "Render/RenderPass/ForwardRenderPass.h"
 #include "Render/RenderPass/WireframeRenderPass.h"
 
 namespace Kioto
 {
-namespace
-{
-constexpr uint32 MaxRenderPassesCount = 128;
-}
-
 RenderSystem::RenderSystem()
 {
-    m_renderPasses.reserve(MaxRenderPassesCount);
-    m_activePasses.reserve(MaxRenderPassesCount);
+    m_renderPasses.reserve(Kioto::RenderOptions::MaxRenderPassesCount);
+    m_activePasses.reserve(Kioto::RenderOptions::MaxRenderPassesCount);
     m_renderObjects.reserve(2048);
     m_components.reserve(2048);
 }
@@ -95,7 +91,7 @@ void RenderSystem::Update(float32 dt)
 
     for (auto pass : m_activePasses)
     {
-        pass->CollectRenderData();
+        pass->BuildRenderPackets();
         pass->Cleanup();
     }
     m_renderObjects.clear();
@@ -105,7 +101,7 @@ void RenderSystem::Draw()
 {
     for (auto pass : m_activePasses)
     {
-        pass->SubmitRenderData();
+        pass->Submit();
     }
 }
 

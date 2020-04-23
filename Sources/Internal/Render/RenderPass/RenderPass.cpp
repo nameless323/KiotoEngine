@@ -23,7 +23,7 @@ RenderPass::RenderPass(const RenderPass& other)
 {
 }
 
-void RenderPass::SubmitRenderData()
+void RenderPass::Submit()
 {
     PushCommand(RenderCommandHelpers::CreateEndGpuEventCommand());
     Renderer::SubmitRenderCommands(GetRenderCommands());

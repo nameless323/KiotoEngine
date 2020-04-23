@@ -3,7 +3,7 @@
 #include "Systems/DebugSystem.h"
 
 #include "Core/KiotoEngine.h"
-#include "Render/RenderSettings.h"
+#include "Render/RenderOptions.h"
 
 #include "IMGUI/imgui.h"
 
@@ -33,7 +33,7 @@ namespace Kioto
     {
         static std::array<std::string, 3> items = { "Final", "Wireframe", "FinalAndWireframe" };
         static std::string current_item = items[0];
-        const static std::array<RenderSettings::RenderModeOptions, 3> renderModeOptions{ RenderSettings::RenderModeOptions::Final,RenderSettings::RenderModeOptions::Wireframe, RenderSettings::RenderModeOptions::FinalAndWireframe };
+        const static std::array<RenderOptions::RenderModeOptions, 3> renderModeOptions{ RenderOptions::RenderModeOptions::Final,RenderOptions::RenderModeOptions::Wireframe, RenderOptions::RenderModeOptions::FinalAndWireframe };
 
         ImGui::Begin("Render options || DebugSystem.cpp::Update(float dt)");
 

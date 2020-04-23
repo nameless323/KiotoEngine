@@ -24,7 +24,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 namespace Kioto
 {
 class Scene;
-struct RenderSettings;
+struct RenderOptions;
 
 ///
 /// Entry point of Kioto Engine. Call this function from your WinMain.
@@ -60,6 +60,6 @@ void Update();
 void Shutdown();
 void ChangeFullscreenMode(bool fullScreen);
 void Resize(uint16 width, uint16 height, bool minimized);
-Kioto::RenderSettings& GetRenderSettings();
+Kioto::RenderOptions& GetRenderSettings();
 }
 }

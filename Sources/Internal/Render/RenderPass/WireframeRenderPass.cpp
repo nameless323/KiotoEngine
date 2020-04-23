@@ -9,7 +9,7 @@
 #include "Render/RenderCommand.h"
 #include "Render/RenderObject.h"
 #include "Render/RenderPacket.h"
-#include "Render/RenderSettings.h"
+#include "Render/RenderOptions.h"
 #include "Render/Shader.h"
 
 namespace Kioto::Renderer
@@ -21,7 +21,7 @@ namespace Kioto::Renderer
         SetRenderTargetCount(1);
     }
 
-    void WireframeRenderPass::CollectRenderData()
+    void WireframeRenderPass::BuildRenderPackets()
     {
         SetRenderTargets();
         for (auto ro : m_renderObjects)
@@ -53,7 +53,7 @@ namespace Kioto::Renderer
 
     void WireframeRenderPass::SetRenderTargets()
     {
-        bool isWireframe = KiotoCore::GetRenderSettings().RenderMode == RenderSettings::RenderModeOptions::Wireframe;
+        bool isWireframe = KiotoCore::GetRenderSettings().RenderMode == RenderOptions::RenderModeOptions::Wireframe;
         SetRenderTargetsCommand cmd;
         cmd.SetRenderTargets(Renderer::DefaultBackBufferHandle);
         cmd.RenderTargetCount = GetRenderTargetCount();
@@ -82,9 +82,9 @@ namespace Kioto::Renderer
 
     bool WireframeRenderPass::ConfigureInputsAndOutputs()
     {
-        const RenderSettings& settings = KiotoCore::GetRenderSettings();
-        if (settings.RenderMode == RenderSettings::RenderModeOptions::Wireframe
-            || settings.RenderMode == RenderSettings::RenderModeOptions::FinalAndWireframe)
+        const RenderOptions& settings = KiotoCore::GetRenderSettings();
+        if (settings.RenderMode == RenderOptions::RenderModeOptions::Wireframe
+            || settings.RenderMode == RenderOptions::RenderModeOptions::FinalAndWireframe)
             return true;
         return false;
     }

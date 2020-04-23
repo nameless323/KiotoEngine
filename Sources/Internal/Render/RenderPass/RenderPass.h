@@ -41,8 +41,8 @@ public:
         SetCameraConstantBuffers();
     }
 
-    virtual void CollectRenderData() abstract;
-    virtual void SubmitRenderData();
+    virtual void BuildRenderPackets() abstract;
+    virtual void Submit();
 
     virtual void Cleanup() abstract; // cleanup all pass setups
 

@@ -4,7 +4,7 @@
 
 namespace Kioto
 {
-    struct RenderSettings
+    struct RenderOptions
     {
         enum class RenderModeOptions
         {
@@ -15,5 +15,7 @@ namespace Kioto
 
         RenderModeOptions RenderMode = RenderModeOptions::Final;
         Vector2i Resolution{ 1366, 768 };
+
+        static constexpr uint32 MaxRenderPassesCount = 128;
     };
 }

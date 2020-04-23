@@ -10,7 +10,7 @@ namespace Kioto::Renderer
         WireframeRenderPass();
 
         bool ConfigureInputsAndOutputs() override;
-        void CollectRenderData() override;
+        void BuildRenderPackets() override;
         void Cleanup() override;
 
     private:

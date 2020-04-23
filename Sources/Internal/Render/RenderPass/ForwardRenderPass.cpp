@@ -9,7 +9,7 @@
 #include "Render/RenderCommand.h"
 #include "Render/RenderObject.h"
 #include "Render/RenderPacket.h"
-#include "Render/RenderSettings.h"
+#include "Render/RenderOptions.h"
 #include "Render/Shader.h"
 
 namespace Kioto::Renderer
@@ -21,7 +21,7 @@ ForwardRenderPass::ForwardRenderPass()
     SetRenderTargetCount(1);
 }
 
-void ForwardRenderPass::CollectRenderData()
+void ForwardRenderPass::BuildRenderPackets()
 {
     SetRenderTargets();
     for (auto ro : m_renderObjects)
@@ -81,9 +81,9 @@ void ForwardRenderPass::SetCameraConstantBuffers()
 
 bool ForwardRenderPass::ConfigureInputsAndOutputs()
 {
-    const RenderSettings& settings = KiotoCore::GetRenderSettings();
-    if (settings.RenderMode == RenderSettings::RenderModeOptions::Final
-        || settings.RenderMode == RenderSettings::RenderModeOptions::FinalAndWireframe)
+    const RenderOptions& settings = KiotoCore::GetRenderSettings();
+    if (settings.RenderMode == RenderOptions::RenderModeOptions::Final
+        || settings.RenderMode == RenderOptions::RenderModeOptions::FinalAndWireframe)
         return true;
     return false;
 }
