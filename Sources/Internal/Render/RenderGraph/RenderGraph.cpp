@@ -10,34 +10,26 @@ namespace Kioto::Renderer
 
 RenderGraph::RenderGraph()
 {
-    m_registredPasses.resize(RenderOptions::MaxRenderPassesCount);
-    m_activePasses.resize(RenderOptions::MaxRenderPassesCount);
+    m_registredPasses.reserve(RenderOptions::MaxRenderPassesCount);
+    m_activePasses.reserve(RenderOptions::MaxRenderPassesCount);
 }
 
-void RenderGraph::AddPass(RenderPass& renderPass)
+void RenderGraph::AddPass(RenderPass* renderPass)
 {
-    PassInfo info;
-    info.ConfigureInputsOutputs = [&renderPass] { return renderPass.ConfigureInputsAndOutputs(); };
-    info.SetRenderObjects = [&renderPass](std::vector<RenderObject*> renderObjects) { renderPass.SetRenderObjects(renderObjects); };
-    info.Setup = [&renderPass] { renderPass.Setup(); };
-    info.BuildRenderPackets = [&renderPass] { renderPass.BuildRenderPackets(); };
-    info.Submit = [&renderPass] { renderPass.Submit(); };
-    info.Cleanup = [&renderPass] { renderPass.Cleanup(); };
-    m_registredPasses.push_back(std::move(info));
+    m_registredPasses.push_back(renderPass);
 }
 
 RenderGraph::~RenderGraph()
 {
-    m_registredPasses.clear();
-    m_activePasses.clear();
+    Clear();
 }
 
 void RenderGraph::SheduleGraph()
 {
-    for (PassInfo& pass : m_registredPasses)
+    for (auto pass : m_registredPasses)
     {
-        if (pass.ConfigureInputsOutputs())
-            m_activePasses.push_back(&pass);
+        if (pass->ConfigureInputsAndOutputs())
+            m_activePasses.push_back(pass);
     }
 }
 
@@ -62,6 +54,11 @@ void RenderGraph::Submit()
     {
         pass->Submit();
     }
+    Clear();
+}
+
+void RenderGraph::Clear()
+{
     m_registredPasses.clear();
     m_activePasses.clear();
 }

@@ -4,6 +4,8 @@
 #include "Core/Core.h"
 #include "Core/ECS/SceneSystem.h"
 
+#include "Render/RenderGraph/RenderGraph.h"
+
 namespace Kioto
 {
 namespace Renderer
@@ -32,8 +34,9 @@ public:
 
 private:
     std::vector<Renderer::RenderPass*> m_renderPasses;
-    std::vector<Renderer::RenderPass*> m_activePasses;
     std::vector<Renderer::RenderObject*> m_renderObjects;
     std::vector<RenderComponent*> m_components;
+
+    Renderer::RenderGraph m_renderGraph;
 };
 }
