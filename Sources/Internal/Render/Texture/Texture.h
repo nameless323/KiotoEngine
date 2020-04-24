@@ -130,10 +130,24 @@ enum class eTextureFormat
     Format_FORCE_UINT = -1
 };
 
+enum class eTextureDim
+{
+    Texture2D
+};
+
+struct TextureDescriptor
+{
+    eTextureFormat Format = eTextureFormat::Format_UNKNOWN;
+    eTextureDim Dimension = eTextureDim::Texture2D;
+    uint32 Width = 0;
+    uint32 Height = 0;
+};
+
 class Texture : public Asset
 {
 public:
-    Texture() : Asset("") {}
+    Texture();
+    Texture(TextureDescriptor descriptor);
     Texture(const std::string& path) : Asset(path) {}
 
     TextureHandle GetHandle() const;
@@ -141,7 +155,14 @@ public:
 
 private:
     TextureHandle m_handle;
+
+    TextureDescriptor m_descriptor;
 };
+
+inline Texture::Texture(TextureDescriptor descriptor)
+{
+    std::swap(m_descriptor, descriptor);
+}
 
 inline TextureHandle Texture::GetHandle() const
 {
@@ -152,4 +173,5 @@ inline void Texture::SetHandle(TextureHandle handle)
 {
     m_handle = handle;
 }
+
 }
