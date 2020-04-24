@@ -12,7 +12,10 @@ public:
     ~RenderGraph();
 
     // TODO: [a_vorontcov] Maybe move ownership of passes here?
-    void SchedulePass(RenderPass& renderPass);
+    void AddPass(RenderPass& renderPass);
+    void SheduleGraph();
+    void Execute(std::vector<RenderObject*>& renderObjects); // [a_vorontcov] TODO: for now, normally call culling system for object for pass.
+    void Submit();
 
 private:
     struct PassInfo
@@ -22,6 +25,7 @@ private:
         std::function<void(void)> Setup;
         std::function<void(void)> BuildRenderPackets;
         std::function<void(void)> Submit;
+        std::function<void(void)> Cleanup;
     };
 
     std::vector<PassInfo> m_registredPasses;
