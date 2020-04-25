@@ -348,6 +348,12 @@
     <ClInclude Include="Sources\Internal\Render\RenderOptions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Sources\Internal\Render\RenderGraph\ResourcesBlackboard.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Internal\Render\DX12\KiotoDx12Mapping.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -540,6 +546,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Sources\Internal\Render\RenderGraph\RenderGraph.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Internal\Render\RenderGraph\ResourcesBlackboard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
