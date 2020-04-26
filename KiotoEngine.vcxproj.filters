@@ -354,6 +354,9 @@
     <ClInclude Include="Sources\Internal\Render\DX12\KiotoDx12Mapping.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Sources\Internal\Render\ResourceStates.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

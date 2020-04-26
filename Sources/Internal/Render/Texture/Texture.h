@@ -3,6 +3,7 @@
 #include "AssetsSystem/Asset.h"
 
 #include "Render/RendererPublic.h"
+#include "Render/ResourceStates.h"
 
 namespace Kioto::Renderer
 {
@@ -139,6 +140,7 @@ struct TextureDescriptor
 {
     eTextureFormat Format = eTextureFormat::Format_UNKNOWN;
     eTextureDim Dimension = eTextureDim::Texture2D;
+    eResourceState InitialState = eResourceState::Common;
     uint32 Width = 0;
     uint32 Height = 0;
 };
@@ -157,11 +159,13 @@ private:
     TextureHandle m_handle;
 
     TextureDescriptor m_descriptor;
+    eResourceState m_currentState = eResourceState::Common;
 };
 
 inline Texture::Texture(TextureDescriptor descriptor)
 {
     std::swap(m_descriptor, descriptor);
+    m_currentState = m_descriptor.InitialState;
 }
 
 inline TextureHandle Texture::GetHandle() const

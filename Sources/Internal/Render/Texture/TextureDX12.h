@@ -20,6 +20,8 @@ public:
     void Create(ID3D12Device* device, ID3D12GraphicsCommandList* commandList);
 
     void SetHandle(TextureHandle handle);
+    void SetDescriptor(TextureDescriptor descriptor);
+
     TextureHandle GetHandle() const;
     DXGI_FORMAT GetFormat() const;
     D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle() const;
@@ -32,6 +34,7 @@ private:
     TextureHandle m_handle;
     D3D12_CPU_DESCRIPTOR_HANDLE m_CPUdescriptorHandle;
     D3D12_GPU_DESCRIPTOR_HANDLE m_GPUdescriptorHandle;
+    TextureDescriptor m_descriptor;
 };
 
 inline DXGI_FORMAT TextureDX12::ToDXGIFormat(eTextureFormat format)
@@ -72,5 +75,10 @@ inline void TextureDX12::SetCPUHandle(D3D12_CPU_DESCRIPTOR_HANDLE handle)
 inline void TextureDX12::SetGPUHandle(D3D12_GPU_DESCRIPTOR_HANDLE handle)
 {
     m_GPUdescriptorHandle = handle;
+}
+
+inline void TextureDX12::SetDescriptor(TextureDescriptor descriptor)
+{
+    std::swap(m_descriptor, descriptor);
 }
 }

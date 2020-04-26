@@ -252,6 +252,7 @@
     <ClInclude Include="Sources\Internal\Render\RenderPass\ForwardRenderPass.h" />
     <ClInclude Include="Sources\Internal\Render\RenderPass\RenderPass.h" />
     <ClInclude Include="Sources\Internal\Render\RenderPass\WireframeRenderPass.h" />
+    <ClInclude Include="Sources\Internal\Render\ResourceStates.h" />
     <ClInclude Include="Sources\Internal\Render\ScopedGpuProfiler.h" />
     <ClInclude Include="Sources\Internal\Render\Shader.h" />
     <ClInclude Include="Sources\Internal\Render\ShaderData.h" />

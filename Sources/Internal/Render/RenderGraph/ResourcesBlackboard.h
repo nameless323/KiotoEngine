@@ -1,31 +1,22 @@
 #pragma once
 
+#include <unordered_map>
+#include <string>
+#include "Render/Texture/Texture.h"
+
 namespace Kioto::Renderer
 {
-enum class ResourceStates
-{
-    Common,
-    VertexAndConstantBuffer,
-    IndexBuffer,
-    RenderTarget,
-    UnorderedAccess,
-    DepthWrite,
-    DepthRead,
-    NonPixelShaderResource,
-    PixelShaderResource,
-    StreamOut,
-    IndirectArgument,
-    CopyDest,
-    CopySource,
-    ResolveDest,
-    ResolveSource,
-    RaytracingAccelerationStructure,
-    ShadingRateSource,
-    GenericRead
-};
-
 class ResourcesBlackboard
 {
 public:
+    ResourcesBlackboard();
+    ~ResourcesBlackboard();
+
+    void NewTexture(const std::string& name, TextureDescriptor& desc);
+    Texture* GetRenderTarget(const std::string& name);
+    Texture* GetShaderResource(const std::string& name);
+
+private:
+    std::unordered_map<std::string, Texture*> m_resources;
 };
 }

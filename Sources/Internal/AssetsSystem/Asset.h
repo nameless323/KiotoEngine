@@ -16,6 +16,8 @@ public:
     std::string GetAssetPath() const;
     void SetAssetPath(std::string path); // [a_vorontcov] Kostil for mesh parser, remove when separate load appears.
 
+    bool IsMemoryAsset() const;
+
 protected:
     bool m_isMemoryAsset = true;
     std::string m_assetPath;
@@ -38,5 +40,10 @@ inline void Asset::SetAssetPath(std::string path)
     std::swap(m_assetPath, path);
     if (!m_assetPath.empty())
         m_isMemoryAsset = false;
+}
+
+inline bool Asset::IsMemoryAsset() const
+{
+    return m_isMemoryAsset;
 }
 }
