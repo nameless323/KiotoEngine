@@ -31,6 +31,9 @@ public:
     void SetGPUHandle(D3D12_GPU_DESCRIPTOR_HANDLE handle);
 
 private:
+    void CreateFromFile(ID3D12Device* device, ID3D12GraphicsCommandList* commandList);
+    void CreateFromDescriptor(ID3D12Device* device, ID3D12GraphicsCommandList* commandList);
+
     TextureHandle m_handle;
     D3D12_CPU_DESCRIPTOR_HANDLE m_CPUdescriptorHandle;
     D3D12_GPU_DESCRIPTOR_HANDLE m_GPUdescriptorHandle;

@@ -206,4 +206,8 @@ static std::map<eTextureFormat, DXGI_FORMAT> ResourceFormats
     { eTextureFormat::Format_V408, DXGI_FORMAT_V408 },
     { eTextureFormat::Format_FORCE_UINT, DXGI_FORMAT_FORCE_UINT }
 };
+static std::map<eTextureDim, D3D12_RESOURCE_DIMENSION> ResourceDimensions
+{
+    { eTextureDim::Texture2D, D3D12_RESOURCE_DIMENSION_TEXTURE2D }
+};
 }

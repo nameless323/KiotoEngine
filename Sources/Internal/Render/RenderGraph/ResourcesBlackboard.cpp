@@ -2,6 +2,8 @@
 
 #include "Render/RenderGraph/ResourcesBlackboard.h"
 
+#include "Render/Renderer.h"
+
 namespace Kioto::Renderer
 {
 
@@ -19,7 +21,16 @@ ResourcesBlackboard::~ResourcesBlackboard()
 
 void ResourcesBlackboard::NewTexture(const std::string& name, TextureDescriptor& desc)
 {
-
+    if (m_resources.count(name) != 0)
+    {
+        if (desc != m_resources[name]->GetDescriptor)
+            assert(false);
+        else
+            return;
+    }
+    Texture* tex = new Texture(desc);
+    Renderer::RegisterRenderAsset(tex);
+    m_resources[name] = tex;
 }
 
 Kioto::Renderer::Texture* ResourcesBlackboard::GetRenderTarget(const std::string& name)

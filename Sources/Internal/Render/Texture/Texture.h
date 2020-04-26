@@ -155,6 +155,8 @@ public:
     TextureHandle GetHandle() const;
     void SetHandle(TextureHandle handle);
 
+    const TextureDescriptor& GetDescriptor() const;
+
 private:
     TextureHandle m_handle;
 
@@ -176,6 +178,11 @@ inline TextureHandle Texture::GetHandle() const
 inline void Texture::SetHandle(TextureHandle handle)
 {
     m_handle = handle;
+}
+
+inline const TextureDescriptor& Texture::GetDescriptor() const
+{
+    return m_descriptor;
 }
 
 }
