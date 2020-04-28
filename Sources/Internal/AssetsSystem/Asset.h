@@ -23,6 +23,11 @@ protected:
     std::string m_assetPath;
 };
 
+inline Asset::Asset()
+    : m_isMemoryAsset(true)
+{
+}
+
 inline Asset::Asset(std::string assetPath) 
     : m_assetPath(assetPath)
 {

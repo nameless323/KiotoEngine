@@ -1,11 +1,11 @@
 #include "stdafx.h"
 
-#include "Render/Texture/TextureManagerDX12.h"
+#include "Render/DX12/Texture/TextureManagerDX12.h"
 
-#include "Render/Texture/Texture.h"
-#include "Render/Texture/TextureDX12.h"
-#include "Render/Texture/TextureSet.h"
 #include "Render/DX12/StateDX.h"
+#include "Render/DX12/Texture/TextureDX12.h"
+#include "Render/Texture/Texture.h"
+#include "Render/Texture/TextureSet.h"
 
 namespace Kioto::Renderer
 {

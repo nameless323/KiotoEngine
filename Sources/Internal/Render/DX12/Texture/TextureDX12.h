@@ -11,7 +11,7 @@ namespace Kioto::Renderer
 class TextureDX12
 {
 public:
-    static DXGI_FORMAT ToDXGIFormat(eTextureFormat format);
+    static DXGI_FORMAT ToDXGIFormat(eResourceFormat format);
 
     std::wstring Path;
     Microsoft::WRL::ComPtr<ID3D12Resource> Resource = nullptr; // [a_vorontcov] Change to ResourceDX12.
@@ -40,7 +40,7 @@ private:
     TextureDescriptor m_descriptor;
 };
 
-inline DXGI_FORMAT TextureDX12::ToDXGIFormat(eTextureFormat format)
+inline DXGI_FORMAT TextureDX12::ToDXGIFormat(eResourceFormat format)
 {
     return static_cast<DXGI_FORMAT>(format);
 }

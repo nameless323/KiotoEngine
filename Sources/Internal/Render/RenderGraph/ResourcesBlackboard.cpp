@@ -23,7 +23,7 @@ void ResourcesBlackboard::NewTexture(const std::string& name, TextureDescriptor&
 {
     if (m_resources.count(name) != 0)
     {
-        if (desc != m_resources[name]->GetDescriptor)
+        if (desc != m_resources[name]->GetDescriptor())
             assert(false);
         else
             return;

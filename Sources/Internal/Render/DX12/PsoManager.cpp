@@ -6,14 +6,13 @@
 #include "Render/DX12/RootSignatureManager.h"
 #include "Render/DX12/ShaderManagerDX12.h"
 #include "Render/DX12/StateDX.h"
+#include "Render/DX12/Texture/TextureManagerDX12.h"
+#include "Render/DX12/Texture/TextureDX12.h"
 #include "Render/DX12/VertexLayoutManagerDX12.h"
 #include "Render/Material.h"
 #include "Render/PipelineState.h"
 #include "Render/RenderPass/RenderPass.h"
 #include "Render/Shader.h"
-#include "Render/Texture/TextureManagerDX12.h"
-#include "Render/Texture/TextureManagerDX12.h"
-#include "Render/Texture/TextureDX12.h"
 
 namespace Kioto::Renderer
 {

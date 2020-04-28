@@ -2,7 +2,7 @@
 
 #include "Render/DX12/Buffers/ResourceDX12.h"
 #include "Render/DX12/StateDX.h"
-#include "Render/Texture/TextureDX12.h"
+#include "Render/DX12/Texture/TextureDX12.h"
 
 namespace Kioto::Renderer
 {

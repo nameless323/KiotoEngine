@@ -7,7 +7,7 @@
 
 namespace Kioto::Renderer
 {
-enum class eTextureFormat
+enum class eResourceFormat
 {
     Format_UNKNOWN = 0,
     Format_R32G32B32A32_TYPELESS = 1,
@@ -131,19 +131,46 @@ enum class eTextureFormat
     Format_FORCE_UINT = -1
 };
 
-enum class eTextureDim
+enum class eResourceDim
 {
     Texture2D
 };
 
+enum class eResourceFlags
+{
+    None,
+    AllowRenderTarget,
+    AllowDepthStencil,
+    AllowUnorderedAccess,
+    DenyShaderResource,
+    AllowCrossAdapter,
+    AllowSimultaneousAccess
+};
+
 struct TextureDescriptor
 {
-    eTextureFormat Format = eTextureFormat::Format_UNKNOWN;
-    eTextureDim Dimension = eTextureDim::Texture2D;
+    eResourceFlags Flags = eResourceFlags::None;
+    eResourceFormat Format = eResourceFormat::Format_UNKNOWN;
+    eResourceDim Dimension = eResourceDim::Texture2D;
     eResourceState InitialState = eResourceState::Common;
     uint32 Width = 0;
     uint32 Height = 0;
+
+    friend bool operator== (const TextureDescriptor& lhs, const TextureDescriptor& rhs);
+    friend bool operator!= (const TextureDescriptor& lhs, const TextureDescriptor& rhs);
 };
+
+inline bool operator== (const TextureDescriptor& lhs, const TextureDescriptor& rhs)
+{
+    return lhs.Flags == rhs.Flags && lhs.Format == rhs.Format && lhs.Dimension == rhs.Dimension
+        && lhs.InitialState == rhs.InitialState /* [a_vorontcov] Not sure */
+        && lhs.Width == rhs.Width && lhs.Height == rhs.Height;
+}
+
+inline bool operator!= (const TextureDescriptor& lhs, const TextureDescriptor& rhs)
+{
+    return !(lhs == rhs);
+}
 
 class Texture : public Asset
 {

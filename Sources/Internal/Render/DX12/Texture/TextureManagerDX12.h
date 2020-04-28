@@ -33,7 +33,7 @@ public:
     TextureDX12* FindTexture(TextureHandle handle);
 
 private:
-    std::map<TextureSetHandle, Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>> m_textureHeaps; // [a_vorontcov] One tex heap for all textures?
+    std::map<TextureSetHandle, Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>> m_textureHeaps; // [a_vorontcov] TODO: One tex heap for all textures?
     std::vector<TextureDX12*> m_textureQueue;
     std::vector<const TextureSet*> m_textureSetUpdateQueue;
     std::map<TextureHandle, TextureDX12*> m_textures;
