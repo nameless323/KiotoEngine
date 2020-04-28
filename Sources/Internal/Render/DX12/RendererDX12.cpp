@@ -166,20 +166,9 @@ void RendererDX12::InitImGui()
 
 void RendererDX12::RenderImGui()
 {
-    D3D12_RESOURCE_BARRIER barrier = {};
-    barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-    barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-    barrier.Transition.pResource = m_swapChain.GetCurrentBackBuffer()->Resource.Get();
-    barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-    barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
-    barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
-    m_state.CommandList->ResourceBarrier(1, &barrier);
     m_state.CommandList->SetDescriptorHeaps(1, &m_imguiDescriptorHeap);
     ImGui::Render();
     ImGui::ImplDX12RenderDrawData(ImGui::GetDrawData(), m_state.CommandList.Get());
-    barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
-    barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
-    m_state.CommandList->ResourceBarrier(1, &barrier);
 }
 
 void RendererDX12::ShutdownImGui()
@@ -298,6 +287,9 @@ void RendererDX12::Present()
     m_constantBufferManager.ProcessRegistrationQueue(m_state);
     m_constantBufferManager.ProcessBufferUpdates(m_swapChain.GetCurrentFrameIndex());
 
+    auto toRt = CD3DX12_RESOURCE_BARRIER::Transition(m_swapChain.GetCurrentBackBuffer()->Resource.Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+    m_state.CommandList->ResourceBarrier(1, &toRt);
+
     TextureDX12* currentRenderTarget = nullptr;
     TextureDX12* currentDS = nullptr;
     for (auto& cmd : m_frameCommands)
@@ -330,9 +322,6 @@ void RendererDX12::Present()
             if (currentRenderTarget == nullptr && currentDS == nullptr)
                 return;
 
-            auto toRt = CD3DX12_RESOURCE_BARRIER::Transition(currentRenderTarget->Resource.Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-            m_state.CommandList->ResourceBarrier(1, &toRt);
-
             m_state.CommandList->RSSetScissorRects(1, &DXRectFromKioto(srtCommand.Scissor));
             m_state.CommandList->RSSetViewports(1, &DXViewportFromKioto(srtCommand.Viewport));
             if (srtCommand.ClearColor)
@@ -344,8 +333,6 @@ void RendererDX12::Present()
         }
         else if (cmd.CommandType == eRenderCommandType::eEndRenderPass)
         {
-            auto toPresent = CD3DX12_RESOURCE_BARRIER::Transition(currentRenderTarget->Resource.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT); // [a_vorontcov] WRONG WRONG WRONG, but ok for now.
-            m_state.CommandList->ResourceBarrier(1, &toPresent);
             currentRenderTarget = nullptr;
             currentDS = nullptr;
         }
@@ -410,6 +397,9 @@ void RendererDX12::Present()
     }
 
     RenderImGui();
+
+    auto toPresent = CD3DX12_RESOURCE_BARRIER::Transition(m_swapChain.GetCurrentBackBuffer()->Resource.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT); // [a_vorontcov] WRONG WRONG WRONG, but ok for now.
+    m_state.CommandList->ResourceBarrier(1, &toPresent);
 
     m_state.CommandList->Close();
     ID3D12CommandList* cmdLists[] = { m_state.CommandList.Get() };
