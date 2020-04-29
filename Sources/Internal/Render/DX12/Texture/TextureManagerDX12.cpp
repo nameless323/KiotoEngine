@@ -127,12 +127,12 @@ void TextureManagerDX12::ProcessRegistationQueue(const StateDX& state)
         if (tex->GetIsFromMemoryAsset() && ((tex->GetDx12TextureFlags() & D3D12_RESOURCE_FLAGS::D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET) != 0))
         {
             assert(m_rtvHeapOffsets.count(tex->GetHandle()) == 0);
-            uint32 offset = m_currentRtvOffset * state.RtvDescriptorSize;
-            ++m_currentRtvOffset;
-            m_rtvHeapOffsets[tex->GetHandle()] = offset;
+            m_rtvHeapOffsets[tex->GetHandle()] = m_currentRtvOffset;
 
             CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
-            handle.Offset(offset);
+            handle.Offset(m_currentRtvOffset);
+
+            m_currentRtvOffset += state.RtvDescriptorSize;
 
             D3D12_SHADER_RESOURCE_VIEW_DESC texDescr = {};
             texDescr.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
@@ -169,7 +169,10 @@ void TextureManagerDX12::ProcessTextureSetUpdates(const StateDX& state)
 
 D3D12_CPU_DESCRIPTOR_HANDLE TextureManagerDX12::GetRtvHandle(TextureHandle handle) const
 {
-    return D3D12_CPU_DESCRIPTOR_HANDLE{};
+    assert(m_rtvHeapOffsets.count(handle) == 1 && "The texture is not registered as a rtv");
+    CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
+    rtvHandle.Offset(m_rtvHeapOffsets.at(handle));
+    return rtvHandle;
 }
 
 }
