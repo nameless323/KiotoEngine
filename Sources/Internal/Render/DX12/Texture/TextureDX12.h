@@ -21,14 +21,15 @@ public:
 
     void SetHandle(TextureHandle handle);
     void SetDescriptor(TextureDescriptor descriptor);
+    const TextureDescriptor& GetDescriptor() const;
 
     TextureHandle GetHandle() const;
     DXGI_FORMAT GetFormat() const;
-    D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle() const;
-    D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandle() const;
 
-    void SetCPUHandle(D3D12_CPU_DESCRIPTOR_HANDLE handle);
-    void SetGPUHandle(D3D12_GPU_DESCRIPTOR_HANDLE handle);
+    bool GetIsFromMemoryAsset() const;
+    void SetIsFromMemoryAsset(bool isFromMemoryAsset);
+
+    D3D12_RESOURCE_FLAGS GetDx12TextureFlags() const;
 
 private:
     void CreateFromFile(ID3D12Device* device, ID3D12GraphicsCommandList* commandList);
@@ -38,6 +39,10 @@ private:
     D3D12_CPU_DESCRIPTOR_HANDLE m_CPUdescriptorHandle;
     D3D12_GPU_DESCRIPTOR_HANDLE m_GPUdescriptorHandle;
     TextureDescriptor m_descriptor;
+
+    D3D12_RESOURCE_FLAGS m_textureFlags = D3D12_RESOURCE_FLAGS(0);
+
+    bool m_fromMemoryAsset = false;
 };
 
 inline DXGI_FORMAT TextureDX12::ToDXGIFormat(eResourceFormat format)
@@ -60,28 +65,29 @@ inline DXGI_FORMAT TextureDX12::GetFormat() const
     return Resource->GetDesc().Format;
 }
 
-inline D3D12_CPU_DESCRIPTOR_HANDLE TextureDX12::GetCPUHandle() const
-{
-    return m_CPUdescriptorHandle;
-}
-
-inline D3D12_GPU_DESCRIPTOR_HANDLE TextureDX12::GetGPUHandle() const
-{
-    return m_GPUdescriptorHandle;
-}
-
-inline void TextureDX12::SetCPUHandle(D3D12_CPU_DESCRIPTOR_HANDLE handle)
-{
-    m_CPUdescriptorHandle = handle;
-}
-
-inline void TextureDX12::SetGPUHandle(D3D12_GPU_DESCRIPTOR_HANDLE handle)
-{
-    m_GPUdescriptorHandle = handle;
-}
-
 inline void TextureDX12::SetDescriptor(TextureDescriptor descriptor)
 {
     std::swap(m_descriptor, descriptor);
+}
+
+inline bool TextureDX12::GetIsFromMemoryAsset() const
+{
+    return m_fromMemoryAsset;
+}
+
+inline void TextureDX12::SetIsFromMemoryAsset(bool isFromMemoryAsset)
+{
+    m_fromMemoryAsset = isFromMemoryAsset;
+}
+
+inline const TextureDescriptor& TextureDX12::GetDescriptor() const
+{
+    assert(m_fromMemoryAsset);
+    return m_descriptor;
+}
+
+inline D3D12_RESOURCE_FLAGS TextureDX12::GetDx12TextureFlags() const
+{
+    return m_textureFlags;
 }
 }

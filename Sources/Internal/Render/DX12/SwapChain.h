@@ -33,6 +33,9 @@ public:
     D3D12_CPU_DESCRIPTOR_HANDLE GetCpuDescriptorHandleForHeapStart() const;
     D3D12_GPU_DESCRIPTOR_HANDLE GetGpuDescriptorHandleForHeapStart() const;
 
+    D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentBackBufferCPUHandle(const StateDX& state) const;
+    D3D12_CPU_DESCRIPTOR_HANDLE GetDepthStencilCPUHandle() const;
+
     void Present(); // proceed to nex.
     void ProceedToNextFrame();
 
@@ -112,5 +115,17 @@ inline D3D12_CPU_DESCRIPTOR_HANDLE SwapChain::GetCpuDescriptorHandleForHeapStart
 inline D3D12_GPU_DESCRIPTOR_HANDLE SwapChain::GetGpuDescriptorHandleForHeapStart() const
 {
     return m_rtvHeap->GetGPUDescriptorHandleForHeapStart();
+}
+
+inline D3D12_CPU_DESCRIPTOR_HANDLE SwapChain::GetDepthStencilCPUHandle() const
+{
+    return m_dsvHeap->GetCPUDescriptorHandleForHeapStart();
+}
+
+inline D3D12_CPU_DESCRIPTOR_HANDLE SwapChain::GetCurrentBackBufferCPUHandle(const StateDX& state) const
+{
+    CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
+    handle.Offset(GetCurrentBackBufferIndex() * state.RtvDescriptorSize);
+    return handle;
 }
 }

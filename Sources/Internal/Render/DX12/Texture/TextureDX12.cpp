@@ -9,7 +9,7 @@ namespace Kioto::Renderer
 {
 void TextureDX12::Create(ID3D12Device* device, ID3D12GraphicsCommandList* commandList)
 {
-    if (Path.empty())
+    if (m_fromMemoryAsset)
     {
         CreateFromDescriptor(device, commandList);
     }
@@ -32,7 +32,13 @@ void TextureDX12::CreateFromDescriptor(ID3D12Device* device, ID3D12GraphicsComma
     textureDesc.Format = KiotoDx12Mapping::ResourceFormats[m_descriptor.Format];
     textureDesc.Width = m_descriptor.Width;
     textureDesc.Height = m_descriptor.Height;
-    textureDesc.Flags = KiotoDx12Mapping::ResourceFlags[m_descriptor.Flags];
+
+    for (const auto& flag : FlagsArray)
+    {
+        if (((uint16)m_descriptor.Flags & (uint16)flag) != 0)
+            m_textureFlags |= KiotoDx12Mapping::ResourceFlags[m_descriptor.Flags];
+    }
+    textureDesc.Flags = m_textureFlags;
     textureDesc.DepthOrArraySize = 1;
     textureDesc.SampleDesc.Count = 1;
     textureDesc.SampleDesc.Quality = 0;

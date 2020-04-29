@@ -9,6 +9,11 @@
 
 namespace Kioto::Renderer
 {
+namespace
+{
+constexpr uint16 MaxRenderTargetViews = 256;
+}
+
 TextureManagerDX12::TextureManagerDX12()
 {
     m_textureQueue.reserve(64);
@@ -27,6 +32,8 @@ void TextureManagerDX12::RegisterTexture(Texture* texture)
     TextureDX12* tex = new TextureDX12();
     tex->Path = StrToWstr(texture->GetAssetPath());
     tex->SetHandle(GetNewHandle());
+    tex->SetDescriptor(texture->GetDescriptor());
+    tex->SetIsFromMemoryAsset(texture->IsMemoryAsset());
     m_textureQueue.push_back(tex);
     texture->SetHandle(tex->GetHandle());
 
@@ -38,6 +45,15 @@ TextureManagerDX12::~TextureManagerDX12()
     for (auto& tex : m_textures)
         delete tex.second;
     m_textures.clear();
+}
+
+void TextureManagerDX12::InitRtvHeap(const StateDX& state)
+{
+    D3D12_DESCRIPTOR_HEAP_DESC heapDescr = {};
+    heapDescr.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+    heapDescr.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+    heapDescr.NumDescriptors = MaxRenderTargetViews;
+    ThrowIfFailed(state.Device->CreateDescriptorHeap(&heapDescr, IID_PPV_ARGS(&m_rtvHeap)));
 }
 
 void TextureManagerDX12::UpdateTextureSetHeap(const StateDX& state, const TextureSet& texSet)
@@ -106,7 +122,29 @@ void TextureManagerDX12::RegisterTextureWithoutOwnership(TextureDX12* texture)
 void TextureManagerDX12::ProcessRegistationQueue(const StateDX& state)
 {
     for (auto& tex : m_textureQueue)
+    {
         tex->Create(state.Device.Get(), state.CommandList.Get());
+        if (tex->GetIsFromMemoryAsset() && ((tex->GetDx12TextureFlags() & D3D12_RESOURCE_FLAGS::D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET) != 0))
+        {
+            assert(m_rtvHeapOffsets.count(tex->GetHandle()) == 0);
+            uint32 offset = m_currentRtvOffset * state.RtvDescriptorSize;
+            ++m_currentRtvOffset;
+            m_rtvHeapOffsets[tex->GetHandle()] = offset;
+
+            CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
+            handle.Offset(offset);
+
+            D3D12_SHADER_RESOURCE_VIEW_DESC texDescr = {};
+            texDescr.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+            texDescr.Format = tex->Resource->GetDesc().Format;
+            texDescr.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+            texDescr.Texture2D.MipLevels = tex->Resource->GetDesc().MipLevels;
+            texDescr.Texture2D.MostDetailedMip = 0;
+            texDescr.Texture2D.ResourceMinLODClamp = 0.0f;
+
+            state.Device->CreateShaderResourceView(tex->Resource.Get(), &texDescr, handle);
+        }
+    }
     m_textureQueue.clear();
 }
 
@@ -128,4 +166,10 @@ void TextureManagerDX12::ProcessTextureSetUpdates(const StateDX& state)
         UpdateTextureSetHeap(state, *texSet);
     m_textureSetUpdateQueue.clear();
 }
+
+D3D12_CPU_DESCRIPTOR_HANDLE TextureManagerDX12::GetRtvHandle(TextureHandle handle) const
+{
+    return D3D12_CPU_DESCRIPTOR_HANDLE{};
+}
+
 }

@@ -71,7 +71,6 @@ void SwapChain::Resize(const StateDX& state, uint16 width, uint16 height)
     {
         ThrowIfFailed(m_swapChain->GetBuffer(i, IID_PPV_ARGS(&m_backBuffers[i].Resource)));
         state.Device->CreateRenderTargetView(m_backBuffers[i].Resource.Get(), nullptr, rtvHandle);
-        m_backBuffers[i].SetCPUHandle(rtvHandle);
         rtvHandle.Offset(state.RtvDescriptorSize);
     }
 
@@ -100,8 +99,7 @@ void SwapChain::Resize(const StateDX& state, uint16 width, uint16 height)
     dsViewDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
     dsViewDesc.Texture2D.MipSlice = 0;
 
-    m_depthStencil.SetCPUHandle(m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
-    state.Device->CreateDepthStencilView(m_depthStencil.Resource.Get(), &dsViewDesc, m_depthStencil.GetCPUHandle());
+    state.Device->CreateDepthStencilView(m_depthStencil.Resource.Get(), &dsViewDesc, m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
 
     auto transition = CD3DX12_RESOURCE_BARRIER::Transition(m_depthStencil.Resource.Get(), D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE);
     state.CommandList->ResourceBarrier(1, &transition);

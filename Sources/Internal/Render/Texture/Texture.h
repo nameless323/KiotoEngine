@@ -2,6 +2,8 @@
 
 #include "AssetsSystem/Asset.h"
 
+#include <array>
+
 #include "Render/RendererPublic.h"
 #include "Render/ResourceStates.h"
 
@@ -138,14 +140,18 @@ enum class eResourceDim
 
 enum class eResourceFlags
 {
-    None,
-    AllowRenderTarget,
-    AllowDepthStencil,
-    AllowUnorderedAccess,
-    DenyShaderResource,
-    AllowCrossAdapter,
-    AllowSimultaneousAccess
+    None = 0,
+    AllowRenderTarget = 1 << 0,
+    AllowDepthStencil = 1 << 1,
+    AllowUnorderedAccess = 1 << 2,
+    DenyShaderResource = 1 << 3,
+    AllowCrossAdapter = 1 << 4,
+    AllowSimultaneousAccess = 1 << 5
 };
+inline std::array<eResourceFlags, 7> FlagsArray =
+{ eResourceFlags::None, eResourceFlags::AllowRenderTarget, eResourceFlags::AllowDepthStencil,
+eResourceFlags::AllowUnorderedAccess, eResourceFlags::DenyShaderResource,
+eResourceFlags::AllowCrossAdapter, eResourceFlags::AllowSimultaneousAccess };
 
 struct TextureDescriptor
 {
