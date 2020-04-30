@@ -11,6 +11,7 @@
 #include "Render/RenderPacket.h"
 #include "Render/RenderOptions.h"
 #include "Render/Shader.h"
+#include "Render/RenderGraph/ResourcesBlackboard.h"
 
 namespace Kioto::Renderer
 {
@@ -21,7 +22,7 @@ ForwardRenderPass::ForwardRenderPass()
     SetRenderTargetCount(1);
 }
 
-void ForwardRenderPass::BuildRenderPackets(CommandList* commandList)
+void ForwardRenderPass::BuildRenderPackets(CommandList* commandList, ResourcesBlackboard& resources)
 {
     SetPassConstantBuffers(commandList);
     SetCameraConstantBuffers(commandList);
@@ -84,6 +85,18 @@ void ForwardRenderPass::SetCameraConstantBuffers(CommandList* commandList)
 bool ForwardRenderPass::ConfigureInputsAndOutputs(ResourcesBlackboard& resources)
 {
     const RenderOptions& settings = KiotoCore::GetRenderSettings();
+
+    TextureDescriptor desc;
+    desc.Dimension = eResourceDim::Texture2D;
+    desc.Format = eResourceFormat::Format_R8G8B8A8_UNORM;
+    desc.Flags = eResourceFlags::AllowRenderTarget;
+    desc.Width = 1024;
+    desc.Height = 768;
+    desc.InitialState = eResourceState::Common;
+
+    resources.NewTexture("FwdTargetTexture", std::move(desc));
+    resources.GetRenderTarget("FwdTargetTexture");
+
     if (settings.RenderMode == RenderOptions::RenderModeOptions::Final
         || settings.RenderMode == RenderOptions::RenderModeOptions::FinalAndWireframe)
         return true;

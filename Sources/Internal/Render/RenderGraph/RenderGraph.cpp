@@ -47,7 +47,7 @@ void RenderGraph::Execute(std::vector<RenderObject*>& renderObjects)
     for (auto& submInfo : m_activePasses)
     {
         submInfo.CmdList->PushCommand(RenderCommandHelpers::CreateBeginGpuEventCommand(submInfo.Pass->GetName()));
-        submInfo.Pass->BuildRenderPackets(submInfo.CmdList);
+        submInfo.Pass->BuildRenderPackets(submInfo.CmdList, m_blackboard);
         submInfo.Pass->Cleanup();
         submInfo.CmdList->PushCommand(RenderCommandHelpers::CreateEndGpuEventCommand());
     }

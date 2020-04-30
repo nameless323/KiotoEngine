@@ -39,7 +39,7 @@ public:
     virtual void Setup()
     {}
 
-    virtual void BuildRenderPackets(CommandList* commandList) abstract;
+    virtual void BuildRenderPackets(CommandList* commandList, ResourcesBlackboard& resources) abstract;
 
     virtual void Cleanup() abstract; // cleanup all pass setups
 

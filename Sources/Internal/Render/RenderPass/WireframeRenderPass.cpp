@@ -21,7 +21,7 @@ namespace Kioto::Renderer
         SetRenderTargetCount(1);
     }
 
-    void WireframeRenderPass::BuildRenderPackets(CommandList* commandList)
+    void WireframeRenderPass::BuildRenderPackets(CommandList* commandList, ResourcesBlackboard& resources)
     {
         SetRenderTargets(commandList);
         for (auto ro : m_renderObjects)

@@ -11,7 +11,7 @@ public:
     ForwardRenderPass();
 
     bool ConfigureInputsAndOutputs(ResourcesBlackboard& resources) override;
-    void BuildRenderPackets(CommandList* commandList) override;
+    void BuildRenderPackets(CommandList* commandList, ResourcesBlackboard& resources) override;
     void Cleanup() override;
 
 private:

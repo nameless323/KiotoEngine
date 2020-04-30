@@ -189,6 +189,7 @@ public:
     void SetHandle(TextureHandle handle);
 
     const TextureDescriptor& GetDescriptor() const;
+    eResourceState GetCurrentState() const;
 
 private:
     TextureHandle m_handle;
@@ -216,6 +217,11 @@ inline void Texture::SetHandle(TextureHandle handle)
 inline const TextureDescriptor& Texture::GetDescriptor() const
 {
     return m_descriptor;
+}
+
+inline eResourceState Texture::GetCurrentState() const
+{
+    return m_currentState;
 }
 
 }
