@@ -134,15 +134,12 @@ void TextureManagerDX12::ProcessRegistationQueue(const StateDX& state)
 
             m_currentRtvOffset += state.RtvDescriptorSize;
 
-            D3D12_SHADER_RESOURCE_VIEW_DESC texDescr = {};
-            texDescr.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+            D3D12_RENDER_TARGET_VIEW_DESC texDescr = {};
             texDescr.Format = tex->Resource->GetDesc().Format;
-            texDescr.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-            texDescr.Texture2D.MipLevels = tex->Resource->GetDesc().MipLevels;
-            texDescr.Texture2D.MostDetailedMip = 0;
-            texDescr.Texture2D.ResourceMinLODClamp = 0.0f;
+            texDescr.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+            texDescr.Texture2D = { 0, 0};
 
-            state.Device->CreateShaderResourceView(tex->Resource.Get(), &texDescr, handle);
+            state.Device->CreateRenderTargetView(tex->Resource.Get(), &texDescr, handle);
         }
     }
     m_textureQueue.clear();
