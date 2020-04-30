@@ -33,14 +33,14 @@ void ResourcesBlackboard::NewTexture(const std::string& name, TextureDescriptor&
     m_resources[name] = tex;
 }
 
-Kioto::Renderer::Texture* ResourcesBlackboard::GetRenderTarget(const std::string& name)
+Texture* ResourcesBlackboard::GetRenderTarget(const std::string& name)
 {
     if (m_resources.count(name) != 1)
         assert(false && "Requested resource is not in the table (you forgot to call ResourcesBlackboard::New*)?");
     return m_resources[name];
 }
 
-Kioto::Renderer::Texture* ResourcesBlackboard::GetShaderResource(const std::string& name)
+Texture* ResourcesBlackboard::GetShaderResource(const std::string& name)
 {
     if (m_resources.count(name) != 1)
         assert(false && "Requested resource is not in the table (you forgot to call ResourcesBlackboard::New*)?");

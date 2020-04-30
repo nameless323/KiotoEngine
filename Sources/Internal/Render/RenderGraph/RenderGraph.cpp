@@ -12,6 +12,8 @@ RenderGraph::RenderGraph()
 {
     m_registredPasses.reserve(RenderOptions::MaxRenderPassesCount);
     m_activePasses.reserve(RenderOptions::MaxRenderPassesCount);
+
+    m_commandListPool.resize(RenderOptions::MaxRenderCommandsCount);
 }
 
 void RenderGraph::AddPass(RenderPass* renderPass)
@@ -28,31 +30,31 @@ void RenderGraph::SheduleGraph()
 {
     for (auto pass : m_registredPasses)
     {
-        if (pass->ConfigureInputsAndOutputs())
-            m_activePasses.push_back(pass);
+        if (pass->ConfigureInputsAndOutputs(m_blackboard))
+            m_activePasses.push_back({ pass, &m_commandListPool[m_currentCommandListIndex++] });
     }
 }
 
 void RenderGraph::Execute(std::vector<RenderObject*>& renderObjects)
 {
-    for (auto pass : m_activePasses)
+    for (auto submInfo : m_activePasses)
     {
-        pass->SetRenderObjects(renderObjects);
-        pass->Setup();
+        submInfo.first->SetRenderObjects(renderObjects);
+        submInfo.first->Setup();
     }
 
-    for (auto pass : m_activePasses)
+    for (auto submInfo : m_activePasses)
     {
-        pass->BuildRenderPackets();
-        pass->Cleanup();
+        submInfo.first->BuildRenderPackets();
+        submInfo.first->Cleanup();
     }
 }
 
 void RenderGraph::Submit()
 {
-    for (auto pass : m_activePasses)
+    for (auto submInfo : m_activePasses)
     {
-        pass->Submit();
+        submInfo.first->Submit();
     }
     Clear();
 }
@@ -61,6 +63,9 @@ void RenderGraph::Clear()
 {
     m_registredPasses.clear();
     m_activePasses.clear();
+    for (uint32 i = 0; i < m_currentCommandListIndex; ++i)
+        m_commandListPool[i].ClearCommands();
+    m_currentCommandListIndex = 0;
 }
 
 }

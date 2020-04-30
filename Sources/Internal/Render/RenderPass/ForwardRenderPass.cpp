@@ -79,7 +79,7 @@ void ForwardRenderPass::SetCameraConstantBuffers()
     PushCommand(RenderCommandHelpers::CreateConstantBufferCommand(Renderer::GetMainCamera()->GetConstantBuffer(), this));
 }
 
-bool ForwardRenderPass::ConfigureInputsAndOutputs()
+bool ForwardRenderPass::ConfigureInputsAndOutputs(ResourcesBlackboard& resources)
 {
     const RenderOptions& settings = KiotoCore::GetRenderSettings();
     if (settings.RenderMode == RenderOptions::RenderModeOptions::Final

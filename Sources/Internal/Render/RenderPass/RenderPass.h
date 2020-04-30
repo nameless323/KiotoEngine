@@ -10,6 +10,8 @@
 
 namespace Kioto::Renderer
 {
+class ResourcesBlackboard;
+
 enum PassPriority
 {
     MainPass = 100
@@ -32,7 +34,7 @@ public:
 
     // Describe what resources pass get for input and what resources it writes.
     // Return true - pass will be executed in the current frame. false - otherwise.
-    virtual bool ConfigureInputsAndOutputs() abstract;
+    virtual bool ConfigureInputsAndOutputs(ResourcesBlackboard& resources) abstract;
 
     virtual void Setup() // set all pass buffers
     {

@@ -150,6 +150,33 @@ struct RenderCommand
 struct PassEndsCommand
 {};
 
+class CommandList
+{
+public:
+    CommandList()
+    {
+        m_commands.reserve(512);
+    }
+
+    void PushCommand(RenderCommand&& command)
+    {
+        m_commands.push_back(command);
+    }
+
+    void ClearCommands()
+    {
+        m_commands.clear();
+    }
+
+    const std::vector<RenderCommand>& GetCommands() const
+    {
+        return m_commands;
+    }
+
+private:
+    std::vector<RenderCommand> m_commands;
+};
+
 namespace RenderCommandHelpers
 {
 RenderCommand CreateConstantBufferCommand(const ConstantBuffer& buffer, RenderPass* pass);

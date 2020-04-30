@@ -1,5 +1,8 @@
 #pragma once
 
+#include "Render/RenderGraph/ResourcesBlackboard.h"
+#include "Render/RenderCommand.h"
+
 namespace Kioto::Renderer
 {
 class RenderPass;
@@ -19,7 +22,14 @@ public:
     void Clear();
 
 private:
+    using PassSubmitionInfo = std::pair<RenderPass*, CommandList*>;
+
     std::vector<RenderPass*> m_registredPasses;
-    std::vector<RenderPass*> m_activePasses;
+    std::vector<PassSubmitionInfo> m_activePasses;
+
+    std::vector<CommandList> m_commandListPool;
+    uint32 m_currentCommandListIndex = 0;
+
+    ResourcesBlackboard m_blackboard;
 };
 }

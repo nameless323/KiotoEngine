@@ -10,7 +10,7 @@ class ForwardRenderPass : public RenderPass
 public:
     ForwardRenderPass();
 
-    bool ConfigureInputsAndOutputs() override;
+    bool ConfigureInputsAndOutputs(ResourcesBlackboard& resources) override;
     void BuildRenderPackets() override;
     void Cleanup() override;
 
