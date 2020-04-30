@@ -21,9 +21,9 @@ namespace Kioto::Renderer
         SetRenderTargetCount(1);
     }
 
-    void WireframeRenderPass::BuildRenderPackets()
+    void WireframeRenderPass::BuildRenderPackets(CommandList* commandList)
     {
-        SetRenderTargets();
+        SetRenderTargets(commandList);
         for (auto ro : m_renderObjects)
         {
             Material* mat = ro->GetMaterial();
@@ -41,18 +41,20 @@ namespace Kioto::Renderer
             currPacket.Pass = GetHandle();
             currPacket.CBSet = ro->GetBufferLayout(m_passName).bufferSetHandle;
 
-            PushCommand(RenderCommandHelpers::CreateRenderPacketCommand(currPacket, this));
+            commandList->PushCommand(RenderCommandHelpers::CreateRenderPacketCommand(currPacket, this));
         }
 
-        PushCommand(RenderCommandHelpers::CreatePassEndsCommand(this));
+        commandList->PushCommand(RenderCommandHelpers::CreatePassEndsCommand(this));
     }
 
     void WireframeRenderPass::Cleanup()
     {
     }
 
-    void WireframeRenderPass::SetRenderTargets()
+    void WireframeRenderPass::SetRenderTargets(CommandList* commandList)
     {
+        SetPassConstantBuffers(commandList);
+        SetCameraConstantBuffers(commandList);
         bool isWireframe = KiotoCore::GetRenderSettings().RenderMode == RenderOptions::RenderModeOptions::Wireframe;
         SetRenderTargetsCommand cmd;
         cmd.SetRenderTargets(Renderer::DefaultBackBufferHandle);
@@ -67,17 +69,17 @@ namespace Kioto::Renderer
         cmd.ClearStencil = isWireframe;
         cmd.ClearStencilValue = 0;
 
-        PushCommand(RenderCommandHelpers::CreateSetRenderTargetCommand(cmd, this));
+        commandList->PushCommand(RenderCommandHelpers::CreateSetRenderTargetCommand(cmd, this));
     }
 
-    void WireframeRenderPass::SetPassConstantBuffers()
+    void WireframeRenderPass::SetPassConstantBuffers(CommandList* commandList)
     {
 
     }
 
-    void WireframeRenderPass::SetCameraConstantBuffers()
+    void WireframeRenderPass::SetCameraConstantBuffers(CommandList* commandList)
     {
-        PushCommand(RenderCommandHelpers::CreateConstantBufferCommand(Renderer::GetMainCamera()->GetConstantBuffer(), this));
+        commandList->PushCommand(RenderCommandHelpers::CreateConstantBufferCommand(Renderer::GetMainCamera()->GetConstantBuffer(), this));
     }
 
     bool WireframeRenderPass::ConfigureInputsAndOutputs(ResourcesBlackboard& resources)

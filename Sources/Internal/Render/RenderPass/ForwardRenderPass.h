@@ -11,12 +11,12 @@ public:
     ForwardRenderPass();
 
     bool ConfigureInputsAndOutputs(ResourcesBlackboard& resources) override;
-    void BuildRenderPackets() override;
+    void BuildRenderPackets(CommandList* commandList) override;
     void Cleanup() override;
 
 private:
-    void SetRenderTargets() override;
-    void SetPassConstantBuffers() override;
-    void SetCameraConstantBuffers() override;
+    void SetRenderTargets(CommandList* commandList) override;
+    void SetPassConstantBuffers(CommandList* commandList) override;
+    void SetCameraConstantBuffers(CommandList* commandList) override;
 };
 }

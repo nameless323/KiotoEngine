@@ -2,16 +2,16 @@
 
 namespace Kioto::Renderer
 {
-class RenderPass;
+class CommandList;
 
 class ScopedGpuProfiler
 {
 public:
-    ScopedGpuProfiler(RenderPass* pass, std::string name);
+    ScopedGpuProfiler(CommandList* cmdList, std::string name);
 
     ~ScopedGpuProfiler();
 
 private:
-    RenderPass* m_pass = nullptr;
+    CommandList* m_cmdList = nullptr;
 };
 }

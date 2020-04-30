@@ -21,9 +21,11 @@ ForwardRenderPass::ForwardRenderPass()
     SetRenderTargetCount(1);
 }
 
-void ForwardRenderPass::BuildRenderPackets()
+void ForwardRenderPass::BuildRenderPackets(CommandList* commandList)
 {
-    SetRenderTargets();
+    SetPassConstantBuffers(commandList);
+    SetCameraConstantBuffers(commandList);
+    SetRenderTargets(commandList);
     for (auto ro : m_renderObjects)
     {
         Material* mat = ro->GetMaterial();
@@ -41,17 +43,17 @@ void ForwardRenderPass::BuildRenderPackets()
         currPacket.Pass = GetHandle();
         currPacket.CBSet = ro->GetBufferLayout(m_passName).bufferSetHandle;
 
-        PushCommand(RenderCommandHelpers::CreateRenderPacketCommand(currPacket, this));
+        commandList->PushCommand(RenderCommandHelpers::CreateRenderPacketCommand(currPacket, this));
     }
 
-    PushCommand(RenderCommandHelpers::CreatePassEndsCommand(this));
+    commandList->PushCommand(RenderCommandHelpers::CreatePassEndsCommand(this));
 }
 
 void ForwardRenderPass::Cleanup()
 {
 }
 
-void ForwardRenderPass::SetRenderTargets()
+void ForwardRenderPass::SetRenderTargets(CommandList* commandList)
 {
     SetRenderTargetsCommand cmd;
     cmd.SetRenderTargets(Renderer::DefaultBackBufferHandle);
@@ -66,17 +68,17 @@ void ForwardRenderPass::SetRenderTargets()
     cmd.ClearStencil = true;
     cmd.ClearStencilValue = 0;
 
-    PushCommand(RenderCommandHelpers::CreateSetRenderTargetCommand(cmd, this));
+    commandList->PushCommand(RenderCommandHelpers::CreateSetRenderTargetCommand(cmd, this));
 }
 
-void ForwardRenderPass::SetPassConstantBuffers()
+void ForwardRenderPass::SetPassConstantBuffers(CommandList* commandList)
 {
 
 }
 
-void ForwardRenderPass::SetCameraConstantBuffers()
+void ForwardRenderPass::SetCameraConstantBuffers(CommandList* commandList)
 {
-    PushCommand(RenderCommandHelpers::CreateConstantBufferCommand(Renderer::GetMainCamera()->GetConstantBuffer(), this));
+    commandList->PushCommand(RenderCommandHelpers::CreateConstantBufferCommand(Renderer::GetMainCamera()->GetConstantBuffer(), this));
 }
 
 bool ForwardRenderPass::ConfigureInputsAndOutputs(ResourcesBlackboard& resources)

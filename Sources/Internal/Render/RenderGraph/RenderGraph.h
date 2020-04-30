@@ -22,7 +22,11 @@ public:
     void Clear();
 
 private:
-    using PassSubmitionInfo = std::pair<RenderPass*, CommandList*>;
+    struct PassSubmitionInfo
+    {
+        RenderPass* Pass;
+        CommandList* CmdList;
+    };
 
     std::vector<RenderPass*> m_registredPasses;
     std::vector<PassSubmitionInfo> m_activePasses;

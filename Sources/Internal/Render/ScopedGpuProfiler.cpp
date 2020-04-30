@@ -2,18 +2,18 @@
 
 #include "Render/ScopedGpuProfiler.h"
 
-#include "Render/RenderPass/RenderPass.h"
+#include "Render/RenderCommand.h"
 
 namespace Kioto::Renderer
 {
-ScopedGpuProfiler::ScopedGpuProfiler(RenderPass* pass, std::string name)
-    : m_pass(pass)
+ScopedGpuProfiler::ScopedGpuProfiler(CommandList* cmdList, std::string name)
+    : m_cmdList(cmdList)
 {
-    m_pass->PushCommand(RenderCommandHelpers::CreateBeginGpuEventCommand(std::move(name)));
+    m_cmdList->PushCommand(RenderCommandHelpers::CreateBeginGpuEventCommand(std::move(name)));
 }
 
 ScopedGpuProfiler::~ScopedGpuProfiler()
 {
-    m_pass->PushCommand(RenderCommandHelpers::CreateEndGpuEventCommand());
+    m_cmdList->PushCommand(RenderCommandHelpers::CreateEndGpuEventCommand());
 }
 }

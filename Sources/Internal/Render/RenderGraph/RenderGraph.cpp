@@ -2,6 +2,7 @@
 
 #include "Render/RenderGraph/RenderGraph.h"
 
+#include "Render/Renderer.h"
 #include "Render/RenderOptions.h"
 #include "Render/RenderPass/RenderPass.h"
 
@@ -37,24 +38,27 @@ void RenderGraph::SheduleGraph()
 
 void RenderGraph::Execute(std::vector<RenderObject*>& renderObjects)
 {
-    for (auto submInfo : m_activePasses)
+    for (auto& submInfo : m_activePasses)
     {
-        submInfo.first->SetRenderObjects(renderObjects);
-        submInfo.first->Setup();
+        submInfo.Pass->SetRenderObjects(renderObjects);
+        submInfo.Pass->Setup();
     }
 
-    for (auto submInfo : m_activePasses)
+    for (auto& submInfo : m_activePasses)
     {
-        submInfo.first->BuildRenderPackets();
-        submInfo.first->Cleanup();
+        submInfo.CmdList->PushCommand(RenderCommandHelpers::CreateBeginGpuEventCommand(submInfo.Pass->GetName()));
+        submInfo.Pass->BuildRenderPackets(submInfo.CmdList);
+        submInfo.Pass->Cleanup();
+        submInfo.CmdList->PushCommand(RenderCommandHelpers::CreateEndGpuEventCommand());
     }
 }
 
 void RenderGraph::Submit()
 {
-    for (auto submInfo : m_activePasses)
+    for (auto& submInfo : m_activePasses)
     {
-        submInfo.first->Submit();
+        Renderer::SubmitRenderCommands(submInfo.CmdList->GetCommands());
+        submInfo.Pass->Cleanup();
     }
     Clear();
 }
