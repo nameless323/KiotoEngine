@@ -22,7 +22,7 @@ ForwardRenderPass::ForwardRenderPass()
     SetRenderTargetCount(1);
 }
 
-void ForwardRenderPass::BuildRenderPackets(CommandList* commandList, ResourcesBlackboard& resources)
+void ForwardRenderPass::BuildRenderPackets(CommandList* commandList, ResourceTable& resources)
 {
     SetPassConstantBuffers(commandList);
     SetCameraConstantBuffers(commandList);
@@ -95,7 +95,6 @@ bool ForwardRenderPass::ConfigureInputsAndOutputs(ResourcesBlackboard& resources
     desc.InitialState = eResourceState::Common;
 
     resources.NewTexture("FwdTargetTexture", std::move(desc));
-    resources.GetRenderTarget("FwdTargetTexture");
 
     if (settings.RenderMode == RenderOptions::RenderModeOptions::Final
         || settings.RenderMode == RenderOptions::RenderModeOptions::FinalAndWireframe)

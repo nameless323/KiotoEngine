@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Render/RenderGraph/ResourcesBlackboard.h"
+#include "Render/RenderGraph/ResourceTable.h"
 #include "Render/RenderCommand.h"
 
 namespace Kioto::Renderer
@@ -34,6 +34,6 @@ private:
     std::vector<CommandList> m_commandListPool;
     uint32 m_currentCommandListIndex = 0;
 
-    ResourcesBlackboard m_blackboard;
+    ResourceTable m_resourceTable;
 };
 }

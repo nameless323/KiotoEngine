@@ -6,17 +6,39 @@
 
 namespace Kioto::Renderer
 {
+enum class eResourceStates
+{
+    Read,
+    Write,
+    UnorderedAccess
+};
+
 class ResourcesBlackboard
 {
 public:
+    struct ResourceCreationRequest
+    {
+        std::string Name;
+        TextureDescriptor Desc;
+    };
+    struct ResourceTransitionRequest
+    {
+        std::string Name;
+        eResourceStates TransitionTo;
+    };
+
     ResourcesBlackboard();
     ~ResourcesBlackboard();
 
-    void NewTexture(const std::string& name, TextureDescriptor& desc);
-    Texture* GetRenderTarget(const std::string& name);
-    Texture* GetShaderResource(const std::string& name);
+    void NewTexture(std::string name, TextureDescriptor desc);
+
+    void ScheduleRead(std::string name);
+    void ScheduleWrite(std::string name);
+    void ScheduleUnorderedAccess(std::string name);
+    void Clear();
 
 private:
-    std::unordered_map<std::string, Texture*> m_resources;
+    std::vector<ResourceCreationRequest> m_creationRequests;
+    std::vector<ResourceTransitionRequest> m_transitionRequests;
 };
 }

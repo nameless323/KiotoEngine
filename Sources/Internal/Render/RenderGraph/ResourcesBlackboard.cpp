@@ -9,43 +9,38 @@ namespace Kioto::Renderer
 
 ResourcesBlackboard::ResourcesBlackboard()
 {
-
+    m_creationRequests.reserve(16);
+    m_transitionRequests.reserve(128);
 }
 
 ResourcesBlackboard::~ResourcesBlackboard()
 {
-    for (auto& it : m_resources)
-        SafeDelete(it.second);
-    m_resources.clear();
 }
 
-void ResourcesBlackboard::NewTexture(const std::string& name, TextureDescriptor& desc)
+void ResourcesBlackboard::NewTexture(std::string name, TextureDescriptor desc)
 {
-    if (m_resources.count(name) != 0)
-    {
-        if (desc != m_resources[name]->GetDescriptor())
-            assert(false);
-        else
-            return;
-    }
-    Texture* tex = new Texture(desc);
-    Renderer::RegisterRenderAsset(tex);
-    m_resources[name] = tex;
+    m_creationRequests.push_back({ name, desc });
 }
 
-Texture* ResourcesBlackboard::GetRenderTarget(const std::string& name)
+void ResourcesBlackboard::ScheduleRead(std::string name)
 {
-    if (m_resources.count(name) != 1)
-        assert(false && "Requested resource is not in the table (you forgot to call ResourcesBlackboard::New*)?");
-    return m_resources[name];
+    m_transitionRequests.push_back({ name, eResourceStates::Read });
 }
 
-Texture* ResourcesBlackboard::GetShaderResource(const std::string& name)
+void ResourcesBlackboard::ScheduleWrite(std::string name)
 {
-    if (m_resources.count(name) != 1)
-        assert(false && "Requested resource is not in the table (you forgot to call ResourcesBlackboard::New*)?");
-    return m_resources[name];
+    m_transitionRequests.push_back({ name, eResourceStates::Write });
 }
 
+void ResourcesBlackboard::ScheduleUnorderedAccess(std::string name)
+{
+    m_transitionRequests.push_back({ name, eResourceStates::UnorderedAccess });
+}
+
+void ResourcesBlackboard::Clear()
+{
+    m_creationRequests.clear();
+    m_transitionRequests.clear();
+}
 
 }

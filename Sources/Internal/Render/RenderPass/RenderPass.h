@@ -11,6 +11,7 @@
 namespace Kioto::Renderer
 {
 class ResourcesBlackboard;
+class ResourceTable;
 
 enum PassPriority
 {
@@ -39,7 +40,7 @@ public:
     virtual void Setup()
     {}
 
-    virtual void BuildRenderPackets(CommandList* commandList, ResourcesBlackboard& resources) abstract;
+    virtual void BuildRenderPackets(CommandList* commandList, ResourceTable& resources) abstract;
 
     virtual void Cleanup() abstract; // cleanup all pass setups
 

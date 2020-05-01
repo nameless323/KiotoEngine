@@ -188,6 +188,7 @@
     <ClInclude Include="Sources\Internal\Render\DX12\KiotoDx12Mapping.h" />
     <ClInclude Include="Sources\Internal\Render\RenderGraph\RenderGraph.h" />
     <ClInclude Include="Sources\Internal\Render\RenderGraph\ResourcesBlackboard.h" />
+    <ClInclude Include="Sources\Internal\Render\RenderGraph\ResourceTable.h" />
     <ClInclude Include="Sources\Internal\Render\RenderOptions.h" />
     <ClInclude Include="Sources\Internal\Core\FPSCounter.h" />
     <ClInclude Include="Sources\Internal\Core\Input\Input.h" />
@@ -322,6 +323,7 @@
     <ClCompile Include="Sources\Internal\Render\Renderer.cpp" />
     <ClCompile Include="Sources\Internal\Render\RenderGraph\RenderGraph.cpp" />
     <ClCompile Include="Sources\Internal\Render\RenderGraph\ResourcesBlackboard.cpp" />
+    <ClCompile Include="Sources\Internal\Render\RenderGraph\ResourceTable.cpp" />
     <ClCompile Include="Sources\Internal\Render\RenderPass\ForwardRenderPass.cpp" />
     <ClCompile Include="Sources\Internal\Render\RenderPass\RenderPass.cpp" />
     <ClCompile Include="Sources\Internal\Render\RenderPass\WireframeRenderPass.cpp" />

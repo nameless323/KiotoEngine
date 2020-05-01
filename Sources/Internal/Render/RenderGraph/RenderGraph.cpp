@@ -31,7 +31,9 @@ void RenderGraph::SheduleGraph()
 {
     for (auto pass : m_registredPasses)
     {
-        if (pass->ConfigureInputsAndOutputs(m_blackboard))
+        PassBlackboard* passBlackboard = m_resourceTable.GetNextBlackboard();
+        passBlackboard->first = pass;
+        if (pass->ConfigureInputsAndOutputs(passBlackboard->second))
             m_activePasses.push_back({ pass, &m_commandListPool[m_currentCommandListIndex++] });
     }
 }
@@ -47,10 +49,11 @@ void RenderGraph::Execute(std::vector<RenderObject*>& renderObjects)
     for (auto& submInfo : m_activePasses)
     {
         submInfo.CmdList->PushCommand(RenderCommandHelpers::CreateBeginGpuEventCommand(submInfo.Pass->GetName()));
-        submInfo.Pass->BuildRenderPackets(submInfo.CmdList, m_blackboard);
+        submInfo.Pass->BuildRenderPackets(submInfo.CmdList, m_resourceTable);
         submInfo.Pass->Cleanup();
         submInfo.CmdList->PushCommand(RenderCommandHelpers::CreateEndGpuEventCommand());
     }
+    m_resourceTable.ClearBlackboards();
 }
 
 void RenderGraph::Submit()

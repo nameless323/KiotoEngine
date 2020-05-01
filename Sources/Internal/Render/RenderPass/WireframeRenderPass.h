@@ -10,7 +10,7 @@ namespace Kioto::Renderer
         WireframeRenderPass();
 
         bool ConfigureInputsAndOutputs(ResourcesBlackboard& resources) override;
-        void BuildRenderPackets(CommandList* commandList, ResourcesBlackboard& resources) override;
+        void BuildRenderPackets(CommandList* commandList, ResourceTable& resources) override;
         void Cleanup() override;
 
     private:
