@@ -31,6 +31,7 @@ RenderCommand CreateRenderPacketCommand(RenderPacket packet, RenderPass* pass)
     RenderCommand command;
     command.CommandType = eRenderCommandType::eSubmitRenderPacket;
     command.Command = rpCommand;
+    command.PassName = pass->GetName();
 
     return command;
 }
@@ -40,6 +41,7 @@ RenderCommand CreateSetRenderTargetCommand(SetRenderTargetsCommand setRTCmd, Ren
     RenderCommand command;
     command.CommandType = eRenderCommandType::eSetRenderTargets;
     command.Command = setRTCmd;
+    command.PassName = pass->GetName();
 
     return command;
 }
@@ -85,5 +87,16 @@ RenderCommand CreateGpuMarkerCommand(std::string name)
     return command;
 }
 
+RenderCommand CreateResourceTransitonCommand(TextureHandle handle, eResourceState destState, RenderPass* pass)
+{
+    ResourceTransitonCommand cmd;
+    cmd.ResourceHandle = handle;
+    cmd.DestState = destState;
 
+    RenderCommand command;
+    command.CommandType = eRenderCommandType::eResourceTransitonCommand;
+    command.PassName = pass->GetName();
+
+    return command;
+}
 }
