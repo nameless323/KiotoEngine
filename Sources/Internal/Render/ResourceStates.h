@@ -21,6 +21,8 @@ enum class eResourceState
     ResolveSource,
     RaytracingAccelerationStructure,
     ShadingRateSource,
-    GenericRead
+    GenericRead,
+    Present,
+    Predication
 };
 }

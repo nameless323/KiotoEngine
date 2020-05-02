@@ -220,5 +220,27 @@ inline std::map<eResourceFlags, D3D12_RESOURCE_FLAGS> ResourceFlags
      { eResourceFlags::AllowCrossAdapter, D3D12_RESOURCE_FLAG_ALLOW_CROSS_ADAPTER },
      { eResourceFlags::AllowSimultaneousAccess, D3D12_RESOURCE_FLAG_ALLOW_SIMULTANEOUS_ACCESS }
 };
-
+inline std::map<eResourceState, D3D12_RESOURCE_STATES> ResourceStates
+{
+    { eResourceState::Common, D3D12_RESOURCE_STATE_COMMON },
+    { eResourceState::VertexAndConstantBuffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER },
+    { eResourceState::IndexBuffer, D3D12_RESOURCE_STATE_INDEX_BUFFER },
+    { eResourceState::RenderTarget, D3D12_RESOURCE_STATE_RENDER_TARGET },
+    { eResourceState::UnorderedAccess, D3D12_RESOURCE_STATE_UNORDERED_ACCESS },
+    { eResourceState::DepthWrite, D3D12_RESOURCE_STATE_DEPTH_WRITE },
+    { eResourceState::DepthRead, D3D12_RESOURCE_STATE_DEPTH_READ },
+    { eResourceState::NonPixelShaderResource, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE },
+    { eResourceState::PixelShaderResource, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE },
+    { eResourceState::StreamOut, D3D12_RESOURCE_STATE_STREAM_OUT },
+    { eResourceState::IndirectArgument, D3D12_RESOURCE_STATE_INDIRECT_ARGUMENT },
+    { eResourceState::CopyDest, D3D12_RESOURCE_STATE_COPY_DEST },
+    { eResourceState::CopySource, D3D12_RESOURCE_STATE_COPY_SOURCE },
+    { eResourceState::ResolveDest, D3D12_RESOURCE_STATE_RESOLVE_DEST },
+    { eResourceState::ResolveSource, D3D12_RESOURCE_STATE_RESOLVE_SOURCE },
+    { eResourceState::RaytracingAccelerationStructure, D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE },
+    { eResourceState::ShadingRateSource, D3D12_RESOURCE_STATE_SHADING_RATE_SOURCE },
+    { eResourceState::GenericRead, D3D12_RESOURCE_STATE_GENERIC_READ },
+    { eResourceState::Present, D3D12_RESOURCE_STATE_PRESENT },
+    { eResourceState::Predication, D3D12_RESOURCE_STATE_PREDICATION }
+};
 }
