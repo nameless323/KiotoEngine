@@ -14,6 +14,7 @@
 #include "Core/WindowsApplication.h"
 #include "Render/Buffers/EngineBuffers.h"
 #include "Render/DX12/Geometry/MeshDX12.h"
+#include "Render/DX12/KiotoDx12Mapping.h"
 #include "Render/Shader.h"
 #include "Render/Material.h"
 #include "Render/RenderPass/RenderPass.h"
@@ -129,6 +130,16 @@ void RendererDX12::Init(uint16 width, uint16 height)
 void RendererDX12::LoadPipeline()
 {
     WaitForGPU();
+}
+
+void RendererDX12::ResourceTransition(StateDX& dxState, TextureHandle resourceHandle, eResourceState destState)
+{
+    TextureDX12* tex = m_textureManager.FindTexture(resourceHandle);
+    D3D12_RESOURCE_STATES dxSrcState = tex->GetCurrentState();
+    D3D12_RESOURCE_STATES dxDstState = KiotoDx12Mapping::ResourceStates[destState];
+    auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(tex->Resource.Get(), dxSrcState, dxDstState);
+    m_state.CommandList->ResourceBarrier(1, &barrier);
+    tex->SetCurrentState(dxDstState);
 }
 
 void RendererDX12::Shutdown()
@@ -337,6 +348,11 @@ void RendererDX12::Present()
         {
             currentRenderTarget = nullptr;
             currentDS = nullptr;
+        }
+        else if (cmd.CommandType == eRenderCommandType::eResourceTransitonCommand)
+        {
+            const ResourceTransitonCommand& transitionCommand = std::get<ResourceTransitonCommand>(cmd.Command);
+            ResourceTransition(m_state, transitionCommand.ResourceHandle, transitionCommand.DestState);
         }
         else if (cmd.CommandType == eRenderCommandType::eSubmitRenderPacket)
         {

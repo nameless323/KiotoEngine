@@ -23,6 +23,7 @@ void TextureDX12::CreateFromFile(ID3D12Device* device, ID3D12GraphicsCommandList
 {
     HRESULT texRes = DirectX::CreateDDSTextureFromFile12(device, commandList, Path.c_str(), Resource, UploadResource);
     ThrowIfFailed(texRes);
+    m_currentState = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 }
 
 void TextureDX12::CreateFromDescriptor(ID3D12Device* device, ID3D12GraphicsCommandList* commandList)
@@ -51,6 +52,7 @@ void TextureDX12::CreateFromDescriptor(ID3D12Device* device, ID3D12GraphicsComma
         D3D12_RESOURCE_STATE_COPY_DEST,
         nullptr,
         IID_PPV_ARGS(&Resource)));
+    m_currentState = D3D12_RESOURCE_STATE_COPY_DEST;
 }
 
 }

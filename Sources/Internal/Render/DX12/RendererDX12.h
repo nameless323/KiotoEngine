@@ -84,6 +84,7 @@ private:
     void LogAdapterOutputs(IDXGIAdapter* adapter);
     void LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format);
     void LoadPipeline();
+    void ResourceTransition(StateDX& dxState, TextureHandle resourceHandle, eResourceState destState);
 
     std::vector<RenderCommand> m_frameCommands;
     GpuProfiler<PixProfiler> m_profiler;

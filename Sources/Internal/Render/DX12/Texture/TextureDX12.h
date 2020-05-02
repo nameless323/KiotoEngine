@@ -31,6 +31,9 @@ public:
 
     D3D12_RESOURCE_FLAGS GetDx12TextureFlags() const;
 
+    D3D12_RESOURCE_STATES GetCurrentState() const;
+    void SetCurrentState(D3D12_RESOURCE_STATES state);
+
 private:
     void CreateFromFile(ID3D12Device* device, ID3D12GraphicsCommandList* commandList);
     void CreateFromDescriptor(ID3D12Device* device, ID3D12GraphicsCommandList* commandList);
@@ -39,6 +42,8 @@ private:
     D3D12_CPU_DESCRIPTOR_HANDLE m_CPUdescriptorHandle;
     D3D12_GPU_DESCRIPTOR_HANDLE m_GPUdescriptorHandle;
     TextureDescriptor m_descriptor;
+
+    D3D12_RESOURCE_STATES m_currentState;
 
     D3D12_RESOURCE_FLAGS m_textureFlags = D3D12_RESOURCE_FLAGS(0);
 
@@ -90,4 +95,15 @@ inline D3D12_RESOURCE_FLAGS TextureDX12::GetDx12TextureFlags() const
 {
     return m_textureFlags;
 }
+
+inline D3D12_RESOURCE_STATES TextureDX12::GetCurrentState() const
+{
+    return m_currentState;
+}
+
+inline void TextureDX12::SetCurrentState(D3D12_RESOURCE_STATES state)
+{
+    m_currentState = state;
+}
+
 }
