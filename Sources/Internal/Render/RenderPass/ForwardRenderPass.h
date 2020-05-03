@@ -15,7 +15,7 @@ public:
     void Cleanup() override;
 
 private:
-    void SetRenderTargets(CommandList* commandList) override;
+    void SetRenderTargets(CommandList* commandList, ResourceTable& resources) override;
     void SetPassConstantBuffers(CommandList* commandList) override;
     void SetCameraConstantBuffers(CommandList* commandList) override;
 };

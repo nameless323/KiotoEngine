@@ -179,6 +179,7 @@ void RendererDX12::InitImGui()
 
 void RendererDX12::RenderImGui()
 {
+    m_state.CommandList->OMSetRenderTargets(1, &m_swapChain.GetCurrentBackBufferCPUHandle(m_state), false, &m_swapChain.GetDepthStencilCPUHandle());
     m_state.CommandList->SetDescriptorHeaps(1, &m_imguiDescriptorHeap);
     ImGui::Render();
     ImGui::ImplDX12RenderDrawData(ImGui::GetDrawData(), m_state.CommandList.Get());
@@ -303,8 +304,6 @@ void RendererDX12::Present()
     auto toRt = CD3DX12_RESOURCE_BARRIER::Transition(m_swapChain.GetCurrentBackBuffer()->Resource.Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
     m_state.CommandList->ResourceBarrier(1, &toRt);
 
-    TextureDX12* currentRenderTarget = nullptr;
-    TextureDX12* currentDS = nullptr;
     for (auto& cmd : m_frameCommands)
     {
         assert(cmd.CommandType != eRenderCommandType::eInvalidCommand);
@@ -322,32 +321,32 @@ void RendererDX12::Present()
         else if (cmd.CommandType == eRenderCommandType::eSetRenderTargets)
         {
             const SetRenderTargetsCommand& srtCommand = std::get<SetRenderTargetsCommand>(cmd.Command);
+            D3D12_CPU_DESCRIPTOR_HANDLE rtHandle;
+            D3D12_CPU_DESCRIPTOR_HANDLE dsHandle;
             if (srtCommand.GetRenderTarget(0) == DefaultBackBufferHandle)
-                currentRenderTarget = m_swapChain.GetCurrentBackBuffer();
+                rtHandle = m_swapChain.GetCurrentBackBufferCPUHandle(m_state);
             else
-                currentRenderTarget = m_textureManager.FindTexture(srtCommand.GetRenderTarget(0));
+                rtHandle = m_textureManager.GetRtvHandle(srtCommand.GetRenderTarget(0));
 
             if (srtCommand.GetDepthStencil() == DefaultDepthStencilHandle)
-                currentDS = m_swapChain.GetDepthStencil();
+                dsHandle = m_swapChain.GetDepthStencilCPUHandle();
             else
-                currentDS = m_textureManager.FindTexture(srtCommand.GetDepthStencil());
-
-            if (currentRenderTarget == nullptr && currentDS == nullptr)
-                return;
+            {
+                assert(false);
+                // [a_vorontcov] TODO: ToBeImplemented dsHandle = m_textureManager.GetDsvHandle(srtCommand.GetDepthStencil());
+            }
 
             m_state.CommandList->RSSetScissorRects(1, &DXRectFromKioto(srtCommand.Scissor));
             m_state.CommandList->RSSetViewports(1, &DXViewportFromKioto(srtCommand.Viewport));
             if (srtCommand.ClearColor)
-                m_state.CommandList->ClearRenderTargetView(m_swapChain.GetCurrentBackBufferCPUHandle(m_state), DirectX::Colors::DarkGray, 0, nullptr);
+                m_state.CommandList->ClearRenderTargetView(rtHandle, DirectX::Colors::DarkGray, 0, nullptr);
             if (srtCommand.ClearDepth)
-                m_state.CommandList->ClearDepthStencilView(m_swapChain.GetDepthStencilCPUHandle(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+                m_state.CommandList->ClearDepthStencilView(dsHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
-            m_state.CommandList->OMSetRenderTargets(1, &m_swapChain.GetCurrentBackBufferCPUHandle(m_state), false, &m_swapChain.GetDepthStencilCPUHandle());
+            m_state.CommandList->OMSetRenderTargets(1, &rtHandle, false, &dsHandle);
         }
         else if (cmd.CommandType == eRenderCommandType::eEndRenderPass)
         {
-            currentRenderTarget = nullptr;
-            currentDS = nullptr;
         }
         else if (cmd.CommandType == eRenderCommandType::eResourceTransitonCommand)
         {

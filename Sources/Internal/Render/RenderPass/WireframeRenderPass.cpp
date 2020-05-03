@@ -23,7 +23,7 @@ namespace Kioto::Renderer
 
     void WireframeRenderPass::BuildRenderPackets(CommandList* commandList, ResourceTable& resources)
     {
-        SetRenderTargets(commandList);
+        SetRenderTargets(commandList, resources);
         for (auto ro : m_renderObjects)
         {
             Material* mat = ro->GetMaterial();
@@ -51,7 +51,7 @@ namespace Kioto::Renderer
     {
     }
 
-    void WireframeRenderPass::SetRenderTargets(CommandList* commandList)
+    void WireframeRenderPass::SetRenderTargets(CommandList* commandList, ResourceTable& resources)
     {
         SetPassConstantBuffers(commandList);
         SetCameraConstantBuffers(commandList);

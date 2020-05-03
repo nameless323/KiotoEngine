@@ -74,7 +74,7 @@ public:
     const std::string& GetName() const;
 
 protected:
-    virtual void SetRenderTargets(CommandList* commandList) abstract; // Set scissor, render targets, viewports
+    virtual void SetRenderTargets(CommandList* commandList, ResourceTable& resources) abstract; // Set scissor, render targets, viewports
     virtual void SetPassConstantBuffers(CommandList* commandList) abstract;
     virtual void SetCameraConstantBuffers(CommandList* commandList) abstract;
 

@@ -12,6 +12,7 @@
 #include "Render/RenderOptions.h"
 #include "Render/Shader.h"
 #include "Render/RenderGraph/ResourcesBlackboard.h"
+#include "Render/RenderGraph/ResourceTable.h"
 
 namespace Kioto::Renderer
 {
@@ -26,7 +27,7 @@ void ForwardRenderPass::BuildRenderPackets(CommandList* commandList, ResourceTab
 {
     SetPassConstantBuffers(commandList);
     SetCameraConstantBuffers(commandList);
-    SetRenderTargets(commandList);
+    SetRenderTargets(commandList, resources);
     for (auto ro : m_renderObjects)
     {
         Material* mat = ro->GetMaterial();
@@ -54,10 +55,12 @@ void ForwardRenderPass::Cleanup()
 {
 }
 
-void ForwardRenderPass::SetRenderTargets(CommandList* commandList)
+void ForwardRenderPass::SetRenderTargets(CommandList* commandList, ResourceTable& resources)
 {
     SetRenderTargetsCommand cmd;
-    cmd.SetRenderTargets(Renderer::DefaultBackBufferHandle);
+    Texture* rtTex = resources.GetResource("FwdTargetTexture");
+    cmd.SetRenderTargets(rtTex->GetHandle());
+    //cmd.SetRenderTargets(Renderer::DefaultBackBufferHandle);
     cmd.RenderTargetCount = GetRenderTargetCount();
     cmd.DepthStencil = Renderer::DefaultDepthStencilHandle;
 
@@ -90,8 +93,8 @@ bool ForwardRenderPass::ConfigureInputsAndOutputs(ResourcesBlackboard& resources
     desc.Dimension = eResourceDim::Texture2D;
     desc.Format = eResourceFormat::Format_R8G8B8A8_UNORM;
     desc.Flags = eResourceFlags::AllowRenderTarget;
-    desc.Width = 1024;
-    desc.Height = 768;
+    desc.Width = Renderer::GetWidth();
+    desc.Height = Renderer::GetHeight();
     desc.InitialState = eResourceState::Common;
 
     resources.NewTexture("FwdTargetTexture", std::move(desc));
