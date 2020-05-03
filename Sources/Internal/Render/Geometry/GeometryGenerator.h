@@ -10,6 +10,17 @@ namespace GeometryGenerator
 {
 void Init();
 void Shutdown();
+void RegisterGeometry();
+///
+/// Generate fullscreen quad (only positions, -1 < x < 1, -1< y < 1, z = 0).
+/// (-1,1)  *----* (1,1)
+///         *   /* 
+///         *  / * 
+///         * /  * 
+///         */   * 
+/// (-1,-1) *----* (1,-1)
+///
+Mesh GenerateFullscreenQuad();
 
 ///
 /// Generate XZ aligned plane.
@@ -47,5 +58,6 @@ Mesh* GetCone();
 Mesh* GetUnitSphere();
 Mesh* GetTube();
 Mesh* GetUnitIcosphere();
+Mesh* GetFullscreenQuad();
 }
 }

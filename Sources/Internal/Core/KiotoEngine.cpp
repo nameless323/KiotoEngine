@@ -117,6 +117,8 @@ void Init()
     Renderer::EngineBuffers::Init();
     Renderer::Init(Renderer::eRenderApi::DirectX12, RenderSettings.Resolution.x, RenderSettings.Resolution.y);
 
+    Renderer::GeometryGenerator::RegisterGeometry();
+
     if (InitEngineCallback != nullptr)
         InitEngineCallback();
 

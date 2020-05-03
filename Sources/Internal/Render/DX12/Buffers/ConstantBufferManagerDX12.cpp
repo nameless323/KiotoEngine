@@ -32,7 +32,7 @@ void ConstantBufferManagerDX12::RegisterRenderObject(RenderObject& renderObject)
         RenderObjectBufferLayout& bufferLayout = layoutElem.second;
         auto it = m_constantBufferSets.find(bufferLayout.bufferSetHandle);
         if (it != m_constantBufferSets.end() && bufferLayout.bufferSetHandle != InvalidHandle)
-            continue;;
+            continue;
         ConstantBufferSetHandle setHandle = GetNewHandle();
         bufferLayout.bufferSetHandle = setHandle;
         for (size_t i = 0; i < bufferLayout.constantBuffers.size(); ++i)

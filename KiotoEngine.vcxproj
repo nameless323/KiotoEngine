@@ -251,6 +251,7 @@
     <ClInclude Include="Sources\Internal\Render\RendererPublic.h" />
     <ClInclude Include="Sources\Internal\Render\RenderLayer.h" />
     <ClInclude Include="Sources\Internal\Render\RenderPass\ForwardRenderPass.h" />
+    <ClInclude Include="Sources\Internal\Render\RenderPass\GrayscaleRenderPass.h" />
     <ClInclude Include="Sources\Internal\Render\RenderPass\RenderPass.h" />
     <ClInclude Include="Sources\Internal\Render\RenderPass\WireframeRenderPass.h" />
     <ClInclude Include="Sources\Internal\Render\ResourceStates.h" />
@@ -325,6 +326,7 @@
     <ClCompile Include="Sources\Internal\Render\RenderGraph\ResourcesBlackboard.cpp" />
     <ClCompile Include="Sources\Internal\Render\RenderGraph\ResourceTable.cpp" />
     <ClCompile Include="Sources\Internal\Render\RenderPass\ForwardRenderPass.cpp" />
+    <ClCompile Include="Sources\Internal\Render\RenderPass\GrayscaleRenderPass.cpp" />
     <ClCompile Include="Sources\Internal\Render\RenderPass\RenderPass.cpp" />
     <ClCompile Include="Sources\Internal\Render\RenderPass\WireframeRenderPass.cpp" />
     <ClCompile Include="Sources\Internal\Render\ScopedGpuProfiler.cpp" />

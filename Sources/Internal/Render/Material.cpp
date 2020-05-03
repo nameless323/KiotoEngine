@@ -69,15 +69,27 @@ void Material::DeserializeRenderPassConfig(const YAML::Node& pass)
 
     std::vector<TextureAssetDescription> texDescriptions;
 
+    const TextureSet* texSet = &state.Shader->GetShaderData().textureSet;
+    for (uint32 i = 0; i < texSet->GetTexturesCount(); ++i)
+    {
+        texDescriptions.emplace_back(TextureAssetDescription{ *state.Shader->GetShaderData().textureSet.GetTextureName(i), "", state.Shader->GetShaderData().textureSet.GetTextureOffset(i) });
+    }
+
     if (pass["textures"])
     {
         YAML::Node texNodes = pass["textures"];
         auto it = texNodes.begin();
-        std::string texName = it->first.as<std::string>();
-        uint16 texOffset = state.Shader->GetShaderData().textureSet.GetTextureOffset(texName);
-        assert(texOffset != -1);
         for (; it != texNodes.end(); ++it)
-            texDescriptions.emplace_back(TextureAssetDescription{ std::move(texName), it->second.as<std::string>(), texOffset });
+        {
+            std::string texName = it->first.as<std::string>();
+            auto texIter = std::find_if(texDescriptions.begin(), texDescriptions.end(), [&texName](const TextureAssetDescription& d)
+                {
+                    return d.Name == texName;
+                });
+            assert(texIter != texDescriptions.end());
+            std::string texPath = it->second.as<std::string>();
+            texIter->Path = std::move(texPath);
+        }
     }
     m_materialPipelineStates[passName] = std::move(state);
     m_textures[passName] = std::move(texDescriptions);

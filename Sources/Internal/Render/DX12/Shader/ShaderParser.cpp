@@ -460,10 +460,10 @@ bool TryParseTextureIndex(const std::string& source, size_t pos, size_t bound, u
     return false;
 }
 
-TextureSet ParseTextures(std::string& source)
+TextureSet ParseTextures(std::string& source, std::string&& key)
 {
     TextureSet res;
-    size_t texBegin = source.find("[_IN_]");
+    size_t texBegin = source.find(key.c_str());
     while (texBegin != std::string::npos)
     {
         source.erase(texBegin, 6);
@@ -505,9 +505,14 @@ TextureSet ParseTextures(std::string& source)
         if (!typeFound || !nameFound)
             throw "wtf";
 
-        texBegin = source.find("[_IN_]", texBegin);
+        texBegin = source.find(key.c_str(), texBegin);
     }
     return res;
+}
+
+TextureSet ParseTextures(std::string& source)
+{
+    return ParseTextures(source, { "[_IN_]" });
 }
 
 std::string DXPreprocess(const std::string& source, const std::vector<ShaderDefine>* const defines)

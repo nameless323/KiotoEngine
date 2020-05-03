@@ -66,4 +66,14 @@ uint16 TextureSet::GetTextureOffset(const std::string& name) const
     return it->Offset;
 }
 
+uint16 TextureSet::GetTextureOffset(uint32 index) const
+{
+    return m_data[index].Offset;
+}
+
+const std::string* TextureSet::GetTextureName(uint32 index) const
+{
+    return &m_data[index].Name;
+}
+
 }
