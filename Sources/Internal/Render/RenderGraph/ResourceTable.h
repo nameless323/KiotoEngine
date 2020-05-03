@@ -18,7 +18,12 @@ public:
 
     PassBlackboard* GetNextBlackboard();
     ResourcesBlackboard* GetBalackboardForPass(const RenderPass* pass);
+    void ProcessCreationRequest(const ResourceCreationRequest& request);
     void ClearBlackboards();
+
+    void CreateResourcesForPass(const RenderPass* pass);
+
+    Texture* GetResource(const std::string& name);
 
 private:
     std::vector<PassBlackboard> m_blackboardsPool;
@@ -26,4 +31,11 @@ private:
 
     std::map<std::string, Texture*> m_resources;
 };
+
+inline Texture* ResourceTable::GetResource(const std::string& name)
+{
+    assert(m_resources.contains(name) && "Resource wasn't added");
+    return m_resources[name];
+}
+
 }

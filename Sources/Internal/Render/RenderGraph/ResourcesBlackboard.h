@@ -2,31 +2,26 @@
 
 #include <unordered_map>
 #include <string>
+
 #include "Render/Texture/Texture.h"
+#include "Render/ResourceStates.h"
 
 namespace Kioto::Renderer
 {
-enum class eResourceStates
+struct ResourceCreationRequest
 {
-    Read,
-    Write,
-    UnorderedAccess
+    std::string ResourceName;
+    TextureDescriptor Desc;
+};
+struct ResourceTransitionRequest
+{
+    std::string ResourceName;
+    eResourceState TransitionTo;
 };
 
 class ResourcesBlackboard
 {
 public:
-    struct ResourceCreationRequest
-    {
-        std::string Name;
-        TextureDescriptor Desc;
-    };
-    struct ResourceTransitionRequest
-    {
-        std::string Name;
-        eResourceStates TransitionTo;
-    };
-
     ResourcesBlackboard();
     ~ResourcesBlackboard();
 
@@ -35,10 +30,22 @@ public:
     void ScheduleRead(std::string name);
     void ScheduleWrite(std::string name);
     void ScheduleUnorderedAccess(std::string name);
+    const std::vector<ResourceTransitionRequest>& GetTransitionRequests() const;
+    const std::vector<ResourceCreationRequest>& GetCreationRequest() const;
     void Clear();
 
 private:
     std::vector<ResourceCreationRequest> m_creationRequests;
     std::vector<ResourceTransitionRequest> m_transitionRequests;
 };
+
+inline const std::vector<ResourceTransitionRequest>& ResourcesBlackboard::GetTransitionRequests() const
+{
+    return m_transitionRequests;
+}
+
+inline const std::vector<ResourceCreationRequest>& ResourcesBlackboard::GetCreationRequest() const
+{
+    return m_creationRequests;
+}
 }

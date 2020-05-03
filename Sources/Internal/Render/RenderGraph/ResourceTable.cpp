@@ -2,6 +2,7 @@
 
 #include "Render/RenderGraph/ResourceTable.h"
 #include "Render/Texture/Texture.h"
+#include "Render/Renderer.h"
 
 namespace Kioto::Renderer
 {
@@ -39,6 +40,30 @@ ResourcesBlackboard* ResourceTable::GetBalackboardForPass(const RenderPass* pass
 
     assert(it != m_blackboardsPool.end() && "Pass is unregistered for current frame");
     return &it->second;
+}
+
+void ResourceTable::ProcessCreationRequest(const ResourceCreationRequest& request)
+{
+    if (m_resources.contains(request.ResourceName))
+    {
+        const TextureDescriptor& desc = m_resources[request.ResourceName]->GetDescriptor();
+        if (desc != request.Desc)
+            assert(false && "To be implemented...");
+        else
+            return;
+    }
+    Texture* tex = new Texture(request.Desc);
+    Renderer::RegisterRenderAsset(tex);
+    m_resources[request.ResourceName] = tex;
+}
+
+void ResourceTable::CreateResourcesForPass(const RenderPass* pass)
+{
+    ResourcesBlackboard* blackboard = GetBalackboardForPass(pass);
+    for (const auto& request : blackboard->GetCreationRequest())
+    {
+        ProcessCreationRequest(request);
+    }
 }
 
 }

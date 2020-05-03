@@ -24,17 +24,17 @@ void ResourcesBlackboard::NewTexture(std::string name, TextureDescriptor desc)
 
 void ResourcesBlackboard::ScheduleRead(std::string name)
 {
-    m_transitionRequests.push_back({ name, eResourceStates::Read });
+    m_transitionRequests.push_back({ name, eResourceState::PixelShaderResource });
 }
 
 void ResourcesBlackboard::ScheduleWrite(std::string name)
 {
-    m_transitionRequests.push_back({ name, eResourceStates::Write });
+    m_transitionRequests.push_back({ name, eResourceState::RenderTarget });
 }
 
 void ResourcesBlackboard::ScheduleUnorderedAccess(std::string name)
 {
-    m_transitionRequests.push_back({ name, eResourceStates::UnorderedAccess });
+    m_transitionRequests.push_back({ name, eResourceState::UnorderedAccess });
 }
 
 void ResourcesBlackboard::Clear()

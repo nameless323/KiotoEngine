@@ -49,6 +49,15 @@ void RenderGraph::Execute(std::vector<RenderObject*>& renderObjects)
     for (auto& submInfo : m_activePasses)
     {
         submInfo.CmdList->PushCommand(RenderCommandHelpers::CreateBeginGpuEventCommand(submInfo.Pass->GetName()));
+        ResourcesBlackboard* blackboard = m_resourceTable.GetBalackboardForPass(submInfo.Pass);
+
+        m_resourceTable.CreateResourcesForPass(submInfo.Pass);
+        for (const auto& transitions : blackboard->GetTransitionRequests())
+        {
+            Texture* tex = m_resourceTable.GetResource(transitions.ResourceName);
+            submInfo.CmdList->PushCommand(RenderCommandHelpers::CreateResourceTransitonCommand(tex->GetHandle(), transitions.TransitionTo, submInfo.Pass));
+        }
+
         submInfo.Pass->BuildRenderPackets(submInfo.CmdList, m_resourceTable);
         submInfo.Pass->Cleanup();
         submInfo.CmdList->PushCommand(RenderCommandHelpers::CreateEndGpuEventCommand());
