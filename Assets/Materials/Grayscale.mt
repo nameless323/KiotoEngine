@@ -3,4 +3,4 @@ passes:
     renderPass: 
         name: "Grayscale"
         pipelineConfig: "PipelineConfigs\\Posteffect.pcfg"
-        shader: "Shaders\\Fallback.hlsl"
+        shader: "Shaders\\Grayscale.hlsl"

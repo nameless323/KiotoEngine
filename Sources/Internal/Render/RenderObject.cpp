@@ -51,4 +51,11 @@ namespace Kioto::Renderer
             }
         }
     }
+
+    void RenderObject::SetTexture(const std::string& name, Texture* texture, const std::string& passName)
+    {
+        assert(m_textureSets.contains(passName) && "Texture is missing in texture set");
+        m_textureSets[passName].SetTexture(name, texture);
+    }
+
 }

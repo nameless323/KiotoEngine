@@ -43,6 +43,9 @@ TextureSet::eReturnCode TextureSet::SetTexture(const std::string& name, Texture*
     TextureSetData* data = nullptr;
     if (!Find(name, data))
         return eReturnCode::NotFound;
+    if (data->Texture != nullptr && data->Texture == texture)
+        return eReturnCode::Ok;
+
     data->Texture = texture;
     Renderer::QueueTextureSetForUpdate(*this);
     return eReturnCode::Ok;

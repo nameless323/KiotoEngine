@@ -14,6 +14,7 @@
 #include "Render/RenderGraph/ResourcesBlackboard.h"
 #include "Render/RenderGraph/ResourceTable.h"
 #include "Render/Geometry/GeometryGenerator.h"
+#include "Render/Renderer.h"
 
 namespace Kioto::Renderer
 {
@@ -37,6 +38,8 @@ void GrayscaleRenderPass::BuildRenderPackets(CommandList* commandList, ResourceT
     Material* mat = m_renderObject->GetMaterial();
     Mesh* mesh = m_renderObject->GetMesh();
     mat->BuildMaterialForPass(this);
+
+    m_renderObject->SetTexture("IntputColor", input, m_passName);
 
     RenderPacket currPacket = {};
     currPacket.Material = mat->GetHandle();
@@ -95,7 +98,9 @@ bool GrayscaleRenderPass::ConfigureInputsAndOutputs(ResourcesBlackboard& resourc
 
 void GrayscaleRenderPass::CreateMaterial()
 {
-
+    std::string matPath = AssetsSystem::GetAssetFullPath("Materials\\Grayscale.mt");
+    m_material = new Material(matPath);
+    Renderer::RegisterRenderAsset(m_material);
 }
 
 void GrayscaleRenderPass::CreateQuadMesh()

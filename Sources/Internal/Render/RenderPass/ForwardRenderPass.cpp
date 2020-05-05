@@ -59,8 +59,8 @@ void ForwardRenderPass::SetRenderTargets(CommandList* commandList, ResourceTable
 {
     SetRenderTargetsCommand cmd;
     Texture* rtTex = resources.GetResource("FwdTargetTexture");
-    //cmd.SetRenderTargets(rtTex->GetHandle());
-    cmd.SetRenderTargets(Renderer::DefaultBackBufferHandle);
+    cmd.SetRenderTargets(rtTex->GetHandle());
+    //cmd.SetRenderTargets(Renderer::DefaultBackBufferHandle);
     cmd.RenderTargetCount = GetRenderTargetCount();
     cmd.DepthStencil = Renderer::DefaultDepthStencilHandle;
 
