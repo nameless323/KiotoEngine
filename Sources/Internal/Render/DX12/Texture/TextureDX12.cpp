@@ -2,6 +2,7 @@
 
 #include "Render/DX12/Texture/TextureDX12.h"
 
+#include "AssetsSystem/FilesystemHelpers.h"
 #include "Core/CoreHelpers.h"
 #include "Render/DX12/KiotoDx12Mapping.h"
 #include "Sources/External/Dx12Helpers/DDSTextureLoader.h"
@@ -20,7 +21,7 @@ void TextureDX12::Create(ID3D12Device* device, ID3D12GraphicsCommandList* comman
     else
     {
         CreateFromFile(device, commandList);
-        SetName(Resource.Get(), Path.c_str());
+        SetName(Resource.Get(), FilesystemHelpers::GetFilenameFromPath(Path).c_str());
     }
 }
 

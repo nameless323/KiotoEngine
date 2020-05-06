@@ -5,6 +5,7 @@
 #include "yaml-cpp/yaml.h"
 
 #include "AssetsSystem/AssetsSystem.h"
+#include "AssetsSystem/FilesystemHelpers.h"
 #include "AssetsSystem/RenderStateParamsConverter.h"
 #include "Render/Renderer.h"
 #include "Render/RenderPass/RenderPass.h"
@@ -20,7 +21,7 @@ Material::Material(const std::string& path)
     m_buildedPassesHandles.reserve(32);
 
     using namespace RenderParamsConverter;
-    if (!AssetsSystem::CheckIfFileExist(path))
+    if (!FilesystemHelpers::CheckIfFileExist(path))
         throw "Material not exist";
 
     YAML::Node config = YAML::LoadFile(path);

@@ -1,7 +1,9 @@
 #include "stdafx.h"
 
-#include "Render/Material.h"
 #include "Render/RenderObject.h"
+
+#include "AssetsSystem/AssetsSystem.h"
+#include "Render/Material.h"
 #include "Render/Shader.h"
 
 namespace Kioto::Renderer

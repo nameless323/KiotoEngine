@@ -2,7 +2,7 @@
 
 #include "Render/Geometry/ParserGLTF.h"
 
-#include "AssetsSystem/AssetsSystem.h"
+#include "AssetsSystem/FilesystemHelpers.h"
 #include "Core/Logger/Logger.h"
 #include "Render/Geometry/IntermediateMesh.h"
 
@@ -54,7 +54,7 @@ namespace Kioto
         std::string warn;
 
         bool res = false;
-        std::string ext = AssetsSystem::GetFileExtension(path);
+        std::string ext = FilesystemHelpers::GetFileExtension(path);
         if (ext == ".glb")
             res = loader.LoadBinaryFromFile(&model, &err, &warn, path.c_str());
         else if (ext == ".gltf")

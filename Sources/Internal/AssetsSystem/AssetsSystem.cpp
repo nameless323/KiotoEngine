@@ -1,10 +1,10 @@
 #include "stdafx.h"
 
-#include <fstream>
+#include "AssetsSystem/AssetsSystem.h"
 
 #include <yaml-cpp/yaml.h>
 
-#include "AssetsSystem/AssetsSystem.h"
+#include "AssetsSystem/FilesystemHelpers.h"
 #include "Core/CoreHelpers.h"
 #include "Render/Material.h"
 
@@ -46,19 +46,11 @@ std::string GetAssetFullPath(const std::string& assetName)
     return AssetsPath + assetName;
 }
 
-std::string GetFileExtension(const std::string& path)
-{
-    size_t lastPeriod = path.find_last_of('.');
-    if (lastPeriod == std::string::npos)
-        assert(false);
-    return path.substr(lastPeriod);
-}
-
 void Init()
 {
 #if _DEBUG
     string configPath = GetAssetFullPath("AssetsConfig.yaml");
-    if (!CheckIfFileExist(configPath))
+    if (!FilesystemHelpers::CheckIfFileExist(configPath))
         throw "Assets Config not found. Please read the Readme file.";
 
     YAML::Node config = YAML::LoadFile(configPath);
@@ -82,28 +74,6 @@ void Shutdown()
 {
     CleanAssets();
     m_renderAssetsManager.Shutdown();
-}
-
-bool CheckIfFileExist(const std::wstring& path)
-{
-    FILE* file = nullptr;
-    if (fopen_s(&file, WstrToStr(path).c_str(), "r") == 0)
-    {
-        fclose(file);
-        return true;
-    }
-    return false;
-}
-
-bool CheckIfFileExist(const std::string& path)
-{
-    FILE* file = nullptr;
-    if (fopen_s(&file, path.c_str(), "r") == 0)
-    {
-        fclose(file);
-        return true;
-    }
-    return false;
 }
 
 void UnloadAsset(const std::string& assetPath)
@@ -131,14 +101,6 @@ void RegisterAsset(Asset* asset)
     m_dynamicAssets.push_back(asset);
 }
 
-std::string ReadFileAsString(const std::string& path)
-{
-    std::ifstream f(path);
-    std::stringstream buffer;
-    buffer << f.rdbuf();
-    return buffer.str();
-}
-
 RenderAssetsManager* GetRenderAssetsManager()
 {
     return &m_renderAssetsManager;
@@ -148,11 +110,6 @@ bool CheckIfAssetLoaded(const std::string& assetPath)
 {
     auto it = m_assets.find(assetPath);
     return it != m_assets.end();
-}
-
-std::string GetFilenameFromPath(const std::string& path)
-{
-    return path.substr(path.find_last_of("/\\") + 1);
 }
 
 }

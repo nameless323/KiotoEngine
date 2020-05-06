@@ -3,7 +3,7 @@
 #include <string>
 
 #include "AssetsSystem/Asset.h"
-#include "AssetsSystem/AssetsSystem.h"
+#include "AssetsSystem/FilesystemHelpers.h"
 #include "Render/RendererPublic.h"
 #include "Render/DX12/Shader/ShaderParser.h"
 
@@ -15,7 +15,7 @@ public:
     Shader() : Asset("") {}
     Shader(const std::string& path) : Asset(path) 
     {
-        m_shader = Kioto::AssetsSystem::ReadFileAsString(path);
+        m_shader = Kioto::FilesystemHelpers::ReadFileAsString(path);
     }
 
     void SetHandle(ShaderHandle handle);
