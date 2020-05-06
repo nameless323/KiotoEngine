@@ -65,6 +65,8 @@ void TextureManagerDX12::UpdateTextureSetHeap(const StateDX& state, const Textur
     heapDescr.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
     heapDescr.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
     heapDescr.NumDescriptors = texSet.GetTexturesCount();
+
+    // [a_vorontcov] TODO: maybe reuse the same heap and overwrite descriptors?
     ThrowIfFailed(state.Device->CreateDescriptorHeap(&heapDescr, IID_PPV_ARGS(&m_textureHeaps[texSet.GetHandle()])));
 
     CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_textureHeaps[texSet.GetHandle()]->GetCPUDescriptorHandleForHeapStart());

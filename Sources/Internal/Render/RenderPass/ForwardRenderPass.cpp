@@ -96,8 +96,10 @@ bool ForwardRenderPass::ConfigureInputsAndOutputs(ResourcesBlackboard& resources
     desc.Width = Renderer::GetWidth();
     desc.Height = Renderer::GetHeight();
     desc.InitialState = eResourceState::Common;
+    desc.Name = "FwdTargetTexture";
 
     resources.NewTexture("FwdTargetTexture", std::move(desc));
+    resources.ScheduleWrite("FwdTargetTexture");
 
     if (settings.RenderMode == RenderOptions::RenderModeOptions::Final
         || settings.RenderMode == RenderOptions::RenderModeOptions::FinalAndWireframe)

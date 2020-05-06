@@ -368,12 +368,16 @@ void RendererDX12::Present()
             m_state.CommandList->SetGraphicsRootConstantBufferView(0, timeBuffer->GetFrameDataGpuAddress(m_swapChain.GetCurrentFrameIndex()));
             m_state.CommandList->SetGraphicsRootConstantBufferView(1, cameraBuffer->GetFrameDataGpuAddress(m_swapChain.GetCurrentFrameIndex()));
 
-            auto& bufferList = m_constantBufferManager.FindBuffers(packet.CBSet);
             size_t engineBuffersCount = EngineBuffers::BufferIndices.size();
-            size_t buffersCount = bufferList.size() + engineBuffersCount;
+            size_t buffersCount = engineBuffersCount;
+            if (packet.CBSet != EmptyConstantBufferSetHandle)
+            {
+                auto& bufferList = m_constantBufferManager.FindBuffers(packet.CBSet);
+                buffersCount += bufferList.size();
 
-            for (size_t i = engineBuffersCount; i < buffersCount; ++i)
-                m_state.CommandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(i), bufferList[i - engineBuffersCount]->GetFrameDataGpuAddress(m_swapChain.GetCurrentFrameIndex()));
+                for (size_t i = engineBuffersCount; i < buffersCount; ++i)
+                    m_state.CommandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(i), bufferList[i - engineBuffersCount]->GetFrameDataGpuAddress(m_swapChain.GetCurrentFrameIndex()));
+            }
 
             ID3D12DescriptorHeap* currTexDescriptorHeap = m_textureManager.GetTextureHeap(packet.TextureSet);
             if (currTexDescriptorHeap != nullptr) // [a_vorontcov] TODO: No difference if one messed up with texset or if there is no textures for the draw. Not good at all. Rethink.

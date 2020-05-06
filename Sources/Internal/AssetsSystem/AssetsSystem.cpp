@@ -150,4 +150,9 @@ bool CheckIfAssetLoaded(const std::string& assetPath)
     return it != m_assets.end();
 }
 
+std::string GetFilenameFromPath(const std::string& path)
+{
+    return path.substr(path.find_last_of("/\\") + 1);
+}
+
 }

@@ -24,6 +24,9 @@ GrayscaleRenderPass::GrayscaleRenderPass()
     Renderer::RegisterRenderPass(this);
     SetRenderTargetCount(1);
 
+    CreateQuadMesh();
+    CreateMaterial();
+
     m_renderObject = new RenderObject();
     m_renderObject->SetMaterial(m_material);
     m_renderObject->SetMesh(m_quad);

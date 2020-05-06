@@ -161,6 +161,7 @@ struct TextureDescriptor
     eResourceState InitialState = eResourceState::Common;
     uint32 Width = 0;
     uint32 Height = 0;
+    std::string Name = "";
 
     friend bool operator== (const TextureDescriptor& lhs, const TextureDescriptor& rhs);
     friend bool operator!= (const TextureDescriptor& lhs, const TextureDescriptor& rhs);

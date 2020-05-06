@@ -96,6 +96,7 @@ RenderCommand CreateResourceTransitonCommand(TextureHandle handle, eResourceStat
     RenderCommand command;
     command.CommandType = eRenderCommandType::eResourceTransitonCommand;
     command.PassName = pass->GetName();
+    command.Command = cmd;
 
     return command;
 }

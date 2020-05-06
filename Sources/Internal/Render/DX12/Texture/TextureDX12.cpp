@@ -2,8 +2,11 @@
 
 #include "Render/DX12/Texture/TextureDX12.h"
 
+#include "Core/CoreHelpers.h"
 #include "Render/DX12/KiotoDx12Mapping.h"
 #include "Sources/External/Dx12Helpers/DDSTextureLoader.h"
+
+#include "Render/DX12/DXHelpers.h"
 
 namespace Kioto::Renderer
 {
@@ -12,10 +15,12 @@ void TextureDX12::Create(ID3D12Device* device, ID3D12GraphicsCommandList* comman
     if (m_fromMemoryAsset)
     {
         CreateFromDescriptor(device, commandList);
+        SetName(Resource.Get(), Kioto::StrToWstr(m_descriptor.Name).c_str());
     }
     else
     {
         CreateFromFile(device, commandList);
+        SetName(Resource.Get(), Path.c_str());
     }
 }
 

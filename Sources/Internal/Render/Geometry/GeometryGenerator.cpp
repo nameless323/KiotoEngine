@@ -98,15 +98,14 @@ void Shutdown()
     SafeDelete(m_quad);
 }
 
-
 Mesh GenerateFullscreenQuad()
 {
     uint32 vCount = 4;
     uint32 iCount = 6;
     Mesh mesh(Renderer::VertexLayout::LayoutPos3, vCount, iCount);
     Vector3 verts[4] = { { -1.0f, 1.0f, 0.0f }, { 1.0f, 1.0f, 0.0f }, { -1.0f, -1.0f, 0.0f }, { 1.0f, -1.0f, 0.0f } };
-    uint32 indices[6] = { 0, 2, 1,
-                          1, 2, 3 };
+    uint32 indices[6] = { 0, 1, 2,
+                          1, 3, 2 };
     Vector3* meshPosPtr = mesh.GetPositionPtr(0);
     memcpy(meshPosPtr, verts, sizeof(Vector3) * 4);
     uint32* meshIdxPrt = mesh.GetIndexPtr(0);

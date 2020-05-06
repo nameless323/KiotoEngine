@@ -18,6 +18,7 @@ vOut vs(vIn i)
     vOut o;
     o.position = float4(i.position.xy, 0.0f, 1.0f);
     o.uv = i.position.xy * 0.5 + 0.5;
+    o.uv.y = 1.0f - o.uv.y;
     return o;
 }
 
