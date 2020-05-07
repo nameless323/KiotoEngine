@@ -2,11 +2,16 @@
 
 #include "AssetsSystem/Asset.h"
 
+#include <array>
+#include <variant>
+
+#include "Render/Color.h"
 #include "Render/RendererPublic.h"
+#include "Render/ResourceStates.h"
 
 namespace Kioto::Renderer
 {
-enum class eTextureFormat
+enum class eResourceFormat
 {
     Format_UNKNOWN = 0,
     Format_R32G32B32A32_TYPELESS = 1,
@@ -130,18 +135,79 @@ enum class eTextureFormat
     Format_FORCE_UINT = -1
 };
 
+enum class eResourceDim
+{
+    Texture2D
+};
+
+enum class eResourceFlags
+{
+    None = 0,
+    AllowRenderTarget = 1 << 0,
+    AllowDepthStencil = 1 << 1,
+    AllowUnorderedAccess = 1 << 2,
+    DenyShaderResource = 1 << 3,
+    AllowCrossAdapter = 1 << 4,
+    AllowSimultaneousAccess = 1 << 5
+};
+inline std::array<eResourceFlags, 7> FlagsArray =
+{ eResourceFlags::None, eResourceFlags::AllowRenderTarget, eResourceFlags::AllowDepthStencil,
+eResourceFlags::AllowUnorderedAccess, eResourceFlags::DenyShaderResource,
+eResourceFlags::AllowCrossAdapter, eResourceFlags::AllowSimultaneousAccess };
+
+struct TextureDescriptor
+{
+    eResourceFlags Flags = eResourceFlags::None;
+    eResourceFormat Format = eResourceFormat::Format_UNKNOWN;
+    eResourceDim Dimension = eResourceDim::Texture2D;
+    eResourceState InitialState = eResourceState::Common;
+    uint32 Width = 0;
+    uint32 Height = 0;
+    bool FastClear = true;
+    std::variant<Color, Vector2> FastClearValue;
+    std::string Name = "";
+
+    friend bool operator== (const TextureDescriptor& lhs, const TextureDescriptor& rhs);
+    friend bool operator!= (const TextureDescriptor& lhs, const TextureDescriptor& rhs);
+};
+
+inline bool operator== (const TextureDescriptor& lhs, const TextureDescriptor& rhs)
+{
+    return lhs.Flags == rhs.Flags && lhs.Format == rhs.Format && lhs.Dimension == rhs.Dimension
+        && lhs.InitialState == rhs.InitialState /* [a_vorontcov] Not sure */
+        && lhs.Width == rhs.Width && lhs.Height == rhs.Height;
+}
+
+inline bool operator!= (const TextureDescriptor& lhs, const TextureDescriptor& rhs)
+{
+    return !(lhs == rhs);
+}
+
 class Texture : public Asset
 {
 public:
-    Texture() : Asset("") {}
+    Texture();
+    Texture(TextureDescriptor descriptor);
     Texture(const std::string& path) : Asset(path) {}
 
     TextureHandle GetHandle() const;
     void SetHandle(TextureHandle handle);
 
+    const TextureDescriptor& GetDescriptor() const;
+    eResourceState GetCurrentState() const;
+
 private:
     TextureHandle m_handle;
+
+    TextureDescriptor m_descriptor;
+    eResourceState m_currentState = eResourceState::Common;
 };
+
+inline Texture::Texture(TextureDescriptor descriptor)
+{
+    std::swap(m_descriptor, descriptor);
+    m_currentState = m_descriptor.InitialState;
+}
 
 inline TextureHandle Texture::GetHandle() const
 {
@@ -152,4 +218,15 @@ inline void Texture::SetHandle(TextureHandle handle)
 {
     m_handle = handle;
 }
+
+inline const TextureDescriptor& Texture::GetDescriptor() const
+{
+    return m_descriptor;
+}
+
+inline eResourceState Texture::GetCurrentState() const
+{
+    return m_currentState;
+}
+
 }

@@ -1,7 +1,9 @@
 #include "stdafx.h"
 
-#include "Render/Material.h"
 #include "Render/RenderObject.h"
+
+#include "AssetsSystem/AssetsSystem.h"
+#include "Render/Material.h"
 #include "Render/Shader.h"
 
 namespace Kioto::Renderer
@@ -33,8 +35,12 @@ namespace Kioto::Renderer
             TextureSet set;
             for (auto& texDescr : textureAssetDescriptionsForPasses.second)
             {
-                std::string fullPath = AssetsSystem::GetAssetFullPath(texDescr.Path);
-                Texture* tex = AssetsSystem::GetRenderAssetsManager()->GetOrLoadAsset<Texture>(fullPath);
+                Texture* tex = nullptr;
+                if (!texDescr.Path.empty())
+                {
+                    std::string fullPath = AssetsSystem::GetAssetFullPath(texDescr.Path);
+                    tex = AssetsSystem::GetRenderAssetsManager()->GetOrLoadAsset<Texture>(fullPath);
+                }
                 set.AddTexture(texDescr.Name, texDescr.Offset, tex);
             }
             assert(m_textureSets.count(passName) == 0);
@@ -47,4 +53,11 @@ namespace Kioto::Renderer
             }
         }
     }
+
+    void RenderObject::SetTexture(const std::string& name, Texture* texture, const std::string& passName)
+    {
+        assert(m_textureSets.contains(passName) && "Texture is missing in texture set");
+        m_textureSets[passName].SetTexture(name, texture);
+    }
+
 }

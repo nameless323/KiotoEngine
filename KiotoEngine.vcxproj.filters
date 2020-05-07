@@ -162,9 +162,6 @@
     <ClInclude Include="Sources\Internal\AssetsSystem\Asset.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\Internal\Render\Texture\TextureDX12.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Sources\Internal\Render\Texture\Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -205,9 +202,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Sources\Internal\Render\DX12\SwapChain.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\Internal\Render\Texture\TextureManagerDX12.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Sources\Internal\Render\DX12\RootSignatureManager.h">
@@ -342,7 +336,37 @@
     <ClInclude Include="Sources\Internal\Core\KiotoEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\Internal\Render\RenderSettings.h">
+    <ClInclude Include="Sources\Internal\Render\RenderGraph\RenderGraph.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Internal\Render\RenderOptions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Internal\Render\RenderGraph\ResourcesBlackboard.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Internal\Render\DX12\KiotoDx12Mapping.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Internal\Render\ResourceStates.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Internal\Render\DX12\Texture\TextureDX12.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Internal\Render\DX12\Texture\TextureManagerDX12.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Internal\Render\RenderGraph\ResourceTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Internal\Render\RenderPass\GrayscaleRenderPass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Internal\AssetsSystem\FilesystemHelpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Internal\Render\Color.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -446,13 +470,7 @@
     <ClCompile Include="Sources\Internal\Render\Texture\TextureSet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\Internal\Render\Texture\TextureDX12.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Sources\Internal\Render\DX12\SwapChain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Internal\Render\Texture\TextureManagerDX12.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Sources\Internal\Render\DX12\RootSignatureManager.cpp">
@@ -534,6 +552,27 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Sources\Internal\Systems\DebugSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Internal\Render\RenderGraph\RenderGraph.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Internal\Render\RenderGraph\ResourcesBlackboard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Internal\Render\DX12\Texture\TextureDX12.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Internal\Render\DX12\Texture\TextureManagerDX12.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Internal\Render\RenderGraph\ResourceTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Internal\Render\RenderPass\GrayscaleRenderPass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Internal\AssetsSystem\FilesystemHelpers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

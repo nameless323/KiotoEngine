@@ -9,8 +9,10 @@
 #include "Render/RenderCommand.h"
 #include "Render/RenderObject.h"
 #include "Render/RenderPacket.h"
-#include "Render/RenderSettings.h"
+#include "Render/RenderOptions.h"
 #include "Render/Shader.h"
+#include "Render/RenderGraph/ResourcesBlackboard.h"
+#include "Render/RenderGraph/ResourceTable.h"
 
 namespace Kioto::Renderer
 {
@@ -21,9 +23,11 @@ ForwardRenderPass::ForwardRenderPass()
     SetRenderTargetCount(1);
 }
 
-void ForwardRenderPass::CollectRenderData()
+void ForwardRenderPass::BuildRenderPackets(CommandList* commandList, ResourceTable& resources)
 {
-    SetRenderTargets();
+    SetPassConstantBuffers(commandList);
+    SetCameraConstantBuffers(commandList);
+    SetRenderTargets(commandList, resources);
     for (auto ro : m_renderObjects)
     {
         Material* mat = ro->GetMaterial();
@@ -41,20 +45,22 @@ void ForwardRenderPass::CollectRenderData()
         currPacket.Pass = GetHandle();
         currPacket.CBSet = ro->GetBufferLayout(m_passName).bufferSetHandle;
 
-        PushCommand(RenderCommandHelpers::CreateRenderPacketCommand(currPacket, this));
+        commandList->PushCommand(RenderCommandHelpers::CreateRenderPacketCommand(currPacket, this));
     }
 
-    PushCommand(RenderCommandHelpers::CreatePassEndsCommand(this));
+    commandList->PushCommand(RenderCommandHelpers::CreatePassEndsCommand(this));
 }
 
 void ForwardRenderPass::Cleanup()
 {
 }
 
-void ForwardRenderPass::SetRenderTargets()
+void ForwardRenderPass::SetRenderTargets(CommandList* commandList, ResourceTable& resources)
 {
     SetRenderTargetsCommand cmd;
-    cmd.SetRenderTargets(Renderer::DefaultBackBufferHandle);
+    Texture* rtTex = resources.GetResource("FwdTargetTexture");
+    cmd.SetRenderTargets(rtTex->GetHandle());
+    //cmd.SetRenderTargets(Renderer::DefaultBackBufferHandle);
     cmd.RenderTargetCount = GetRenderTargetCount();
     cmd.DepthStencil = Renderer::DefaultDepthStencilHandle;
 
@@ -63,27 +69,43 @@ void ForwardRenderPass::SetRenderTargets()
     cmd.ClearDepth = true;
     cmd.ClearDepthValue = 0.0f;
     cmd.ClearColor = true;
+    cmd.ClearColorValue = Color::DefaultBackgroundColor;
     cmd.ClearStencil = true;
     cmd.ClearStencilValue = 0;
 
-    PushCommand(RenderCommandHelpers::CreateSetRenderTargetCommand(cmd, this));
+    commandList->PushCommand(RenderCommandHelpers::CreateSetRenderTargetCommand(cmd, this));
 }
 
-void ForwardRenderPass::SetPassConstantBuffers()
+void ForwardRenderPass::SetPassConstantBuffers(CommandList* commandList)
 {
 
 }
 
-void ForwardRenderPass::SetCameraConstantBuffers()
+void ForwardRenderPass::SetCameraConstantBuffers(CommandList* commandList)
 {
-    PushCommand(RenderCommandHelpers::CreateConstantBufferCommand(Renderer::GetMainCamera()->GetConstantBuffer(), this));
+    commandList->PushCommand(RenderCommandHelpers::CreateConstantBufferCommand(Renderer::GetMainCamera()->GetConstantBuffer(), this));
 }
 
-bool ForwardRenderPass::ConfigureInputsAndOutputs()
+bool ForwardRenderPass::ConfigureInputsAndOutputs(ResourcesBlackboard& resources)
 {
-    const RenderSettings& settings = KiotoCore::GetRenderSettings();
-    if (settings.RenderMode == RenderSettings::RenderModeOptions::Final
-        || settings.RenderMode == RenderSettings::RenderModeOptions::FinalAndWireframe)
+    const RenderOptions& settings = KiotoCore::GetRenderSettings();
+
+    TextureDescriptor desc;
+    desc.Dimension = eResourceDim::Texture2D;
+    desc.Format = eResourceFormat::Format_R8G8B8A8_UNORM;
+    desc.Flags = eResourceFlags::AllowRenderTarget;
+    desc.Width = Renderer::GetWidth();
+    desc.Height = Renderer::GetHeight();
+    desc.InitialState = eResourceState::Common;
+    desc.FastClear = true;
+    desc.FastClearValue = Color::DefaultBackgroundColor;
+    desc.Name = "FwdTargetTexture";
+
+    resources.NewTexture("FwdTargetTexture", std::move(desc));
+    resources.ScheduleWrite("FwdTargetTexture");
+
+    if (settings.RenderMode == RenderOptions::RenderModeOptions::Final
+        || settings.RenderMode == RenderOptions::RenderModeOptions::FinalAndWireframe)
         return true;
     return false;
 }

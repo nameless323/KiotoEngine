@@ -22,11 +22,4 @@ RenderPass::RenderPass(const RenderPass& other)
     , m_passName(other.m_passName)
 {
 }
-
-void RenderPass::SubmitRenderData()
-{
-    PushCommand(RenderCommandHelpers::CreateEndGpuEventCommand());
-    Renderer::SubmitRenderCommands(GetRenderCommands());
-    ClearCommands();
-}
 }

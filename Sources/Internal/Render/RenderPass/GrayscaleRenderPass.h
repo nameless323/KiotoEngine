@@ -5,10 +5,11 @@
 
 namespace Kioto::Renderer
 {
-class ForwardRenderPass : public RenderPass
+class GrayscaleRenderPass : public RenderPass
 {
 public:
-    ForwardRenderPass();
+    GrayscaleRenderPass();
+    ~GrayscaleRenderPass();
 
     bool ConfigureInputsAndOutputs(ResourcesBlackboard& resources) override;
     void BuildRenderPackets(CommandList* commandList, ResourceTable& resources) override;
@@ -18,5 +19,12 @@ private:
     void SetRenderTargets(CommandList* commandList, ResourceTable& resources) override;
     void SetPassConstantBuffers(CommandList* commandList) override;
     void SetCameraConstantBuffers(CommandList* commandList) override;
+
+    void CreateMaterial();
+    void CreateQuadMesh();
+
+    Material* m_material = nullptr;
+    Mesh* m_quad = nullptr;
+    RenderObject* m_renderObject = nullptr;
 };
 }

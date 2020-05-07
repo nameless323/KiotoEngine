@@ -5,9 +5,11 @@
 
 #include "Core/CoreTypes.h"
 #include "Math/Rect.h"
+#include "Render/Color.h"
 #include "Render/RendererPublic.h"
 #include "Render/RenderPacket.h"
 #include "Render/ScopedGpuProfiler.h"
+#include "Render/ResourceStates.h"
 
 namespace Kioto::Renderer
 {
@@ -20,7 +22,8 @@ enum class eRenderCommandType
     eBeginGpuEvent,
     eEndGpuEvent,
     eSetGpuMarker,
-    eEndRenderPass
+    eEndRenderPass,
+    eResourceTransitonCommand
 };
 
 struct SetRenderTargetsCommand final
@@ -102,6 +105,7 @@ public:
 
     RectI Scissor;
     RectI Viewport;
+    Color ClearColorValue;
     bool ClearColor = true;
     bool ClearDepth = true;
     float32 ClearDepthValue = 0.0f;
@@ -118,6 +122,12 @@ struct SubmitConstantBufferCommand final
     ConstantBufferHandle BufferHandle;
     uint16 Space = 0;
     uint16 Index = 0;
+};
+
+struct ResourceTransitonCommand final
+{
+    TextureHandle ResourceHandle;
+    eResourceState DestState;
 };
 
 struct SubmitRenderPacketCommand final
@@ -142,13 +152,40 @@ struct SetGpuMarkerCommand
 struct RenderCommand
 {
     eRenderCommandType CommandType = eRenderCommandType::eInvalidCommand;
-    std::variant<SetRenderTargetsCommand, SubmitConstantBufferCommand, SubmitRenderPacketCommand, BeginGpuEventCommand, EndGpuEventCommand, SetGpuMarkerCommand> Command;
+    std::variant<SetRenderTargetsCommand, SubmitConstantBufferCommand, SubmitRenderPacketCommand, BeginGpuEventCommand, EndGpuEventCommand, SetGpuMarkerCommand, ResourceTransitonCommand> Command;
 
     std::string PassName; // [a_vorontcov] For debugging.
 };
 
 struct PassEndsCommand
 {};
+
+class CommandList
+{
+public:
+    CommandList()
+    {
+        m_commands.reserve(512);
+    }
+
+    void PushCommand(RenderCommand&& command)
+    {
+        m_commands.push_back(command);
+    }
+
+    void ClearCommands()
+    {
+        m_commands.clear();
+    }
+
+    const std::vector<RenderCommand>& GetCommands() const
+    {
+        return m_commands;
+    }
+
+private:
+    std::vector<RenderCommand> m_commands;
+};
 
 namespace RenderCommandHelpers
 {
@@ -160,6 +197,7 @@ RenderCommand CreatePassEndsCommand(RenderPass* pass);
 RenderCommand CreateBeginGpuEventCommand(std::string name);
 RenderCommand CreateEndGpuEventCommand();
 RenderCommand CreateGpuMarkerCommand(std::string name);
+RenderCommand CreateResourceTransitonCommand(TextureHandle handle, eResourceState destState, RenderPass* pass);
 
 #define SCOPED_GPU_EVENT(name) ScopedGpuProfiler ____scopedProfiler___ ## __LINE__(this, name);
 }

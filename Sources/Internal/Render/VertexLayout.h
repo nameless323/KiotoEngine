@@ -75,6 +75,7 @@ public:
     static const VertexLayout LayoutPos3Norm3Tan3Bit3Uv2Col4;
     static const VertexLayout LayoutPos3Norm3Uv2Col4;
     static const VertexLayout LayoutPos3Uv2;
+    static const VertexLayout LayoutPos3;
 
 private:
     std::vector<SemanticDesc> m_semanticsDesc;

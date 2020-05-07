@@ -9,13 +9,13 @@ namespace Kioto::Renderer
     public:
         WireframeRenderPass();
 
-        bool ConfigureInputsAndOutputs() override;
-        void CollectRenderData() override;
+        bool ConfigureInputsAndOutputs(ResourcesBlackboard& resources) override;
+        void BuildRenderPackets(CommandList* commandList, ResourceTable& resources) override;
         void Cleanup() override;
 
     private:
-        void SetRenderTargets() override;
-        void SetPassConstantBuffers() override;
-        void SetCameraConstantBuffers() override;
+        void SetRenderTargets(CommandList* commandList, ResourceTable& resources) override;
+        void SetPassConstantBuffers(CommandList* commandList) override;
+        void SetCameraConstantBuffers(CommandList* commandList) override;
     };
 }

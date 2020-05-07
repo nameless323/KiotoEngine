@@ -34,6 +34,7 @@ public:
     const TextureSet& GetTextureSet(const PassName& passName);
     const std::unordered_map<PassName, RenderObjectBufferLayout>& GetBuffersLayouts() const;
     std::unordered_map<PassName, RenderObjectBufferLayout>& GetBuffersLayouts();
+    void SetTexture(const std::string& name, Texture* texture, const std::string& passName);
 
     template<typename T>
     ConstantBuffer::eReturnCode SetValueToBuffer(const std::string& name, T&& val, const PassName& passName)

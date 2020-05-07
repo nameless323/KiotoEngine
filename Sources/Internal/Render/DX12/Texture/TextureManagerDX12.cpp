@@ -1,14 +1,19 @@
 #include "stdafx.h"
 
-#include "Render/Texture/TextureManagerDX12.h"
+#include "Render/DX12/Texture/TextureManagerDX12.h"
 
-#include "Render/Texture/Texture.h"
-#include "Render/Texture/TextureDX12.h"
-#include "Render/Texture/TextureSet.h"
 #include "Render/DX12/StateDX.h"
+#include "Render/DX12/Texture/TextureDX12.h"
+#include "Render/Texture/Texture.h"
+#include "Render/Texture/TextureSet.h"
 
 namespace Kioto::Renderer
 {
+namespace
+{
+constexpr uint16 MaxRenderTargetViews = 256;
+}
+
 TextureManagerDX12::TextureManagerDX12()
 {
     m_textureQueue.reserve(64);
@@ -27,6 +32,8 @@ void TextureManagerDX12::RegisterTexture(Texture* texture)
     TextureDX12* tex = new TextureDX12();
     tex->Path = StrToWstr(texture->GetAssetPath());
     tex->SetHandle(GetNewHandle());
+    tex->SetDescriptor(texture->GetDescriptor());
+    tex->SetIsFromMemoryAsset(texture->IsMemoryAsset());
     m_textureQueue.push_back(tex);
     texture->SetHandle(tex->GetHandle());
 
@@ -40,6 +47,15 @@ TextureManagerDX12::~TextureManagerDX12()
     m_textures.clear();
 }
 
+void TextureManagerDX12::InitRtvHeap(const StateDX& state)
+{
+    D3D12_DESCRIPTOR_HEAP_DESC heapDescr = {};
+    heapDescr.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+    heapDescr.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+    heapDescr.NumDescriptors = MaxRenderTargetViews;
+    ThrowIfFailed(state.Device->CreateDescriptorHeap(&heapDescr, IID_PPV_ARGS(&m_rtvHeap)));
+}
+
 void TextureManagerDX12::UpdateTextureSetHeap(const StateDX& state, const TextureSet& texSet)
 {
     if (m_textureHeaps.find(texSet.GetHandle()) != m_textureHeaps.end())
@@ -49,6 +65,8 @@ void TextureManagerDX12::UpdateTextureSetHeap(const StateDX& state, const Textur
     heapDescr.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
     heapDescr.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
     heapDescr.NumDescriptors = texSet.GetTexturesCount();
+
+    // [a_vorontcov] TODO: maybe reuse the same heap and overwrite descriptors?
     ThrowIfFailed(state.Device->CreateDescriptorHeap(&heapDescr, IID_PPV_ARGS(&m_textureHeaps[texSet.GetHandle()])));
 
     CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_textureHeaps[texSet.GetHandle()]->GetCPUDescriptorHandleForHeapStart());
@@ -106,7 +124,26 @@ void TextureManagerDX12::RegisterTextureWithoutOwnership(TextureDX12* texture)
 void TextureManagerDX12::ProcessRegistationQueue(const StateDX& state)
 {
     for (auto& tex : m_textureQueue)
+    {
         tex->Create(state.Device.Get(), state.CommandList.Get());
+        if (tex->GetIsFromMemoryAsset() && ((tex->GetDx12TextureFlags() & D3D12_RESOURCE_FLAGS::D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET) != 0))
+        {
+            assert(m_rtvHeapOffsets.count(tex->GetHandle()) == 0);
+            m_rtvHeapOffsets[tex->GetHandle()] = m_currentRtvOffset;
+
+            CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
+            handle.Offset(m_currentRtvOffset);
+
+            m_currentRtvOffset += state.RtvDescriptorSize;
+
+            D3D12_RENDER_TARGET_VIEW_DESC texDescr = {};
+            texDescr.Format = tex->Resource->GetDesc().Format;
+            texDescr.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+            texDescr.Texture2D = { 0, 0};
+
+            state.Device->CreateRenderTargetView(tex->Resource.Get(), &texDescr, handle);
+        }
+    }
     m_textureQueue.clear();
 }
 
@@ -128,4 +165,13 @@ void TextureManagerDX12::ProcessTextureSetUpdates(const StateDX& state)
         UpdateTextureSetHeap(state, *texSet);
     m_textureSetUpdateQueue.clear();
 }
+
+D3D12_CPU_DESCRIPTOR_HANDLE TextureManagerDX12::GetRtvHandle(TextureHandle handle) const
+{
+    assert(m_rtvHeapOffsets.count(handle) == 1 && "The texture is not registered as a rtv");
+    CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
+    rtvHandle.Offset(m_rtvHeapOffsets.at(handle));
+    return rtvHandle;
+}
+
 }

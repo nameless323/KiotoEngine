@@ -10,6 +10,9 @@
 
 namespace Kioto::Renderer
 {
+class ResourcesBlackboard;
+class ResourceTable;
+
 enum PassPriority
 {
     MainPass = 100
@@ -32,34 +35,14 @@ public:
 
     // Describe what resources pass get for input and what resources it writes.
     // Return true - pass will be executed in the current frame. false - otherwise.
-    virtual bool ConfigureInputsAndOutputs() abstract;
+    virtual bool ConfigureInputsAndOutputs(ResourcesBlackboard& resources) abstract;
 
-    virtual void Setup() // set all pass buffers
-    {
-        PushCommand(RenderCommandHelpers::CreateBeginGpuEventCommand(m_passName));
-        SetPassConstantBuffers();
-        SetCameraConstantBuffers();
-    }
+    virtual void Setup()
+    {}
 
-    virtual void CollectRenderData() abstract;
-    virtual void SubmitRenderData();
+    virtual void BuildRenderPackets(CommandList* commandList, ResourceTable& resources) abstract;
 
     virtual void Cleanup() abstract; // cleanup all pass setups
-
-    void PushCommand(RenderCommand command)
-    {
-        m_commands.push_back(command);
-    }
-
-    const std::vector<RenderCommand>& GetRenderCommands() const
-    {
-        return m_commands;
-    }
-
-    void ClearCommands()
-    {
-        m_commands.clear();
-    }
 
     void SetScissor(const RectI& scissor);
     void SetViewport(const RectI& viewport);
@@ -91,9 +74,9 @@ public:
     const std::string& GetName() const;
 
 protected:
-    virtual void SetRenderTargets() abstract; // Set scissor, render targets, viewports
-    virtual void SetPassConstantBuffers() abstract;
-    virtual void SetCameraConstantBuffers() abstract;
+    virtual void SetRenderTargets(CommandList* commandList, ResourceTable& resources) abstract; // Set scissor, render targets, viewports
+    virtual void SetPassConstantBuffers(CommandList* commandList) abstract;
+    virtual void SetCameraConstantBuffers(CommandList* commandList) abstract;
 
     RectI m_scissor;
     RectI m_viewport;
@@ -109,7 +92,6 @@ protected:
     uint32 m_priority = PassPriority::MainPass;
 
     std::string m_passName;
-    std::vector<RenderCommand> m_commands;
     std::vector<RenderObject*> m_renderObjects; // [a_vorontcov] TODO: think maybe just a pointer will be fine.
 };
 

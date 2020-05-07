@@ -14,9 +14,9 @@
 #include "Render/DX12/StateDX.h"
 #include "Render/DX12/SwapChain.h"
 #include "Render/DX12/VertexLayoutManagerDX12.h"
+#include "Render/DX12/Texture/TextureManagerDX12.h"
 #include "Render/RenderCommand.h"
 #include "Render/RendererPublic.h"
-#include "Render/Texture/TextureManagerDX12.h"
 
 namespace Kioto
 {
@@ -84,6 +84,7 @@ private:
     void LogAdapterOutputs(IDXGIAdapter* adapter);
     void LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format);
     void LoadPipeline();
+    void ResourceTransition(StateDX& dxState, TextureHandle resourceHandle, eResourceState destState);
 
     std::vector<RenderCommand> m_frameCommands;
     GpuProfiler<PixProfiler> m_profiler;

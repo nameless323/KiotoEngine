@@ -43,6 +43,9 @@ TextureSet::eReturnCode TextureSet::SetTexture(const std::string& name, Texture*
     TextureSetData* data = nullptr;
     if (!Find(name, data))
         return eReturnCode::NotFound;
+    if (data->Texture != nullptr && data->Texture == texture)
+        return eReturnCode::Ok;
+
     data->Texture = texture;
     Renderer::QueueTextureSetForUpdate(*this);
     return eReturnCode::Ok;
@@ -64,6 +67,16 @@ uint16 TextureSet::GetTextureOffset(const std::string& name) const
     if (it == m_data.end())
         return -1;
     return it->Offset;
+}
+
+uint16 TextureSet::GetTextureOffset(uint32 index) const
+{
+    return m_data[index].Offset;
+}
+
+const std::string* TextureSet::GetTextureName(uint32 index) const
+{
+    return &m_data[index].Name;
 }
 
 }

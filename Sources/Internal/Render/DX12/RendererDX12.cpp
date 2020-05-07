@@ -14,6 +14,7 @@
 #include "Core/WindowsApplication.h"
 #include "Render/Buffers/EngineBuffers.h"
 #include "Render/DX12/Geometry/MeshDX12.h"
+#include "Render/DX12/KiotoDx12Mapping.h"
 #include "Render/Shader.h"
 #include "Render/Material.h"
 #include "Render/RenderPass/RenderPass.h"
@@ -110,6 +111,8 @@ void RendererDX12::Init(uint16 width, uint16 height)
 
     InitImGui();
 
+    m_textureManager.InitRtvHeap(m_state);
+
 #ifdef _DEBUG
     LogAdapters();
 
@@ -127,6 +130,16 @@ void RendererDX12::Init(uint16 width, uint16 height)
 void RendererDX12::LoadPipeline()
 {
     WaitForGPU();
+}
+
+void RendererDX12::ResourceTransition(StateDX& dxState, TextureHandle resourceHandle, eResourceState destState)
+{
+    TextureDX12* tex = m_textureManager.FindTexture(resourceHandle);
+    D3D12_RESOURCE_STATES dxSrcState = tex->GetCurrentState();
+    D3D12_RESOURCE_STATES dxDstState = KiotoDx12Mapping::ResourceStates[destState];
+    auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(tex->Resource.Get(), dxSrcState, dxDstState);
+    m_state.CommandList->ResourceBarrier(1, &barrier);
+    tex->SetCurrentState(dxDstState);
 }
 
 void RendererDX12::Shutdown()
@@ -166,20 +179,10 @@ void RendererDX12::InitImGui()
 
 void RendererDX12::RenderImGui()
 {
-    D3D12_RESOURCE_BARRIER barrier = {};
-    barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-    barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-    barrier.Transition.pResource = m_swapChain.GetCurrentBackBuffer()->Resource.Get();
-    barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-    barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
-    barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
-    m_state.CommandList->ResourceBarrier(1, &barrier);
+    m_state.CommandList->OMSetRenderTargets(1, &m_swapChain.GetCurrentBackBufferCPUHandle(m_state), false, &m_swapChain.GetDepthStencilCPUHandle());
     m_state.CommandList->SetDescriptorHeaps(1, &m_imguiDescriptorHeap);
     ImGui::Render();
     ImGui::ImplDX12RenderDrawData(ImGui::GetDrawData(), m_state.CommandList.Get());
-    barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
-    barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
-    m_state.CommandList->ResourceBarrier(1, &barrier);
 }
 
 void RendererDX12::ShutdownImGui()
@@ -298,8 +301,9 @@ void RendererDX12::Present()
     m_constantBufferManager.ProcessRegistrationQueue(m_state);
     m_constantBufferManager.ProcessBufferUpdates(m_swapChain.GetCurrentFrameIndex());
 
-    TextureDX12* currentRenderTarget = nullptr;
-    TextureDX12* currentDS = nullptr;
+    auto toRt = CD3DX12_RESOURCE_BARRIER::Transition(m_swapChain.GetCurrentBackBuffer()->Resource.Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+    m_state.CommandList->ResourceBarrier(1, &toRt);
+
     for (auto& cmd : m_frameCommands)
     {
         assert(cmd.CommandType != eRenderCommandType::eInvalidCommand);
@@ -317,37 +321,38 @@ void RendererDX12::Present()
         else if (cmd.CommandType == eRenderCommandType::eSetRenderTargets)
         {
             const SetRenderTargetsCommand& srtCommand = std::get<SetRenderTargetsCommand>(cmd.Command);
+            D3D12_CPU_DESCRIPTOR_HANDLE rtHandle;
+            D3D12_CPU_DESCRIPTOR_HANDLE dsHandle;
             if (srtCommand.GetRenderTarget(0) == DefaultBackBufferHandle)
-                currentRenderTarget = m_swapChain.GetCurrentBackBuffer();
+                rtHandle = m_swapChain.GetCurrentBackBufferCPUHandle(m_state);
             else
-                currentRenderTarget = m_textureManager.FindTexture(srtCommand.GetRenderTarget(0));
+                rtHandle = m_textureManager.GetRtvHandle(srtCommand.GetRenderTarget(0));
 
             if (srtCommand.GetDepthStencil() == DefaultDepthStencilHandle)
-                currentDS = m_swapChain.GetDepthStencil();
+                dsHandle = m_swapChain.GetDepthStencilCPUHandle();
             else
-                currentDS = m_textureManager.FindTexture(srtCommand.GetDepthStencil());
-
-            if (currentRenderTarget == nullptr && currentDS == nullptr)
-                return;
-
-            auto toRt = CD3DX12_RESOURCE_BARRIER::Transition(currentRenderTarget->Resource.Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-            m_state.CommandList->ResourceBarrier(1, &toRt);
+            {
+                assert(false);
+                // [a_vorontcov] TODO: ToBeImplemented dsHandle = m_textureManager.GetDsvHandle(srtCommand.GetDepthStencil());
+            }
 
             m_state.CommandList->RSSetScissorRects(1, &DXRectFromKioto(srtCommand.Scissor));
             m_state.CommandList->RSSetViewports(1, &DXViewportFromKioto(srtCommand.Viewport));
-            if (srtCommand.ClearColor)
-                m_state.CommandList->ClearRenderTargetView(currentRenderTarget->GetCPUHandle(), DirectX::Colors::DarkGray, 0, nullptr);
-            if (srtCommand.ClearDepth)
-                m_state.CommandList->ClearDepthStencilView(currentDS->GetCPUHandle(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
-            m_state.CommandList->OMSetRenderTargets(1, &currentRenderTarget->GetCPUHandle(), false, &currentDS->GetCPUHandle());
+            if (srtCommand.ClearColor)
+                m_state.CommandList->ClearRenderTargetView(rtHandle, srtCommand.ClearColorValue.data, 0, nullptr);
+            if (srtCommand.ClearDepth)
+                m_state.CommandList->ClearDepthStencilView(dsHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+
+            m_state.CommandList->OMSetRenderTargets(1, &rtHandle, false, &dsHandle);
         }
         else if (cmd.CommandType == eRenderCommandType::eEndRenderPass)
         {
-            auto toPresent = CD3DX12_RESOURCE_BARRIER::Transition(currentRenderTarget->Resource.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT); // [a_vorontcov] WRONG WRONG WRONG, but ok for now.
-            m_state.CommandList->ResourceBarrier(1, &toPresent);
-            currentRenderTarget = nullptr;
-            currentDS = nullptr;
+        }
+        else if (cmd.CommandType == eRenderCommandType::eResourceTransitonCommand)
+        {
+            const ResourceTransitonCommand& transitionCommand = std::get<ResourceTransitonCommand>(cmd.Command);
+            ResourceTransition(m_state, transitionCommand.ResourceHandle, transitionCommand.DestState);
         }
         else if (cmd.CommandType == eRenderCommandType::eSubmitRenderPacket)
         {
@@ -364,12 +369,16 @@ void RendererDX12::Present()
             m_state.CommandList->SetGraphicsRootConstantBufferView(0, timeBuffer->GetFrameDataGpuAddress(m_swapChain.GetCurrentFrameIndex()));
             m_state.CommandList->SetGraphicsRootConstantBufferView(1, cameraBuffer->GetFrameDataGpuAddress(m_swapChain.GetCurrentFrameIndex()));
 
-            auto& bufferList = m_constantBufferManager.FindBuffers(packet.CBSet);
             size_t engineBuffersCount = EngineBuffers::BufferIndices.size();
-            size_t buffersCount = bufferList.size() + engineBuffersCount;
+            size_t buffersCount = engineBuffersCount;
+            if (packet.CBSet != EmptyConstantBufferSetHandle)
+            {
+                auto& bufferList = m_constantBufferManager.FindBuffers(packet.CBSet);
+                buffersCount += bufferList.size();
 
-            for (size_t i = engineBuffersCount; i < buffersCount; ++i)
-                m_state.CommandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(i), bufferList[i - engineBuffersCount]->GetFrameDataGpuAddress(m_swapChain.GetCurrentFrameIndex()));
+                for (size_t i = engineBuffersCount; i < buffersCount; ++i)
+                    m_state.CommandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(i), bufferList[i - engineBuffersCount]->GetFrameDataGpuAddress(m_swapChain.GetCurrentFrameIndex()));
+            }
 
             ID3D12DescriptorHeap* currTexDescriptorHeap = m_textureManager.GetTextureHeap(packet.TextureSet);
             if (currTexDescriptorHeap != nullptr) // [a_vorontcov] TODO: No difference if one messed up with texset or if there is no textures for the draw. Not good at all. Rethink.
@@ -410,6 +419,9 @@ void RendererDX12::Present()
     }
 
     RenderImGui();
+
+    auto toPresent = CD3DX12_RESOURCE_BARRIER::Transition(m_swapChain.GetCurrentBackBuffer()->Resource.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT); // [a_vorontcov] WRONG WRONG WRONG, but ok for now.
+    m_state.CommandList->ResourceBarrier(1, &toPresent);
 
     m_state.CommandList->Close();
     ID3D12CommandList* cmdLists[] = { m_state.CommandList.Get() };

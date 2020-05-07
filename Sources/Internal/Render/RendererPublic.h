@@ -26,6 +26,7 @@ struct ShaderDefine
 constexpr uint32 InvalidHandle = -1;
 constexpr uint32 DefaultBackBufferHandle = InvalidHandle - 1;
 constexpr uint32 DefaultDepthStencilHandle = InvalidHandle - 2;
+constexpr uint32 EmptyConstantBufferSetHandle = InvalidHandle - 3;
 constexpr uint8 MaxRenderTargetsCount = 8;
 
 template <typename T>

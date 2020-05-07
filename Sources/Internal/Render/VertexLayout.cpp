@@ -79,6 +79,14 @@ const VertexLayout VertexLayout::LayoutPos3Uv2
 }
 };
 
+const VertexLayout VertexLayout::LayoutPos3
+{
+    std::vector<SemanticDesc>
+{
+    { eVertexSemantic::Position, 0, eDataFormat::R8_G8_B8, 0 },
+}
+};
+
 VertexLayout::VertexLayout(const VertexLayout& other)
 {
     m_semanticsDesc = other.m_semanticsDesc;

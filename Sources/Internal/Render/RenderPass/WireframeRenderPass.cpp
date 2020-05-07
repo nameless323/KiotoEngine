@@ -9,7 +9,7 @@
 #include "Render/RenderCommand.h"
 #include "Render/RenderObject.h"
 #include "Render/RenderPacket.h"
-#include "Render/RenderSettings.h"
+#include "Render/RenderOptions.h"
 #include "Render/Shader.h"
 
 namespace Kioto::Renderer
@@ -21,9 +21,9 @@ namespace Kioto::Renderer
         SetRenderTargetCount(1);
     }
 
-    void WireframeRenderPass::CollectRenderData()
+    void WireframeRenderPass::BuildRenderPackets(CommandList* commandList, ResourceTable& resources)
     {
-        SetRenderTargets();
+        SetRenderTargets(commandList, resources);
         for (auto ro : m_renderObjects)
         {
             Material* mat = ro->GetMaterial();
@@ -41,19 +41,21 @@ namespace Kioto::Renderer
             currPacket.Pass = GetHandle();
             currPacket.CBSet = ro->GetBufferLayout(m_passName).bufferSetHandle;
 
-            PushCommand(RenderCommandHelpers::CreateRenderPacketCommand(currPacket, this));
+            commandList->PushCommand(RenderCommandHelpers::CreateRenderPacketCommand(currPacket, this));
         }
 
-        PushCommand(RenderCommandHelpers::CreatePassEndsCommand(this));
+        commandList->PushCommand(RenderCommandHelpers::CreatePassEndsCommand(this));
     }
 
     void WireframeRenderPass::Cleanup()
     {
     }
 
-    void WireframeRenderPass::SetRenderTargets()
+    void WireframeRenderPass::SetRenderTargets(CommandList* commandList, ResourceTable& resources)
     {
-        bool isWireframe = KiotoCore::GetRenderSettings().RenderMode == RenderSettings::RenderModeOptions::Wireframe;
+        SetPassConstantBuffers(commandList);
+        SetCameraConstantBuffers(commandList);
+        bool isWireframe = KiotoCore::GetRenderSettings().RenderMode == RenderOptions::RenderModeOptions::Wireframe;
         SetRenderTargetsCommand cmd;
         cmd.SetRenderTargets(Renderer::DefaultBackBufferHandle);
         cmd.RenderTargetCount = GetRenderTargetCount();
@@ -64,27 +66,28 @@ namespace Kioto::Renderer
         cmd.ClearDepth = isWireframe;
         cmd.ClearDepthValue = 0.0f;
         cmd.ClearColor = isWireframe;
+        cmd.ClearColorValue = Color::DefaultBackgroundColor;
         cmd.ClearStencil = isWireframe;
         cmd.ClearStencilValue = 0;
 
-        PushCommand(RenderCommandHelpers::CreateSetRenderTargetCommand(cmd, this));
+        commandList->PushCommand(RenderCommandHelpers::CreateSetRenderTargetCommand(cmd, this));
     }
 
-    void WireframeRenderPass::SetPassConstantBuffers()
+    void WireframeRenderPass::SetPassConstantBuffers(CommandList* commandList)
     {
 
     }
 
-    void WireframeRenderPass::SetCameraConstantBuffers()
+    void WireframeRenderPass::SetCameraConstantBuffers(CommandList* commandList)
     {
-        PushCommand(RenderCommandHelpers::CreateConstantBufferCommand(Renderer::GetMainCamera()->GetConstantBuffer(), this));
+        commandList->PushCommand(RenderCommandHelpers::CreateConstantBufferCommand(Renderer::GetMainCamera()->GetConstantBuffer(), this));
     }
 
-    bool WireframeRenderPass::ConfigureInputsAndOutputs()
+    bool WireframeRenderPass::ConfigureInputsAndOutputs(ResourcesBlackboard& resources)
     {
-        const RenderSettings& settings = KiotoCore::GetRenderSettings();
-        if (settings.RenderMode == RenderSettings::RenderModeOptions::Wireframe
-            || settings.RenderMode == RenderSettings::RenderModeOptions::FinalAndWireframe)
+        const RenderOptions& settings = KiotoCore::GetRenderSettings();
+        if (settings.RenderMode == RenderOptions::RenderModeOptions::Wireframe
+            || settings.RenderMode == RenderOptions::RenderModeOptions::FinalAndWireframe)
             return true;
         return false;
     }

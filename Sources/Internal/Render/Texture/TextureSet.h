@@ -42,7 +42,9 @@ public:
     TextureSetHandle GetHandle() const;
 
     const Texture* GetTexture(uint32 index) const;
+    const std::string* GetTextureName(uint32 index) const;
     uint16 GetTextureOffset(const std::string& name) const;
+    uint16 GetTextureOffset(uint32 index) const;
 
     friend void swap(TextureSet& l, TextureSet& r)
     {

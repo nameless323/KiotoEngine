@@ -1,13 +1,15 @@
 #include "stdafx.h"
 
+#include "Render/DX12/Shader/ShaderParser.h"
+
 #include "AssetsSystem/AssetsSystem.h"
+#include "AssetsSystem/FilesystemHelpers.h"
 
 #include "Math/Vector2.h"
 #include "Math/Vector3.h"
 #include "Math/Vector4.h"
 #include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
-#include "Render/DX12/Shader/ShaderParser.h"
 #include "Render/Buffers/EngineBuffers.h"
 
 namespace Kioto::Renderer::ShaderParser // [a_vorontcov] Real parser via AST tree too time consuming for now.
@@ -53,8 +55,8 @@ std::string UnfoldIncludes(std::string& source, uint16 recursionDepth)
             if (it == m_preprocessedHeaders.end())
             {
                 std::string shaderPath = AssetsSystem::GetAssetFullPath(relativeIncludePath);
-                bool isExist = AssetsSystem::CheckIfFileExist(shaderPath);
-                std::string incl = AssetsSystem::ReadFileAsString(shaderPath);
+                bool isExist = FilesystemHelpers::CheckIfFileExist(shaderPath);
+                std::string incl = FilesystemHelpers::ReadFileAsString(shaderPath);
                 source.insert(includePos, UnfoldIncludes(incl, recursionDepth + 1));
                 m_preprocessedHeaders.push_back(relativeIncludePath);
             }
@@ -460,10 +462,10 @@ bool TryParseTextureIndex(const std::string& source, size_t pos, size_t bound, u
     return false;
 }
 
-TextureSet ParseTextures(std::string& source)
+TextureSet ParseTextures(std::string& source, std::string&& key)
 {
     TextureSet res;
-    size_t texBegin = source.find("[_IN_]");
+    size_t texBegin = source.find(key.c_str());
     while (texBegin != std::string::npos)
     {
         source.erase(texBegin, 6);
@@ -505,9 +507,14 @@ TextureSet ParseTextures(std::string& source)
         if (!typeFound || !nameFound)
             throw "wtf";
 
-        texBegin = source.find("[_IN_]", texBegin);
+        texBegin = source.find(key.c_str(), texBegin);
     }
     return res;
+}
+
+TextureSet ParseTextures(std::string& source)
+{
+    return ParseTextures(source, { "[_IN_]" });
 }
 
 std::string DXPreprocess(const std::string& source, const std::vector<ShaderDefine>* const defines)
@@ -543,7 +550,7 @@ std::string DXPreprocess(const std::string& source, const std::vector<ShaderDefi
 
 ShaderDataAndBufferLayout ParseShader(const std::string& path, const std::vector<ShaderDefine>* const defines)
 {
-    std::string shaderStr = AssetsSystem::ReadFileAsString(path);
+    std::string shaderStr = FilesystemHelpers::ReadFileAsString(path);
     return ParseShaderFromString(shaderStr, defines);
 }
 

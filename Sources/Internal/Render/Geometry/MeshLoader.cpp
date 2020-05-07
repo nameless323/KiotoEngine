@@ -4,7 +4,7 @@
 
 #include <map>
 
-#include "AssetsSystem/AssetsSystem.h"
+#include "AssetsSystem/FilesystemHelpers.h"
 #include "Render/Geometry/MeshParser.h"
 #include "Render/Geometry/ParserFBX.h"
 #include "Render/Geometry/ParserGLTF.h"
@@ -43,7 +43,7 @@ void Shutdown()
 
 void LoadMesh(Renderer::Mesh* src)
 {
-    std::string ext = AssetsSystem::GetFileExtension(src->GetAssetPath());
+    std::string ext = FilesystemHelpers::GetFileExtension(src->GetAssetPath());
     auto it = MeshParsers.find(ext);
     if (it == MeshParsers.end())
         assert(false);

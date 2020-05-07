@@ -7,6 +7,7 @@
 #include <vector>
 #include <map>
 
+#include "Render/Renderer.h"
 #include "Render/Geometry/Mesh.h"
 #include "Render/VertexLayout.h"
 #include "Math/Vector2.h"
@@ -73,6 +74,7 @@ Mesh* m_tube = nullptr;
 Mesh* m_cone = nullptr;
 Mesh* m_unitSphere = nullptr;
 Mesh* m_unitIcosphere = nullptr;
+Mesh* m_quad = nullptr;
 }
 
 void Init()
@@ -83,6 +85,7 @@ void Init()
     m_unitSphere = new Mesh(GenerateSphere());
     m_tube = new Mesh(GenerateTube());
     m_unitIcosphere = new Mesh(GenerateIcosphere());
+    m_quad = new Mesh(GenerateFullscreenQuad());
 }
 
 void Shutdown()
@@ -92,6 +95,23 @@ void Shutdown()
     SafeDelete(m_unitCube);
     SafeDelete(m_unitSphere);
     SafeDelete(m_unitIcosphere);
+    SafeDelete(m_quad);
+}
+
+Mesh GenerateFullscreenQuad()
+{
+    uint32 vCount = 4;
+    uint32 iCount = 6;
+    Mesh mesh(Renderer::VertexLayout::LayoutPos3, vCount, iCount);
+    Vector3 verts[4] = { { -1.0f, 1.0f, 0.0f }, { 1.0f, 1.0f, 0.0f }, { -1.0f, -1.0f, 0.0f }, { 1.0f, -1.0f, 0.0f } };
+    uint32 indices[6] = { 0, 1, 2,
+                          1, 3, 2 };
+    Vector3* meshPosPtr = mesh.GetPositionPtr(0);
+    memcpy(meshPosPtr, verts, sizeof(Vector3) * 4);
+    uint32* meshIdxPrt = mesh.GetIndexPtr(0);
+    memcpy(meshIdxPrt, indices, sizeof(uint32) * 6);
+
+    return mesh;
 }
 
 Mesh GeometryGenerator::GeneratePlane(float32 sizeX /*= 1.0f*/, float32 sizeZ /*= 1.0f*/)
@@ -910,4 +930,21 @@ Mesh* GetTube()
 {
     return m_tube;
 }
+
+Renderer::Mesh* GetFullscreenQuad()
+{
+    return m_quad;
+}
+
+void RegisterGeometry()
+{
+    Renderer::RegisterRenderAsset(m_plane);
+    Renderer::RegisterRenderAsset(m_cone);
+    Renderer::RegisterRenderAsset(m_unitCube);
+    Renderer::RegisterRenderAsset(m_unitSphere);
+    Renderer::RegisterRenderAsset(m_tube);
+    Renderer::RegisterRenderAsset(m_unitIcosphere);
+    Renderer::RegisterRenderAsset(m_quad);
+}
+
 }
