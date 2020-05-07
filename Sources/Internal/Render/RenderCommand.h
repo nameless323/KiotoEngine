@@ -5,6 +5,7 @@
 
 #include "Core/CoreTypes.h"
 #include "Math/Rect.h"
+#include "Render/Color.h"
 #include "Render/RendererPublic.h"
 #include "Render/RenderPacket.h"
 #include "Render/ScopedGpuProfiler.h"
@@ -104,6 +105,7 @@ public:
 
     RectI Scissor;
     RectI Viewport;
+    Color ClearColorValue;
     bool ClearColor = true;
     bool ClearDepth = true;
     float32 ClearDepthValue = 0.0f;

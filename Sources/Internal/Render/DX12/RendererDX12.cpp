@@ -338,8 +338,9 @@ void RendererDX12::Present()
 
             m_state.CommandList->RSSetScissorRects(1, &DXRectFromKioto(srtCommand.Scissor));
             m_state.CommandList->RSSetViewports(1, &DXViewportFromKioto(srtCommand.Viewport));
+
             if (srtCommand.ClearColor)
-                m_state.CommandList->ClearRenderTargetView(rtHandle, DirectX::Colors::DarkGray, 0, nullptr);
+                m_state.CommandList->ClearRenderTargetView(rtHandle, srtCommand.ClearColorValue.data, 0, nullptr);
             if (srtCommand.ClearDepth)
                 m_state.CommandList->ClearDepthStencilView(dsHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 

@@ -6,6 +6,7 @@
 #include "Core/CoreHelpers.h"
 #include "Render/DX12/KiotoDx12Mapping.h"
 #include "Sources/External/Dx12Helpers/DDSTextureLoader.h"
+#include "Render/Color.h"
 
 #include "Render/DX12/DXHelpers.h"
 
@@ -51,12 +52,19 @@ void TextureDX12::CreateFromDescriptor(ID3D12Device* device, ID3D12GraphicsComma
     textureDesc.SampleDesc.Quality = 0;
     textureDesc.Dimension = KiotoDx12Mapping::ResourceDimensions[m_descriptor.Dimension];
 
+    D3D12_CLEAR_VALUE clearValue;
+    if (m_descriptor.FastClear)
+    {
+        clearValue.Format = textureDesc.Format;
+        memcpy(clearValue.Color, std::get<Color>(m_descriptor.FastClearValue).data, sizeof(float32) * 4);
+    }
+
     ThrowIfFailed(device->CreateCommittedResource(
         &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
         D3D12_HEAP_FLAG_NONE,
         &textureDesc,
         D3D12_RESOURCE_STATE_COPY_DEST,
-        nullptr,
+        m_descriptor.FastClear ? &clearValue : nullptr,
         IID_PPV_ARGS(&Resource)));
     m_currentState = D3D12_RESOURCE_STATE_COPY_DEST;
 }

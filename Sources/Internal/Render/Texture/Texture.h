@@ -3,7 +3,9 @@
 #include "AssetsSystem/Asset.h"
 
 #include <array>
+#include <variant>
 
+#include "Render/Color.h"
 #include "Render/RendererPublic.h"
 #include "Render/ResourceStates.h"
 
@@ -161,6 +163,8 @@ struct TextureDescriptor
     eResourceState InitialState = eResourceState::Common;
     uint32 Width = 0;
     uint32 Height = 0;
+    bool FastClear = true;
+    std::variant<Color, Vector2> FastClearValue;
     std::string Name = "";
 
     friend bool operator== (const TextureDescriptor& lhs, const TextureDescriptor& rhs);

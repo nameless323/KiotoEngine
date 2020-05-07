@@ -66,6 +66,7 @@ namespace Kioto::Renderer
         cmd.ClearDepth = isWireframe;
         cmd.ClearDepthValue = 0.0f;
         cmd.ClearColor = isWireframe;
+        cmd.ClearColorValue = Color::DefaultBackgroundColor;
         cmd.ClearStencil = isWireframe;
         cmd.ClearStencilValue = 0;
 

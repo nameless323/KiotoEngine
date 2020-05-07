@@ -69,6 +69,7 @@ void ForwardRenderPass::SetRenderTargets(CommandList* commandList, ResourceTable
     cmd.ClearDepth = true;
     cmd.ClearDepthValue = 0.0f;
     cmd.ClearColor = true;
+    cmd.ClearColorValue = Color::DefaultBackgroundColor;
     cmd.ClearStencil = true;
     cmd.ClearStencilValue = 0;
 
@@ -96,6 +97,8 @@ bool ForwardRenderPass::ConfigureInputsAndOutputs(ResourcesBlackboard& resources
     desc.Width = Renderer::GetWidth();
     desc.Height = Renderer::GetHeight();
     desc.InitialState = eResourceState::Common;
+    desc.FastClear = true;
+    desc.FastClearValue = Color::DefaultBackgroundColor;
     desc.Name = "FwdTargetTexture";
 
     resources.NewTexture("FwdTargetTexture", std::move(desc));

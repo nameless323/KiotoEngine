@@ -26,5 +26,6 @@ float4 ps(vOut i) : SV_Target
 {
     float4 color = IntputColor.Sample(LinearClampSampler, i.uv);
     float gs = 0.02126 * color.x + 0.7152 * color.y + 0.0722 * color.z;
-    return float4(gs, gs, gs, 1.0);
+    return color;
+    //return float4(gs, gs, gs, 1.0);
 }
