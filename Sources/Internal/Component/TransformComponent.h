@@ -24,6 +24,9 @@ public:
     const Vector3& GetWorldPosition() const;
     const Matrix4& GetWorldRotation() const;
 
+    Vector3 TransformPointToWorld(const Vector3& localPoint) const;
+    Vector3 TransformPointToModel(const Vector3& worldPoint) const;
+
     void SetToWorld(const Matrix4& m);
     void SetToParent(const Matrix4& m);
     void SetToModel(const Matrix4& m);
@@ -143,5 +146,17 @@ inline void TransformComponent::SetChildrenDirty()
 {
     for (auto c : m_children)
         c->SetDirty();
+}
+
+inline Vector3 TransformComponent::TransformPointToWorld(const Vector3& localPoint) const
+{
+    Vector4 worldPoint = Vector4(localPoint, 1.0f) * m_toWorld;
+    return { worldPoint.x, worldPoint.y, worldPoint.z };
+}
+
+inline Vector3 TransformComponent::TransformPointToModel(const Vector3& worldPoint) const
+{
+    Vector4 localPoint = Vector4(worldPoint, 1.0f) * m_toModel;
+    return { localPoint.x, localPoint.y, localPoint.z };
 }
 }
