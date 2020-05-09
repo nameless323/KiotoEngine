@@ -8,6 +8,9 @@
 #include "Math/MathHelpers.h"
 #include "Math/Vector4.h"
 
+#include <iostream>
+#include <iomanip>
+
 namespace Kioto
 {
 ///
@@ -131,6 +134,8 @@ public:
     static Matrix4_<T> BuildOrtho(float32 left, float32 right, float32 bottom, float32 top, float32 zNear, float32 zFar);
 
     static const Matrix4_<T> Identity;
+
+    friend std::ostream& operator<<(std::ostream& os, const Matrix4_<float32>& M);
 };
 
 template <typename T>
@@ -511,4 +516,18 @@ const Matrix4_<T> Matrix4_<T>::Identity(
 );
 
 using Matrix4 = Matrix4_<float32>;
+
+std::ostream& operator<<(std::ostream& os, const Matrix4_<float32>& M)
+{
+    std::ios_base::fmtflags f(os.flags());
+    os << std::setprecision(5) << std::fixed << std::internal << std::endl;
+    for (uint32 i = 1; i <= 16; ++i)
+    {
+        os << " | " << std::setw(6) << M.data[i - 1];
+        if (i % 4 == 0)
+            os << " | " << std::endl;
+    }
+    os.flags(f);
+    return os;
+}
 }

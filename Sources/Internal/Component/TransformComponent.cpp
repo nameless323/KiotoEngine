@@ -23,6 +23,7 @@ Component* TransformComponent::Clone() const
 
 void TransformComponent::Serialize(YAML::Emitter& out) const
 {
+    using ::operator<<;
     out << YAML::Key << "ToWorld" << YAML::Value << m_toWorld;
     out << YAML::Key << "ToParent" << YAML::Value << m_toParent;
     out << YAML::Key << "ToModel" << YAML::Value << m_toModel;
