@@ -6,6 +6,9 @@
 
 #include "Core/CoreTypes.h"
 
+#include <iostream>
+#include <iomanip>
+
 namespace Kioto
 {
 template <typename T>
@@ -77,6 +80,8 @@ public:
     static const Vector3_<T> Forward;
     static const Vector3_<T> Backward;
     static const Vector3_<T> Zero;
+
+    friend std::ostream& operator<<(std::ostream& os, const Vector3_<float32>& M);
 };
 
 template<typename T>
@@ -277,4 +282,14 @@ const Vector3_<T> Vector3_<T>::Zero((T)0, (T)0, (T)0);
 
 using Vector3 = Vector3_<float32>;
 using Vector3i = Vector3_<int32>;
+
+std::ostream& operator<<(std::ostream& os, const Vector3_<float32>& V)
+{
+    std::ios_base::fmtflags f(os.flags());
+    os << std::setprecision(5) << std::fixed << std::internal;
+    for (uint32 i = 0; i < 3; ++i)
+        os << " | " << std::setw(6) << V.data[i];
+    os.flags(f);
+    return os;
+}
 }
