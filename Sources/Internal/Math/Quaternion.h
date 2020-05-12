@@ -19,6 +19,7 @@ public:
         Vector4 v;
         float32 data[4];
     };
+    Quaternion();
     Quaternion(float32 x, float32 y, float32 z, float32 w);
     Quaternion(const Quaternion& q);
     Quaternion& operator= (const Quaternion& q);
@@ -30,8 +31,19 @@ public:
     Quaternion& operator/=(float32 f);
     Quaternion Conjugate() const;
     float32 Length() const;
+    float32 LengthSqr() const;
     Quaternion Inverse() const;
     Quaternion InverseNonNorm() const;
+    Quaternion Normalized() const;
+    Quaternion& Normalize();
+    Quaternion Rotation(const Vector3& axis, float32 angle) const;
+    Vector3 RotateVector(const Vector3& v) const;
+    Matrix4 ToMatrix() const;
+
+    static float32 Dot(const Quaternion& q1, const Quaternion& q2);
+    static Quaternion SLerp(const Quaternion& q1, const Quaternion& q2, float32 t);
+    static Quaternion FromEuler(float32 x, float32 y, float32 z);
+    static Vector3 ToEuler(const Quaternion& q);
 };
 
 inline Quaternion::Quaternion(const Quaternion& q)
@@ -40,6 +52,9 @@ inline Quaternion::Quaternion(const Quaternion& q)
 
 inline Quaternion::Quaternion(float32 x_, float32 y_, float32 z_, float32 w_)
     : x(x_), y(y_), z(z_), w(w_)
+{}
+
+Quaternion::Quaternion() : x(0.0f), y(0.0f), z(0.0f), w(1.0f)
 {}
 
 inline Quaternion& Quaternion::operator= (const Quaternion& q)
@@ -97,6 +112,21 @@ inline Quaternion operator/ (Quaternion q, float32 f)
     return q;
 }
 
+Quaternion& Quaternion::operator*=(float32 f)
+{
+    x = x * f;
+    y = y * f;
+    z = z * f;
+    w = w * f;
+    return *this;
+}
+
+inline Quaternion operator* (Quaternion q, float32 f)
+{
+    q *= f;
+    return q;
+}
+
 
 inline Quaternion Quaternion::Conjugate() const
 {
@@ -105,7 +135,12 @@ inline Quaternion Quaternion::Conjugate() const
 
 float32 Quaternion::Length() const
 {
-    return std::sqrt(x * x + y * y + z * z + w * w);
+    return std::sqrt(LengthSqr());
+}
+
+float32 Quaternion::LengthSqr() const
+{
+    return x * x + y * y + z * z + w * w;
 }
 
 Quaternion Quaternion::Inverse() const
@@ -116,7 +151,96 @@ Quaternion Quaternion::Inverse() const
 
 Quaternion Quaternion::InverseNonNorm() const
 {
-    return Conjugate() / Length();
+    return Conjugate() / LengthSqr();
+}
+
+Quaternion Quaternion::Normalized() const
+{
+    Quaternion q = *this;
+    q /= Length();
+    return q;
+}
+
+Quaternion& Quaternion::Normalize()
+{
+    float32 lenInv = 1.0f / Length();
+    *this *= lenInv;
+    return *this;
+}
+
+Quaternion Quaternion::Rotation(const Vector3& axis, float32 angle) const
+{
+    float32 halfAngle = angle * 0.5f;
+    float32 cosHalfAngle = std::cos(halfAngle);
+    float32 sinHalfAngle = std::sin(halfAngle);
+    Vector3 vecPart = axis * sinHalfAngle;
+    return { vecPart.x, vecPart.y, vecPart.z, cosHalfAngle };
+}
+
+Vector3 Quaternion::RotateVector(const Vector3& v) const 
+{
+    Quaternion pureV = { v.x, v.y, v.z, 0.0f };
+    Quaternion res = *this * pureV * Conjugate();
+    return { res.x, res.y, res.z };
+}
+
+
+Matrix4 Quaternion::ToMatrix() const
+{
+    // [a_vorontcov] TODO: optimize squares.
+    Matrix4 m
+    {
+        1.0f - 2.0f * y * y - 2.0f * z * z, 2.0f * x * y - 2.0f * z * z, 2.0f * x * z + 2.0f * w * y, 0.0f,
+        2.0f * x * y + 2.0f * w * z, 1.0f - 2.0f * x * x - 2.0f * z * z, 2.0f * y * z - 2.0f * w * x, 0.0f,
+        2.0f * x * z - 2.0f * w * y, 2.0f * y * z + 2.0f * w * x, 1.0f - 2.0f * x * x - 2.0f * y * y, 0.0f,
+        0.0f, 0.0f, 0.0f, 1.0f
+    };
+    return m;
+}
+
+float32 Quaternion::Dot(const Quaternion& q1, const Quaternion& q2)
+{
+    return q1.x * q2.x + q1.y * q2.y + q1.z * q2.z + q1.w * q2.w;
+}
+
+inline Quaternion Quaternion::SLerp(const Quaternion& q1, const Quaternion& q2, float32 t)
+{
+    float32 dotSqr = Quaternion::Dot(q1, q2);
+    float32 theta = std::acos(dotSqr);
+    float32 sinThetaInv = 1.0f / std::sin(theta);
+    float32 oneMinusT = 1.0f - t;
+    float32 wa = std::sin(theta * oneMinusT) * sinThetaInv;
+    float32 wb = std::sin(theta * t) * sinThetaInv;
+    Quaternion q1_ = q1 * wa;
+    Quaternion q2_ = q2 * wb;
+    Quaternion res = { q1.x + q2.x, q1.y + q2.y, q1.z + q2.z, q1.w + q2.w };
+    res.Normalize();
+    return res;
+}
+
+Quaternion Quaternion::FromEuler(float32 x, float32 y, float32 z)
+{
+    float32 halfX = x * 0.5f;
+    float32 halfY = y * 0.5f;
+    float32 halfZ = z * 0.5f;
+    float32 cx = std::cos(halfX);
+    float32 sx = std::sin(halfX);
+    float32 cy = std::cos(halfY);
+    float32 sy = std::sin(halfY);
+    float32 cz = std::cos(halfZ);
+    float32 sz = std::sin(halfZ);
+
+    Quaternion q;
+    q.x = sx * cy * cz - cx * sy * sz;
+    q.y = cx * sy * cz + sx * cy * sz;
+    q.z = cx * cy * sz - sx * sy * cz;
+    q.w = cx * cy * cz + sx * sy * sz;
+
+    return q;
+}
+
+Vector3 Quaternion::ToEuler(const Quaternion& q)
+{
 }
 
 }
