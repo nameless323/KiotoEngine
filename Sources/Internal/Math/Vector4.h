@@ -31,6 +31,8 @@ public:
     Vector4_(T x_, T y_, T z_, T w_);
     Vector4_(const Vector4_& other);
 
+    Vector4_<T>& operator=(const Vector4_<T>& v);
+
     Vector4_<T> operator-() const;
 
     bool operator== (const Vector4_<T>& other) const;
@@ -81,6 +83,17 @@ template <typename T>
 Vector4_<T>::Vector4_(const Vector4_& other)
     : x(other.x), y(other.y), z(other.z), w(other.w)
 {
+}
+
+template <typename T>
+Vector4_<T>& Vector4_<T>::operator=(const Vector4_<T>& v)
+{
+    x = v.x;
+    y = v.y;
+    z = v.z;
+    w = v.w;
+
+    return *this;
 }
 
 template <typename T>
