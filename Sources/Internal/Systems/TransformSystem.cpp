@@ -49,7 +49,7 @@ void TransformSystem::Update(float32 dt)
 void TransformSystem::ComposeMatricies(TransformComponent* t)
 {
     const Vector3& pos = t->GetWorldPosition();
-    Matrix4 toWorld = t->GetWorldRotation();
+    Matrix4 toWorld = t->GetWorldRotation().ToMatrix();
     toWorld.SetTranslation(pos);
     t->SetToWorld(toWorld);
 

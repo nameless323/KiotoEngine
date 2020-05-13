@@ -6,6 +6,7 @@
 #include "Core/ECS/Component.h"
 #include "Math/Matrix4.h"
 #include "Math/Vector3.h"
+#include "Math/Quaternion.h"
 
 namespace Kioto
 {
@@ -22,7 +23,7 @@ public:
     const Matrix4& GetToParent() const;
     const Matrix4& GetToModel() const;
     const Vector3& GetWorldPosition() const;
-    const Matrix4& GetWorldRotation() const;
+    const Quaternion& GetWorldRotation() const;
 
     Vector3 TransformPointToWorld(const Vector3& localPoint) const;
     Vector3 TransformPointToModel(const Vector3& worldPoint) const;
@@ -32,7 +33,10 @@ public:
     void SetToModel(const Matrix4& m);
     void SetParent(TransformComponent* parent);
     void SetWorldPosition(const Vector3& pos);
-    void SetWorldRotation(const Matrix4& rot);
+    void SetWorldRotation(const Quaternion& rot);
+
+    Vector3 GetUp() const;
+    Vector3 GetRight() const;
 
     Component* Clone() const override;
 
@@ -50,7 +54,7 @@ private:
     bool m_isDirty = false;
 
     Vector3 m_worldPosition{};
-    Matrix4 m_worldRotation = Matrix4::Identity; // [a_vorontcov] TODO: quaternion.
+    Quaternion m_worldRotation{}; // [a_vorontcov] TODO: quaternion.
 
     TransformComponent* m_parent = nullptr;
     std::vector<TransformComponent*> m_children;
@@ -84,7 +88,7 @@ inline const Vector3& TransformComponent::GetWorldPosition() const
     return m_worldPosition;
 }
 
-inline const Matrix4& TransformComponent::GetWorldRotation() const
+inline const Quaternion& TransformComponent::GetWorldRotation() const
 {
     return m_worldRotation;
 }
@@ -126,7 +130,7 @@ inline void TransformComponent::SetWorldPosition(const Vector3& pos)
     m_isDirty = true;
 }
 
-inline void TransformComponent::SetWorldRotation(const Matrix4& rot)
+inline void TransformComponent::SetWorldRotation(const Quaternion& rot)
 {
     m_worldRotation = rot;
     m_isDirty = true;
