@@ -44,6 +44,7 @@ public:
     static Quaternion SLerp(const Quaternion& q1, const Quaternion& q2, float32 t);
     static Quaternion FromEuler(float32 x, float32 y, float32 z);
     static Vector3 ToEuler(const Quaternion& q);
+    static Quaternion FromMatrix(const Matrix4& m);
 };
 
 inline Quaternion::Quaternion(const Quaternion& q)
@@ -241,6 +242,65 @@ Quaternion Quaternion::FromEuler(float32 x, float32 y, float32 z)
 
 Vector3 Quaternion::ToEuler(const Quaternion& q)
 {
+    float32 sinrCosp = 2.0f * (q.w * q.x + q.y * q.z);
+    float32 cosrCosp = 1.0f - 2.0f * (q.x * q.x + q.y * q.y);
+    float32 x = std::atan2(sinrCosp, cosrCosp);
+
+    float32 y = 0.0f;
+    float32 sinp = 2.0f * (q.w * q.y - q.z * q.x);
+    if (std::abs(sinp) >= 1.0f)
+        y = std::copysign(Math::PIOverTwo, sinp);
+    else
+        y = std::asin(sinp);
+
+    float32 sinyCosp = 2.0f * (q.w * q.z + q.x * q.y);
+    float32 cosyCosp = 1.0f - 2.0f * (q.y * q.y + q.z * q.z);
+    float32 z = std::atan2(sinyCosp, cosyCosp);
+
+    return { x, y, z };
+}
+
+Quaternion Quaternion::FromMatrix(const Matrix4& m)
+{
+    // https://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/
+    float32 trace = m._00 + m._11 + m._22;
+    Quaternion q;
+    if (trace > 0)
+    {
+        float32 s = 0.5f / std::sqrt(trace + 1.0f);
+        q.w = 0.25f / s;
+        q.x = (m._21 - m._12) * s;
+        q.y = (m._02 - m._20) * s;
+        q.z = (m._10 - m._01) * s;
+        return q;
+    }
+
+    if (m._00 > m._11 && m._00 > m._22)
+    {
+        float32 s = 2.0f * std::sqrt(1.0f + m._00 - m._11 - m._22);
+        q.w = (m._21 - m._12) / s;
+        q.x = 0.25f * s;
+        q.y = (m._01 + m._10) / s;
+        q.z = (m._02 + m._20) / s;
+        return q;
+    }
+
+    if (m._11 > m._22)
+    {
+        float32 s = 2.0f * std::sqrt(1.0f + m._11 - m._00 - m._22);
+        q.w = (m._02 - m._20) / s;
+        q.x = (m._01 + m._10) / s;
+        q.y = 0.25f * s;
+        q.z = (m._12 + m._21) / s;
+        return q;
+    }
+
+    float32 s = 2.0f * std::sqrt(1.0f + m._22 - m._00 - m._11);
+    q.w = (m._10 - m._01) / s;
+    q.x = (m._02 + m._20) / s;
+    q.y = (m._12 + m._21) / s;
+    q.z = 0.25f * s;
+    return q;
 }
 
 }
