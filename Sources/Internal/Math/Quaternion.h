@@ -20,6 +20,7 @@ public:
         float32 data[4];
     };
     Quaternion();
+    Quaternion(const Vector3& axis, float32 angle);
     Quaternion(float32 x, float32 y, float32 z, float32 w);
     Quaternion(const Quaternion& q);
     Quaternion& operator= (const Quaternion& q);
@@ -59,6 +60,11 @@ inline Quaternion::Quaternion(float32 x_, float32 y_, float32 z_, float32 w_)
 
 inline Quaternion::Quaternion() : x(0.0f), y(0.0f), z(0.0f), w(1.0f)
 {}
+
+inline Quaternion::Quaternion(const Vector3& axis, float32 angle)
+{
+    AxisAngle(axis, angle);
+}
 
 inline Quaternion& Quaternion::operator= (const Quaternion& q)
 {
@@ -235,8 +241,15 @@ inline void Quaternion::SetFromMatrix(const Matrix4& m)
     z = 0.25f * s;
 }
 
-void Quaternion::AxisAngle(const Vector3& axis, float32 angle)
+inline void Quaternion::AxisAngle(const Vector3& axis, float32 angle)
 {
+    float32 halfAngle = angle * 0.5f;
+    float32 sinHAngle = std::sin(halfAngle);
+    float32 cosHAngle = std::cos(halfAngle);
+    w = cosHAngle;
+    x = axis.x * sinHAngle;
+    y = axis.y * sinHAngle;
+    z = axis.z * sinHAngle;
 }
 
 inline float32 Quaternion::Dot(const Quaternion& q1, const Quaternion& q2)

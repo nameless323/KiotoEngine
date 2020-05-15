@@ -35,8 +35,9 @@ public:
     void SetWorldPosition(const Vector3& pos);
     void SetWorldRotation(const Quaternion& rot);
 
-    Vector3 GetUp() const;
-    Vector3 GetRight() const;
+    Vector3 Up() const;
+    Vector3 Right() const;
+    Vector3 Fwd() const;
 
     Component* Clone() const override;
 
@@ -162,5 +163,20 @@ inline Vector3 TransformComponent::TransformPointToModel(const Vector3& worldPoi
 {
     Vector4 localPoint = Vector4(worldPoint, 1.0f) * m_toModel;
     return { localPoint.x, localPoint.y, localPoint.z };
+}
+
+inline Vector3 TransformComponent::Up() const
+{
+    return { m_toWorld._10, m_toWorld._11, m_toWorld._12 };
+}
+
+inline Vector3 TransformComponent::Right() const
+{
+    return { m_toWorld._00, m_toWorld._01, m_toWorld._02 };
+}
+
+inline Vector3 TransformComponent::Fwd() const
+{
+    return { m_toWorld._20, m_toWorld._21, m_toWorld._22 };
 }
 }
