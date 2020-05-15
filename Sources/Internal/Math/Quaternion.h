@@ -48,6 +48,9 @@ public:
     static Quaternion FromEuler(float32 x, float32 y, float32 z);
     static Vector3 ToEuler(const Quaternion& q);
     static Quaternion FromMatrix(const Matrix4& m);
+    static Quaternion LookAt(const Vector3& sourcePos, const Vector3& targetPos, const Vector3& fwd);
+
+    static Quaternion Identity;
 };
 
 inline Quaternion::Quaternion(const Quaternion& q)
@@ -319,5 +322,22 @@ inline Quaternion Quaternion::FromMatrix(const Matrix4& m)
     q.SetFromMatrix(m);
     return q;
 }
+
+inline Quaternion Quaternion::LookAt(const Vector3& sourcePos, const Vector3& targetPos, const Vector3& fwd)
+{
+    Vector3 trgtVec = targetPos - sourcePos;
+    trgtVec.Normalize();
+    Vector3 up = Vector3::Cross(fwd, trgtVec);
+    up.Normalize();
+    float32 dot = Vector3::Dot(trgtVec, fwd);
+    if (Math::IsFloatEqual(dot, -1.0f))
+        return Quaternion(Vector3::Up, Math::DegToRad(180.0f));
+    if (Math::IsFloatEqual(dot, 1.0f))
+        return Quaternion::Identity;
+    float32 angle = std::acos(dot);
+    return Quaternion(up, angle);
+}
+
+inline Quaternion Quaternion::Identity = { 0.0f, 0.0f, 0.0f, 1.0f };
 
 }
