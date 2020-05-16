@@ -61,19 +61,19 @@ Vector2_<T>::Vector2_(const Vector2_& other)
 }
 
 template <typename T>
-bool Vector2_<T>::operator==(const Vector2_<T>& other) const
+inline bool Vector2_<T>::operator==(const Vector2_<T>& other) const
 {
     return Math::IsFloatEqual(x, other.x) && Math::IsFloatEqual(y, other.y);
 }
 
 template <>
-bool Vector2_<int32>::operator==(const Vector2_<int32>& other) const
+inline bool Vector2_<int32>::operator==(const Vector2_<int32>& other) const
 {
     return x == other.x && y == other.y;
 }
 
 template <>
-bool Vector2_<int64>::operator==(const Vector2_<int64>& other) const
+inline bool Vector2_<int64>::operator==(const Vector2_<int64>& other) const
 {
     return x == other.x && y == other.y;
 }

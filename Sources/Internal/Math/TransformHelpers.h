@@ -8,7 +8,7 @@
 namespace Kioto::Math::TransformHelpers
 {
 /// Returns new position after rotation of source transform around targetPos but angles xAngle and yAngle. DOES NOT MODIFY TRANSFORM ITSELF.
-Vector3 RotateAround(const TransformComponent& source, const Vector3& targetPos, float32 xAngle, float32 yAngle)
+inline Vector3 RotateAround(const TransformComponent& source, const Vector3& targetPos, float32 xAngle, float32 yAngle)
 {
     Vector3 transfVector = source.GetWorldPosition() - targetPos;
     Quaternion xRot(source.Up(), xAngle);

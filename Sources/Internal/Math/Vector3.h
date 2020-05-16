@@ -129,20 +129,20 @@ Vector3_<T>::Vector3_(const Vector3_<T>& v)
 {}
 
 template <typename T>
-bool Vector3_<T>::operator==(const Vector3_<T>& other) const
+inline bool Vector3_<T>::operator==(const Vector3_<T>& other) const
 {
     return Math::IsFloatEqual(x, other.x) && Math::IsFloatEqual(y, other.y)
         && Math::IsFloatEqual(z, other.z);
 }
 
 template <>
-bool Vector3_<int32>::operator==(const Vector3_<int32>& other) const
+inline bool Vector3_<int32>::operator==(const Vector3_<int32>& other) const
 {
     return x == other.x && y == other.y && z == other.z;
 }
 
 template <>
-bool Vector3_<int64>::operator==(const Vector3_<int64>& other) const
+inline bool Vector3_<int64>::operator==(const Vector3_<int64>& other) const
 {
     return x == other.x && y == other.y && z == other.z;
 }
@@ -283,7 +283,7 @@ const Vector3_<T> Vector3_<T>::Zero((T)0, (T)0, (T)0);
 using Vector3 = Vector3_<float32>;
 using Vector3i = Vector3_<int32>;
 
-std::ostream& operator<<(std::ostream& os, const Vector3_<float32>& V)
+inline std::ostream& operator<<(std::ostream& os, const Vector3_<float32>& V)
 {
     std::ios_base::fmtflags f(os.flags());
     os << std::setprecision(5) << std::fixed << std::internal;

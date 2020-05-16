@@ -103,20 +103,20 @@ Vector4_<T> Vector4_<T>::operator-() const
 }
 
 template <typename T>
-bool Vector4_<T>::operator==(const Vector4_<T>& other) const
+inline bool Vector4_<T>::operator==(const Vector4_<T>& other) const
 {
     return Math::IsFloatEqual(x, other.x) && Math::IsFloatEqual(y, other.y)
         && Math::IsFloatEqual(z, other.z) && Math::IsFloatEqual(w, other.w);
 }
 
 template <>
-bool Vector4_<int32>::operator ==(const Vector4_<int32>& other) const
+inline bool Vector4_<int32>::operator ==(const Vector4_<int32>& other) const
 {
     return x == other.x && y == other.y && z == other.z && w == other.w;
 }
 
 template <>
-bool Vector4_<int64>::operator ==(const Vector4_<int64>& other) const
+inline bool Vector4_<int64>::operator ==(const Vector4_<int64>& other) const
 {
     return x == other.x && y == other.y && z == other.z && w == other.w;
 }
@@ -168,7 +168,7 @@ const Vector4_<T> Vector4_<T>::Backward(0.0f, 0.0f, -1.0f, 0.0f);
 using Vector4 = Vector4_<float32>;
 using Vector4i = Vector4_<int32>;
 
-std::ostream& operator<<(std::ostream& os, const Vector4_<float32>& V)
+inline std::ostream& operator<<(std::ostream& os, const Vector4_<float32>& V)
 {
     std::ios_base::fmtflags f(os.flags());
     os << std::setprecision(5) << std::fixed << std::internal;
