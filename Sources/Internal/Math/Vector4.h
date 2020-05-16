@@ -7,6 +7,9 @@
 #include "Core/CoreTypes.h"
 #include "Math/Vector3.h"
 
+#include <iostream>
+#include <iomanip>
+
 namespace Kioto
 {
 template <typename T>
@@ -28,6 +31,8 @@ public:
     Vector4_(T x_, T y_, T z_, T w_);
     Vector4_(const Vector4_& other);
 
+    Vector4_<T>& operator=(const Vector4_<T>& v);
+
     Vector4_<T> operator-() const;
 
     bool operator== (const Vector4_<T>& other) const;
@@ -46,6 +51,8 @@ public:
     static const Vector4_<T> Right;
     static const Vector4_<T> Forward;
     static const Vector4_<T> Backward;
+
+    friend std::ostream& operator<<(std::ostream& os, const Vector4_<float32>& M);
 };
 
 template <typename T>
@@ -76,6 +83,17 @@ template <typename T>
 Vector4_<T>::Vector4_(const Vector4_& other)
     : x(other.x), y(other.y), z(other.z), w(other.w)
 {
+}
+
+template <typename T>
+Vector4_<T>& Vector4_<T>::operator=(const Vector4_<T>& v)
+{
+    x = v.x;
+    y = v.y;
+    z = v.z;
+    w = v.w;
+
+    return *this;
 }
 
 template <typename T>
@@ -149,4 +167,14 @@ const Vector4_<T> Vector4_<T>::Backward(0.0f, 0.0f, -1.0f, 0.0f);
 
 using Vector4 = Vector4_<float32>;
 using Vector4i = Vector4_<int32>;
+
+std::ostream& operator<<(std::ostream& os, const Vector4_<float32>& V)
+{
+    std::ios_base::fmtflags f(os.flags());
+    os << std::setprecision(5) << std::fixed << std::internal;
+    for (uint32 i = 0; i < 4; ++i)
+        os << " | " << std::setw(6) << V.data[i];
+    os.flags(f);
+    return os;
+}
 }

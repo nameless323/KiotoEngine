@@ -186,6 +186,8 @@
     <ClInclude Include="Sources\Internal\Core\ECS\Entity.h" />
     <ClInclude Include="Sources\Internal\Core\ECS\SceneSystem.h" />
     <ClInclude Include="Sources\Internal\Core\ECS\System.h" />
+    <ClInclude Include="Sources\Internal\Math\Quaternion.h" />
+    <ClInclude Include="Sources\Internal\Math\TransformHelpers.h" />
     <ClInclude Include="Sources\Internal\Render\Color.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\KiotoDx12Mapping.h" />
     <ClInclude Include="Sources\Internal\Render\RenderGraph\RenderGraph.h" />

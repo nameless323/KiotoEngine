@@ -6,6 +6,7 @@
 #include "Core/ECS/Component.h"
 #include "Math/Matrix4.h"
 #include "Math/Vector3.h"
+#include "Math/Quaternion.h"
 
 namespace Kioto
 {
@@ -22,14 +23,21 @@ public:
     const Matrix4& GetToParent() const;
     const Matrix4& GetToModel() const;
     const Vector3& GetWorldPosition() const;
-    const Matrix4& GetWorldRotation() const;
+    const Quaternion& GetWorldRotation() const;
+
+    Vector3 TransformPointToWorld(const Vector3& localPoint) const;
+    Vector3 TransformPointToModel(const Vector3& worldPoint) const;
 
     void SetToWorld(const Matrix4& m);
     void SetToParent(const Matrix4& m);
     void SetToModel(const Matrix4& m);
     void SetParent(TransformComponent* parent);
     void SetWorldPosition(const Vector3& pos);
-    void SetWorldRotation(const Matrix4& rot);
+    void SetWorldRotation(const Quaternion& rot);
+
+    Vector3 Up() const;
+    Vector3 Right() const;
+    Vector3 Fwd() const;
 
     Component* Clone() const override;
 
@@ -47,7 +55,7 @@ private:
     bool m_isDirty = false;
 
     Vector3 m_worldPosition{};
-    Matrix4 m_worldRotation = Matrix4::Identity; // [a_vorontcov] TODO: quaternion.
+    Quaternion m_worldRotation{}; // [a_vorontcov] TODO: quaternion.
 
     TransformComponent* m_parent = nullptr;
     std::vector<TransformComponent*> m_children;
@@ -81,7 +89,7 @@ inline const Vector3& TransformComponent::GetWorldPosition() const
     return m_worldPosition;
 }
 
-inline const Matrix4& TransformComponent::GetWorldRotation() const
+inline const Quaternion& TransformComponent::GetWorldRotation() const
 {
     return m_worldRotation;
 }
@@ -123,7 +131,7 @@ inline void TransformComponent::SetWorldPosition(const Vector3& pos)
     m_isDirty = true;
 }
 
-inline void TransformComponent::SetWorldRotation(const Matrix4& rot)
+inline void TransformComponent::SetWorldRotation(const Quaternion& rot)
 {
     m_worldRotation = rot;
     m_isDirty = true;
@@ -143,5 +151,32 @@ inline void TransformComponent::SetChildrenDirty()
 {
     for (auto c : m_children)
         c->SetDirty();
+}
+
+inline Vector3 TransformComponent::TransformPointToWorld(const Vector3& localPoint) const
+{
+    Vector4 worldPoint = Vector4(localPoint, 1.0f) * m_toWorld;
+    return { worldPoint.x, worldPoint.y, worldPoint.z };
+}
+
+inline Vector3 TransformComponent::TransformPointToModel(const Vector3& worldPoint) const
+{
+    Vector4 localPoint = Vector4(worldPoint, 1.0f) * m_toModel;
+    return { localPoint.x, localPoint.y, localPoint.z };
+}
+
+inline Vector3 TransformComponent::Up() const
+{
+    return { m_toWorld._10, m_toWorld._11, m_toWorld._12 };
+}
+
+inline Vector3 TransformComponent::Right() const
+{
+    return { m_toWorld._00, m_toWorld._01, m_toWorld._02 };
+}
+
+inline Vector3 TransformComponent::Fwd() const
+{
+    return { m_toWorld._20, m_toWorld._21, m_toWorld._22 };
 }
 }

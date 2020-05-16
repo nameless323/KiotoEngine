@@ -8,6 +8,9 @@
 #include "Math/MathHelpers.h"
 #include "Math/Vector4.h"
 
+#include <iostream>
+#include <iomanip>
+
 namespace Kioto
 {
 ///
@@ -131,6 +134,8 @@ public:
     static Matrix4_<T> BuildOrtho(float32 left, float32 right, float32 bottom, float32 top, float32 zNear, float32 zFar);
 
     static const Matrix4_<T> Identity;
+
+    friend std::ostream& operator<<(std::ostream& os, const Matrix4_<float32>& M);
 };
 
 template <typename T>
@@ -267,12 +272,12 @@ Matrix4_<T> Matrix4_<T>::InversedOrthonorm() const
 {
     Matrix4_<T> res
     {
-        _00, _01, _02, 0.0f,
-        _10, _11, _12, 0.0f,
-        _20, _21, _22, 0.0f,
+        _00, _10, _20, 0.0f,
+        _01, _11, _21, 0.0f,
+        _02, _12, _22, 0.0f,
         0.0f, 0.0f, 0.0f, 1.0f
     };
-    Vector4_<T> pos(GetTranslation());
+    Vector4_<T> pos(GetTranslation(), 1.0f);
     pos = -pos * res;
     res._30 = pos.x;
     res._31 = pos.y;
@@ -511,4 +516,18 @@ const Matrix4_<T> Matrix4_<T>::Identity(
 );
 
 using Matrix4 = Matrix4_<float32>;
+
+inline std::ostream& operator<<(std::ostream& os, const Matrix4_<float32>& M)
+{
+    std::ios_base::fmtflags f(os.flags());
+    os << std::setprecision(5) << std::fixed << std::internal << std::endl;
+    for (uint32 i = 1; i <= 16; ++i)
+    {
+        os << " | " << std::setw(6) << M.data[i - 1];
+        if (i % 4 == 0)
+            os << " | " << std::endl;
+    }
+    os.flags(f);
+    return os;
+}
 }

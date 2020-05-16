@@ -32,6 +32,7 @@ void CameraComponent::SetEntity(Entity* entity)
 
 void CameraComponent::Serialize(YAML::Emitter& out) const
 {
+    using ::operator<<;
     out << YAML::Key << "Cam.View" << YAML::Value << m_camera.GetView();
     out << YAML::Key << "Cam.FOV_Y" << YAML::Value << m_camera.GetFovY();
     out << YAML::Key << "Cam.Near" << YAML::Value << m_camera.GetNearPlane();

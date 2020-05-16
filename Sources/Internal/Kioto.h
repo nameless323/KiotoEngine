@@ -19,10 +19,12 @@
 #include <Component/TransformComponent.h>
 
 #include <Math/MathHelpers.h>
+#include <Math/TransformHelpers.h>
 #include <Math/Vector2.h>
 #include <Math/Vector3.h>
 #include <Math/Vector4.h>
 #include <Math/Matrix4.h>
+#include <Math/Quaternion.h>
 
 #include <Render/Renderer.h>
 #include <Core/Input/Input.h>
