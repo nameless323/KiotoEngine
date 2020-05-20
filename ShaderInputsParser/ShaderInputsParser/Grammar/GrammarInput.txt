@@ -1,0 +1,8 @@
+
+float4 m_int;
+float ololo;
+
+struct structName
+{
+    int a;
+};

@@ -1,1 +1,1 @@
-antlr4 -Dlanguage=CSharp -visitor Chat.g4
+antlr4 -Dlanguage=CSharp -visitor ShaderInputsParser.g4
