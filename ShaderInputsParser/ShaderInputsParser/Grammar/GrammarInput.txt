@@ -1,7 +1,14 @@
-struct myCoolStruct
+struct instanceData
 {
-    int a;
-    int f;
+    float4x4 toWorld;
+    float4 color;
+};
+
+struct particleSetting
+{
+    float4 color;
+    float4 velocity;
+    float playableByCats;
 };
 
 constantBuffer objectCb

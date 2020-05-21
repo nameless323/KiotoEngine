@@ -3,11 +3,29 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>ShaderInputsParserApp</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Antlr" Version="3.5.0.2" />
-    <PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
+    <None Remove="autogen\Chat.interp" />
+    <None Remove="autogen\Chat.tokens" />
+    <None Remove="autogen\ChatLexer.interp" />
+    <None Remove="autogen\ChatLexer.tokens" />
+    <None Remove="autogen\ShaderInputsLexer.interp" />
+    <None Remove="autogen\ShaderInputsLexer.tokens" />
+    <None Remove="autogen\ShaderInputsParser.interp" />
+    <None Remove="autogen\ShaderInputsParser.tokens" />
+    <None Remove="Grammar\GrammarInput.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Grammar\GrammarInput.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.8.0" />
   </ItemGroup>
 
 </Project>
