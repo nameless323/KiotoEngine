@@ -3,3 +3,14 @@ struct myCoolStruct
     int a;
     int f;
 };
+
+constantBuffer objectCb
+{
+    float4x4 toW;
+    float4x4 toO;
+};
+
+texture2D mask;
+texture2D mask2;
+sampler pointSampler;
+sampler linearSampler;
