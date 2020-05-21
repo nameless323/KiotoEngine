@@ -1,8 +1,5 @@
-
-float4 m_int;
-float ololo;
-
-struct structName
+struct myCoolStruct
 {
     int a;
+    int f;
 };
