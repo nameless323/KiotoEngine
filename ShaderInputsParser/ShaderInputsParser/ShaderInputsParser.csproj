@@ -16,16 +16,21 @@
     <None Remove="autogen\ShaderInputsParser.interp" />
     <None Remove="autogen\ShaderInputsParser.tokens" />
     <None Remove="Grammar\GrammarInput.txt" />
+    <None Remove="Templates\hlslTemplate.stg" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="Grammar\GrammarInput.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Templates\hlslTemplate.stg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Antlr4.Runtime.Standard" Version="4.8.0" />
+    <PackageReference Include="StringTemplate4" Version="4.0.8" />
   </ItemGroup>
 
 </Project>

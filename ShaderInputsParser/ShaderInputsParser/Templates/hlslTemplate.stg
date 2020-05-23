@@ -1,0 +1,8 @@
+var(type, name) ::= "<type> <name>;"
+
+struct(structKeyword, name, members, bindpoint, space) ::= <<
+<structKeyword> <name> : register(b<bindpoint>, space<space>)
+{
+    <members>
+};
+>>

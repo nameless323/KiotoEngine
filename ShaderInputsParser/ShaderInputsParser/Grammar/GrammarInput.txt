@@ -9,6 +9,7 @@ struct particleSetting
     float4 color;
     float4 velocity;
     float playableByCats;
+    float colorAtten;
 };
 
 constantBuffer objectCb
