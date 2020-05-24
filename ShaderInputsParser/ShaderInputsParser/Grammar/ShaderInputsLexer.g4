@@ -4,8 +4,9 @@ fragment LETTER_NUMBER : LETTER | [0-9];
 fragment LETTER : [a-zA-Z] | '_';
 fragment CARET_SYMBOLS : [\n\r];
 
-TYPE: SCALAR_TYPE VECTOR_TYPE_MODIFIERS?;
-VECTOR_TYPE_MODIFIERS : '2' | '3' | '4' | '3x3' | '4x4';
+TYPE: SCALAR_TYPE | VECTOR_TYPE | MATRIX_TYPE;
+MATRIX_TYPE : SCALAR_TYPE ('3x3' | '4x4')+;
+VECTOR_TYPE : SCALAR_TYPE ('2' | '3' | '4')+;
 SCALAR_TYPE : 'int' | 'uint' | 'float';
 
 CURL_BR_O : '{';
@@ -20,8 +21,12 @@ TEX2D_KEYWORD : 'texture2D';
 INCLUDE_KEYWORD : '#include';
 
 NAME : LETTER+ LETTER_NUMBER*;
+VALUE : LETTER_NUMBER+;
 SEMI : ';';
 FILEPATH : ('\\' | LETTER_NUMBER)+ '.' LETTER_NUMBER+;
+PERCENT : '%';
+EQUALS : '=';
+COMMA : ',';
 
 MULTILINE_COMMENT : '/*' .*? '*/' -> skip;
 LINE_COMMENT : '//'.*? CARET_SYMBOLS -> skip;
