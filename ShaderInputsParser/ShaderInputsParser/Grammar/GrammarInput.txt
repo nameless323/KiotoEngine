@@ -1,6 +1,6 @@
 #include "path\filename.txt";
 
-struct instanceData
+struct instanceData %bindTo=2, space=3%
 {
     float4x4 toWorld;
     float4 color;

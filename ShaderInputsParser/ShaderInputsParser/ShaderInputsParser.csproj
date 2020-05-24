@@ -33,4 +33,8 @@
     <PackageReference Include="StringTemplate4" Version="4.0.8" />
   </ItemGroup>
 
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="cd $(ProjectDir)Grammar\&#xD;&#xA;RunAntlr.bat" />
+  </Target>
+
 </Project>

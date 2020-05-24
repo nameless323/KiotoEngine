@@ -6,15 +6,19 @@ using System.Text;
 
 namespace ShaderInputsParserApp.Source
 {
+    struct ShaderOutputContext
+    {
+    }
+
     class ShaderInputsVisitor : ShaderInputsParserBaseVisitor<string>
     {
         public override string VisitStruct(ShaderInputsParser.StructContext context)
         {
             string name = context.NAME().GetText();
 
-            StructureVisitor visitor = new StructureVisitor();
+            MembersVisitor visitor = new MembersVisitor();
             visitor.Visit(context);
-            Structure structure = new Structure(name, visitor.Variables);
+            Structure structure = new Structure(name, visitor.Members);
             Structures.Add(structure);
 
             return name;

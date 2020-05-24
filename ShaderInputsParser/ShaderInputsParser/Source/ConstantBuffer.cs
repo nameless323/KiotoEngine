@@ -1,13 +1,13 @@
-﻿using System;
+﻿using ShaderInputsParserApp.Source.Types;
+using System;
 using System.Collections.Generic;
-using System.Numerics;
 using System.Text;
 
-namespace ShaderInputsParserApp.Source.Types
+namespace ShaderInputsParserApp.Source
 {
-    class Structure
+    class ConstantBuffer
     {
-        public Structure(string name, List<Variable> members)
+        public ConstantBuffer(string name, List<Variable> members)
         {
             Name = name;
             Members = new List<Variable>(members);
@@ -17,6 +17,6 @@ namespace ShaderInputsParserApp.Source.Types
 
         public List<Variable> Members { get; }
 
-        public int Bindpoint { get; set; } = 0;
+        public BindpointDesc Bindpoint;
     }
 }
