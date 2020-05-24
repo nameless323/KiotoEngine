@@ -2,10 +2,13 @@ parser grammar ShaderInputsParser;
 
 options { tokenVocab=ShaderInputsLexer; }
 
-inputFile : (struct
+inputFile : ( include
+            | struct
             | cbuffer
             | tex2d
             | sampler)*;
+
+include: INCLUDE_KEYWORD QUOTE FILEPATH QUOTE SEMI;
 
 struct : STRUCT_KEYWORD NAME CURL_BR_O variable+ CURL_BR_C SEMI;
 

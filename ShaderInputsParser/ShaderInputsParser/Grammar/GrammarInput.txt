@@ -1,3 +1,5 @@
+#include "path\filename.txt";
+
 struct instanceData
 {
     float4x4 toWorld;
