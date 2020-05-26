@@ -28,11 +28,12 @@ namespace ShaderInputsParserApp
 
             ShaderInputsVisitor visitor = new ShaderInputsVisitor();
             visitor.Visit(ctx);
+            ShaderOutputContext outputCtx = visitor.OutputContext;
 
             Validator validator = new Validator();
             try
             {
-                validator.Validate(visitor.Structures);
+                validator.Validate(outputCtx.ConstantBuffers);
             }
             catch (DuplicateNameException ex)
             {
@@ -41,7 +42,7 @@ namespace ShaderInputsParserApp
             }
 
             BindpointManager bindpointManager = new BindpointManager();
-            bindpointManager.AssignBindpoints(visitor.Structures);
+            bindpointManager.AssignBindpoints(outputCtx.ConstantBuffers);
 
             // Bindpoint manager stage
             //    calculate resource counts for inputlayouts
@@ -49,7 +50,7 @@ namespace ShaderInputsParserApp
             //    build actual bindings
 
             HeaderWriter writer = new HeaderWriter();
-            writer.WriteHeaders(visitor.Structures);
+            writer.WriteHeaders(outputCtx);
         }
     }
 }

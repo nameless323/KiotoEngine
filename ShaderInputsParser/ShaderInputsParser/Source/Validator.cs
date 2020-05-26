@@ -17,7 +17,7 @@ namespace ShaderInputsParserApp.Source
         public Validator()
         { }
 
-        public void Validate(List<Structure> structures)
+        public void Validate(IEnumerable<IStructureType> structures)
         {
             foreach (var s in structures)
             {
@@ -28,13 +28,13 @@ namespace ShaderInputsParserApp.Source
             }
         }
 
-        void ValidateMembers(Structure s)
+        void ValidateMembers(IStructureType s)
         {
             HashSet<string> names = new HashSet<string>();
             foreach(var m in s.Members)
             {
                 if (names.Contains(m.Name))
-                    throw new DuplicateNameException("Struct " + s.Name + " contains duplicate member with name " + m.Name);
+                    throw new DuplicateNameException("Type " + s.GetType() + " with a name " + s.Name + " contains duplicate member with name " + m.Name);
                 names.Add(m.Name);
             }
         }

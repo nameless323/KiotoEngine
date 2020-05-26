@@ -11,12 +11,12 @@ namespace ShaderInputsParserApp.Source
         {
         }
 
-        public void AssignBindpoints(List<Structure> structs)
+        public void AssignBindpoints(List<ConstantBuffer> structs)
         {
-            int i = 0;
+            uint i = 0;
             foreach (var s in structs)
             {
-                s.Bindpoint = i++;
+                s.Bindpoint = new BindpointDesc(i++, 0);
             }
         }
     }

@@ -11,10 +11,12 @@ namespace ShaderInputsParserApp.Source
         {
         }
 
-        public void WriteHeaders(List<Structure> structs)
+        public void WriteHeaders(ShaderOutputContext ctx)
         {
             Antlr4.StringTemplate.TemplateGroup group = new Antlr4.StringTemplate.TemplateGroupFile(Environment.CurrentDirectory + "/Templates/hlslTemplate.stg");
             StringBuilder result = new StringBuilder();
+            List<ConstantBuffer> structs = ctx.ConstantBuffers;
+
             foreach (var structure in structs)
             {
                 StringBuilder members = new StringBuilder();
@@ -30,8 +32,8 @@ namespace ShaderInputsParserApp.Source
                 structTemplate.Add("structKeyword", "cbuffer");
                 structTemplate.Add("name", structure.Name);
                 structTemplate.Add("members", members);
-                structTemplate.Add("bindpoint", structure.Bindpoint);
-                structTemplate.Add("space", "0");
+                structTemplate.Add("bindpoint", structure.Bindpoint.Reg);
+                structTemplate.Add("space", structure.Bindpoint.Space);
                 result.Append(structTemplate.Render() + '\n' + '\n');
             }
 

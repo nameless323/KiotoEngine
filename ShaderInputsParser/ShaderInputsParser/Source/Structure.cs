@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ShaderInputsParserApp.Source.Types
 {
-    class Structure
+    class Structure : IStructureType
     {
         public Structure(string name, List<Variable> members)
         {
@@ -13,9 +13,9 @@ namespace ShaderInputsParserApp.Source.Types
             Members = new List<Variable>(members);
         }
 
-        public string Name { get; }
+        public string Name { get; set; }
 
-        public List<Variable> Members { get; }
+        public List<Variable> Members { get; set; }
 
         public int Bindpoint { get; set; } = 0;
     }

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ShaderInputsParserApp.Source
 {
-    class ConstantBuffer
+    class ConstantBuffer : IStructureType, IBindable
     {
         public ConstantBuffer(string name, List<Variable> members)
         {
@@ -13,10 +13,10 @@ namespace ShaderInputsParserApp.Source
             Members = new List<Variable>(members);
         }
 
-        public string Name { get; }
+        public string Name { get; set; }
 
-        public List<Variable> Members { get; }
+        public List<Variable> Members { get; set; }
 
-        public BindpointDesc Bindpoint;
+        public BindpointDesc Bindpoint { get; set; }
     }
 }

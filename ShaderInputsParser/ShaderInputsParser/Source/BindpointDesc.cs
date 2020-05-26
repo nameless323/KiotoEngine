@@ -6,6 +6,11 @@ namespace ShaderInputsParserApp.Source
 {
     struct BindpointDesc
     {
+        public BindpointDesc(uint reg, uint space)
+        {
+            Reg = reg;
+            Space = space;
+        }
         public uint Reg { get; set; }
         public uint Space { get; set; }
     }

@@ -12,7 +12,7 @@ include: INCLUDE_KEYWORD QUOTE FILEPATH QUOTE SEMI;
 
 struct : STRUCT_KEYWORD NAME annotationList CURL_BR_O variable+ CURL_BR_C SEMI;
 
-cbuffer : CBUFFER_KEYWORD NAME CURL_BR_O variable+ CURL_BR_C SEMI;
+cbuffer : CBUFFER_KEYWORD NAME annotationList CURL_BR_O variable+ CURL_BR_C SEMI;
 
 tex2d : TEX2D_KEYWORD NAME SEMI;
 
