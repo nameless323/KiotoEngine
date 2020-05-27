@@ -22,7 +22,7 @@ namespace ShaderInputsParserApp.Source
             foreach (var s in structures)
             {
                 if (m_structNames.Contains(s.Name))
-                    throw new DuplicateNameException("Struct name " + s.Name + " is duplicated.");
+                    throw new DuplicateNameException("Name " + s.Name + " is duplicated.");
                 m_structNames.Add(s.Name);
                 ValidateMembers(s);
             }

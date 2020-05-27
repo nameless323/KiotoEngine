@@ -16,6 +16,7 @@ namespace ShaderInputsParserApp.Source
         public string Name { get; set; }
 
         public List<Variable> Members { get; set; }
+        public List<Annotation> Annotations { get; set; }
 
         public BindpointDesc Bindpoint { get; set; }
     }

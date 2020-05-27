@@ -24,4 +24,4 @@ annotationList : annotation*;
 
 annotation : PERCENT (annotationMember COMMA)* annotationMember PERCENT;
 
-annotationMember : NAME (EQUALS VALUE)*;
+annotationMember : NAME (EQUALS VALUE)?;

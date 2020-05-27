@@ -14,13 +14,13 @@ struct particleSetting
     float colorAtten;
 };
 
-constantBuffer objectCb %bindTo=2, space=3%
+constantBuffer objectCb %bindTo=2, space=3, someAnnot%
 {
     float4x4 toW;
     float4x4 toO;
 };
 
-constantBuffer engineCb %bindto = 1, space = 4%
+constantBuffer engineCb %bindTo=1, space = 4%
 {
     float4 time;
     float sinTime;
