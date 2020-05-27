@@ -15,15 +15,9 @@ namespace ShaderInputsParserApp.Source.Types
         public string Type { get; }
         public string Name { get; }
 
-        public static string ConvertType(string type)
+        public static string ConvertHlslType(string type)
         {
-            if (type == "float4")
-                return "vector4";
-            if (type == "float4x4")
-                return "matrix4";
-            if (type == "float")
-                return "float32";
-            return "";
+            return type;
         }
     }
 }
