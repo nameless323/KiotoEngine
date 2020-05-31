@@ -45,6 +45,12 @@ namespace ShaderInputsParserApp.Source
         {
             AssignBindpointsFromAnnotations(ctx.ConstantBuffers);
             AutomaticallyAssignBindpoints(ctx.ConstantBuffers, m_allBindings[BindpointType.Buffer]);
+
+            AssignBindpointsFromAnnotations(ctx.Textures);
+            AutomaticallyAssignBindpoints(ctx.Textures, m_allBindings[BindpointType.Texture]);
+
+            AssignBindpointsFromAnnotations(ctx.Samplers);
+            AutomaticallyAssignBindpoints(ctx.Samplers, m_allBindings[BindpointType.Sampler]);
         }
 
         void ValidateAnnotation(BindpointDesc d, Bindings bindings)
@@ -102,8 +108,12 @@ namespace ShaderInputsParserApp.Source
         {
             uint register = 0;
             uint space = 0;
+            outDesc = null;
 
             List<Annotation> annotations = cb.Annotations;
+            if (annotations == null)
+                return false;
+
             var bindToAnnotation = annotations.FirstOrDefault(annot => annot.Name == "bindTo");
             bool regParseSucess = false;
             if (bindToAnnotation.Value != null)
@@ -112,10 +122,7 @@ namespace ShaderInputsParserApp.Source
             }
 
             if (!regParseSucess)
-            {
-                outDesc = null;
                 return false;
-            }
 
             var spaceAnnotation = annotations.FirstOrDefault(annot => annot.Name == "space");
             if (spaceAnnotation.Value != null)

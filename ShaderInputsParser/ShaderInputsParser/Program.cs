@@ -50,7 +50,7 @@ namespace ShaderInputsParserApp
             //    build actual bindings
 
             HeaderWriter writer = new HeaderWriter();
-            writer.WriteHeaders(outputCtx);
+            writer.WriteHLSLHeaders(outputCtx);
         }
     }
 }

@@ -11,7 +11,7 @@ namespace ShaderInputsParserApp.Source
         {
         }
 
-        public void WriteHeaders(ShaderOutputContext ctx)
+        public void WriteHLSLHeaders(ShaderOutputContext ctx)
         {
             Antlr4.StringTemplate.TemplateGroup group = new Antlr4.StringTemplate.TemplateGroupFile(Environment.CurrentDirectory + "/Templates/hlslTemplate.stg");
             StringBuilder result = new StringBuilder();
@@ -23,6 +23,10 @@ namespace ShaderInputsParserApp.Source
                 inclTemplate.Add("path", include);
                 result.Append(inclTemplate.Render() + '\n');
             }
+            result.Append('\n');
+            result.Append('\n');
+
+            result.Append("///////////////// STRUCTURES /////////////////// ");
             result.Append('\n');
 
             List<Structure> ss = ctx.Structures;
@@ -42,6 +46,12 @@ namespace ShaderInputsParserApp.Source
                 result.Append(structTemplate.Render() + '\n' + '\n');
             }
 
+            result.Append('\n');
+            result.Append('\n');
+
+            result.Append("///////////////// CONSTANT BUFFERS /////////////////// ");
+            result.Append('\n');
+
             List<ConstantBuffer> constantBuffers = ctx.ConstantBuffers;
 
             foreach (var cbuffer in constantBuffers)
@@ -60,6 +70,39 @@ namespace ShaderInputsParserApp.Source
                 cbufferTemplate.Add("reg", cbuffer.Bindpoint.Reg);
                 cbufferTemplate.Add("space", cbuffer.Bindpoint.Space);
                 result.Append(cbufferTemplate.Render() + '\n' + '\n');
+            }
+
+            result.Append('\n');
+            result.Append('\n');
+
+            result.Append("///////////////// TEXTURES /////////////////// ");
+            result.Append('\n');
+
+            List<Texture> textures = ctx.Textures;
+
+            foreach (var t in textures)
+            {
+                Antlr4.StringTemplate.Template texTemplate = group.GetInstanceOf("tex2d");
+                texTemplate.Add("name", t.Name);
+                texTemplate.Add("reg", t.Bindpoint.Reg);
+                texTemplate.Add("space", t.Bindpoint.Space);
+                result.Append(texTemplate.Render() + '\n');
+            }
+
+            result.Append('\n');
+            result.Append('\n');
+
+            result.Append("///////////////// SAMPLERS /////////////////// ");
+            result.Append('\n');
+
+            List<Sampler> samplers = ctx.Samplers;
+            foreach (var s in samplers)
+            {
+                Antlr4.StringTemplate.Template smplrTemplate = group.GetInstanceOf("sampler");
+                smplrTemplate.Add("name", s.Name);
+                smplrTemplate.Add("reg", s.Bindpoint.Reg);
+                smplrTemplate.Add("space", s.Bindpoint.Space);
+                result.Append(smplrTemplate.Render() + '\n');
             }
 
             string filenameOut = "C:/Repos/KiotoEngine/Assets/autogen/hlsl/shaderparser.hlsl";
