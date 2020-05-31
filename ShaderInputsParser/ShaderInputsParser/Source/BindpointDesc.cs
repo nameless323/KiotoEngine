@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ShaderInputsParserApp.Source
 {
-    struct BindpointDesc
+    class BindpointDesc
     {
         public BindpointDesc(uint reg, uint space)
         {

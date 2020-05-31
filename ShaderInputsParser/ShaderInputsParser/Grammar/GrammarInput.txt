@@ -26,6 +26,16 @@ constantBuffer engineCb %bindTo=1, space = 4%
     float sinTime;
 };
 
+constantBuffer randomCb
+{
+    float ololosha;
+};
+
+constantBuffer randomCb2
+{
+    float ololosha;
+};
+
 texture2D mask;
 texture2D mask2;
 sampler pointSampler;

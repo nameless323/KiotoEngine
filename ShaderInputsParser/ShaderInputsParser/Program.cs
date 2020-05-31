@@ -42,7 +42,7 @@ namespace ShaderInputsParserApp
             }
 
             BindpointManager bindpointManager = new BindpointManager();
-            bindpointManager.AssignBindpoints(outputCtx.ConstantBuffers);
+            bindpointManager.AssignBindpoints(outputCtx);
 
             // Bindpoint manager stage
             //    calculate resource counts for inputlayouts

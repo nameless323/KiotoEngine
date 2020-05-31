@@ -14,5 +14,6 @@ namespace ShaderInputsParserApp.Source
         public string Name { get; private set; }
         public BindpointDesc Bindpoint { get; set; }
         public List<Annotation> Annotations { get; set; }
+        public BindpointType ResourceBindpointType { get { return BindpointType.Texture; } set { } }
     }
 }
