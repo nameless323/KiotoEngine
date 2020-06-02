@@ -51,6 +51,7 @@ namespace ShaderInputsParserApp
 
             HeaderWriter writer = new HeaderWriter();
             writer.WriteHLSLHeaders(outputCtx);
+            writer.WriteCPPHeaders(outputCtx);
         }
     }
 }

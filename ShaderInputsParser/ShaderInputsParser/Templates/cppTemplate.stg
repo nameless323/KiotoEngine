@@ -1,0 +1,53 @@
+header(name, cbuffers) ::= <<
+#include "stdafx.h"
+
+#include "Math/Vector2.h"
+#include "Math/Vector3.h"
+#include "Math/Vector4.h"
+#include "Math/Matrix3.h"
+#include "Math/Matrix4.h"
+#include "Render/Buffers/EngineBuffers.h"
+
+namespace Kioto::Renderer::SInp
+{
+class <name>_sinp
+{
+public:
+    <name>_sinp()
+    {
+        InitConstantBuffers();
+    };
+
+    ShaderBufferLayoutTemplate GetLayoutTemplate() const
+    {
+        return m_cbs;
+    }
+
+    ShaderData GetShaderData() const
+    {
+        return m_sdata;
+    }
+
+private:
+    void InitConstantBuffers()
+    {
+        <cbuffers>
+    }
+
+    ShaderBufferLayoutTemplate m_cbs;
+    ShaderData m_sdata;
+};
+};
+>>
+
+cbuffer(cbname, reg, space, addParams) ::= <<
+ConstantBuffer <cbname>(<reg>, <space>);
+<addParams>
+m_cbs.push_back(std::move(<cbname>));
+
+////////////////////////////////
+>>
+
+cbmember(cbname, memberName, initVal) ::= <<
+<cbname>.Add(<memberName>, <initVal>);
+>>

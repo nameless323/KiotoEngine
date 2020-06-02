@@ -16,6 +16,7 @@
     <None Remove="autogen\ShaderInputsParser.interp" />
     <None Remove="autogen\ShaderInputsParser.tokens" />
     <None Remove="Grammar\GrammarInput.txt" />
+    <None Remove="Templates\cppTemplate.stg" />
     <None Remove="Templates\hlslTemplate.stg" />
   </ItemGroup>
 
@@ -31,6 +32,12 @@
   <ItemGroup>
     <PackageReference Include="Antlr4.Runtime.Standard" Version="4.8.0" />
     <PackageReference Include="StringTemplate4" Version="4.0.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Templates\cppTemplate.stg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
