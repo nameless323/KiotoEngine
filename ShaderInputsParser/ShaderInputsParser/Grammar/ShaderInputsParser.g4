@@ -8,7 +8,7 @@ inputFile : ( include
             | tex2d
             | sampler
             | vertexLayout
-            | shaders)*;
+            | shadersBinding)*;
 
 include: INCLUDE_KEYWORD QUOTE FILEPATH QUOTE SEMI;
 
@@ -32,6 +32,6 @@ vertexLayout : VERTEX_LAYOUT_KEYWORD NAME CURL_BR_O vertexLayoutMember+ CURL_BR_
 
 vertexLayoutMember : TYPE NAME COLON V_SEMANTIC SEMI;
 
-shaders : SHADER_KEYWORD COLON (shaderFunc COMMA)* shaderFunc SEMI;
+shadersBinding : SHADER_KEYWORD COLON (shaderBind COMMA)* shaderBind SEMI;
 
-shaderFunc : SHADER_TYPE NAME;
+shaderBind : SHADER_TYPE NAME;

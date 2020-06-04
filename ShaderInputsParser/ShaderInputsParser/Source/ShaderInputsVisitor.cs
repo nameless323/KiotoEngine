@@ -6,6 +6,12 @@ using System.Text;
 
 namespace ShaderInputsParserApp.Source
 {
+    public class DuplicateDefinedException : System.Exception
+    {
+        public DuplicateDefinedException() : base() { }
+        public DuplicateDefinedException(string message) : base(message) { }
+        public DuplicateDefinedException(string message, System.Exception inner) : base(message, inner) { }
+    }
     class ShaderOutputContext
     {
         public List<Structure> Structures { get; set; } = new List<Structure>();
@@ -13,7 +19,7 @@ namespace ShaderInputsParserApp.Source
         public List<ConstantBuffer> ConstantBuffers { get; set; } = new List<ConstantBuffer>();
         public List<Texture> Textures { get; set; } = new List<Texture>();
         public List<Sampler> Samplers { get; set; } = new List<Sampler>();
-
+        public VertexLayout VertLayout { get; set; } = null;
     }
 
     class ShaderInputsVisitor : ShaderInputsParserBaseVisitor<string>
@@ -64,6 +70,20 @@ namespace ShaderInputsParserApp.Source
             Sampler s = new Sampler(name);
             OutputContext.Samplers.Add(s);
             return base.VisitSampler(context);
+        }
+        public override string VisitVertexLayout(ShaderInputsParser.VertexLayoutContext context)
+        {
+            if (OutputContext.VertLayout != null)
+                throw new DuplicateDefinedException("VertexLayout defined more than one time in a shader input file");
+            VertexLayoutVisitor layoutVisitor = new VertexLayoutVisitor();
+            layoutVisitor.Visit(context);
+            OutputContext.VertLayout = new VertexLayout(layoutVisitor.Members);
+            return base.VisitVertexLayout(context);
+        }
+
+        public override string VisitShadersBinding(ShaderInputsParser.ShadersBindingContext context)
+        {
+            return base.VisitShadersBinding(context);
         }
         public ShaderOutputContext OutputContext { get; private set; } = new ShaderOutputContext();
     }
