@@ -16,7 +16,7 @@ namespace ShaderInputsParserApp.Source
             return base.VisitShaderBind(context);
         }
 
-        ShadersBinding ShaderBindings = new ShadersBinding();
+        public ShadersBinding ShaderBindings = new ShadersBinding();
     }
 
 }

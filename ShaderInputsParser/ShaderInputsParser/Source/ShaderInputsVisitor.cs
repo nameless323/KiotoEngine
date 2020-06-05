@@ -20,6 +20,7 @@ namespace ShaderInputsParserApp.Source
         public List<Texture> Textures { get; set; } = new List<Texture>();
         public List<Sampler> Samplers { get; set; } = new List<Sampler>();
         public VertexLayout VertLayout { get; set; } = null;
+        public ShadersBinding ShaderBinding { get; set; } = null;
     }
 
     class ShaderInputsVisitor : ShaderInputsParserBaseVisitor<string>
@@ -83,6 +84,12 @@ namespace ShaderInputsParserApp.Source
 
         public override string VisitShadersBinding(ShaderInputsParser.ShadersBindingContext context)
         {
+            if (OutputContext.ShaderBinding != null)
+                throw new DuplicateDefinedException("ShadersBinding defined more than one time in a shader input file");
+
+            ShadersBindingVisitor sbVisitor = new ShadersBindingVisitor();
+            sbVisitor.Visit(context);
+            OutputContext.ShaderBinding = sbVisitor.ShaderBindings;
             return base.VisitShadersBinding(context);
         }
         public ShaderOutputContext OutputContext { get; private set; } = new ShaderOutputContext();

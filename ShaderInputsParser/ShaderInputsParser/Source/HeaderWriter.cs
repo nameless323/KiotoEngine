@@ -17,6 +17,12 @@ namespace ShaderInputsParserApp.Source
             { "float3x3", "Matrix3()" },
             { "float4x4", "Matrix4()" }
         };
+        private Dictionary<string, string> m_shaderStagesToKioto = new Dictionary<string, string>()
+        {
+            { "VS", "ShaderProgramType::Vertex" },
+            { "PS", "ShaderProgramType::Fragment" },
+            { "CS", "ShaderProgramType::Compute" }
+        };
         public HeaderWriter()
         {
         }
@@ -161,10 +167,20 @@ namespace ShaderInputsParserApp.Source
             tSetTemplate.Add("addParams", texturesRes.ToString());
             string texSetsResult = tSetTemplate.Render();
 
+            StringBuilder shadersBindingRes = new StringBuilder();
+            List<ShaderBinding> shaderBinds = ctx.ShaderBinding.Bindings;
+            for (int i = 0; i < shaderBinds.Count; ++i)
+            {
+                shadersBindingRes.Append("uint8(" + m_shaderStagesToKioto[shaderBinds[i].ShaderType] + ")");
+                if (i != (shaderBinds.Count - 1))
+                    shadersBindingRes.Append(" | ");
+            }
+
             Antlr4.StringTemplate.Template headerTemplate = group.GetInstanceOf("header");
             headerTemplate.Add("name", "Diffuse");
             headerTemplate.Add("cbuffers", cbsResult.ToString());
             headerTemplate.Add("texSets", texSetsResult);
+            headerTemplate.Add("shaderProgs", shadersBindingRes.ToString());
 
             string filenameOut = "C:/Repos/KiotoEngine/Assets/autogen/hlsl/shaderparser.h";
             System.IO.File.WriteAllText(filenameOut, headerTemplate.Render());
