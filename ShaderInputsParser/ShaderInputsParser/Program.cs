@@ -8,8 +8,17 @@ using System.Text;
 
 namespace ShaderInputsParserApp
 {
+    public class InvalidCommandLineException : System.Exception
+    {
+        public InvalidCommandLineException() : base() { }
+        public InvalidCommandLineException(string message) : base(message) { }
+        public InvalidCommandLineException(string message, System.Exception inner) : base(message, inner) { }
+    }
+
     class Program
     {
+        static string inputDir;
+        static string outputDir;
         static ShaderInputsParser InitializeAntlr(string content)
         {
             AntlrInputStream inputStream = new AntlrInputStream(content);
@@ -18,8 +27,31 @@ namespace ShaderInputsParserApp
             return new ShaderInputsParser(tokenStream);
         }
 
+        static void ParseCommandLine(string[] args)
+        {
+            for (int i = 0; i < args.Length; ++i)
+            {
+                if (args[i] == "inDir:")
+                {
+                    ++i;
+                    inputDir = args[i];
+                }
+                else if (args[i] == "outDir:")
+                {
+                    ++i;
+                    outputDir = args[i];
+                }
+            }
+        }
+
         static void Main(string[] args)
         {
+            ParseCommandLine(args);
+            if (inputDir == null)
+                throw new InvalidCommandLineException("Input directory isn't set in the command line");
+            if (outputDir == null)
+                throw new InvalidCommandLineException("Output directory isn't set in the command line");
+
             string filename = Environment.CurrentDirectory + "/Grammar/GrammarInput.txt";
             string content = File.ReadAllText(filename);
 
