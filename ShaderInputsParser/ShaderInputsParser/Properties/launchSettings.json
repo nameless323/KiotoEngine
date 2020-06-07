@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ShaderInputsParser": {
+      "commandName": "Project",
+      "commandLineArgs": "inDir: C:\\Repos\\KiotoEngine\\Assets\\Shaders\\sInp\\ outDir: C:/Repos/KiotoEngine/Assets/autogen"
+    }
+  }
+}

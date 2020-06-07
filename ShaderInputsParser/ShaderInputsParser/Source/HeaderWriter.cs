@@ -1,6 +1,7 @@
 ﻿using ShaderInputsParserApp.Source.Types;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -23,8 +24,23 @@ namespace ShaderInputsParserApp.Source
             { "PS", "ShaderProgramType::Fragment" },
             { "CS", "ShaderProgramType::Compute" }
         };
-        public HeaderWriter()
+        private Dictionary<string, string> m_typeToKiotoFormat = new Dictionary<string, string>()
         {
+            { "float", "eDataFormat::R8" },
+            { "float2", "eDataFormat::R8_G8" },
+            { "float3", "eDataFormat::R8_G8_B8" },
+            { "float4", "eDataFormat::R8_G8_B8_A8" },
+        };
+        private Dictionary<string, string> m_semanticToKiotoSemantic = new Dictionary<string, string>()
+        {
+            { "POSITION", "eVertexSemantic::Position" },
+            { "NORMAL", "eVertexSemantic::Normal" },
+            { "TEXCOORD", "eVertexSemantic::Texcoord" },
+            { "COLOR", "eVertexSemantic::Color" }
+        };
+        public HeaderWriter(string filename)
+        {
+            Filename = filename;
         }
 
         public void WriteHLSLHeaders(ShaderOutputContext ctx)
@@ -124,7 +140,8 @@ namespace ShaderInputsParserApp.Source
                 result.Append(smplrTemplate.Render() + '\n');
             }
 
-            string filenameOut = "C:/Repos/KiotoEngine/Assets/autogen/hlsl/shaderparser.hlsl";
+            string outDirHlsl = Program.OutputDir + "/hlsl/";
+            string filenameOut = outDirHlsl + Filename + ".hlsl";
             System.IO.File.WriteAllText(filenameOut, result.ToString());
         }
 
@@ -176,14 +193,29 @@ namespace ShaderInputsParserApp.Source
                     shadersBindingRes.Append(" | ");
             }
 
+            List<VertexLayoutMember> vlayoutMembers = ctx.VertLayout.Members;
+            StringBuilder vertLayoutParseRes = new StringBuilder();
+            foreach (var vlm in vlayoutMembers)
+            {
+                Antlr4.StringTemplate.Template vlmTemplate = group.GetInstanceOf("vlayoutmember");
+                vlmTemplate.Add("semantic", m_semanticToKiotoSemantic[vlm.Semantic]);
+                vlmTemplate.Add("index", vlm.SemanticIndex);
+                vlmTemplate.Add("format", m_typeToKiotoFormat[vlm.Type]);
+                vertLayoutParseRes.Append(vlmTemplate.Render() + '\n');
+            }
+
             Antlr4.StringTemplate.Template headerTemplate = group.GetInstanceOf("header");
             headerTemplate.Add("name", "Diffuse");
             headerTemplate.Add("cbuffers", cbsResult.ToString());
             headerTemplate.Add("texSets", texSetsResult);
             headerTemplate.Add("shaderProgs", shadersBindingRes.ToString());
+            headerTemplate.Add("vertexLayout", vertLayoutParseRes.ToString());
 
-            string filenameOut = "C:/Repos/KiotoEngine/Assets/autogen/hlsl/shaderparser.h";
+            string outDirHlsl = Program.OutputDir + "/cpp/";
+            string filenameOut = outDirHlsl + Filename + ".h";
             System.IO.File.WriteAllText(filenameOut, headerTemplate.Render());
         }
+
+        string Filename { get; set; }
     }
 }

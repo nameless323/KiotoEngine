@@ -1,0 +1,15 @@
+#include "path\filename.txt";
+
+constantBuffer mainCb
+{
+    float4 velocity;
+    float playableByCats;
+    float catsNumber;
+};
+
+vertexLayout vIn
+{
+    float3 position : POSITION;
+};
+
+shader: VS vs_main, PS ps_main;

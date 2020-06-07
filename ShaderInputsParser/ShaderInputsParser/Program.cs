@@ -17,8 +17,8 @@ namespace ShaderInputsParserApp
 
     class Program
     {
-        static string inputDir;
-        static string outputDir;
+        public static string InputDir { get; private set; }
+        public static string OutputDir { get; private set; }
         static ShaderInputsParser InitializeAntlr(string content)
         {
             AntlrInputStream inputStream = new AntlrInputStream(content);
@@ -34,12 +34,12 @@ namespace ShaderInputsParserApp
                 if (args[i] == "inDir:")
                 {
                     ++i;
-                    inputDir = args[i];
+                    InputDir = args[i];
                 }
                 else if (args[i] == "outDir:")
                 {
                     ++i;
-                    outputDir = args[i];
+                    OutputDir = args[i];
                 }
             }
         }
@@ -47,43 +47,55 @@ namespace ShaderInputsParserApp
         static void Main(string[] args)
         {
             ParseCommandLine(args);
-            if (inputDir == null)
+            if (InputDir == null)
                 throw new InvalidCommandLineException("Input directory isn't set in the command line");
-            if (outputDir == null)
+            if (!System.IO.Directory.Exists(InputDir))
+                throw new InvalidCommandLineException("Input directory doesn't exist");
+
+            if (OutputDir == null)
                 throw new InvalidCommandLineException("Output directory isn't set in the command line");
 
-            string filename = Environment.CurrentDirectory + "/Grammar/GrammarInput.txt";
-            string content = File.ReadAllText(filename);
+            System.IO.Directory.CreateDirectory(OutputDir);
+            System.IO.Directory.CreateDirectory(OutputDir + "/hlsl");
+            System.IO.Directory.CreateDirectory(OutputDir + "/cpp");
 
-            ShaderInputsParser parser = InitializeAntlr(content);
-            ShaderInputsParser.InputFileContext ctx = parser.inputFile();
+            string[] files = Directory.GetFiles(InputDir, "*.sinp", SearchOption.AllDirectories);
 
-            ShaderInputsVisitor visitor = new ShaderInputsVisitor();
-            visitor.Visit(ctx);
-            ShaderOutputContext outputCtx = visitor.OutputContext;
-
-            Validator validator = new Validator();
-            try
+            foreach (var filename in files)
             {
-                validator.Validate(outputCtx.ConstantBuffers);
+                string currentInputFilename = Path.GetFileNameWithoutExtension(filename);
+                string content = File.ReadAllText(filename);
+
+                ShaderInputsParser parser = InitializeAntlr(content);
+                ShaderInputsParser.InputFileContext ctx = parser.inputFile();
+
+                ShaderInputsVisitor visitor = new ShaderInputsVisitor();
+                visitor.Visit(ctx);
+                ShaderOutputContext outputCtx = visitor.OutputContext;
+
+                Validator validator = new Validator();
+                try
+                {
+                    validator.Validate(outputCtx.ConstantBuffers);
+                }
+                catch (DuplicateNameException ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    throw;
+                }
+
+                BindpointManager bindpointManager = new BindpointManager();
+                bindpointManager.AssignBindpoints(outputCtx);
+
+                // Bindpoint manager stage
+                //    calculate resource counts for inputlayouts
+                //    calculate resource counts for inputGroups (possible to dump files)
+                //    build actual bindings
+
+                HeaderWriter writer = new HeaderWriter(currentInputFilename);
+                writer.WriteHLSLHeaders(outputCtx);
+                writer.WriteCPPHeaders(outputCtx);
             }
-            catch (DuplicateNameException ex)
-            {
-                Console.WriteLine(ex.Message);
-                throw;
-            }
-
-            BindpointManager bindpointManager = new BindpointManager();
-            bindpointManager.AssignBindpoints(outputCtx);
-
-            // Bindpoint manager stage
-            //    calculate resource counts for inputlayouts
-            //    calculate resource counts for inputGroups (possible to dump files)
-            //    build actual bindings
-
-            HeaderWriter writer = new HeaderWriter();
-            writer.WriteHLSLHeaders(outputCtx);
-            writer.WriteCPPHeaders(outputCtx);
         }
     }
 }
