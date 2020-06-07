@@ -1,6 +1,7 @@
 ﻿using Antlr4.Runtime;
 using antlrGenerated;
 using ShaderInputsParserApp.Source;
+using ShaderInputsParserApp.Source.HeaderWriters;
 using ShaderInputsParserApp.Source.Types;
 using System;
 using System.IO;
@@ -44,27 +45,38 @@ namespace ShaderInputsParserApp
             }
         }
 
+        static void CreateOutputDirectories()
+        {
+            Directory.CreateDirectory(OutputDir);
+            Directory.CreateDirectory(OutputDir + "/hlsl");
+            Directory.CreateDirectory(OutputDir + "/cpp");
+        }
+
         static void Main(string[] args)
         {
             ParseCommandLine(args);
-            if (InputDir == null)
-                throw new InvalidCommandLineException("Input directory isn't set in the command line");
-            if (!System.IO.Directory.Exists(InputDir))
-                throw new InvalidCommandLineException("Input directory doesn't exist");
+            try
+            {
+                if (InputDir == null)
+                    throw new InvalidCommandLineException("Input directory isn't set in the command line");
+                if (!Directory.Exists(InputDir))
+                    throw new InvalidCommandLineException("Input directory doesn't exist");
 
-            if (OutputDir == null)
-                throw new InvalidCommandLineException("Output directory isn't set in the command line");
+                if (OutputDir == null)
+                    throw new InvalidCommandLineException("Output directory isn't set in the command line");
+            }
+            catch (InvalidCommandLineException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
 
-            System.IO.Directory.CreateDirectory(OutputDir);
-            System.IO.Directory.CreateDirectory(OutputDir + "/hlsl");
-            System.IO.Directory.CreateDirectory(OutputDir + "/cpp");
+            CreateOutputDirectories();
 
             string[] files = Directory.GetFiles(InputDir, "*.sinp", SearchOption.AllDirectories);
 
-            foreach (var filename in files)
+            foreach (var filepath in files)
             {
-                string currentInputFilename = Path.GetFileNameWithoutExtension(filename);
-                string content = File.ReadAllText(filename);
+                string content = File.ReadAllText(filepath);
 
                 ShaderInputsParser parser = InitializeAntlr(content);
                 ShaderInputsParser.InputFileContext ctx = parser.inputFile();
@@ -87,14 +99,11 @@ namespace ShaderInputsParserApp
                 BindpointManager bindpointManager = new BindpointManager();
                 bindpointManager.AssignBindpoints(outputCtx);
 
-                // Bindpoint manager stage
-                //    calculate resource counts for inputlayouts
-                //    calculate resource counts for inputGroups (possible to dump files)
-                //    build actual bindings
-
-                HeaderWriter writer = new HeaderWriter(currentInputFilename);
-                writer.WriteHLSLHeaders(outputCtx);
-                writer.WriteCPPHeaders(outputCtx);
+                string filename = Path.GetFileNameWithoutExtension(filepath);
+                HlslHeadersWriter hlslWriter = new HlslHeadersWriter();
+                hlslWriter.WriteHeaders(outputCtx, filename);
+                CppHeaderWriter cppWriter = new CppHeaderWriter();
+                cppWriter.WriteHeaders(outputCtx, filename);
             }
         }
     }
