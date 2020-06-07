@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>ShaderInputsParserApp</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="autogen\Chat.interp" />
+    <None Remove="autogen\Chat.tokens" />
+    <None Remove="autogen\ChatLexer.interp" />
+    <None Remove="autogen\ChatLexer.tokens" />
+    <None Remove="autogen\ShaderInputsLexer.interp" />
+    <None Remove="autogen\ShaderInputsLexer.tokens" />
+    <None Remove="autogen\ShaderInputsParser.interp" />
+    <None Remove="autogen\ShaderInputsParser.tokens" />
+    <None Remove="Grammar\GrammarInput.txt" />
+    <None Remove="Templates\cppTemplate.stg" />
+    <None Remove="Templates\hlslTemplate.stg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Grammar\GrammarInput.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\hlslTemplate.stg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.8.0" />
+    <PackageReference Include="StringTemplate4" Version="4.0.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Templates\cppTemplate.stg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="cd $(ProjectDir)Grammar\&#xD;&#xA;RunAntlr.bat" />
+  </Target>
+
+</Project>

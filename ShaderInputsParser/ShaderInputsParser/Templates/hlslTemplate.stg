@@ -1,0 +1,21 @@
+var(type, name) ::= "<type> <name>;"
+
+include(path) ::= "#include <path>;"
+
+struct(name, members) ::= <<
+struct <name>
+{
+    <members>
+};
+>>
+
+cbuffer(name, members, reg, space) ::= <<
+cbuffer <name> : register(b<reg>, space<space>)
+{
+    <members>
+};
+>>
+
+tex2d(name, reg, space) ::= "Texture2D <name> : register(t<reg>, space<space>);"
+
+sampler(name, reg, space) ::= "SamplerState <name> : register(s<reg>, space<space>);"

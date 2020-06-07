@@ -1,0 +1,1 @@
+antlr4 -Dlanguage=CSharp -visitor *.g4 -o ..\autogen -package antlrGenerated
