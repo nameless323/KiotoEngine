@@ -19,7 +19,8 @@ namespace ShaderInputsParserApp
     class Program
     {
         public static string InputDir { get; private set; }
-        public static string OutputDir { get; private set; }
+        public static string HlslOutputDir { get; private set; }
+        public static string CppOutputDir { get; private set; }
         static ShaderInputsParser InitializeAntlr(string content)
         {
             AntlrInputStream inputStream = new AntlrInputStream(content);
@@ -40,16 +41,22 @@ namespace ShaderInputsParserApp
                 else if (args[i] == "outDir:")
                 {
                     ++i;
-                    OutputDir = args[i];
+                    HlslOutputDir = args[i];
+                }
+                else if (args[i] == "factoryOutDir:")
+                {
+                    ++i;
+                    CppOutputDir = args[i];
                 }
             }
         }
 
         static void CreateOutputDirectories()
         {
-            Directory.CreateDirectory(OutputDir);
-            Directory.CreateDirectory(OutputDir + "/hlsl");
-            Directory.CreateDirectory(OutputDir + "/cpp");
+            Directory.CreateDirectory(HlslOutputDir);
+            Directory.CreateDirectory(HlslOutputDir + "/hlsl");
+            Directory.CreateDirectory(HlslOutputDir + "/cpp");
+            Directory.CreateDirectory(CppOutputDir);
         }
 
         static void Main(string[] args)
@@ -62,8 +69,11 @@ namespace ShaderInputsParserApp
                 if (!Directory.Exists(InputDir))
                     throw new InvalidCommandLineException("Input directory doesn't exist");
 
-                if (OutputDir == null)
-                    throw new InvalidCommandLineException("Output directory isn't set in the command line");
+                if (HlslOutputDir == null)
+                    throw new InvalidCommandLineException("Hlsl directory isn't set in the command line");
+
+                if (CppOutputDir == null)
+                    throw new InvalidCommandLineException("Cpp output directory isn't set in the command line");
             }
             catch (InvalidCommandLineException ex)
             {
@@ -105,6 +115,8 @@ namespace ShaderInputsParserApp
                 CppHeaderWriter cppWriter = new CppHeaderWriter();
                 cppWriter.WriteHeaders(outputCtx, filename);
             }
+            FactoryWriter factoryWriter = new FactoryWriter();
+            factoryWriter.WriteFactory(files);
         }
     }
 }

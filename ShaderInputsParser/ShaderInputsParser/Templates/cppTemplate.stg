@@ -13,7 +13,7 @@ header(name, cbuffers, texSets, shaderProgs, vertexLayout) ::= <<
 
 namespace Kioto::Renderer::SInp
 {
-class <name>_sinp
+class <name>_sinp : public ShaderInputBase
 {
 public:
     <name>_sinp()
@@ -24,12 +24,12 @@ public:
         InitVertexLayout();
     };
 
-    ShaderBufferLayoutTemplate GetLayoutTemplate() const
+    ShaderBufferLayoutTemplate GetLayoutTemplate() const override
     {
         return m_cbs;
     }
 
-    ShaderData GetShaderData() const
+    ShaderData GetShaderData() const override
     {
         return m_sdata;
     }
@@ -62,7 +62,7 @@ private:
     ShaderBufferLayoutTemplate m_cbs;
     ShaderData m_sdata;
 };
-};
+}
 >>
 
 cbuffer(cbname, reg, space, addParams) ::= <<

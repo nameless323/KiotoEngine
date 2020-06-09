@@ -157,7 +157,7 @@ namespace ShaderInputsParserApp.Source
             result.Append(WriteTextures(ctx, group));
             result.Append(WriteSamplers(ctx, group));
 
-            string outDirHlsl = Program.OutputDir + "/hlsl/";
+            string outDirHlsl = Program.HlslOutputDir + "/hlsl/";
             string filenameOut = outDirHlsl + filename + ".hlsl";
             File.WriteAllText(filenameOut, result.ToString());
         }
