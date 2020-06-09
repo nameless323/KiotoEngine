@@ -262,6 +262,7 @@
     <ClInclude Include="Sources\Internal\Render\ScopedGpuProfiler.h" />
     <ClInclude Include="Sources\Internal\Render\Shader.h" />
     <ClInclude Include="Sources\Internal\Render\ShaderData.h" />
+    <ClInclude Include="Sources\Internal\Render\ShaderInputBase.h" />
     <ClInclude Include="Sources\Internal\Render\Texture\TextureManager.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\Texture\TextureManagerDX12.h" />
     <ClInclude Include="Sources\Internal\Render\Texture\TextureSet.h" />
