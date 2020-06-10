@@ -125,7 +125,7 @@ namespace ShaderInputsParserApp.Source.HeaderWriters
             headerTemplate.Add("shaderProgs", bindings);
             headerTemplate.Add("vertexLayout", vertexLayouts);
 
-            string outDirHlsl = Program.CppOutputDir + "/cpp/";
+            string outDirHlsl = Program.CppOutputDir + "/sInp/";
             string filenameOut = outDirHlsl + filename + ".h";
             System.IO.File.WriteAllText(filenameOut, headerTemplate.Render());
         }

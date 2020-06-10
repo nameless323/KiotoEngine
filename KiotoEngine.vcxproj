@@ -108,11 +108,14 @@
       <AdditionalDependencies>d3dcompiler.lib;D3D12.lib;dxgi.lib;dxguid.lib;$(ProjectDir)Libs\yaml-cpp\lib\libyaml-cppmdd.lib;$(ProjectDir)Libs\fbx-sdk\lib\vs2015\x64\debug\libfbxsdk-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
-      <Command>RD /S /Q $(TargetDir)Assets
+      <Command>$(ProjectDir)ShaderInputsParser\ShaderInputsParser\bin\Debug\netcoreapp3.1\ShaderInputsParser.exe inDir: $(ProjectDir)Assets\Shaders\sInp hlslOutDir: $(ProjectDir)Assets\autogen cppOutDir: $(ProjectDir)\Sources\Internal\Render\Shaders\autogen
+
+
+RD /S /Q $(TargetDir)Assets
 (robocopy $(ProjectDir) $(TargetDir)Assets AssetsConfig.yaml) ^&amp; IF %ERRORLEVEL% LEQ 1 exit 0</Command>
     </PreBuildEvent>
     <PreBuildEvent>
-      <Message>Copy assets config...</Message>
+      <Message>Generating shader inputs and copy assets config...</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
