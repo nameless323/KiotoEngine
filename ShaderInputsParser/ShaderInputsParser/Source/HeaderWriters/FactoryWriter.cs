@@ -11,7 +11,7 @@ namespace ShaderInputsParserApp.Source.HeaderWriters
     {
         public void WriteFactory(string[] files)
         {
-            TemplateGroup cppGroup = new Antlr4.StringTemplate.TemplateGroupFile(Environment.CurrentDirectory + "/Templates/factoryTemplateCpp.stg");
+            TemplateGroup cppGroup = new Antlr4.StringTemplate.TemplateGroupFile(Program.TemplatesDir + "/factoryTemplateCpp.stg");
 
             StringBuilder mapping = new StringBuilder();
             foreach (var filepath in files)
@@ -28,7 +28,7 @@ namespace ShaderInputsParserApp.Source.HeaderWriters
 
             System.IO.File.WriteAllText(filename + ".cpp", factoryCppTemplate.Render());
 
-            TemplateGroup hGroup = new Antlr4.StringTemplate.TemplateGroupFile(Environment.CurrentDirectory + "/Templates/factoryTemplateH.stg");
+            TemplateGroup hGroup = new Antlr4.StringTemplate.TemplateGroupFile(Program.TemplatesDir + "/factoryTemplateH.stg");
             StringTemplate factoryHTemplate = hGroup.GetInstanceOf("factory");
             System.IO.File.WriteAllText(filename + ".h", factoryHTemplate.Render());
         }

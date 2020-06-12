@@ -111,7 +111,7 @@ namespace ShaderInputsParserApp.Source.HeaderWriters
 
         public void WriteHeaders(ShaderOutputContext ctx, string filename)
         {
-            TemplateGroup group = new Antlr4.StringTemplate.TemplateGroupFile(Environment.CurrentDirectory + "/Templates/cppTemplate.stg");
+            TemplateGroup group = new Antlr4.StringTemplate.TemplateGroupFile(Program.TemplatesDir + "/cppTemplate.stg");
 
             string constantBuffers = WriteConstantBuffers(ctx, group);
             string textureSets = WriteTextureSets(ctx, group);
