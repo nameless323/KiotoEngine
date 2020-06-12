@@ -14,4 +14,22 @@ You must also create file AssetsConfig.yaml in project dir, near the .sln file (
 ```yaml
 enginePath: "C:\\KiotoEngine"
 ```
+Also build step should be properly configured. For debug it should copy AssetsConfig.yaml, for Release all the assets.
+### Example
+```cpp
+// Debug:
+
+RD /S /Q $(TargetDir)Assets
+(robocopy $(ProjectDir) $(TargetDir)Assets AssetsConfig.yaml) ^& IF %ERRORLEVEL% LEQ 1 exit 0
+
+// Release:
+RD /S /Q $(TargetDir)Assets
+(robocopy $(ProjectDir)Assets $(TargetDir)Assets /S /E)^& IF %ERRORLEVEL% LEQ 1 exit 0
+```
+
+To be able to run the engine, you also need to build ShaderInputsParser and make sure that you have a proper build step that runs the parser to generate the shaders inputs cpp and hlsl files. 
+### Example of the build step
+```cpp
+$(ProjectDir)ShaderInputsParser\ShaderInputsParser\bin\Debug\netcoreapp3.1\ShaderInputsParser.exe inDir: $(ProjectDir)Assets\Shaders\sInp hlslOutDir: $(ProjectDir)Assets\autogen cppOutDir: $(ProjectDir)Sources\Internal\Render\Shaders\autogen templatesDir: $(ProjectDir)ShaderInputsParser\ShaderInputsParser\Templates
+```
 
