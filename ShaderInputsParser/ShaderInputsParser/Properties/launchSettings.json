@@ -1,7 +1,8 @@
 {
   "profiles": {
     "ShaderInputsParser": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "inDir: C:\\Repos\\KiotoEngine\\Assets\\Shaders\\sInp hlslOutDir: C:\\Repos\\KiotoEngine\\Assets\\autogen cppOutDir: C:\\Repos\\KiotoEngine\\Sources\\Internal\\Render\\Shaders\\autogen templatesDir: C:\\Repos\\KiotoEngine\\ShaderInputsParser\\ShaderInputsParser\\Templates"
     }
   }
 }

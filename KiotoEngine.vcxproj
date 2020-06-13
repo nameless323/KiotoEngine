@@ -108,8 +108,9 @@
       <AdditionalDependencies>d3dcompiler.lib;D3D12.lib;dxgi.lib;dxguid.lib;$(ProjectDir)Libs\yaml-cpp\lib\libyaml-cppmdd.lib;$(ProjectDir)Libs\fbx-sdk\lib\vs2015\x64\debug\libfbxsdk-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
-      <Command>$(ProjectDir)ShaderInputsParser\ShaderInputsParser\bin\Debug\netcoreapp3.1\ShaderInputsParser.exe inDir: $(ProjectDir)Assets\Shaders\sInp hlslOutDir: $(ProjectDir)Assets\autogen cppOutDir: $(ProjectDir)\Sources\Internal\Render\Shaders\autogen
-
+      <Command>echo Running shader parser with command line inDir: $(ProjectDir)Assets\Shaders\sInp hlslOutDir: $(ProjectDir)Assets\autogen cppOutDir: $(ProjectDir)Sources\Internal\Render\Shaders\autogen templatesDir: $(ProjectDir)ShaderInputsParser\ShaderInputsParser\Templates
+$(ProjectDir)ShaderInputsParser\ShaderInputsParser\bin\Debug\netcoreapp3.1\ShaderInputsParser.exe inDir: $(ProjectDir)Assets\Shaders\sInp hlslOutDir: $(ProjectDir)Assets\autogen cppOutDir: $(ProjectDir)Sources\Internal\Render\Shaders\autogen templatesDir: $(ProjectDir)ShaderInputsParser\ShaderInputsParser\Templates
+IF %ERRORLEVEL% NEQ 0 exit /b 1
 
 RD /S /Q $(TargetDir)Assets
 (robocopy $(ProjectDir) $(TargetDir)Assets AssetsConfig.yaml) ^&amp; IF %ERRORLEVEL% LEQ 1 exit 0</Command>
