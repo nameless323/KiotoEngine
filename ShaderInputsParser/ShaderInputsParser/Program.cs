@@ -22,6 +22,9 @@ namespace ShaderInputsParserApp
         public static string HlslOutputDir { get; private set; }
         public static string CppOutputDir { get; private set; }
         public static string TemplatesDir { get; private set; }
+        public static string ShadersDir { get; private set; }
+
+        public static ShadersDirectoryManager ShadersDirManager;
         public static ShaderInputsParser InitializeAntlr(string content)
         {
             AntlrInputStream inputStream = new AntlrInputStream(content);
@@ -54,11 +57,19 @@ namespace ShaderInputsParserApp
                     ++i;
                     TemplatesDir = args[i];
                 }
+                else if (args[i] == "shadersDir:")
+                {
+                    ++i;
+                    ShadersDir = args[i];
+                }
             }
         }
 
         static void CleanDirectory(string path)
         {
+            if (!Directory.Exists(path))
+                return;
+
             DirectoryInfo dir = new DirectoryInfo(path);
 
             foreach (FileInfo fi in dir.GetFiles())
@@ -100,6 +111,11 @@ namespace ShaderInputsParserApp
                 if (!Directory.Exists(TemplatesDir))
                     throw new InvalidCommandLineException("Template directory doesn't exist (" + TemplatesDir + ")");
 
+                if (ShadersDir == null)
+                    throw new InvalidCommandLineException("Shaders (shadersDir) directory isn't set in the command line");
+                if (!Directory.Exists(InputDir))
+                    throw new InvalidCommandLineException("Shaders directory doesn't exist (" + ShadersDir + ")");
+
                 if (HlslOutputDir == null)
                     throw new InvalidCommandLineException("Hlsl directory isn't set in the command line");
 
@@ -112,7 +128,9 @@ namespace ShaderInputsParserApp
                 Console.WriteLine(ex.Message);
             }
 
-            CreateOutputDirectories(true);
+            ShadersDirManager = new ShadersDirectoryManager(ShadersDir);
+
+            CreateOutputDirectories(false);
 
             string[] files = Directory.GetFiles(InputDir, "*.sinp", SearchOption.AllDirectories);
 

@@ -1,20 +1,4 @@
-#include "Include\EngineBuffers.hlsl"
-
-[_IN_] Texture2D Diffuse : register(t0);
-[_IN_] Texture2D Mask : register(t1);
-
-cbuffer cbRenderObjectBuffer : register(b0, space0)
-{
-    float4x4 ToWorld;
-    float4x4 ToModel;
-};
-
-struct vIn
-{
-    float3 position : POSITION;
-    float3 normal : NORMAL;
-    float2 uv : TEXCOORD0;
-};
+#include "autogen\UnlitMovingTex.hlsl"
 
 struct vOut
 {

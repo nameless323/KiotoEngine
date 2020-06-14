@@ -117,6 +117,7 @@ namespace ShaderInputsParserApp.Source.HeaderWriters
             string textureSets = WriteTextureSets(ctx, group);
             string bindings = WriteBindings(ctx, group);
             string vertexLayouts = WriteVertexLayouts(ctx, group);
+            string shaderCode = Program.ShadersDirManager.GetShaderCode(filename);
 
             StringTemplate headerTemplate = group.GetInstanceOf("header");
             headerTemplate.Add("name", filename);
@@ -124,6 +125,7 @@ namespace ShaderInputsParserApp.Source.HeaderWriters
             headerTemplate.Add("texSets", textureSets);
             headerTemplate.Add("shaderProgs", bindings);
             headerTemplate.Add("vertexLayout", vertexLayouts);
+            headerTemplate.Add("text", shaderCode);
 
             string outDirHlsl = Program.CppOutputDir + "/sInp/";
             string filenameOut = outDirHlsl + filename + ".h";

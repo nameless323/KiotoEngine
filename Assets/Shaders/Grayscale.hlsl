@@ -1,11 +1,4 @@
-#include "Include\EngineBuffers.hlsl"
-
-[_IN_] Texture2D IntputColor : register(t0);
-
-struct vIn
-{
-    float3 position : POSITION;
-};
+#include "autogen\Grayscale.hlsl"
 
 struct vOut
 {
