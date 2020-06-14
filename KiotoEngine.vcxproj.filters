@@ -378,6 +378,9 @@
     <ClInclude Include="Sources\Internal\Render\ShaderInputBase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Sources\Internal\Render\Shaders\autogen\KiotoShaders.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -582,6 +585,21 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Sources\Internal\AssetsSystem\FilesystemHelpers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\*.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\*.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\*.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\*.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Internal\Render\Shaders\autogen\KiotoShaders.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

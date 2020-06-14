@@ -2,7 +2,7 @@
 
 #include "Render/ShaderData.h"
 
-namespace Kioto::Renderer::Sinp
+namespace Kioto::Renderer::SInp
 {
 class ShaderInputBase
 {

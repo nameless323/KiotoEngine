@@ -57,13 +57,28 @@ namespace ShaderInputsParserApp
             }
         }
 
+        static void CleanDirectory(string path)
+        {
+            DirectoryInfo dir = new DirectoryInfo(path);
+
+            foreach (FileInfo fi in dir.GetFiles())
+            {
+                fi.Delete();
+            }
+
+            foreach (DirectoryInfo di in dir.GetDirectories())
+            {
+                CleanDirectory(di.FullName);
+                di.Delete();
+            }
+        }
+
         static void CreateOutputDirectories(bool deleteExisting)
         {
             if (deleteExisting)
             {
-                Directory.Delete(HlslOutputDir, true);
-                Directory.Delete(CppOutputDir, true);
-                Directory.Delete(CppOutputDir + "/sInp/", true);
+                CleanDirectory(HlslOutputDir);
+                CleanDirectory(CppOutputDir);
             }
             Directory.CreateDirectory(HlslOutputDir);
             Directory.CreateDirectory(CppOutputDir);
@@ -97,7 +112,7 @@ namespace ShaderInputsParserApp
                 Console.WriteLine(ex.Message);
             }
 
-            CreateOutputDirectories(false);
+            CreateOutputDirectories(true);
 
             string[] files = Directory.GetFiles(InputDir, "*.sinp", SearchOption.AllDirectories);
 

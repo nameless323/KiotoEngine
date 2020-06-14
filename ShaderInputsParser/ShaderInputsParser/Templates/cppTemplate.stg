@@ -13,6 +13,8 @@ header(name, cbuffers, texSets, shaderProgs, vertexLayout) ::= <<
 #include "Math/Matrix4.h"
 #include "Render/Buffers/EngineBuffers.h"
 
+#include "Render/ShaderInputBase.h"
+
 namespace Kioto::Renderer::SInp
 {
 class $name$_sinp : public ShaderInputBase
@@ -68,7 +70,7 @@ private:
 >>
 
 cbuffer(cbname, reg, space, addParams) ::= <<
-ConstantBuffer $cbname$($reg$, <space>);
+ConstantBuffer $cbname$($reg$, $space$);
 $addParams$
 m_cbs.push_back(std::move($cbname$));
 
@@ -76,7 +78,7 @@ m_cbs.push_back(std::move($cbname$));
 >>
 
 cbmember(cbname, memberName, initVal) ::= <<
-$cbname$.Add($memberName$, $initVal$);
+$cbname$.Add("$memberName$", $initVal$);
 >>
 
 texSet(addParams) ::= <<
@@ -87,7 +89,7 @@ $addParams$
 >>
 
 texture(name, reg) ::= <<
-tSet.AddTexture($name$, $reg$, nullptr);
+tSet.AddTexture("$name$", $reg$, nullptr);
 >>
 
 vlayoutmember(semantic, index, format) ::= <<

@@ -6,6 +6,8 @@ factory() ::= <<
 //////////////////////////////////////////////// 
 #include <string>
 
+#include "Render/ShaderInputBase.h"
+
 namespace Kioto::Renderer::SInp::KiotoShaders
 {
 ShaderInputBase& GetShader(const std::string& key);

@@ -14,14 +14,20 @@ namespace ShaderInputsParserApp.Source.HeaderWriters
             TemplateGroup cppGroup = new Antlr4.StringTemplate.TemplateGroupFile(Program.TemplatesDir + "/factoryTemplateCpp.stg");
 
             StringBuilder mapping = new StringBuilder();
+            StringBuilder includes = new StringBuilder();
             foreach (var filepath in files)
             {
                 string filenameWithoutExt = Path.GetFileNameWithoutExtension(filepath);
                 StringTemplate mapTemplate = cppGroup.GetInstanceOf("shaderMap");
                 mapTemplate.Add("key", filenameWithoutExt);
                 mapping.Append(mapTemplate.Render() + '\n');
+
+                StringTemplate inclTemplate = cppGroup.GetInstanceOf("include");
+                inclTemplate.Add("filename", filenameWithoutExt);
+                includes.Append(inclTemplate.Render() + '\n');
             }
             StringTemplate factoryCppTemplate = cppGroup.GetInstanceOf("factory");
+            factoryCppTemplate.Add("includes", includes.ToString());
             factoryCppTemplate.Add("mapping", mapping.ToString());
 
             string filename = Program.CppOutputDir + "/KiotoShaders";

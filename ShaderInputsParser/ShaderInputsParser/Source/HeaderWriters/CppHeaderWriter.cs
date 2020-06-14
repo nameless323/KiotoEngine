@@ -119,7 +119,7 @@ namespace ShaderInputsParserApp.Source.HeaderWriters
             string vertexLayouts = WriteVertexLayouts(ctx, group);
 
             StringTemplate headerTemplate = group.GetInstanceOf("header");
-            headerTemplate.Add("name", "filename");
+            headerTemplate.Add("name", filename);
             headerTemplate.Add("cbuffers", constantBuffers);
             headerTemplate.Add("texSets", textureSets);
             headerTemplate.Add("shaderProgs", bindings);
