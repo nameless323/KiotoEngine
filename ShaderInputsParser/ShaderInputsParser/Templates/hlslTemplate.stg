@@ -1,6 +1,7 @@
 delimiters "$", "$"
 
 var(type, name) ::= "$type$ $name$;"
+vlayoutvar(type, name, semantic) ::= "$type$ $name$ : $semantic$;"
 
 include(path) ::= "#include $path$;"
 

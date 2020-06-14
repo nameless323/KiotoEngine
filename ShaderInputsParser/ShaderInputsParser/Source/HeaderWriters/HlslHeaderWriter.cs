@@ -45,6 +45,38 @@ namespace ShaderInputsParserApp.Source
             return result.ToString();
         }
 
+        string WriteVertexLayout(ShaderOutputContext ctx, TemplateGroup group)
+        {
+            VertexLayout vLayout = ctx.VertLayout;
+
+            StringBuilder result = new StringBuilder();
+
+            result.Append("///////////////// VERTEX LAYOUT /////////////////// ");
+            result.Append('\n');
+
+            StringBuilder members = new StringBuilder();
+            foreach (var member in vLayout.Members)
+            {
+                StringTemplate memberTemplate = group.GetInstanceOf("vlayoutvar");
+                memberTemplate.Add("type", Variable.ConvertHlslType(member.Type));
+                memberTemplate.Add("name", member.Name);
+                string index = "";
+                if (member.Semantic == "TEXCOORD" || member.Semantic == "COLOR")
+                    index = member.SemanticIndex.ToString();
+                memberTemplate.Add("semantic", member.Semantic + index);
+                members.Append(memberTemplate.Render() + '\n');
+            }
+            StringTemplate structTemplate = group.GetInstanceOf("struct");
+            structTemplate.Add("name", "vIn");
+            structTemplate.Add("members", members);
+            result.Append(structTemplate.Render() + '\n' + '\n');
+
+            result.Append('\n');
+            result.Append('\n');
+
+            return result.ToString();
+        }
+
         string WriteConstantBuffers(ShaderOutputContext ctx, TemplateGroup group)
         {
             List<ConstantBuffer> constantBuffers = ctx.ConstantBuffers;
@@ -122,6 +154,10 @@ namespace ShaderInputsParserApp.Source
                 samplerTemplate.Add("space", sampler.Bindpoint.Space);
                 result.Append(samplerTemplate.Render() + '\n');
             }
+
+            result.Append('\n');
+            result.Append('\n');
+
             return result.ToString();
         }
 
@@ -137,6 +173,7 @@ namespace ShaderInputsParserApp.Source
             result.Append(WriteConstantBuffers(ctx, group));
             result.Append(WriteTextures(ctx, group));
             result.Append(WriteSamplers(ctx, group));
+            result.Append(WriteVertexLayout(ctx, group));
 
             string outDirHlsl = Program.HlslOutputDir;
             string filenameOut = outDirHlsl + "/" + filename + ".hlsl";
