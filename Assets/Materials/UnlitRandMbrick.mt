@@ -3,11 +3,11 @@ passes:
     renderPass: 
         name: "Forward"
         pipelineConfig: "PipelineConfigs\\Default.pcfg"
-        shader: "Shaders\\Fallback.hlsl"
+        shader: "Shaders\\sInp\\Fallback.sinp"
         textures:
             Diffuse: "Textures\\rick_and_morty.dds"
             Mask: "Textures\\brick.dds"
     renderPass: 
         name: "Wireframe"
         pipelineConfig: "PipelineConfigs\\Wireframe.pcfg"
-        shader: "Shaders\\Wireframe.hlsl"
+        shader: "Shaders\\sInp\\Wireframe.sinp"

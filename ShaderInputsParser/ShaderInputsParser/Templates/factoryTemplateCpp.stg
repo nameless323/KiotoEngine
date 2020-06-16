@@ -12,14 +12,14 @@ $includes$
 
 namespace Kioto::Renderer::SInp::KiotoShaders
 {
-const std::unordered_map<std::string, ShaderInputBase&> m_shaderMap =
+ShaderInputBase& GetShader(const std::string& key)
+{
+    // TODO Fix memory leak
+    static const std::unordered_map<std::string, ShaderInputBase*> m_shaderMap =
         {
             $mapping$
         };
-
-ShaderInputBase& GetShader(const std::string& key)
-{
-    return m_shaderMap.at(key);
+    return *m_shaderMap.at(key);
 }
 }
 >>
@@ -29,5 +29,5 @@ include(filename) ::= <<
 >>
 
 shaderMap(key) ::= <<
-{ "$key$", $key$_sinp() },
+{ "$key$.sinp", new $key$_sinp() },
 >>
