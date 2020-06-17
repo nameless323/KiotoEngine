@@ -42,7 +42,7 @@ void GrayscaleRenderPass::BuildRenderPackets(CommandList* commandList, ResourceT
     Mesh* mesh = m_renderObject->GetMesh();
     mat->BuildMaterialForPass(this);
 
-    m_renderObject->SetTexture("IntputColor", input, m_passName);
+    m_renderObject->SetTexture("InputColor", input, m_passName);
 
     RenderPacket currPacket = {};
     currPacket.Material = mat->GetHandle();
