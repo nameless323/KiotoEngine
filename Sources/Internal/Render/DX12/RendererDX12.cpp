@@ -366,6 +366,7 @@ void RendererDX12::Present()
 
             UploadBufferDX12* timeBuffer = m_constantBufferManager.FindBuffer(m_currentTimeBuffer);
             UploadBufferDX12* cameraBuffer = m_constantBufferManager.FindBuffer(m_currentCameraBuffer);
+            // [a_vorontcov] TODO: IMPORTANT: we're hoping that the first two buffers in the first two slots in the root sig are engine buffers. In general it might be wrong.
             m_state.CommandList->SetGraphicsRootConstantBufferView(0, timeBuffer->GetFrameDataGpuAddress(m_swapChain.GetCurrentFrameIndex()));
             m_state.CommandList->SetGraphicsRootConstantBufferView(1, cameraBuffer->GetFrameDataGpuAddress(m_swapChain.GetCurrentFrameIndex()));
 
@@ -374,10 +375,10 @@ void RendererDX12::Present()
             if (packet.CBSet != EmptyConstantBufferSetHandle)
             {
                 auto& bufferList = m_constantBufferManager.FindBuffers(packet.CBSet);
-                buffersCount += bufferList.size();
+                buffersCount = bufferList.size();
 
                 for (size_t i = engineBuffersCount; i < buffersCount; ++i)
-                    m_state.CommandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(i), bufferList[i - engineBuffersCount]->GetFrameDataGpuAddress(m_swapChain.GetCurrentFrameIndex()));
+                    m_state.CommandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(i), bufferList[i]->GetFrameDataGpuAddress(m_swapChain.GetCurrentFrameIndex()));
             }
 
             ID3D12DescriptorHeap* currTexDescriptorHeap = m_textureManager.GetTextureHeap(packet.TextureSet);

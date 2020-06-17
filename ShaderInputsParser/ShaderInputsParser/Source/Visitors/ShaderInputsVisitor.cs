@@ -2,6 +2,7 @@
 using ShaderInputsParserApp.Source.Types;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace ShaderInputsParserApp.Source
@@ -15,12 +16,27 @@ namespace ShaderInputsParserApp.Source
     class ShaderOutputContext
     {
         public List<Structure> Structures { get; set; } = new List<Structure>();
-        public List<string> Includes { get; set; } = new List<string>();
         public List<ConstantBuffer> ConstantBuffers { get; set; } = new List<ConstantBuffer>();
         public List<Texture> Textures { get; set; } = new List<Texture>();
         public List<Sampler> Samplers { get; set; } = new List<Sampler>();
         public VertexLayout VertLayout { get; set; } = null;
         public ShadersBinding ShaderBinding { get; set; } = null;
+
+        public void Merge(ShaderOutputContext other)
+        {
+            Structures.AddRange(other.Structures);
+            ConstantBuffers.AddRange(other.ConstantBuffers);
+            Textures.AddRange(other.Textures);
+            Samplers.AddRange(other.Samplers);
+            if (VertLayout != null && other.VertLayout != null)
+                throw new DuplicateBindpointException("Vertex layout is defined twice");
+            if (VertLayout == null)
+                VertLayout = other.VertLayout;
+            if (ShaderBinding != null && other.ShaderBinding != null)
+                throw new DuplicateBindpointException("Shader bindings are defined twice");
+            if (ShaderBinding == null)
+                ShaderBinding = other.ShaderBinding;
+        }
     }
 
     class ShaderInputsVisitor : ShaderInputsParserBaseVisitor<string>
@@ -61,8 +77,21 @@ namespace ShaderInputsParserApp.Source
         }
         public override string VisitInclude(ShaderInputsParser.IncludeContext context)
         {
-            string path = context.FILEPATH().GetText();
-            OutputContext.Includes.Add(path);
+            string filename = context.FILEPATH().GetText();
+            string filepath = Program.InputDir + "/" + filename;
+            if (!File.Exists(filepath))
+                throw new Exception("Include file " + filepath + " doesn't exist");
+
+            string includeContent = File.ReadAllText(filepath);
+
+            ShaderInputsParser parser = Program.InitializeAntlr(includeContent);
+            ShaderInputsParser.InputFileContext ictx = parser.inputFile();
+
+            ShaderInputsVisitor visitor = new ShaderInputsVisitor();
+            visitor.Visit(ictx);
+
+            OutputContext.Merge(visitor.OutputContext);
+
             return base.VisitInclude(context);
         }
         public override string VisitSampler(ShaderInputsParser.SamplerContext context)

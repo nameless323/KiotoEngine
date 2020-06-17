@@ -19,6 +19,7 @@ using ShaderBufferLayoutTemplate = std::vector<ConstantBuffer>;
 struct ShaderData
 {
     std::string output;
+    std::string shaderPath;
     VertexLayout vertexLayout;
     TextureSet textureSet;
     uint8 shaderPrograms = 0;

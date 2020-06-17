@@ -1,21 +1,24 @@
-var(type, name) ::= "<type> <name>;"
+delimiters "$", "$"
 
-include(path) ::= "#include <path>;"
+var(type, name) ::= "$type$ $name$;"
+vlayoutvar(type, name, semantic) ::= "$type$ $name$ : $semantic$;"
+
+include(path) ::= "#include $path$;"
 
 struct(name, members) ::= <<
-struct <name>
+struct $name$
 {
-    <members>
+    $members$
 };
 >>
 
 cbuffer(name, members, reg, space) ::= <<
-cbuffer <name> : register(b<reg>, space<space>)
+cbuffer $name$ : register(b$reg$, space$space$)
 {
-    <members>
+    $members$
 };
 >>
 
-tex2d(name, reg, space) ::= "Texture2D <name> : register(t<reg>, space<space>);"
+tex2d(name, reg, space) ::= "Texture2D $name$ : register(t$reg$, space$space$);"
 
-sampler(name, reg, space) ::= "SamplerState <name> : register(s<reg>, space<space>);"
+sampler(name, reg, space) ::= "SamplerState $name$ : register(s$reg$, space$space$);"

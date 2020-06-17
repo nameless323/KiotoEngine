@@ -10,7 +10,7 @@ inputFile : ( include
             | vertexLayout
             | shadersBinding)*;
 
-include: INCLUDE_KEYWORD QUOTE FILEPATH QUOTE SEMI;
+include: INCLUDE_KEYWORD QUOTE FILEPATH QUOTE;
 
 struct : STRUCT_KEYWORD NAME annotationList CURL_BR_O variable+ CURL_BR_C SEMI;
 

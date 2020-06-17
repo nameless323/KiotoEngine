@@ -15,7 +15,6 @@ public:
     Shader() : Asset("") {}
     Shader(const std::string& path) : Asset(path) 
     {
-        m_shader = Kioto::FilesystemHelpers::ReadFileAsString(path);
     }
 
     void SetHandle(ShaderHandle handle);
@@ -28,10 +27,7 @@ public:
     void SetBufferLayoutTemplate(const ShaderBufferLayoutTemplate& layoutTemplate);
     ShaderBufferLayoutTemplate CreateLayoutTemplateShalowCopy() const;
 
-    const std::string& GetShaderString() const;
-
 private:
-    std::string m_shader;
     ShaderProgramHandle m_vsHandle;
     ShaderProgramHandle m_psHandle;
     VertexLayoutHandle m_vertexLayout;
@@ -60,11 +56,6 @@ inline void Shader::SetShaderData(const ShaderData& data)
 inline const ShaderData& Shader::GetShaderData() const
 {
     return m_data;
-}
-
-inline const std::string& Shader::GetShaderString() const
-{
-    return m_shader;
 }
 
 inline const ShaderBufferLayoutTemplate& Shader::GetBufferLayoutTemplate() const

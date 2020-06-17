@@ -19,8 +19,13 @@ namespace ShaderInputsParserApp
     class Program
     {
         public static string InputDir { get; private set; }
-        public static string OutputDir { get; private set; }
-        static ShaderInputsParser InitializeAntlr(string content)
+        public static string HlslOutputDir { get; private set; }
+        public static string CppOutputDir { get; private set; }
+        public static string TemplatesDir { get; private set; }
+        public static string ShadersDir { get; private set; }
+
+        public static ShadersDirectoryManager ShadersDirManager;
+        public static ShaderInputsParser InitializeAntlr(string content)
         {
             AntlrInputStream inputStream = new AntlrInputStream(content);
             ShaderInputsLexer lexer = new ShaderInputsLexer(inputStream);
@@ -37,19 +42,58 @@ namespace ShaderInputsParserApp
                     ++i;
                     InputDir = args[i];
                 }
-                else if (args[i] == "outDir:")
+                else if (args[i] == "hlslOutDir:")
                 {
                     ++i;
-                    OutputDir = args[i];
+                    HlslOutputDir = args[i];
+                }
+                else if (args[i] == "cppOutDir:")
+                {
+                    ++i;
+                    CppOutputDir = args[i];
+                }
+                else if (args[i] == "templatesDir:")
+                {
+                    ++i;
+                    TemplatesDir = args[i];
+                }
+                else if (args[i] == "shadersDir:")
+                {
+                    ++i;
+                    ShadersDir = args[i];
                 }
             }
         }
 
-        static void CreateOutputDirectories()
+        static void CleanDirectory(string path)
         {
-            Directory.CreateDirectory(OutputDir);
-            Directory.CreateDirectory(OutputDir + "/hlsl");
-            Directory.CreateDirectory(OutputDir + "/cpp");
+            if (!Directory.Exists(path))
+                return;
+
+            DirectoryInfo dir = new DirectoryInfo(path);
+
+            foreach (FileInfo fi in dir.GetFiles())
+            {
+                fi.Delete();
+            }
+
+            foreach (DirectoryInfo di in dir.GetDirectories())
+            {
+                CleanDirectory(di.FullName);
+                di.Delete();
+            }
+        }
+
+        static void CreateOutputDirectories(bool deleteExisting)
+        {
+            if (deleteExisting)
+            {
+                CleanDirectory(HlslOutputDir);
+                CleanDirectory(CppOutputDir);
+            }
+            Directory.CreateDirectory(HlslOutputDir);
+            Directory.CreateDirectory(CppOutputDir);
+            Directory.CreateDirectory(CppOutputDir + "/sInp/");
         }
 
         static void Main(string[] args)
@@ -58,53 +102,74 @@ namespace ShaderInputsParserApp
             try
             {
                 if (InputDir == null)
-                    throw new InvalidCommandLineException("Input directory isn't set in the command line");
+                    throw new InvalidCommandLineException("Input (inDir) directory isn't set in the command line");
                 if (!Directory.Exists(InputDir))
-                    throw new InvalidCommandLineException("Input directory doesn't exist");
+                    throw new InvalidCommandLineException("Input directory doesn't exist (" + InputDir + ")");
 
-                if (OutputDir == null)
-                    throw new InvalidCommandLineException("Output directory isn't set in the command line");
+                if (TemplatesDir == null)
+                    throw new InvalidCommandLineException("Template (templatesDir) directory isn't set in the command line");
+                if (!Directory.Exists(TemplatesDir))
+                    throw new InvalidCommandLineException("Template directory doesn't exist (" + TemplatesDir + ")");
+
+                if (ShadersDir == null)
+                    throw new InvalidCommandLineException("Shaders (shadersDir) directory isn't set in the command line");
+                if (!Directory.Exists(InputDir))
+                    throw new InvalidCommandLineException("Shaders directory doesn't exist (" + ShadersDir + ")");
+
+                if (HlslOutputDir == null)
+                    throw new InvalidCommandLineException("Hlsl directory isn't set in the command line");
+
+                if (CppOutputDir == null)
+                    throw new InvalidCommandLineException("Cpp output directory isn't set in the command line");
+
             }
             catch (InvalidCommandLineException ex)
             {
                 Console.WriteLine(ex.Message);
             }
 
-            CreateOutputDirectories();
+            ShadersDirManager = new ShadersDirectoryManager(ShadersDir);
+
+            CreateOutputDirectories(false);
 
             string[] files = Directory.GetFiles(InputDir, "*.sinp", SearchOption.AllDirectories);
 
             foreach (var filepath in files)
             {
-                string content = File.ReadAllText(filepath);
-
-                ShaderInputsParser parser = InitializeAntlr(content);
-                ShaderInputsParser.InputFileContext ctx = parser.inputFile();
-
-                ShaderInputsVisitor visitor = new ShaderInputsVisitor();
-                visitor.Visit(ctx);
-                ShaderOutputContext outputCtx = visitor.OutputContext;
-
-                Validator validator = new Validator();
                 try
                 {
+                    string content = File.ReadAllText(filepath);
+
+                    ShaderInputsParser parser = InitializeAntlr(content);
+                    ShaderInputsParser.InputFileContext ctx = parser.inputFile();
+
+                    ShaderInputsVisitor visitor = new ShaderInputsVisitor();
+                    visitor.Visit(ctx);
+                    ShaderOutputContext outputCtx = visitor.OutputContext;
+
+                    Validator validator = new Validator();
+
                     validator.Validate(outputCtx.ConstantBuffers);
+
+                    BindpointManager bindpointManager = new BindpointManager();
+                    bindpointManager.AssignBindpoints(outputCtx);
+
+                    string filename = Path.GetFileNameWithoutExtension(filepath);
+                    HlslHeadersWriter hlslWriter = new HlslHeadersWriter();
+                    hlslWriter.WriteHeaders(outputCtx, filename);
+                    CppHeaderWriter cppWriter = new CppHeaderWriter();
+                    cppWriter.WriteHeaders(outputCtx, filename);
                 }
-                catch (DuplicateNameException ex)
+                catch (Exception ex)
                 {
+                    Console.WriteLine("Exception occurred while parsing file " + filepath);
                     Console.WriteLine(ex.Message);
+                    Console.WriteLine(ex.StackTrace);
                     throw;
                 }
-
-                BindpointManager bindpointManager = new BindpointManager();
-                bindpointManager.AssignBindpoints(outputCtx);
-
-                string filename = Path.GetFileNameWithoutExtension(filepath);
-                HlslHeadersWriter hlslWriter = new HlslHeadersWriter();
-                hlslWriter.WriteHeaders(outputCtx, filename);
-                CppHeaderWriter cppWriter = new CppHeaderWriter();
-                cppWriter.WriteHeaders(outputCtx, filename);
             }
+            FactoryWriter factoryWriter = new FactoryWriter();
+            factoryWriter.WriteFactory(files);
         }
     }
 }

@@ -1,0 +1,10 @@
+#include "Includes\EngineBuffers.kincl"
+
+texture2D InputColor;
+
+vertexLayout vIn
+{
+    float3 position : POSITION;
+};
+
+shader: VS vs, PS ps;

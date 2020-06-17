@@ -94,6 +94,20 @@ namespace ShaderInputsParserApp.Source.HeaderWriters
             return res.ToString();
         }
 
+        string WriteProgramNames(ShaderOutputContext ctx, TemplateGroup group)
+        {
+            StringBuilder res = new StringBuilder();
+            List<ShaderBinding> shaderBinds = ctx.ShaderBinding.Bindings;
+
+            for (int i = 0; i < shaderBinds.Count; ++i)
+            {
+                StringTemplate nameTemplate = group.GetInstanceOf("programNamePair");
+                nameTemplate.Add("shaderProg", m_shaderStagesToKioto[shaderBinds[i].ShaderType]);
+                nameTemplate.Add("name", shaderBinds[i].EntryPointName);
+                res.Append(nameTemplate.Render() + '\n');
+            }
+            return res.ToString();
+        }
         string WriteVertexLayouts(ShaderOutputContext ctx, TemplateGroup group)
         {
             List<VertexLayoutMember> vertexLayoutMembers = ctx.VertLayout.Members;
@@ -111,21 +125,26 @@ namespace ShaderInputsParserApp.Source.HeaderWriters
 
         public void WriteHeaders(ShaderOutputContext ctx, string filename)
         {
-            TemplateGroup group = new Antlr4.StringTemplate.TemplateGroupFile(Environment.CurrentDirectory + "/Templates/cppTemplate.stg");
+            TemplateGroup group = new Antlr4.StringTemplate.TemplateGroupFile(Program.TemplatesDir + "/cppTemplate.stg");
 
             string constantBuffers = WriteConstantBuffers(ctx, group);
             string textureSets = WriteTextureSets(ctx, group);
             string bindings = WriteBindings(ctx, group);
             string vertexLayouts = WriteVertexLayouts(ctx, group);
+            string programNames = WriteProgramNames(ctx, group);
+            string shaderCode = Program.ShadersDirManager.GetShaderCode(filename);
 
             StringTemplate headerTemplate = group.GetInstanceOf("header");
-            headerTemplate.Add("name", "filename");
+            headerTemplate.Add("name", filename);
             headerTemplate.Add("cbuffers", constantBuffers);
             headerTemplate.Add("texSets", textureSets);
             headerTemplate.Add("shaderProgs", bindings);
             headerTemplate.Add("vertexLayout", vertexLayouts);
+            headerTemplate.Add("text", shaderCode);
+            headerTemplate.Add("shaderProgNames", programNames);
+            headerTemplate.Add("shaderPath", "Shaders/" + filename + ".hlsl");
 
-            string outDirHlsl = Program.OutputDir + "/cpp/";
+            string outDirHlsl = Program.CppOutputDir + "/sInp/";
             string filenameOut = outDirHlsl + filename + ".h";
             System.IO.File.WriteAllText(filenameOut, headerTemplate.Render());
         }

@@ -15,6 +15,19 @@ static const std::map<const eDataFormat, uint16> formats
     { eDataFormat::R8, 4 }
 };
 
+static uint16 GetOffsetFromFormat(eDataFormat format)
+{
+    static const std::map<const eDataFormat, uint16> formats
+    {
+        { eDataFormat::UNKNOWN, 0 },
+        { eDataFormat::R8_G8_B8_A8, 16 },
+        { eDataFormat::R8_G8_B8, 12 },
+        { eDataFormat::R8_G8, 8 },
+        { eDataFormat::R8, 4 }
+    };
+    return formats.at(format);
+}
+
 const VertexLayout VertexLayout::LayoutPos3Norm3Uv2
 {
     std::vector<SemanticDesc>
@@ -119,9 +132,9 @@ VertexLayout& VertexLayout::operator=(VertexLayout other)
 void VertexLayout::AddElement(eVertexSemantic semantic, uint8 semanticIndex, eDataFormat format)
 {
     m_semanticsDesc.emplace_back(semantic, semanticIndex, format, m_totalOffset);
-    auto it = formats.find(format);
-    if (it != formats.end())
-        m_totalOffset += it->second;
+    //auto it = formats.find(format);
+    //if (it != formats.end())
+    m_totalOffset += GetOffsetFromFormat(format);
 }
 
 void VertexLayout::Clear()

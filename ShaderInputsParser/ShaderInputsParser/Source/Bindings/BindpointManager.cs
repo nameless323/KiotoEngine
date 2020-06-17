@@ -20,7 +20,6 @@ namespace ShaderInputsParserApp.Source
     {
         private Dictionary<BindpointType, Bindings> m_allBindings = new Dictionary<BindpointType, Bindings>();
         private const uint MaxBindpointRegistersInSpace = 256;
-        private uint m_nextAutoAssignedBindpoint = 0;
 
         public BindpointManager()
         {
@@ -86,18 +85,19 @@ namespace ShaderInputsParserApp.Source
                 regs = new List<uint>();
                 bindings.Add(0, regs);
             }
+            uint nextAutoAssignedBindpoint = 0;
             foreach (var b in bindableList)
             {
                 if (b.Bindpoint != null)
                     continue;
 
                 uint reg = 0;
-                for (uint i = m_nextAutoAssignedBindpoint; i < MaxBindpointRegistersInSpace; ++i)
+                for (uint i = nextAutoAssignedBindpoint; i < MaxBindpointRegistersInSpace; ++i)
                 {
                     if (regs.Contains(i))
                         continue;
                     reg = i;
-                    m_nextAutoAssignedBindpoint = i + 1;
+                    nextAutoAssignedBindpoint = i + 1;
                     break;
                 }
                 b.Bindpoint = new BindpointDesc(reg, 0);

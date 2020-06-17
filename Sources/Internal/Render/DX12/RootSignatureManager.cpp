@@ -14,13 +14,6 @@ void RootSignatureManager::CreateRootSignature(const StateDX& state, const Shade
 
     std::vector<CD3DX12_ROOT_PARAMETER1> rootParams;
  
-    for (size_t i = 0; i < EngineBuffers::EngineBuffersCount; ++i)
-    {
-        CD3DX12_ROOT_PARAMETER1 param;
-        param.InitAsConstantBufferView(EngineBuffers::BufferIndices[i], EngineBuffers::EngineBuffersSpace);
-        rootParams.push_back(std::move(param));
-    }
-
     for (size_t i = 0; i < bufferLayoutTemplate.size(); ++i)
     {
         CD3DX12_ROOT_PARAMETER1 param;

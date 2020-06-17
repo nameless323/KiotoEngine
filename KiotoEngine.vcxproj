@@ -108,11 +108,15 @@
       <AdditionalDependencies>d3dcompiler.lib;D3D12.lib;dxgi.lib;dxguid.lib;$(ProjectDir)Libs\yaml-cpp\lib\libyaml-cppmdd.lib;$(ProjectDir)Libs\fbx-sdk\lib\vs2015\x64\debug\libfbxsdk-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
-      <Command>RD /S /Q $(TargetDir)Assets
+      <Command>echo Running shader parser with command line inDir: $(ProjectDir)Assets\Shaders\sInp hlslOutDir: $(ProjectDir)Assets\autogen cppOutDir: $(ProjectDir)Sources\Internal\Render\Shaders\autogen templatesDir: $(ProjectDir)ShaderInputsParser\ShaderInputsParser\Templates
+$(ProjectDir)ShaderInputsParser\ShaderInputsParser\bin\Debug\netcoreapp3.1\ShaderInputsParser.exe inDir: $(ProjectDir)Assets\Shaders\sInp hlslOutDir: $(ProjectDir)Assets\Shaders\autogen cppOutDir: $(ProjectDir)Sources\Internal\Render\Shaders\autogen templatesDir: $(ProjectDir)ShaderInputsParser\ShaderInputsParser\Templates shadersDir:  $(ProjectDir)Assets\Shaders
+IF %ERRORLEVEL% NEQ 0 exit /b 1
+
+RD /S /Q $(TargetDir)Assets
 (robocopy $(ProjectDir) $(TargetDir)Assets AssetsConfig.yaml) ^&amp; IF %ERRORLEVEL% LEQ 1 exit 0</Command>
     </PreBuildEvent>
     <PreBuildEvent>
-      <Message>Copy assets config...</Message>
+      <Message>Generating shader inputs and copy assets config...</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -262,6 +266,8 @@
     <ClInclude Include="Sources\Internal\Render\ScopedGpuProfiler.h" />
     <ClInclude Include="Sources\Internal\Render\Shader.h" />
     <ClInclude Include="Sources\Internal\Render\ShaderData.h" />
+    <ClInclude Include="Sources\Internal\Render\ShaderInputBase.h" />
+    <ClInclude Include="Sources\Internal\Render\Shaders\autogen\KiotoShaders.h" />
     <ClInclude Include="Sources\Internal\Render\Texture\TextureManager.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\Texture\TextureManagerDX12.h" />
     <ClInclude Include="Sources\Internal\Render\Texture\TextureSet.h" />
@@ -275,6 +281,8 @@
     <ClInclude Include="Sources\Internal\Systems\EventSystem\EventSystem.h" />
     <ClInclude Include="Sources\Internal\Systems\RenderSystem.h" />
     <ClInclude Include="Sources\Internal\Systems\TransformSystem.h" />
+    <ClCompile Include="Sources\Internal\Render\Shaders\autogen\KiotoShaders.cpp" />
+    <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\*.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>

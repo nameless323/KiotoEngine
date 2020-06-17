@@ -1,17 +1,4 @@
-#include "Include\EngineBuffers.hlsl"
-
-cbuffer cbRenderObjectBuffer : register(b0, space0)
-{
-    float4x4 ToWorld;
-    float4x4 ToModel;
-};
-
-struct vIn
-{
-    float3 position : POSITION;
-    float3 normal : NORMAL;
-    float2 uv : TEXCOORD0;
-};
+#include "autogen\Wireframe.hlsl"
 
 struct vOut
 {

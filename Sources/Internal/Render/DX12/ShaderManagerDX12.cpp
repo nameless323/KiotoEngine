@@ -2,7 +2,11 @@
 
 #include "Render/DX12/ShaderManagerDX12.h"
 
+#include "AssetsSystem/AssetsSystem.h"
+#include "Core/CoreHelpers.h"
 #include "Render/Shader.h"
+
+#include "Render/Shaders/autogen/KiotoShaders.h"
 
 namespace Kioto::Renderer
 {
@@ -12,16 +16,19 @@ void ShaderManagerDX12::RegisterShader(Shader* shader)
     if (it != m_shaders.cend())
         return;
     shader->SetHandle(GetNewHandle());
-    ShaderDataAndBufferLayout dataAndLayout = ShaderParser::ParseShaderFromString(shader->GetShaderString(), nullptr);
-    shader->SetShaderData(dataAndLayout.first); // [a_vorontcov] TODO:: Move it?
-    shader->SetBufferLayoutTemplate(dataAndLayout.second);
+
+    // [a_vorontcov] TODO: api independent, move to shader ctor
+    std::string filename = FilesystemHelpers::GetFilenameFromPath(shader->GetAssetPath());
+    SInp::ShaderInputBase& parsedShader = SInp::KiotoShaders::GetShader(filename);
+    shader->SetShaderData(parsedShader.GetShaderData()); // [a_vorontcov] TODO:: Move it?
+    shader->SetBufferLayoutTemplate(parsedShader.GetLayoutTemplate());
 
     std::vector<ShaderDX12> shadersDX;
     if (shader->GetShaderData().shaderPrograms & uint8(ShaderProgramType::Vertex))
-        shadersDX.push_back(CompileDXShader(*shader, "vs", "vs_5_1"));
+        shadersDX.push_back(CompileDXShader(*shader, parsedShader.GetProgramName(ShaderProgramType::Vertex), "vs_5_1"));
 
     if (shader->GetShaderData().shaderPrograms & uint8(ShaderProgramType::Fragment))
-        shadersDX.push_back(CompileDXShader(*shader, "ps", "ps_5_1"));
+        shadersDX.push_back(CompileDXShader(*shader, parsedShader.GetProgramName(ShaderProgramType::Fragment), "ps_5_1"));
 
     m_shaders[shader->GetHandle()] = std::move(shadersDX);
 }
@@ -52,7 +59,8 @@ ShaderDX12 ShaderManagerDX12::CompileDXShader(const Shader& shader, const std::s
 {
     ShaderDX12 res;
     res.SetHandle(GetNewHandle());
-    HRESULT hr = res.Compile(shader.GetShaderData().output.c_str(), shader.GetShaderData().output.length() * sizeof(char), entryName.c_str(), shaderModel.c_str(), shaderFlags);
+    std::string shaderPath = AssetsSystem::GetAssetFullPath(shader.GetShaderData().shaderPath);
+    HRESULT hr = res.CompileFromFile(StrToWstr(shaderPath).c_str(), entryName.c_str(), shaderModel.c_str(), shaderFlags);
     if (!res.GetIsCompiled())
         OutputDebugStringA(res.GetErrorMsg());
     ThrowIfFailed(hr);

@@ -1,12 +1,12 @@
-cbuffer cbEngineBuffer : register(b0, space1)
+constantBuffer cbEngineBuffer %bindTo = 0, space = 1%
 {
     float4 Time; // [a_vorontsov] Time since start: (t / 20, t, t * 2, t * 3).
     float4 SinTime; // [a_vorontsov] Sin of time: (t / 4, t / 2, t, t * 2).
     float4 CosTime; // [a_vorontsov] Cos of time: (t / 4, t / 2, t, t * 2).
     float4 DeltaTime; // [a_vorontsov] Delta time: (dt, 1 / dt, smoothDt, 1 / smoothDt).
-}
+};
 
-cbuffer cbCameraBuffer : register(b1, space1)
+constantBuffer cbCameraBuffer %bindTo = 1, space = 1%
 {
     float4x4 ViewProjection;
     float4x4 View;
@@ -17,5 +17,5 @@ cbuffer cbCameraBuffer : register(b1, space1)
     float Pad1;
 };
 
-SamplerState LinearClampSampler : register(s0);
-SamplerState LinearWrapSampler : register(s1);
+sampler LinearClampSampler;
+sampler LinearWrapSampler;

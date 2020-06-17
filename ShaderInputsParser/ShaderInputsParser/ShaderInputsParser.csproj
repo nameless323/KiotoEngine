@@ -17,11 +17,19 @@
     <None Remove="autogen\ShaderInputsParser.tokens" />
     <None Remove="Grammar\GrammarInput.txt" />
     <None Remove="Templates\cppTemplate.stg" />
+    <None Remove="Templates\factoryTemplateCpp.stg" />
+    <None Remove="Templates\factoryTemplateH.stg" />
     <None Remove="Templates\hlslTemplate.stg" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="Grammar\GrammarInput.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\factoryTemplateCpp.stg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\factoryTemplateH.stg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Templates\hlslTemplate.stg">

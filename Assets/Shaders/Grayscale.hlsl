@@ -1,11 +1,4 @@
-#include "Include\EngineBuffers.hlsl"
-
-[_IN_] Texture2D IntputColor : register(t0);
-
-struct vIn
-{
-    float3 position : POSITION;
-};
+#include "autogen\Grayscale.hlsl"
 
 struct vOut
 {
@@ -24,7 +17,7 @@ vOut vs(vIn i)
 
 float4 ps(vOut i) : SV_Target
 {
-    float4 color = IntputColor.Sample(LinearClampSampler, i.uv);
+    float4 color = InputColor.Sample(LinearClampSampler, i.uv);
     float gs = 0.02126 * color.x + 0.7152 * color.y + 0.0722 * color.z;
     return color;
     //return float4(gs, gs, gs, 1.0);
