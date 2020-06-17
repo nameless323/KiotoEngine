@@ -30,6 +30,8 @@ RD /S /Q $(TargetDir)Assets
 To be able to run the engine, you also need to build ShaderInputsParser and make sure that you have a proper build step that runs the parser to generate the shaders inputs cpp and hlsl files. 
 ### Example of the build step
 ```cpp
-$(ProjectDir)ShaderInputsParser\ShaderInputsParser\bin\Debug\netcoreapp3.1\ShaderInputsParser.exe inDir: $(ProjectDir)Assets\Shaders\sInp hlslOutDir: $(ProjectDir)Assets\autogen cppOutDir: $(ProjectDir)Sources\Internal\Render\Shaders\autogen templatesDir: $(ProjectDir)ShaderInputsParser\ShaderInputsParser\Templates
+echo Running shader parser with command line inDir: $(ProjectDir)Assets\Shaders\sInp hlslOutDir: $(ProjectDir)Assets\autogen cppOutDir: $(ProjectDir)Sources\Internal\Render\Shaders\autogen templatesDir: $(ProjectDir)ShaderInputsParser\ShaderInputsParser\Templates
+$(ProjectDir)ShaderInputsParser\ShaderInputsParser\bin\Debug\netcoreapp3.1\ShaderInputsParser.exe inDir: $(ProjectDir)Assets\Shaders\sInp hlslOutDir: $(ProjectDir)Assets\Shaders\autogen cppOutDir: $(ProjectDir)Sources\Internal\Render\Shaders\autogen templatesDir: $(ProjectDir)ShaderInputsParser\ShaderInputsParser\Templates shadersDir:  $(ProjectDir)Assets\Shaders
+IF %ERRORLEVEL% NEQ 0 exit /b 1
 ```
 
