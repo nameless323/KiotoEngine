@@ -179,6 +179,7 @@ RD /S /Q $(TargetDir)Assets
     <ClInclude Include="Sources\Internal\AssetsSystem\FilesystemHelpers.h" />
     <ClInclude Include="Sources\Internal\AssetsSystem\RenderStateParamsConverter.h" />
     <ClInclude Include="Sources\Internal\Component\CameraComponent.h" />
+    <ClInclude Include="Sources\Internal\Component\LightComponent.h" />
     <ClInclude Include="Sources\Internal\Component\RenderComponent.h" />
     <ClInclude Include="Sources\Internal\Component\TransformComponent.h" />
     <ClInclude Include="Sources\Internal\Core\Core.h" />
@@ -194,6 +195,7 @@ RD /S /Q $(TargetDir)Assets
     <ClInclude Include="Sources\Internal\Math\TransformHelpers.h" />
     <ClInclude Include="Sources\Internal\Render\Color.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\KiotoDx12Mapping.h" />
+    <ClInclude Include="Sources\Internal\Render\Lighting\Light.h" />
     <ClInclude Include="Sources\Internal\Render\RenderGraph\RenderGraph.h" />
     <ClInclude Include="Sources\Internal\Render\RenderGraph\ResourcesBlackboard.h" />
     <ClInclude Include="Sources\Internal\Render\RenderGraph\ResourceTable.h" />
@@ -281,6 +283,7 @@ RD /S /Q $(TargetDir)Assets
     <ClInclude Include="Sources\Internal\Systems\EventSystem\EventSystem.h" />
     <ClInclude Include="Sources\Internal\Systems\RenderSystem.h" />
     <ClInclude Include="Sources\Internal\Systems\TransformSystem.h" />
+    <ClCompile Include="Sources\Internal\Component\LightComponent.cpp" />
     <ClCompile Include="Sources\Internal\Render\Shaders\autogen\KiotoShaders.cpp" />
     <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\*.h" />
     <ClInclude Include="stdafx.h" />

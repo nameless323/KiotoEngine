@@ -381,6 +381,12 @@
     <ClInclude Include="Sources\Internal\Render\Shaders\autogen\KiotoShaders.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Sources\Internal\Render\Lighting\Light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Internal\Component\LightComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -610,6 +616,18 @@
     </ClCompile>
     <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\*.h">
       <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\*.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\*.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\*.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Internal\Component\LightComponent.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

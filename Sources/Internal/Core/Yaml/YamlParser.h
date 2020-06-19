@@ -7,6 +7,7 @@
 #include "Math/Matrix4.h"
 #include "Math/Vector3.h"
 #include "Math/Quaternion.h"
+#include "Render/Color.h"
 
 inline YAML::Emitter& operator << (YAML::Emitter& out, const Kioto::Matrix4& m)
 {
@@ -24,6 +25,16 @@ inline YAML::Emitter& operator << (YAML::Emitter& out, const Kioto::Vector3& v)
     out << YAML::BeginSeq;
     for (Kioto::uint32 i = 0; i < 3; ++i)
         out << v.data[i];
+    out << YAML::EndSeq;
+    return out;
+}
+
+inline YAML::Emitter& operator << (YAML::Emitter& out, const Kioto::Renderer::Color& c)
+{
+    out << YAML::Flow;
+    out << YAML::BeginSeq;
+    for (Kioto::uint32 i = 0; i < 4; ++i)
+        out << c.data[i];
     out << YAML::EndSeq;
     return out;
 }
@@ -105,6 +116,29 @@ struct convert<Kioto::Quaternion>
         }
         for (Kioto::uint32 i = 0; i < 4; ++i)
             q.data[i] = node[i].as<float>();
+        return true;
+    }
+};
+
+template<>
+struct convert<Kioto::Renderer::Color>
+{
+    static Node encode(const Kioto::Renderer::Color& c)
+    {
+        Node node;
+        for (Kioto::uint32 i = 0; i < 4; ++i)
+            node.push_back(c.data[i]);
+        return node;
+    }
+
+    static bool decode(const Node& node, Kioto::Renderer::Color& c)
+    {
+        if (!node.IsSequence() || node.size() != 4)
+        {
+            return false;
+        }
+        for (Kioto::uint32 i = 0; i < 4; ++i)
+            c.data[i] = node[i].as<float>();
         return true;
     }
 };
