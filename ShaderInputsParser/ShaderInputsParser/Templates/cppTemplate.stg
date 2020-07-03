@@ -28,7 +28,6 @@ public:
         InitTextureSet();
         InitShaderProgs();
         InitVertexLayout();
-        InitShaderText();
         InitProgNames();
         SetShaderPath();
     };
@@ -71,11 +70,6 @@ private:
         VertexLayout vl;
         $vertexLayout$
         m_sdata.vertexLayout = std::move(vl);
-    }
-
-    void InitShaderText()
-    {
-        m_sdata.output = R"($text$)";
     }
 
     void InitProgNames()

@@ -132,7 +132,6 @@ namespace ShaderInputsParserApp.Source.HeaderWriters
             string bindings = WriteBindings(ctx, group);
             string vertexLayouts = WriteVertexLayouts(ctx, group);
             string programNames = WriteProgramNames(ctx, group);
-            string shaderCode = Program.ShadersDirManager.GetShaderCode(filename);
 
             StringTemplate headerTemplate = group.GetInstanceOf("header");
             headerTemplate.Add("name", filename);
@@ -140,7 +139,6 @@ namespace ShaderInputsParserApp.Source.HeaderWriters
             headerTemplate.Add("texSets", textureSets);
             headerTemplate.Add("shaderProgs", bindings);
             headerTemplate.Add("vertexLayout", vertexLayouts);
-            headerTemplate.Add("text", shaderCode);
             headerTemplate.Add("shaderProgNames", programNames);
             headerTemplate.Add("shaderPath", "Shaders/" + filename + ".hlsl");
 

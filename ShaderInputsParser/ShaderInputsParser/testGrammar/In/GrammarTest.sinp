@@ -1,6 +1,23 @@
 texture2D Diffuse;
 texture2D Mask;
 
+sampler LinearSampler;
+
+struct InstanceData
+{
+    float Height;
+    float3 Oobb;
+};
+
+constantBuffer<InstanceData> instanceCb;
+
+struct InstancesInfo
+{
+    uint index;
+};
+
+constantBuffer<InstancesInfo> instanceInfo[12];
+
 constantBuffer cbRenderObjectBuffer
 {
     float4x4 ToWorld;
