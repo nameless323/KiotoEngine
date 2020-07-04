@@ -91,7 +91,6 @@ private:
     uint16 m_index = 0;
     uint16 m_space = 0;
     uint32 m_key = 0;
-    bool m_isDirty = true;
     bool m_regenerateMemLayout = true;
 
     std::vector<Param> m_params;

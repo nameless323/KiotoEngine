@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ShaderInputsParserApp.Source.Types;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -123,6 +124,33 @@ namespace ShaderInputsParserApp.Source.HeaderWriters
             return res.ToString();
         }
 
+        string WriteStructures(ShaderOutputContext ctx, TemplateGroup group)
+        {
+            List<Structure> structures = ctx.Structures;
+            if (structures.Count == 0)
+                return "";
+
+            StringBuilder result = new StringBuilder();
+
+            foreach (var structure in structures)
+            {
+                StringBuilder members = new StringBuilder();
+                foreach (var member in structure.Members)
+                {
+                    StringTemplate memberTemplate = group.GetInstanceOf("structMember");
+                    memberTemplate.Add("type", Variable.ConvertCppType(member.Type));
+                    memberTemplate.Add("name", member.Name);
+                    members.Append(memberTemplate.Render() + '\n');
+                }
+                StringTemplate structTemplate = group.GetInstanceOf("struct");
+                structTemplate.Add("name", structure.Name);
+                structTemplate.Add("members", members);
+                result.Append(structTemplate.Render() + '\n');
+            }
+
+            return result.ToString();
+        }
+
         public void WriteHeaders(ShaderOutputContext ctx, string filename)
         {
             TemplateGroup group = new Antlr4.StringTemplate.TemplateGroupFile(Program.TemplatesDir + "/cppTemplate.stg");
@@ -132,9 +160,11 @@ namespace ShaderInputsParserApp.Source.HeaderWriters
             string bindings = WriteBindings(ctx, group);
             string vertexLayouts = WriteVertexLayouts(ctx, group);
             string programNames = WriteProgramNames(ctx, group);
+            string structs = WriteStructures(ctx, group);
 
             StringTemplate headerTemplate = group.GetInstanceOf("header");
             headerTemplate.Add("name", filename);
+            headerTemplate.Add("structs", structs);
             headerTemplate.Add("cbuffers", constantBuffers);
             headerTemplate.Add("texSets", textureSets);
             headerTemplate.Add("shaderProgs", bindings);

@@ -14,7 +14,6 @@ ConstantBuffer::ConstantBuffer(const ConstantBuffer& other)
     : m_index(other.m_index)
     , m_space(other.m_space)
     , m_key(other.m_key)
-    , m_isDirty(other.m_isDirty)
     , m_regenerateMemLayout(other.m_regenerateMemLayout)
     , m_dataSize(other.m_dataSize)
     , m_dataSize4ByteElem(other.m_dataSize4ByteElem)
@@ -363,7 +362,6 @@ void ConstantBuffer::MakeShallowCopy(ConstantBuffer& target, bool queueForUpdate
     target.m_index = m_index;
     target.m_space = m_space;
     target.m_key = m_key;
-    target.m_isDirty = true;
     target.m_regenerateMemLayout = true;
 
     for (auto& param : m_params)
