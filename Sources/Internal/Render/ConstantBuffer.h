@@ -33,6 +33,13 @@ public:
     };
 
     ConstantBuffer() {}
+    template <typename T>
+    ConstantBuffer(uint16 index, uint16 space, uint16 elemNum = 1);
+    template <typename T>
+    void Set(const T& val, uint16 elemOffset = 0);
+    template <typename T>
+    T* Get(uint16 elemOffset = 0);
+
     ConstantBuffer(uint16 index, uint16 space);
     ConstantBuffer(const ConstantBuffer& other);
     ConstantBuffer(ConstantBuffer&& other);
@@ -94,6 +101,7 @@ private:
     bool m_regenerateMemLayout = true;
 
     std::vector<Param> m_params;
+    // [a_vorontcov] TODO: template class with typename m_memData.
     float32* m_memData = nullptr;
     uint32 m_dataSize = 0;
     uint32 m_dataSize4ByteElem = 0;
@@ -113,6 +121,27 @@ private:
         std::swap(l.m_handle, r.m_handle);
     }
 };
+
+template <typename T>
+inline ConstantBuffer::ConstantBuffer(uint16 index, uint16 space, uint16 elemNum)
+    : m_index(index), m_space(space), m_key(m_index | m_space << 16), m_dataSize(sizeof(T) * elemNum)
+{
+    m_memData = new float32[m_dataSize / sizeof(float32)];
+}
+
+template <typename T>
+inline void ConstantBuffer::Set(const T& val, uint16 elemOffset)
+{
+    T* mem = reinterpret_cast<T*>(m_memData);
+    *(mem + elemOffset) = val;
+}
+
+template <typename T>
+inline T* ConstantBuffer::Get(uint16 elemOffset)
+{
+    T* mem = reinterpret_cast<T*>(m_memData);
+    return mem + elemOffset;
+}
 
 inline uint16 ConstantBuffer::GetIndex() const
 {
