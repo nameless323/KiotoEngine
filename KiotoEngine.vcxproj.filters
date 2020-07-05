@@ -593,41 +593,23 @@
     <ClCompile Include="Sources\Internal\AssetsSystem\FilesystemHelpers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\*.h">
-      <Filter>Header Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\*.h">
-      <Filter>Header Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\*.h">
-      <Filter>Header Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\*.h">
-      <Filter>Header Files</Filter>
-    </ClCompile>
     <ClCompile Include="Sources\Internal\Render\Shaders\autogen\KiotoShaders.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\*.h">
-      <Filter>Header Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\*.h">
-      <Filter>Header Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\*.h">
-      <Filter>Header Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\*.h">
-      <Filter>Header Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\*.h">
-      <Filter>Header Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\*.h">
-      <Filter>Header Files</Filter>
-    </ClCompile>
     <ClCompile Include="Sources\Internal\Component\LightComponent.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\Fallback.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\Grayscale.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\UnlitMovingTex.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\Wireframe.h">
+      <Filter>Header Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -105,7 +105,6 @@ private:
         std::swap(l.m_index, r.m_index);
         std::swap(l.m_space, r.m_space);
         std::swap(l.m_key, r.m_key);
-        std::swap(l.m_isDirty, r.m_isDirty);
         std::swap(l.m_regenerateMemLayout, r.m_regenerateMemLayout);
         std::swap(l.m_memData, r.m_memData);
         std::swap(l.m_dataSize, r.m_dataSize);

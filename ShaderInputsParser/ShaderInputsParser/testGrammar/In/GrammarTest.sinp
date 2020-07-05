@@ -16,7 +16,9 @@ struct InstancesInfo
     uint index;
 };
 
-constantBuffer<InstancesInfo> instanceInfo[12];
+constantBuffer<InstancesInfo> information[12];
+
+constantBuffer<float4> objectTranslation;
 
 constantBuffer cbRenderObjectBuffer
 {

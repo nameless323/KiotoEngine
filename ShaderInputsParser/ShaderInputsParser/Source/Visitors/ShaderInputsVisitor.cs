@@ -68,6 +68,22 @@ namespace ShaderInputsParserApp.Source
 
             return name;
         }
+        public override string VisitCbufferTempl(ShaderInputsParser.CbufferTemplContext context)
+        {
+            // In our grammar the cb name goes last whilst the typename first (if exist), if not, there is only one name, typename is a general type.
+            int cbufferNamePos = context.NAME().Length - 1;
+            string name = context.NAME()[cbufferNamePos].GetText();
+            string typename = "";
+            if (context.TYPE() != null)
+                typename = context.TYPE().GetText();
+            else if (context.NAME()[0] != null)
+                typename = context.NAME()[0].GetText();
+
+            AnnotationsVisitor annotVisitor = new AnnotationsVisitor();
+            annotVisitor.Visit(context);
+
+            return base.VisitCbufferTempl(context);
+        }
         public override string VisitTex2d(ShaderInputsParser.Tex2dContext context)
         {
             string name = context.NAME().GetText();
