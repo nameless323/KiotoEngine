@@ -34,7 +34,7 @@ namespace ShaderInputsParserApp.Source
                     members.Append(memberTemplate.Render() + '\n');
                 }
                 StringTemplate structTemplate = group.GetInstanceOf("struct");
-                structTemplate.Add("name", structure.Name);
+                structTemplate.Add("name", structure.Typename);
                 structTemplate.Add("members", members);
                 result.Append(structTemplate.Render() + '\n' + '\n');
             }
@@ -89,20 +89,36 @@ namespace ShaderInputsParserApp.Source
 
             foreach (var constantBuffer in constantBuffers)
             {
-                StringBuilder membersString = new StringBuilder();
-                foreach (var member in constantBuffer.Members)
+                if (!constantBuffer.IsTemplated)
                 {
-                    StringTemplate varTemplate = group.GetInstanceOf("var");
-                    varTemplate.Add("type", Variable.ConvertHlslType(member.Type));
-                    varTemplate.Add("name", member.Name);
-                    membersString.Append(varTemplate.Render() + '\n');
+                    StringBuilder membersString = new StringBuilder();
+                    foreach (var member in constantBuffer.Members)
+                    {
+                        StringTemplate varTemplate = group.GetInstanceOf("var");
+                        varTemplate.Add("type", Variable.ConvertHlslType(member.Type));
+                        varTemplate.Add("name", member.Name);
+                        membersString.Append(varTemplate.Render() + '\n');
+                    }
+                    StringTemplate cbufferTemplate = group.GetInstanceOf("cbuffer");
+                    cbufferTemplate.Add("name", constantBuffer.Name);
+                    cbufferTemplate.Add("members", membersString);
+                    cbufferTemplate.Add("reg", constantBuffer.Bindpoint.Reg);
+                    cbufferTemplate.Add("space", constantBuffer.Bindpoint.Space);
+                    result.Append(cbufferTemplate.Render() + '\n' + '\n');
                 }
-                StringTemplate cbufferTemplate = group.GetInstanceOf("cbuffer");
-                cbufferTemplate.Add("name", constantBuffer.Name);
-                cbufferTemplate.Add("members", membersString);
-                cbufferTemplate.Add("reg", constantBuffer.Bindpoint.Reg);
-                cbufferTemplate.Add("space", constantBuffer.Bindpoint.Space);
-                result.Append(cbufferTemplate.Render() + '\n' + '\n');
+                else
+                {
+                    StringTemplate cbufferTemplate = group.GetInstanceOf("cbufferTempl");
+                    cbufferTemplate.Add("name", constantBuffer.Name);
+                    cbufferTemplate.Add("typename", constantBuffer.Typename);
+                    cbufferTemplate.Add("reg", constantBuffer.Bindpoint.Reg);
+                    cbufferTemplate.Add("space", constantBuffer.Bindpoint.Space);
+                    if (constantBuffer.Size != 0)
+                        cbufferTemplate.Add("isArray", "true");
+                    if (constantBuffer.Size > 0)
+                        cbufferTemplate.Add("size", constantBuffer.Size);
+                    result.Append(cbufferTemplate.Render() + '\n' + '\n');
+                }
             }
 
             result.Append('\n');

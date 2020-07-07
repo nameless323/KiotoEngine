@@ -17,6 +17,7 @@ struct InstancesInfo
 };
 
 constantBuffer<InstancesInfo> information[12];
+constantBuffer<InstancesInfo> informationUnbound[];
 
 constantBuffer<float4> objectTranslation;
 

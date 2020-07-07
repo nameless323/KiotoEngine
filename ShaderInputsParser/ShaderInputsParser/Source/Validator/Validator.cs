@@ -21,10 +21,11 @@ namespace ShaderInputsParserApp.Source
         {
             foreach (var s in structures)
             {
-                if (m_structNames.Contains(s.Name))
-                    throw new DuplicateNameException("Name " + s.Name + " is duplicated.");
-                m_structNames.Add(s.Name);
-                ValidateMembers(s);
+                if (m_structNames.Contains(s.Typename))
+                    throw new DuplicateNameException("Name " + s.Typename + " is duplicated.");
+                m_structNames.Add(s.Typename);
+                if (s.Members != null)
+                    ValidateMembers(s);
             }
         }
 
@@ -34,7 +35,7 @@ namespace ShaderInputsParserApp.Source
             foreach(var m in s.Members)
             {
                 if (names.Contains(m.Name))
-                    throw new DuplicateNameException("Type " + s.GetType() + " with a name " + s.Name + " contains duplicate member with name " + m.Name);
+                    throw new DuplicateNameException("Type " + s.GetType() + " with a name " + s.Typename + " contains duplicate member with name " + m.Name);
                 names.Add(m.Name);
             }
         }

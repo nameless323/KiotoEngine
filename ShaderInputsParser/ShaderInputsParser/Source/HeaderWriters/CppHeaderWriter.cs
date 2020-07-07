@@ -1,6 +1,7 @@
 ﻿using ShaderInputsParserApp.Source.Types;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace ShaderInputsParserApp.Source.HeaderWriters
@@ -45,21 +46,24 @@ namespace ShaderInputsParserApp.Source.HeaderWriters
             List<ConstantBuffer> cbs = ctx.ConstantBuffers;
             foreach (var cb in cbs)
             {
-                StringBuilder membersResult = new StringBuilder();
-                foreach (var m in cb.Members)
+                if (!cb.IsTemplated)
                 {
-                    StringTemplate cBufferMemberTemplate = group.GetInstanceOf("cbmember");
-                    cBufferMemberTemplate.Add("cbname", cb.Name);
-                    cBufferMemberTemplate.Add("memberName", m.Name);
-                    cBufferMemberTemplate.Add("initVal", m_typesToKiotoDefaults[m.Type]);
-                    membersResult.Append(cBufferMemberTemplate.Render() + "\n");
+                    StringBuilder membersResult = new StringBuilder();
+                    foreach (var m in cb.Members)
+                    {
+                        StringTemplate cBufferMemberTemplate = group.GetInstanceOf("cbmember");
+                        cBufferMemberTemplate.Add("cbname", cb.Name);
+                        cBufferMemberTemplate.Add("memberName", m.Name);
+                        cBufferMemberTemplate.Add("initVal", m_typesToKiotoDefaults[m.Type]);
+                        membersResult.Append(cBufferMemberTemplate.Render() + "\n");
+                    }
+                    StringTemplate cBufferTemplate = group.GetInstanceOf("cbuffer");
+                    cBufferTemplate.Add("cbname", cb.Name);
+                    cBufferTemplate.Add("reg", cb.Bindpoint.Reg.ToString());
+                    cBufferTemplate.Add("space", cb.Bindpoint.Space.ToString());
+                    cBufferTemplate.Add("addParams", membersResult.ToString());
+                    res.Append(cBufferTemplate.Render() + '\n');
                 }
-                StringTemplate cBufferTemplate = group.GetInstanceOf("cbuffer");
-                cBufferTemplate.Add("cbname", cb.Name);
-                cBufferTemplate.Add("reg", cb.Bindpoint.Reg.ToString());
-                cBufferTemplate.Add("space", cb.Bindpoint.Space.ToString());
-                cBufferTemplate.Add("addParams", membersResult.ToString());
-                res.Append(cBufferTemplate.Render() + '\n');
             }
             return res.ToString();
         }
@@ -124,10 +128,9 @@ namespace ShaderInputsParserApp.Source.HeaderWriters
             return res.ToString();
         }
 
-        string WriteStructures(ShaderOutputContext ctx, TemplateGroup group)
+        string WriteStructures(ShaderOutputContext ctx, TemplateGroup group, IEnumerable<IStructureType> structures)
         {
-            List<Structure> structures = ctx.Structures;
-            if (structures.Count == 0)
+            if (structures.Count() == 0)
                 return "";
 
             StringBuilder result = new StringBuilder();
@@ -143,7 +146,7 @@ namespace ShaderInputsParserApp.Source.HeaderWriters
                     members.Append(memberTemplate.Render() + '\n');
                 }
                 StringTemplate structTemplate = group.GetInstanceOf("struct");
-                structTemplate.Add("name", structure.Name);
+                structTemplate.Add("name", structure.Typename);
                 structTemplate.Add("members", members);
                 result.Append(structTemplate.Render() + '\n');
             }
@@ -160,7 +163,7 @@ namespace ShaderInputsParserApp.Source.HeaderWriters
             string bindings = WriteBindings(ctx, group);
             string vertexLayouts = WriteVertexLayouts(ctx, group);
             string programNames = WriteProgramNames(ctx, group);
-            string structs = WriteStructures(ctx, group);
+            string structs = WriteStructures(ctx, group, ctx.Structures);
 
             StringTemplate headerTemplate = group.GetInstanceOf("header");
             headerTemplate.Add("name", filename);

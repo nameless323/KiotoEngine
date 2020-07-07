@@ -9,11 +9,11 @@ namespace ShaderInputsParserApp.Source.Types
     {
         public Structure(string name, List<Variable> members)
         {
-            Name = name;
+            Typename = name;
             Members = new List<Variable>(members);
         }
 
-        public string Name { get; set; }
+        public string Typename { get; set; }
 
         public List<Variable> Members { get; set; }
 

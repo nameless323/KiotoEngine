@@ -1,5 +1,6 @@
 ﻿using antlrGenerated;
 using ShaderInputsParserApp.Source.Types;
+using ShaderInputsParserApp.Source.Visitors;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -78,11 +79,18 @@ namespace ShaderInputsParserApp.Source
                 typename = context.TYPE().GetText();
             else if (context.NAME()[0] != null)
                 typename = context.NAME()[0].GetText();
+            ArrayDimVisitor arrayVisiotr = new ArrayDimVisitor();
+            arrayVisiotr.Visit(context);
 
             AnnotationsVisitor annotVisitor = new AnnotationsVisitor();
             annotVisitor.Visit(context);
 
-            return base.VisitCbufferTempl(context);
+            ConstantBuffer buffer = new ConstantBuffer(name, typename);
+            buffer.Annotations = new List<Annotation>(annotVisitor.Annotations);
+            buffer.Size = arrayVisiotr.Size;
+            OutputContext.ConstantBuffers.Add(buffer);
+
+            return name;
         }
         public override string VisitTex2d(ShaderInputsParser.Tex2dContext context)
         {

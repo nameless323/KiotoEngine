@@ -132,9 +132,8 @@ namespace ShaderInputsParserApp
                     visitor.Visit(ctx);
                     ShaderOutputContext outputCtx = visitor.OutputContext;
 
-                    Validator validator = new Validator();
-
-                    validator.Validate(outputCtx.ConstantBuffers);
+                    //Validator validator = new Validator();
+                    //validator.Validate(outputCtx.ConstantBuffers);
 
                     BindpointManager bindpointManager = new BindpointManager();
                     bindpointManager.AssignBindpoints(outputCtx);

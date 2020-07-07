@@ -19,6 +19,8 @@ cbuffer $name$ : register(b$reg$, space$space$)
 };
 >>
 
+cbufferTempl(name, typename, size, isArray, reg, space) ::= "ConstantBuffer<$typename$> $name$$if(isArray)$[$if(size)$$size$$endif$]$endif$ : register(b$reg$, space$space$);"
+
 tex2d(name, reg, space) ::= "Texture2D $name$ : register(t$reg$, space$space$);"
 
 sampler(name, reg, space) ::= "SamplerState $name$ : register(s$reg$, space$space$);"
