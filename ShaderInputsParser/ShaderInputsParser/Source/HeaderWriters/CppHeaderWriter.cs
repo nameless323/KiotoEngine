@@ -46,24 +46,14 @@ namespace ShaderInputsParserApp.Source.HeaderWriters
             List<ConstantBuffer> cbs = ctx.ConstantBuffers;
             foreach (var cb in cbs)
             {
-                if (!cb.IsTemplated)
-                {
-                    StringBuilder membersResult = new StringBuilder();
-                    foreach (var m in cb.Members)
-                    {
-                        StringTemplate cBufferMemberTemplate = group.GetInstanceOf("cbmember");
-                        cBufferMemberTemplate.Add("cbname", cb.Name);
-                        cBufferMemberTemplate.Add("memberName", m.Name);
-                        cBufferMemberTemplate.Add("initVal", m_typesToKiotoDefaults[m.Type]);
-                        membersResult.Append(cBufferMemberTemplate.Render() + "\n");
-                    }
-                    StringTemplate cBufferTemplate = group.GetInstanceOf("cbuffer");
-                    cBufferTemplate.Add("cbname", cb.Name);
-                    cBufferTemplate.Add("reg", cb.Bindpoint.Reg.ToString());
-                    cBufferTemplate.Add("space", cb.Bindpoint.Space.ToString());
-                    cBufferTemplate.Add("addParams", membersResult.ToString());
+                StringTemplate cBufferTemplate = group.GetInstanceOf("cbuffer");
+                cBufferTemplate.Add("cbname", cb.Name);
+                cBufferTemplate.Add("reg", cb.Bindpoint.Reg.ToString());
+                cBufferTemplate.Add("space", cb.Bindpoint.Space.ToString());
+                cBufferTemplate.Add("typename", cb.Typename);
+                if (cb.Size > 1)
+                    cBufferTemplate.Add("size", cb.Size);
                     res.Append(cBufferTemplate.Render() + '\n');
-                }
             }
             return res.ToString();
         }
@@ -137,6 +127,9 @@ namespace ShaderInputsParserApp.Source.HeaderWriters
 
             foreach (var structure in structures)
             {
+                if (structure.Members == null) // [a_vorontcov] For example templated cb.
+                    continue;
+
                 StringBuilder members = new StringBuilder();
                 foreach (var member in structure.Members)
                 {
@@ -164,6 +157,7 @@ namespace ShaderInputsParserApp.Source.HeaderWriters
             string vertexLayouts = WriteVertexLayouts(ctx, group);
             string programNames = WriteProgramNames(ctx, group);
             string structs = WriteStructures(ctx, group, ctx.Structures);
+            structs += WriteStructures(ctx, group, ctx.ConstantBuffers);
 
             StringTemplate headerTemplate = group.GetInstanceOf("header");
             headerTemplate.Add("name", filename);

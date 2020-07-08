@@ -92,9 +92,8 @@ private:
 }
 >>
 
-cbuffer(cbname, reg, space, addParams) ::= <<
-ConstantBuffer $cbname$($reg$, $space$);
-$addParams$
+cbuffer(cbname, reg, space, typename, size) ::= <<
+ConstantBuffer<$typename$> $cbname$($reg$, $space$$if(size)$, $size$$endif$);
 m_cbs.push_back(std::move($cbname$));
 
 ////////////////////////////////
