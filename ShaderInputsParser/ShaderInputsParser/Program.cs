@@ -1,5 +1,6 @@
 ﻿using Antlr4.Runtime;
 using antlrGenerated;
+using Microsoft.VisualBasic.CompilerServices;
 using ShaderInputsParserApp.Source;
 using ShaderInputsParserApp.Source.HeaderWriters;
 using ShaderInputsParserApp.Source.Types;
@@ -88,6 +89,49 @@ namespace ShaderInputsParserApp
             Directory.CreateDirectory(CppOutputDir + "/sInp/");
         }
 
+        static void UpdateOutputVersionFile(DateTime lastUpdateTime, string srcVerPath)
+        {
+            File.WriteAllText(srcVerPath, lastUpdateTime.ToString());
+        }
+
+        static bool CompareOutputsVersion(out DateTime lastUpdateTime, out string srcVerPath)
+        {
+            string[] files = Directory.GetFiles(InputDir, "*.sinp", SearchOption.AllDirectories);
+            var srcModificationTime = Directory.GetLastWriteTime(InputDir);
+            foreach (var filepath in files)
+            {
+                var currModifTime = File.GetLastWriteTime(filepath);
+                if (DateTime.Compare(currModifTime, srcModificationTime) > 0)
+                    srcModificationTime = currModifTime;
+            }
+            // [a_vorontcov] Trim ms, we don't need it.
+            srcModificationTime = new DateTime(srcModificationTime.Year, srcModificationTime.Month, srcModificationTime.Day, srcModificationTime.Hour, srcModificationTime.Minute, srcModificationTime.Second);
+
+            lastUpdateTime = srcModificationTime;
+
+            srcVerPath = CppOutputDir + "/srcver";
+            if (File.Exists(srcVerPath))
+            {
+                string lastModifTimeStr = File.ReadAllText(srcVerPath);
+                var lastModifTime = DateTime.Parse(lastModifTimeStr);
+                if (DateTime.Compare(srcModificationTime, lastModifTime) > 0)
+                {
+                    Console.WriteLine("Previous generated time " + lastModifTimeStr + " Current shader inputs modification time " + srcModificationTime.ToString() + "\nRegenerating output files...");
+                    return false;
+                }
+                else
+                {
+                    Console.WriteLine("Previous generated time " + lastModifTimeStr + " Current shader inputs modification time " + srcModificationTime.ToString() + "\nNo regenaration needed. Shader inputs weren't changed");
+                    return true;
+                }
+            }
+            else
+            {
+                Console.WriteLine("Shader inputs version file is not found. Creating the file and regenerating output files...");
+                return false;
+            }
+        }
+
         static void Main(string[] args)
         {
             ParseCommandLine(args);
@@ -117,8 +161,12 @@ namespace ShaderInputsParserApp
 
             CreateOutputDirectories(false);
 
-            string[] files = Directory.GetFiles(InputDir, "*.sinp", SearchOption.AllDirectories);
+            DateTime lastInputUpdateTime;
+            string updateTimeFilepath;
+            if (CompareOutputsVersion(out lastInputUpdateTime, out updateTimeFilepath))
+                return;
 
+            string[] files = Directory.GetFiles(InputDir, "*.sinp", SearchOption.AllDirectories);
             foreach (var filepath in files)
             {
                 try
@@ -154,6 +202,8 @@ namespace ShaderInputsParserApp
             }
             FactoryWriter factoryWriter = new FactoryWriter();
             factoryWriter.WriteFactory(files);
+
+            UpdateOutputVersionFile(lastInputUpdateTime, updateTimeFilepath);
         }
     }
 }
