@@ -23,6 +23,7 @@ namespace ShaderInputsParserApp
         public static string HlslOutputDir { get; private set; }
         public static string CppOutputDir { get; private set; }
         public static string TemplatesDir { get; private set; }
+        static bool ForceRegenerate { get; set; } = false;
         public static ShaderInputsParser InitializeAntlr(string content)
         {
             AntlrInputStream inputStream = new AntlrInputStream(content);
@@ -55,6 +56,8 @@ namespace ShaderInputsParserApp
                     ++i;
                     TemplatesDir = args[i];
                 }
+                else if (args[i] == "forceRegenerate")
+                    ForceRegenerate = true;
             }
         }
 
@@ -163,7 +166,7 @@ namespace ShaderInputsParserApp
 
             DateTime lastInputUpdateTime;
             string updateTimeFilepath;
-            if (CompareOutputsVersion(out lastInputUpdateTime, out updateTimeFilepath))
+            if (CompareOutputsVersion(out lastInputUpdateTime, out updateTimeFilepath) && !ForceRegenerate)
                 return;
 
             string[] files = Directory.GetFiles(InputDir, "*.sinp", SearchOption.AllDirectories);
