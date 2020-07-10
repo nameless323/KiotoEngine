@@ -20,11 +20,11 @@ header(name, cbuffers, texSets, shaderProgs, vertexLayout, structs, shaderProgNa
 namespace Kioto::Renderer::SInp
 {
 
-$structs$
-
 class $name$_sinp : public ShaderInputBase
 {
 public:
+    $structs$
+
     $name$_sinp()
     {
         InitConstantBuffers();
