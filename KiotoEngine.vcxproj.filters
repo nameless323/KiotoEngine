@@ -473,9 +473,6 @@
     <ClCompile Include="Sources\Internal\Systems\RenderSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\Internal\Render\ConstantBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Sources\Internal\Render\DX12\Shader\ShaderParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
