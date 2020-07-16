@@ -124,7 +124,10 @@ namespace ShaderInputsParserApp
                 }
                 else
                 {
-                    Console.WriteLine("Previous generated time " + lastModifTimeStr + " Current shader inputs modification time " + srcModificationTime.ToString() + "\nNo regenaration needed. Shader inputs weren't changed");
+                    if (!ForceRegenerate)
+                        Console.WriteLine("Previous generated time " + lastModifTimeStr + " Current shader inputs modification time " + srcModificationTime.ToString() + "\nNo regenaration needed. Shader inputs weren't changed");
+                    else
+                        Console.WriteLine("Previous generated time " + lastModifTimeStr + " Current shader inputs modification time " + srcModificationTime.ToString() + "\nNo regenaration needed, but forceRegenerate is set");
                     return true;
                 }
             }
@@ -169,9 +172,11 @@ namespace ShaderInputsParserApp
             if (CompareOutputsVersion(out lastInputUpdateTime, out updateTimeFilepath) && !ForceRegenerate)
                 return;
 
+            Console.WriteLine("Generating...\n");
             string[] files = Directory.GetFiles(InputDir, "*.sinp", SearchOption.AllDirectories);
             foreach (var filepath in files)
             {
+                Console.WriteLine("Parsing file " + filepath + '\n');
                 try
                 {
                     string content = File.ReadAllText(filepath);
@@ -203,8 +208,10 @@ namespace ShaderInputsParserApp
                     throw;
                 }
             }
+            Console.WriteLine("Writing outputs...\n");
             FactoryWriter factoryWriter = new FactoryWriter();
             factoryWriter.WriteFactory(files);
+            Console.WriteLine("Writing done\n");
 
             UpdateOutputVersionFile(lastInputUpdateTime, updateTimeFilepath);
         }
