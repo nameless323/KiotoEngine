@@ -8,6 +8,27 @@ namespace Kioto::Renderer::EngineBuffers
 {
 namespace
 {
+struct CbEngineBuffer
+{
+    Vector4 Time;
+    Vector4 SinTime;
+    Vector4 CosTime;
+    Vector4 DeltaTime;
+
+};
+
+struct CbCameraBuffer
+{
+    Matrix4 ViewProjection;
+    Matrix4 View;
+    Vector4 RTParams;
+    Vector3 ProjParams;
+    float32 Pad0;
+    Vector3 CamWorldPosition;
+    float32 Pad1;
+
+};
+
 namespace TimeCBData
 {
     std::pair<std::string, Vector4> Time = std::make_pair("Time", Vector4()); // [a_vorontcov] Time since start: (t / 20, t, t * 2, t * 3).
@@ -27,7 +48,7 @@ namespace CameraCBData
     std::pair<std::string, float32> Pad1 = std::make_pair("Pad1", 0.0f);
 };
 
-ConstantBuffer m_cameraBuffer{ CameraBufferIndex, EngineBuffersSpace };
+ConstantBuffer m_cameraBuffer("cbCameraBuffer", CameraBufferIndex, EngineBuffersSpace, 1, false);
 ConstantBuffer m_timeBuffer{ TimeBufferIndex, EngineBuffersSpace };
 }
 

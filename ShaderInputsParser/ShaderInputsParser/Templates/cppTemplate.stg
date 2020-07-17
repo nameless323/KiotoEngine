@@ -93,7 +93,7 @@ private:
 >>
 
 cbuffer(cbname, reg, space, typename, size) ::= <<
-ConstantBuffer $cbname$("$typename$", $reg$, $space$, $if(size)$$size$$else$1$endif$, false);
+ConstantBuffer $cbname$("$typename$", $reg$, $space$, sizeof($typename$), $if(size)$$size$$else$1$endif$, false);
 m_cbs.push_back(std::move($cbname$));
 
 ////////////////////////////////

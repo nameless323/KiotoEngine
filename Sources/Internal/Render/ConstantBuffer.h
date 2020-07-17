@@ -26,8 +26,8 @@ class ConstantBuffer
 {
 public:
     ConstantBuffer() {}
-    template <typename T>
-    ConstantBuffer(std::string name, uint16 index, uint16 space, uint16 elemCount = 1, bool allocate = false);
+    ConstantBuffer(std::string name, uint16 index, uint16 space, uint16 elemSize, uint16 elemCount = 1, bool allocate = false);
+    ConstantBuffer(std::string name, uint16 index, uint16 space);
     template <typename T>
     void Set(const T& val, uint16 elemOffset = 0);
     template <typename T>
@@ -104,21 +104,28 @@ inline void ConstantBuffer::SetElemCount(uint32 count, bool reallocate)
         Reallocate();
 }
 
-template <typename T>
-inline ConstantBuffer::ConstantBuffer(std::string name, uint16 index, uint16 space, uint16 elemCount, bool allocate)
+inline ConstantBuffer::ConstantBuffer(std::string name, uint16 index, uint16 space, uint16 elemSize, uint16 elemCount, bool allocate)
     : m_name(std::move(name))
     , m_index(index)
     , m_space(space)
     , m_key(m_index | m_space << 16)
-    , m_dataSize(sizeof(T) * elemCount)
+    , m_dataSize(elemSize * elemCount)
     , m_elemCount(elemCount)
-    , m_elemSize(sizeof(T))
+    , m_elemSize(elemSize)
 {
     if (allocate)
     {
         m_memData = new byte[m_dataSize];
         m_isAllocated = true;
     }
+}
+
+inline ConstantBuffer::ConstantBuffer(std::string name, uint16 index, uint16 space)
+    : m_name(std::move(name))
+    , m_index(index)
+    , m_space(space)
+    , m_key(m_index | m_space << 16)
+{
 }
 
 template <typename T>
