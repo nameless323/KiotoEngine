@@ -183,9 +183,6 @@
     <ClInclude Include="Sources\Internal\Render\ConstantBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\Internal\Render\DX12\Shader\ShaderParser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Sources\Internal\Math\Matrix3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -471,9 +468,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Sources\Internal\Systems\RenderSystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Internal\Render\DX12\Shader\ShaderParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Sources\Internal\Render\PipelineState.cpp">

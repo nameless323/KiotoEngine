@@ -37,17 +37,18 @@ public:
     void SetTexture(const std::string& name, Texture* texture, const std::string& passName);
 
     template<typename T>
-    ConstantBuffer::eReturnCode SetValueToBuffer(const std::string& name, T&& val, const PassName& passName)
+    bool SetValueToBuffer(const std::string& name, T&& val, const PassName& passName, uint32 elemOffset = 0)
     {
         assert(m_renderObjectBuffers.count(passName) == 1);
-        ConstantBuffer::eReturnCode retCode = ConstantBuffer::eReturnCode::NotFound;
         for (auto& cb : m_renderObjectBuffers[passName].constantBuffers)
         {
-            auto code = cb.Set(name, std::forward<T>(val));
-            if (code == ConstantBuffer::eReturnCode::Ok)
-                retCode = ConstantBuffer::eReturnCode::Ok;
+            if (cb.GetName() == name)
+            {
+                cb.Set(val, elemOffset);
+                return true;
+            }
         }
-        return retCode;
+        return false;
     }
 
 private:

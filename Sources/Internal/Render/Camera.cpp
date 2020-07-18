@@ -20,8 +20,8 @@ Camera::Camera(bool createBuffer)
 void Camera::UpdateConstantBuffer()
 {
     assert(m_cameraBuffer.GetHandle() != InvalidHandle && "Camera buffer was not created for this camera");
-    m_cameraBuffer.Set("ViewProjection", m_VP.GetForGPU());
-    m_cameraBuffer.Set("View", m_view.GetForGPU());
-    m_cameraBuffer.ComposeBufferData();
+    m_cbCamera.ViewProjection = m_VP.GetForGPU();
+    m_cbCamera.View = m_view.GetForGPU();
+    m_cameraBuffer.Set(m_cbCamera);
 }
 }

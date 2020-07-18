@@ -4,6 +4,7 @@
 #include <variant>
 
 #include "Core/CoreTypes.h"
+#include "Core/CoreHelpers.h"
 
 #include "Math/Vector2.h"
 #include "Math/Vector3.h"
@@ -44,6 +45,7 @@ public:
     byte* GetBufferData();
     uint32 GetDataSize() const;
     uint32 GetElemCount() const;
+    const std::string& GetName() const;
     template <typename T>
     void SetElemCount(uint32 count, bool reallocate = false);
     bool IsAllocated() const;
@@ -90,6 +92,11 @@ private:
 inline uint32 ConstantBuffer::GetElemCount() const
 {
     return m_elemCount;
+}
+
+inline const std::string& ConstantBuffer::GetName() const
+{
+    return m_name;
 }
 
 template <typename T>
