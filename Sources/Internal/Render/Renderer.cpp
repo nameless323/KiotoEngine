@@ -28,13 +28,17 @@ ConstantBuffer m_timeBuffer; // [a_vorontcov] Find a better place.
 
 void UpdateTimeBuffer()
 {
+    assert(m_timeBuffer.IsAllocated());
     float32 timeFromStart = static_cast<float32>(GlobalTimer::GetTimeFromStart());
-    m_timeBuffer.Set("Time", Vector4(timeFromStart / 20.0f, timeFromStart, timeFromStart * 2, timeFromStart * 3), false);
-    m_timeBuffer.Set("SinTime", Vector4(sin(timeFromStart / 4.0f), sin(timeFromStart / 2.0f), sin(timeFromStart), sin(timeFromStart * 2.0f)), false);
-    m_timeBuffer.Set("CosTime", Vector4(cos(timeFromStart / 4.0f), cos(timeFromStart / 2.0f), cos(timeFromStart), cos(timeFromStart * 2.0f)), false);
+    EngineBuffers::CbEngineBuffer timeBuffer;
+    timeBuffer.Time = { timeFromStart / 20.0f, timeFromStart, timeFromStart * 2, timeFromStart * 3 };
+    timeBuffer.SinTime = { sin(timeFromStart / 4.0f), sin(timeFromStart / 2.0f), sin(timeFromStart), sin(timeFromStart * 2.0f) };
+    timeBuffer.CosTime = { cos(timeFromStart / 4.0f), cos(timeFromStart / 2.0f), cos(timeFromStart), cos(timeFromStart * 2.0f) };
+
     float32 dt = static_cast<float32>(GlobalTimer::GetDeltaTime());
     float32 smoothDt = static_cast<float32>(GlobalTimer::GetSmoothDt());
-    m_timeBuffer.Set("DeltaTime", Vector4(dt, 1.0f / dt, smoothDt, 1.0f / smoothDt));
+    timeBuffer.DeltaTime = Vector4(dt, 1.0f / dt, smoothDt, 1.0f / smoothDt);
+    m_timeBuffer.Set(timeBuffer);
 }
 }
 
@@ -49,7 +53,6 @@ void Init(eRenderApi api, uint16 width, uint16 height)
         GameRenderer->Init(width, height);
 
     EngineBuffers::GetTimeBufferCopy(m_timeBuffer);
-    m_timeBuffer.ComposeBufferData();
     GameRenderer->RegisterConstantBuffer(m_timeBuffer);
     GameRenderer->SetTimeBuffer(m_timeBuffer.GetHandle());
 }

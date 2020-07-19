@@ -102,7 +102,7 @@ void ConstantBufferManagerDX12::ProcessBufferUpdates(UINT frameIndex)
     {
         UploadBufferDX12* uploadBuf = FindBuffer(cb->GetHandle());
 
-        assert(cb->GetIsComposed());
+        assert(cb->IsAllocated());
         if (uploadBuf == nullptr)
             assert(false);
 

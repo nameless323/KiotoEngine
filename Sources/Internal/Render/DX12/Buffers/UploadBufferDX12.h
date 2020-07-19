@@ -13,7 +13,7 @@ namespace Kioto::Renderer
 class UploadBufferDX12 final
 {
 public:
-    UploadBufferDX12(uint32 framesCount, float32* data, uint32 dataSize, bool isConstantBuffer, ID3D12Device* device);
+    UploadBufferDX12(uint32 framesCount, byte* data, uint32 dataSize, bool isConstantBuffer, ID3D12Device* device);
     UploadBufferDX12(const UploadBufferDX12&) = delete;
     UploadBufferDX12(UploadBufferDX12&&) = delete;
     UploadBufferDX12& operator=(const UploadBufferDX12&) = delete;
@@ -21,7 +21,7 @@ public:
     ~UploadBufferDX12();
 
     ID3D12Resource* GetResource() const;
-    void UploadData(uint32 frameIndex, const float32* data);
+    void UploadData(uint32 frameIndex, const byte* data);
     const byte* const GetBufferStart() const;
     const byte* const GetBufferEnd() const;
     size_t GetFrameDataSize() const;

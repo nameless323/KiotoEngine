@@ -4,7 +4,7 @@
 
 namespace Kioto::Renderer
 {
-UploadBufferDX12::UploadBufferDX12(uint32 framesCount, float32* data, uint32 dataSize, bool isConstantBuffer, ID3D12Device* device)
+UploadBufferDX12::UploadBufferDX12(uint32 framesCount, byte* data, uint32 dataSize, bool isConstantBuffer, ID3D12Device* device)
     : m_isConstantBuffer(isConstantBuffer)
     , m_rawDataSize(dataSize)
     , m_framesCount(framesCount)
@@ -44,7 +44,7 @@ ID3D12Resource* UploadBufferDX12::GetResource() const
     return m_resource.Get();
 }
 
-void UploadBufferDX12::UploadData(uint32 frameIndex, const float32* data)
+void UploadBufferDX12::UploadData(uint32 frameIndex, const byte* data)
 {
     assert(frameIndex < m_framesCount);
     memcpy(m_data + frameIndex * m_frameDataSize, data, m_rawDataSize);

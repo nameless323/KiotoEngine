@@ -33,9 +33,9 @@ private:
         ConstantBufferHandle CBHandle = InvalidHandle;
         ConstantBufferSetHandle CBSetHandle = InvalidHandle;
         uint32 DataSize = 0;
-        float32* Data = nullptr;
+        byte* Data = nullptr;
 
-        TempCBData(ConstantBufferHandle cbHandle, ConstantBufferSetHandle setHandle, uint32 dataSize, float32* data)
+        TempCBData(ConstantBufferHandle cbHandle, ConstantBufferSetHandle setHandle, uint32 dataSize, byte* data)
             : CBHandle(cbHandle)
             , CBSetHandle(setHandle)
             , DataSize(dataSize)

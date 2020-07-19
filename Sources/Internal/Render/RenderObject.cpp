@@ -18,7 +18,7 @@ namespace Kioto::Renderer
             bufferLayout.constantBuffers = shader->CreateLayoutTemplateShalowCopy();
 
             for (auto& cb : bufferLayout.constantBuffers)
-                cb.ComposeBufferData();
+                cb.Reallocate();
 
             assert(m_renderObjectBuffers.count(pipelines.first) == 0);
             m_renderObjectBuffers[pipelines.first] = std::move(bufferLayout);

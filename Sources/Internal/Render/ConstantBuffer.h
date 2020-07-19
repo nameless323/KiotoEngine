@@ -30,7 +30,7 @@ public:
     ConstantBuffer(std::string name, uint16 index, uint16 space, uint16 elemSize, uint16 elemCount = 1, bool allocate = false);
     ConstantBuffer(std::string name, uint16 index, uint16 space);
     template <typename T>
-    void Set(const T& val, uint16 elemOffset = 0);
+    void Set(const T& val, uint16 elemOffset = 0, bool updateHWinstance = true);
     template <typename T>
     T* Get(uint16 elemOffset = 0);
     void Reallocate();
@@ -136,10 +136,13 @@ inline ConstantBuffer::ConstantBuffer(std::string name, uint16 index, uint16 spa
 }
 
 template <typename T>
-inline void ConstantBuffer::Set(const T& val, uint16 elemOffset)
+inline void ConstantBuffer::Set(const T& val, uint16 elemOffset, bool updateHWinstance)
 {
     T* mem = reinterpret_cast<T*>(m_memData);
     *(mem + elemOffset) = val;
+
+    if (updateHWinstance)
+        Renderer::QueueConstantBufferForUpdate(*this);
 }
 
 template <typename T>
@@ -199,6 +202,7 @@ inline void ConstantBuffer::Reallocate()
 {
     SafeDeleteArray(m_memData);
     m_memData = new byte[m_dataSize];
+    m_isAllocated = true;
 }
 
 inline ConstantBuffer::~ConstantBuffer()
@@ -216,7 +220,8 @@ inline ConstantBuffer::ConstantBuffer(const ConstantBuffer& other)
     , m_elemSize(other.m_elemSize)
     , m_elemCount(other.m_elemCount)
 {
-    memcpy(m_memData, other.m_memData, other.m_dataSize);
+    if (other.IsAllocated())
+        memcpy(m_memData, other.m_memData, other.m_dataSize);
 }
 
 inline ConstantBuffer::ConstantBuffer(ConstantBuffer&& other)

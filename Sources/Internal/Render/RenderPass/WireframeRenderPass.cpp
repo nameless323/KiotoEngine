@@ -2,6 +2,7 @@
 
 #include "Render/RenderPass/WireframeRenderPass.h"
 
+#include "Render/Shaders/autogen/sInp/Wireframe.h"
 #include "Core/KiotoEngine.h"
 #include "Render/Camera.h"
 #include "Render/Material.h"
@@ -30,8 +31,12 @@ namespace Kioto::Renderer
             Mesh* mesh = ro->GetMesh();
             mat->BuildMaterialForPass(this);
 
-            ro->SetValueToBuffer("ToModel", ro->GetToModel()->GetForGPU(), m_passName);
-            ro->SetValueToBuffer("ToWorld", ro->GetToWorld()->GetForGPU(), m_passName);
+            SInp::Wireframe_sinp::CbRenderObjectBuffer roBuffer;
+            roBuffer.ToModel = ro->GetToModel()->GetForGPU();
+            roBuffer.ToWorld = ro->GetToWorld()->GetForGPU();
+
+            bool success = ro->SetBuffer("cbRenderObjectBuffer", roBuffer, m_passName);
+            assert(success);
 
             RenderPacket currPacket = {};
             currPacket.Material = mat->GetHandle();

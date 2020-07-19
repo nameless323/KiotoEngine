@@ -5,7 +5,7 @@
 #include "AssetsSystem/Asset.h"
 #include "AssetsSystem/FilesystemHelpers.h"
 #include "Render/RendererPublic.h"
-#include "Render/DX12/Shader/ShaderParser.h"
+#include "Render/ShaderData.h"
 
 namespace Kioto::Renderer
 {

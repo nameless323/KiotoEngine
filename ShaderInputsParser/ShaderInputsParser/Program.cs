@@ -214,6 +214,10 @@ namespace ShaderInputsParserApp
             Console.WriteLine("Writing done\n");
 
             UpdateOutputVersionFile(lastInputUpdateTime, updateTimeFilepath);
+
+            Console.Write("Output file timestamp updated\n");
+
+            Console.Write("\n******* SHADERS OUTPUT FILES ARE UPDATED WITH SUCESS ******\n");
         }
     }
 }
