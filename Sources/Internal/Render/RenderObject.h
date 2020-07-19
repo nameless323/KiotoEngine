@@ -15,6 +15,11 @@ public:
     virtual ~RenderObject()
     {}
 
+    /// <summary>
+    ///  Internally sets all constant buffers for rendering
+    /// </summary>
+    virtual void PrepareConstantBuffers(const std::string& passName);
+
     void SetMaterial(Material* material, bool composeBuffersAndTextures = true);
     Material* GetMaterial() const;
 

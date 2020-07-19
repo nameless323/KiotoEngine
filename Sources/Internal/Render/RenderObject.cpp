@@ -6,6 +6,8 @@
 #include "Render/Material.h"
 #include "Render/Shader.h"
 
+#include "Render/Shaders/autogen/sInp/Fallback.h"
+
 namespace Kioto::Renderer
 {
     void RenderObject::ComposeAllConstantBuffers()
@@ -58,6 +60,14 @@ namespace Kioto::Renderer
     {
         assert(m_textureSets.contains(passName) && "Texture is missing in texture set");
         m_textureSets[passName].SetTexture(name, texture);
+    }
+
+    void RenderObject::PrepareConstantBuffers(const std::string& passName)
+    {
+        SInp::Fallback_sinp::CbRenderObjectBuffer roBuffer;
+        roBuffer.ToModel = GetToModel()->GetForGPU();
+        roBuffer.ToWorld = GetToWorld()->GetForGPU();
+        SetBuffer("cbRenderObjectBuffer", roBuffer, passName);
     }
 
 }

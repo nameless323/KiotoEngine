@@ -13,7 +13,6 @@
 #include "Render/Shader.h"
 #include "Render/RenderGraph/ResourcesBlackboard.h"
 #include "Render/RenderGraph/ResourceTable.h"
-#include "Render/Shaders/autogen/sInp/Fallback.h"
 
 namespace Kioto::Renderer
 {
@@ -35,12 +34,7 @@ void ForwardRenderPass::BuildRenderPackets(CommandList* commandList, ResourceTab
         Mesh* mesh = ro->GetMesh();
         mat->BuildMaterialForPass(this);
 
-        SInp::Fallback_sinp::CbRenderObjectBuffer roBuffer;
-        roBuffer.ToModel = ro->GetToModel()->GetForGPU();
-        roBuffer.ToWorld = ro->GetToWorld()->GetForGPU();
-
-        bool success = ro->SetBuffer("cbRenderObjectBuffer", roBuffer, m_passName);// [a_vorontcov] TODO: Move to render object? like RenderObject->buildBuffers (render object knows better what buffers it needs)
-        assert(success);
+        ro->PrepareConstantBuffers(m_passName);
 
         RenderPacket currPacket = {};
         currPacket.Material = mat->GetHandle();
