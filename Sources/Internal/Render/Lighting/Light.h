@@ -14,10 +14,9 @@ enum class eLightType
 
 struct Light
 {
-    eLightType LightType = eLightType::Directional;
-    Vector3 Diretion{};
     Color Color{};
+    eLightType LightType = eLightType::Directional;
+    Vector3 Direction{};
     float AttenuationDistance = 0.0f;
 };
-
 };

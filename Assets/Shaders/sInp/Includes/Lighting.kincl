@@ -1,0 +1,9 @@
+struct Light
+{
+    float3 Color;
+    uint Type;
+    float3 Direction;
+    float AttenuationDistance;
+};
+
+constantBuffer<Light> lights[256];
