@@ -23,6 +23,7 @@ class Entity;
 class CameraSystem;
 class RenderSystem;
 class EventSystem;
+class LightSystem;
 
 class Scene
 {
@@ -107,6 +108,7 @@ private:
     std::vector<Entity*> m_entities; // [a_vorontcov] Same as above.
     CameraSystem* m_cameraSystem = nullptr;
     RenderSystem* m_renderSystem = nullptr;
+    LightSystem* m_lightSystem = nullptr;
 
     std::string m_name = "";
 };

@@ -280,6 +280,7 @@ RD /S /Q $(TargetDir)Assets
     <ClInclude Include="Sources\Internal\Systems\EventSystem\EngineEvents.h" />
     <ClInclude Include="Sources\Internal\Systems\EventSystem\Event.h" />
     <ClInclude Include="Sources\Internal\Systems\EventSystem\EventSystem.h" />
+    <ClInclude Include="Sources\Internal\Systems\LightSystem.h" />
     <ClInclude Include="Sources\Internal\Systems\RenderSystem.h" />
     <ClInclude Include="Sources\Internal\Systems\TransformSystem.h" />
     <ClCompile Include="Sources\Internal\Component\LightComponent.cpp" />
@@ -355,6 +356,7 @@ RD /S /Q $(TargetDir)Assets
     <ClCompile Include="Sources\Internal\Systems\DebugSystem.cpp" />
     <ClCompile Include="Sources\Internal\Systems\EventSystem\EngineEvents.cpp" />
     <ClCompile Include="Sources\Internal\Systems\EventSystem\EventSystem.cpp" />
+    <ClCompile Include="Sources\Internal\Systems\LightSystem.cpp" />
     <ClCompile Include="Sources\Internal\Systems\RenderSystem.cpp" />
     <ClCompile Include="Sources\Internal\Systems\TransformSystem.cpp" />
     <ClCompile Include="stdafx.cpp">

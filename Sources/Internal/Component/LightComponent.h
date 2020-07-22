@@ -16,10 +16,13 @@ public:
     KIOTO_API LightComponent() = default;
     KIOTO_API ~LightComponent() = default;
 
+    Component* Clone() const override;
+
     void Serialize(YAML::Emitter& out) const override;
     void Deserialize(const YAML::Node& in) override;
 
 private:
     Renderer::Light m_light{};
 };
+REGISTER_COMPONENT(LightComponent);
 }
