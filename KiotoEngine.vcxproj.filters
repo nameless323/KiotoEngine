@@ -384,7 +384,7 @@
     <ClInclude Include="Sources\Internal\Component\LightComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\Internal\Systems\LightSystem.h">
+    <ClInclude Include="Sources\Internal\Systems\SystemsSharedData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -604,9 +604,6 @@
     </ClCompile>
     <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\Wireframe.h">
       <Filter>Header Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Internal\Systems\LightSystem.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

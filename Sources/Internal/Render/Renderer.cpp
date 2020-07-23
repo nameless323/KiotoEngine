@@ -24,21 +24,20 @@ float32 m_aspect = 1.0f;
 
 Camera* m_mainCamera;
 
-ConstantBuffer m_timeBuffer; // [a_vorontcov] Find a better place.
-
 void UpdateTimeBuffer()
 {
-    assert(m_timeBuffer.IsAllocated());
+    ConstantBuffer& timeBuffer = EngineBuffers::GetTimeBuffer();
+    assert(timeBuffer.IsAllocated());
     float32 timeFromStart = static_cast<float32>(GlobalTimer::GetTimeFromStart());
-    EngineBuffers::CbEngineBuffer timeBuffer;
-    timeBuffer.Time = { timeFromStart / 20.0f, timeFromStart, timeFromStart * 2, timeFromStart * 3 };
-    timeBuffer.SinTime = { sin(timeFromStart / 4.0f), sin(timeFromStart / 2.0f), sin(timeFromStart), sin(timeFromStart * 2.0f) };
-    timeBuffer.CosTime = { cos(timeFromStart / 4.0f), cos(timeFromStart / 2.0f), cos(timeFromStart), cos(timeFromStart * 2.0f) };
+    EngineBuffers::CbEngineBuffer timeBufferData;
+    timeBufferData.Time = { timeFromStart / 20.0f, timeFromStart, timeFromStart * 2, timeFromStart * 3 };
+    timeBufferData.SinTime = { sin(timeFromStart / 4.0f), sin(timeFromStart / 2.0f), sin(timeFromStart), sin(timeFromStart * 2.0f) };
+    timeBufferData.CosTime = { cos(timeFromStart / 4.0f), cos(timeFromStart / 2.0f), cos(timeFromStart), cos(timeFromStart * 2.0f) };
 
     float32 dt = static_cast<float32>(GlobalTimer::GetDeltaTime());
     float32 smoothDt = static_cast<float32>(GlobalTimer::GetSmoothDt());
-    timeBuffer.DeltaTime = Vector4(dt, 1.0f / dt, smoothDt, 1.0f / smoothDt);
-    m_timeBuffer.Set(timeBuffer);
+    timeBufferData.DeltaTime = Vector4(dt, 1.0f / dt, smoothDt, 1.0f / smoothDt);
+    timeBuffer.Set(timeBufferData);
 }
 }
 
@@ -52,9 +51,8 @@ void Init(eRenderApi api, uint16 width, uint16 height)
     if (api == eRenderApi::DirectX12)
         GameRenderer->Init(width, height);
 
-    EngineBuffers::GetTimeBufferCopy(m_timeBuffer);
-    GameRenderer->RegisterConstantBuffer(m_timeBuffer);
-    GameRenderer->SetTimeBuffer(m_timeBuffer.GetHandle());
+    EngineBuffers::Init();
+    GameRenderer->RegisterConstantBuffer(EngineBuffers::GetTimeBuffer());
 }
 
 void Shutdown()

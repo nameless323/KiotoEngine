@@ -35,6 +35,11 @@ public:
     void ComposeAllConstantBuffers();
     void RegisterAllTextureSets();
 
+    /// <summary>
+    /// Hijacks cb handle in the render object. This is necessary when you need to set cb as a common cb (time, light), or just set per pass buffer (camera)
+    /// </summary>
+    void HijackConstantBuffer(const std::string& cbName, ConstantBufferHandle newHandle); // [a_vorontcov] TODO: really fishy. rethink
+
     const RenderObjectBufferLayout& GetBufferLayout(const PassName& passName);
     const TextureSet& GetTextureSet(const PassName& passName);
     const std::unordered_map<PassName, RenderObjectBufferLayout>& GetBuffersLayouts() const;

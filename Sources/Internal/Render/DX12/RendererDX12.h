@@ -104,9 +104,6 @@ private:
     UINT m_height = -1;
     bool m_isFullScreen = false;
 
-    ConstantBufferHandle m_currentTimeBuffer;
-    ConstantBufferHandle m_currentCameraBuffer;
-
     ID3D12DescriptorHeap* m_imguiDescriptorHeap = nullptr;
 };
 

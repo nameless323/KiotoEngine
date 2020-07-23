@@ -22,6 +22,7 @@ namespace Kioto::Renderer
             for (auto& cb : bufferLayout.constantBuffers)
                 cb.Reallocate();
 
+
             assert(m_renderObjectBuffers.count(pipelines.first) == 0);
             m_renderObjectBuffers[pipelines.first] = std::move(bufferLayout);
         }

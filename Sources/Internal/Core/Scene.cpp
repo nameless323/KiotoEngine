@@ -10,7 +10,6 @@
 #include "Systems/DebugSystem.h"
 #include "Systems/TransformSystem.h"
 #include "Systems/RenderSystem.h"
-#include "Systems/LightSystem.h"
 
 #include "Core/Yaml/YamlParser.h"
 
@@ -46,8 +45,6 @@ void Scene::Init()
     AddSystemInternal(transformSystem);
     m_cameraSystem = new CameraSystem();
     AddSystemInternal(m_cameraSystem);
-    m_lightSystem = new LightSystem();
-    AddSystemInternal(m_lightSystem);
     m_renderSystem = new RenderSystem();
     AddSystemInternal(m_renderSystem);
     AddSystemInternal({ new DebugSystem() });
