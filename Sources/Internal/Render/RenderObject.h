@@ -52,7 +52,7 @@ public:
     bool SetBuffer(const std::string& name, T&& val, const PassName& passName, uint32 elemOffset = 0)
     {
         assert(m_renderObjectBuffers.count(passName) == 1);
-        for (auto& cb : m_renderObjectBuffers[passName].constantBuffers)
+        for (auto& cb : m_renderObjectBuffers[passName])
         {
             if (cb.GetName() == name)
             {

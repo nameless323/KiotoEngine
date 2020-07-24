@@ -12,17 +12,13 @@
 #include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
 
+#include "Render/Buffers/EngineBuffers.h"
+
 #include "Render/RendererPublic.h"
 #include "Render/Renderer.h"
 
 namespace Kioto::Renderer
 {
-struct ConstantBufferSet
-{
-    ConstantBufferSetHandle Handle;
-    std::vector<ConstantBufferHandle> BuffersSet;
-};
-
 class ConstantBuffer
 {
 public:
@@ -49,6 +45,8 @@ public:
     template <typename T>
     void SetElemCount(uint32 count, bool reallocate = false);
     bool IsAllocated() const;
+
+    bool IsPerObjectBuffer() const;
 
     ConstantBufferHandle GetHandle() const;
     void SetHandle(ConstantBufferHandle handle);
@@ -251,4 +249,10 @@ inline void ConstantBuffer::ScheduleToUpdate()
 {
     Renderer::QueueConstantBufferForUpdate(*this);
 }
+
+inline bool ConstantBuffer::IsPerObjectBuffer() const
+{
+    return m_space != Renderer::EngineBuffers::EngineBuffersSpace;
+}
+
 }

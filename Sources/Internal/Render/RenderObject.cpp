@@ -15,16 +15,13 @@ namespace Kioto::Renderer
         for (auto& pipelines : m_material->GetPipelineStates())
         {
             Shader* shader = pipelines.second.Shader;
-            RenderObjectBufferLayout bufferLayout;
+            RenderObjectBufferLayout bufferLayout = shader->CreateLayoutTemplateShalowCopy();
 
-            bufferLayout.constantBuffers = shader->CreateLayoutTemplateShalowCopy();
-
-            for (auto& cb : bufferLayout.constantBuffers)
+            for (auto& cb : bufferLayout)
             {
-                if (cb.GetSpace() != 1)
+                if (cb.IsPerObjectBuffer())
                     cb.Reallocate();
             }
-
 
             assert(m_renderObjectBuffers.count(pipelines.first) == 0);
             m_renderObjectBuffers[pipelines.first] = std::move(bufferLayout);
@@ -82,8 +79,8 @@ namespace Kioto::Renderer
             return;
         }
         RenderObjectBufferLayout& layout = m_renderObjectBuffers[passName];
-        auto& cb = std::find_if(layout.constantBuffers.begin(), layout.constantBuffers.end(), [&cbName](const ConstantBuffer& b) { return b.GetName() == cbName; });
-        if (cb == layout.constantBuffers.end())
+        auto& cb = std::find_if(layout.begin(), layout.end(), [&cbName](const ConstantBuffer& b) { return b.GetName() == cbName; });
+        if (cb == layout.end())
         {
             assert(false);
             return;
@@ -98,8 +95,8 @@ namespace Kioto::Renderer
         const RenderObjectBufferLayout& layout = m_renderObjectBuffers.at(passName);
 
         std::vector<Renderer::ConstantBufferHandle> handles;
-        handles.reserve(layout.constantBuffers.size());
-        for (const auto& cb : layout.constantBuffers)
+        handles.reserve(layout.size());
+        for (const auto& cb : layout)
             handles.push_back(cb.GetHandle());
         return handles;
     }

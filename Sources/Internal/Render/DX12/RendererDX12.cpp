@@ -573,7 +573,7 @@ void RendererDX12::QueueConstantBufferForUpdate(ConstantBuffer& buffer)
 
 void RendererDX12::RegisterConstantBuffer(ConstantBuffer& buffer)
 {
-    m_constantBufferManager.RegisterConstantBuffer(&buffer, -1);
+    m_constantBufferManager.RegisterConstantBuffer(&buffer);
 }
 
 void RendererDX12::SetTimeBuffer(ConstantBufferHandle handle)

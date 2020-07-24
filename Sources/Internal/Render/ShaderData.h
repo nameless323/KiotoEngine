@@ -15,6 +15,7 @@ enum class ShaderProgramType
 };
 
 using ShaderBufferLayoutTemplate = std::vector<ConstantBuffer>;
+using RenderObjectBufferLayout = std::vector<ConstantBuffer>;;
 
 struct ShaderData
 {
@@ -26,11 +27,4 @@ struct ShaderData
 };
 
 using ShaderDataAndBufferLayout = std::pair<ShaderData, ShaderBufferLayoutTemplate>;
-
-struct RenderObjectBufferLayout
-{
-    std::vector<ConstantBuffer> constantBuffers;
-    ConstantBufferSet bufferSet;
-    ConstantBufferSetHandle bufferSetHandle;
-};
 }
