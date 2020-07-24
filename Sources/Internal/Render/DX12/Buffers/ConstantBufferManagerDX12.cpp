@@ -42,7 +42,8 @@ void ConstantBufferManagerDX12::RegisterRenderObject(RenderObject& renderObject)
         bufferLayout.bufferSetHandle = setHandle;
         for (size_t i = 0; i < bufferLayout.constantBuffers.size(); ++i)
         {
-            RegisterConstantBuffer(&bufferLayout.constantBuffers[i], setHandle);
+            if (bufferLayout.constantBuffers[i].GetSpace() != 1)
+                RegisterConstantBuffer(&bufferLayout.constantBuffers[i], setHandle);
         }
     }
 }
@@ -87,7 +88,7 @@ void ConstantBufferManagerDX12::QueueConstantBufferForUpdate(ConstantBuffer& buf
     if (itr == m_buffersToResetUpdatedFramesCount.cend())
         m_buffersToResetUpdatedFramesCount.push_back(&buffer); // [a_vorontcov] TODO: Very questionable.
 
-    auto it = std::find(m_updateQueues.cbegin(), m_updateQueues.cend(), &buffer);
+    auto it = std::find_if(m_updateQueues.cbegin(), m_updateQueues.cend(), [&buffer](const ConstantBuffer* b) { return b->GetHandle() == buffer.GetHandle(); });
     if (it != m_updateQueues.cend())
         return;
 
@@ -104,7 +105,10 @@ void ConstantBufferManagerDX12::ProcessBufferUpdates(UINT frameIndex)
 
         assert(cb->IsAllocated());
         if (uploadBuf == nullptr)
+        {
             assert(false);
+            continue;
+        }
 
         auto it = std::find(m_buffersToResetUpdatedFramesCount.cbegin(), m_buffersToResetUpdatedFramesCount.cend(), cb);
         if (it != m_buffersToResetUpdatedFramesCount.cend())

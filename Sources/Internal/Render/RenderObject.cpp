@@ -20,7 +20,10 @@ namespace Kioto::Renderer
             bufferLayout.constantBuffers = shader->CreateLayoutTemplateShalowCopy();
 
             for (auto& cb : bufferLayout.constantBuffers)
-                cb.Reallocate();
+            {
+                if (cb.GetSpace() != 1)
+                    cb.Reallocate();
+            }
 
 
             assert(m_renderObjectBuffers.count(pipelines.first) == 0);
@@ -69,6 +72,36 @@ namespace Kioto::Renderer
         roBuffer.ToModel = GetToModel()->GetForGPU();
         roBuffer.ToWorld = GetToWorld()->GetForGPU();
         SetBuffer("cbRenderObjectBuffer", roBuffer, passName);
+    }
+
+    void RenderObject::HijackConstantBuffer(const std::string& passName, const std::string& cbName, ConstantBufferHandle newHandle)
+    {
+        if (!m_renderObjectBuffers.contains(passName))
+        {
+            assert(false);
+            return;
+        }
+        RenderObjectBufferLayout& layout = m_renderObjectBuffers[passName];
+        auto& cb = std::find_if(layout.constantBuffers.begin(), layout.constantBuffers.end(), [&cbName](const ConstantBuffer& b) { return b.GetName() == cbName; });
+        if (cb == layout.constantBuffers.end())
+        {
+            assert(false);
+            return;
+        }
+        cb->SetHandle(newHandle);
+    }
+
+    std::vector<Renderer::ConstantBufferHandle> RenderObject::GetCBHandles(const std::string& passName) const
+    {
+        if (!m_renderObjectBuffers.contains(passName))
+            return {};
+        const RenderObjectBufferLayout& layout = m_renderObjectBuffers.at(passName);
+
+        std::vector<Renderer::ConstantBufferHandle> handles;
+        handles.reserve(layout.constantBuffers.size());
+        for (const auto& cb : layout.constantBuffers)
+            handles.push_back(cb.GetHandle());
+        return handles;
     }
 
 }

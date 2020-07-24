@@ -142,7 +142,7 @@ inline void ConstantBuffer::Set(const T& val, uint16 elemOffset, bool updateHWin
     *(mem + elemOffset) = val;
 
     if (updateHWinstance)
-        Renderer::QueueConstantBufferForUpdate(*this);
+        ScheduleToUpdate();
 }
 
 template <typename T>

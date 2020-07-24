@@ -40,6 +40,9 @@ void GrayscaleRenderPass::BuildRenderPackets(CommandList* commandList, ResourceT
 
     Material* mat = m_renderObject->GetMaterial();
     Mesh* mesh = m_renderObject->GetMesh();
+    m_renderObject->HijackConstantBuffer(m_passName, "cbCameraBuffer", Renderer::GetMainCamera()->GetConstantBuffer().GetHandle());
+    m_renderObject->HijackConstantBuffer(m_passName, "cbEngineBuffer", Renderer::EngineBuffers::GetTimeBuffer().GetHandle());
+
     mat->BuildMaterialForPass(this);
 
     m_renderObject->SetTexture("InputColor", input, m_passName);
@@ -50,7 +53,7 @@ void GrayscaleRenderPass::BuildRenderPackets(CommandList* commandList, ResourceT
     currPacket.TextureSet = m_renderObject->GetTextureSet(m_passName).GetHandle();
     currPacket.Mesh = mesh->GetHandle();
     currPacket.Pass = GetHandle();
-    currPacket.CBSet = m_renderObject->GetBufferLayout(m_passName).bufferSetHandle;
+    currPacket.ConstantBufferHandles = std::move(m_renderObject->GetCBHandles(m_passName));
 
     commandList->PushCommand(RenderCommandHelpers::CreateRenderPacketCommand(currPacket, this));
 

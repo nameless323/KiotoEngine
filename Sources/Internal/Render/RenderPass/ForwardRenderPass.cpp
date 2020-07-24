@@ -30,6 +30,8 @@ void ForwardRenderPass::BuildRenderPackets(CommandList* commandList, ResourceTab
     SetRenderTargets(commandList, resources);
     for (auto ro : m_renderObjects)
     {
+        ro->HijackConstantBuffer(m_passName, "cbCameraBuffer", Renderer::GetMainCamera()->GetConstantBuffer().GetHandle());
+        ro->HijackConstantBuffer(m_passName, "cbEngineBuffer", Renderer::EngineBuffers::GetTimeBuffer().GetHandle());
         Material* mat = ro->GetMaterial();
         Mesh* mesh = ro->GetMesh();
         mat->BuildMaterialForPass(this);
@@ -42,7 +44,7 @@ void ForwardRenderPass::BuildRenderPackets(CommandList* commandList, ResourceTab
         currPacket.TextureSet = ro->GetTextureSet(m_passName).GetHandle();
         currPacket.Mesh = mesh->GetHandle();
         currPacket.Pass = GetHandle();
-        currPacket.CBSet = ro->GetBufferLayout(m_passName).bufferSetHandle;
+        currPacket.ConstantBufferHandles = std::move(ro->GetCBHandles(m_passName));
 
         commandList->PushCommand(RenderCommandHelpers::CreateRenderPacketCommand(currPacket, this));
     }
@@ -82,7 +84,7 @@ void ForwardRenderPass::SetPassConstantBuffers(CommandList* commandList)
 
 void ForwardRenderPass::SetCameraConstantBuffers(CommandList* commandList)
 {
-    commandList->PushCommand(RenderCommandHelpers::CreateConstantBufferCommand(Renderer::GetMainCamera()->GetConstantBuffer(), this));
+    //commandList->PushCommand(RenderCommandHelpers::CreateConstantBufferCommand(Renderer::GetMainCamera()->GetConstantBuffer(), this));
 }
 
 bool ForwardRenderPass::ConfigureInputsAndOutputs(ResourcesBlackboard& resources)

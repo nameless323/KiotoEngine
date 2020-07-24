@@ -37,6 +37,8 @@ void Init();
 void GetTimeBufferCopy(ConstantBuffer& target);
 void GetCameraBufferCopy(ConstantBuffer& target);
 
+ConstantBuffer& GetTimeBuffer();
+
 constexpr uint16 EngineBuffersSpace = 1;
 
 constexpr uint16 TimeBufferIndex = 0;

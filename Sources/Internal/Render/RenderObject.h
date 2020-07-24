@@ -38,7 +38,9 @@ public:
     /// <summary>
     /// Hijacks cb handle in the render object. This is necessary when you need to set cb as a common cb (time, light), or just set per pass buffer (camera)
     /// </summary>
-    void HijackConstantBuffer(const std::string& cbName, ConstantBufferHandle newHandle); // [a_vorontcov] TODO: really fishy. rethink
+    void HijackConstantBuffer(const std::string& passName, const std::string& cbName, ConstantBufferHandle newHandle); // [a_vorontcov] TODO: really fishy. rethink
+
+    std::vector<ConstantBufferHandle> GetCBHandles(const std::string& passName) const;
 
     const RenderObjectBufferLayout& GetBufferLayout(const PassName& passName);
     const TextureSet& GetTextureSet(const PassName& passName);

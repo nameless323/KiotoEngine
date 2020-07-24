@@ -9,7 +9,7 @@ namespace Kioto::Renderer::EngineBuffers
 namespace
 {
 ConstantBuffer m_cameraBuffer("cbCameraBuffer", CameraBufferIndex, EngineBuffersSpace, sizeof(CbCameraBuffer));
-ConstantBuffer m_timeBuffer("cbEngineBuffer", TimeBufferIndex, EngineBuffersSpace, sizeof(CbEngineBuffer));
+ConstantBuffer m_timeBuffer("cbEngineBuffer", TimeBufferIndex, EngineBuffersSpace, sizeof(CbEngineBuffer), 1, true);
 }
 
 void EngineBuffers::Init()
@@ -27,4 +27,10 @@ void GetCameraBufferCopy(ConstantBuffer& target)
     m_cameraBuffer.MakeShallowCopy(target, false);
     target.Reallocate();
 }
+
+ConstantBuffer& GetTimeBuffer()
+{
+    return m_timeBuffer;
+}
+
 }

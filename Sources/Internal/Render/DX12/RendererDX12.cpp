@@ -309,6 +309,7 @@ void RendererDX12::Present()
         assert(cmd.CommandType != eRenderCommandType::eInvalidCommand);
         if (cmd.CommandType == eRenderCommandType::eSubmitConstantBuffer)
         {
+            /*
             const SubmitConstantBufferCommand& scbCommand = std::get<SubmitConstantBufferCommand>(cmd.Command);
             assert(scbCommand.Space == EngineBuffers::EngineBuffersSpace);
             if (scbCommand.Index == EngineBuffers::CameraBufferIndex)
@@ -317,6 +318,7 @@ void RendererDX12::Present()
                 m_currentTimeBuffer = scbCommand.BufferHandle;
             else
                 assert(false);
+                */
         }
         else if (cmd.CommandType == eRenderCommandType::eSetRenderTargets)
         {
@@ -364,21 +366,12 @@ void RendererDX12::Present()
             ID3D12RootSignature* rootSig = m_rootSignatureManager.GetRootSignature(packet.Shader);
             m_state.CommandList->SetGraphicsRootSignature(rootSig);
 
-            UploadBufferDX12* timeBuffer = m_constantBufferManager.FindBuffer(m_currentTimeBuffer);
-            UploadBufferDX12* cameraBuffer = m_constantBufferManager.FindBuffer(m_currentCameraBuffer);
-            // [a_vorontcov] TODO: IMPORTANT: we're hoping that the first two buffers in the first two slots in the root sig are engine buffers. In general it might be wrong.
-            m_state.CommandList->SetGraphicsRootConstantBufferView(0, timeBuffer->GetFrameDataGpuAddress(m_swapChain.GetCurrentFrameIndex()));
-            m_state.CommandList->SetGraphicsRootConstantBufferView(1, cameraBuffer->GetFrameDataGpuAddress(m_swapChain.GetCurrentFrameIndex()));
-
-            size_t engineBuffersCount = EngineBuffers::BufferIndices.size();
-            size_t buffersCount = engineBuffersCount;
-            if (packet.CBSet != EmptyConstantBufferSetHandle)
+            UINT currFrameInd = m_swapChain.GetCurrentFrameIndex();
+            UINT buffersCount = static_cast<UINT>(packet.ConstantBufferHandles.size());
+            for (uint32 i = 0; i < buffersCount; ++i)
             {
-                auto& bufferList = m_constantBufferManager.FindBuffers(packet.CBSet);
-                buffersCount = bufferList.size();
-
-                for (size_t i = engineBuffersCount; i < buffersCount; ++i)
-                    m_state.CommandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(i), bufferList[i]->GetFrameDataGpuAddress(m_swapChain.GetCurrentFrameIndex()));
+                UploadBufferDX12* buffer = m_constantBufferManager.FindBuffer(packet.ConstantBufferHandles[i]);
+                m_state.CommandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(i), buffer->GetFrameDataGpuAddress(currFrameInd));
             }
 
             ID3D12DescriptorHeap* currTexDescriptorHeap = m_textureManager.GetTextureHeap(packet.TextureSet);
@@ -387,7 +380,7 @@ void RendererDX12::Present()
                 ID3D12DescriptorHeap* descHeap[] = { currTexDescriptorHeap };
                 m_state.CommandList->SetDescriptorHeaps(_countof(descHeap), descHeap);
 
-                m_state.CommandList->SetGraphicsRootDescriptorTable(static_cast<UINT>(buffersCount), currTexDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+                m_state.CommandList->SetGraphicsRootDescriptorTable(buffersCount, currTexDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
             }
 
             MeshDX12* currGeometry = m_meshManager.Find(packet.Mesh);
@@ -433,7 +426,6 @@ void RendererDX12::Present()
     m_state.CommandQueue->Signal(m_state.Fence.Get(), m_state.CurrentFence);
 
     m_frameCommands.clear();
-    m_currentCameraBuffer = InvalidHandle;
 
     // [a_vorontcov] Check if we can move to next frame.
     m_swapChain.ProceedToNextFrame();
@@ -586,7 +578,6 @@ void RendererDX12::RegisterConstantBuffer(ConstantBuffer& buffer)
 
 void RendererDX12::SetTimeBuffer(ConstantBufferHandle handle)
 {
-    m_currentTimeBuffer = handle;
 }
 
 void RendererDX12::RegisterRenderObject(RenderObject& renderObject)
