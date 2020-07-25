@@ -35,7 +35,7 @@ public:
         SetShaderPath();
     };
 
-    ShaderBufferLayoutTemplate GetLayoutTemplate() const override
+    RenderObjectBufferLayout GetLayoutTemplate() const override
     {
         return m_cbs;
     }
@@ -85,7 +85,7 @@ private:
         m_sdata.shaderPath = "$shaderPath$";
     }
 
-    ShaderBufferLayoutTemplate m_cbs;
+    RenderObjectBufferLayout m_cbs;
     ShaderData m_sdata;
     std::map<ShaderProgramType, std::string> m_progNames;
 };

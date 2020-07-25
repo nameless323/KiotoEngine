@@ -274,6 +274,7 @@ RD /S /Q $(TargetDir)Assets
     <ClInclude Include="Sources\Internal\Render\Texture\TextureSet.h" />
     <ClInclude Include="Sources\Internal\Render\Texture\Texture.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\Texture\TextureDX12.h" />
+    <ClInclude Include="Sources\Internal\Render\UniformConstant.h" />
     <ClInclude Include="Sources\Internal\Render\VertexLayout.h" />
     <ClInclude Include="Sources\Internal\Systems\CameraSystem.h" />
     <ClInclude Include="Sources\Internal\Systems\DebugSystem.h" />

@@ -45,6 +45,10 @@ namespace ShaderInputsParserApp.Source
             AssignBindpointsFromAnnotations(ctx.ConstantBuffers);
             AutomaticallyAssignBindpoints(ctx.ConstantBuffers, m_allBindings[BindpointType.Buffer]);
 
+            // [a_vorontcov] Root constants have the same bindpoints as constant buffers.
+            AssignBindpointsFromAnnotations(ctx.RootConstants);
+            AutomaticallyAssignBindpoints(ctx.RootConstants, m_allBindings[BindpointType.Buffer]);
+
             AssignBindpointsFromAnnotations(ctx.Textures);
             AutomaticallyAssignBindpoints(ctx.Textures, m_allBindings[BindpointType.Texture]);
 
@@ -100,6 +104,7 @@ namespace ShaderInputsParserApp.Source
                     nextAutoAssignedBindpoint = i + 1;
                     break;
                 }
+                regs.Add(reg);
                 b.Bindpoint = new BindpointDesc(reg, 0);
             }
         }

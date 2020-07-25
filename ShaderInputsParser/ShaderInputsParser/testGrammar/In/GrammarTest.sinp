@@ -3,6 +3,9 @@ texture2D Mask;
 
 sampler LinearSampler;
 
+uniform uint LIGHT_COUNT;
+uniform float DENSITY;
+
 struct InstanceData
 {
     float Height;

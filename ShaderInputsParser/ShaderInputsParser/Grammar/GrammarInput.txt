@@ -1,6 +1,8 @@
 texture2D Diffuse;
 texture2D Mask;
 
+uniform float NUM_LIGHTS;
+
 constantBuffer cbRenderObjectBuffer
 {
     float4x4 ToWorld;

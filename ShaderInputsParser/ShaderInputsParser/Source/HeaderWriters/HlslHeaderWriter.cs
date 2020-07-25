@@ -104,6 +104,32 @@ namespace ShaderInputsParserApp.Source
             return result.ToString();
         }
 
+        string WriteRootConstants(ShaderOutputContext ctx, TemplateGroup group)
+        {
+            List<RootConstant> rootConstants = ctx.RootConstants;
+            if (rootConstants.Count == 0)
+                return "";
+
+            StringBuilder result = new StringBuilder();
+            result.Append("///////////////// ROOT CONSANTS /////////////////// ");
+            result.Append('\n');
+
+            foreach (var rootConstant in rootConstants)
+            {
+                StringTemplate cbufferTemplate = group.GetInstanceOf("cbufferTempl");
+                cbufferTemplate.Add("name", rootConstant.Name);
+                cbufferTemplate.Add("typename", rootConstant.Type);
+                cbufferTemplate.Add("reg", rootConstant.Bindpoint.Reg);
+                cbufferTemplate.Add("space", rootConstant.Bindpoint.Space);
+                result.Append(cbufferTemplate.Render() + '\n' + '\n');
+            }
+
+            result.Append('\n');
+            result.Append('\n');
+
+            return result.ToString();
+        }
+
         string WriteTextures(ShaderOutputContext ctx, TemplateGroup group)
         {
             List<Texture> textures = ctx.Textures;
@@ -173,6 +199,7 @@ namespace ShaderInputsParserApp.Source
             result.Append('\n');
 
             result.Append(WriteConstantBuffers(ctx, group));
+            result.Append(WriteRootConstants(ctx, group));
             result.Append(WriteTextures(ctx, group));
             result.Append(WriteSamplers(ctx, group));
             result.Append(WriteVertexLayout(ctx, group));

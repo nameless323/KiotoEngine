@@ -2,7 +2,7 @@
   "profiles": {
     "ShaderInputsParser": {
       "commandName": "Project",
-      "commandLineArgs": "inDir: C:\\Repos\\KiotoEngine\\ShaderInputsParser\\ShaderInputsParser\\testGrammar\\In hlslOutDir: C:\\Repos\\KiotoEngine\\ShaderInputsParser\\ShaderInputsParser\\testGrammar\\Out\\hlsl\\autogen cppOutDir: C:\\Repos\\KiotoEngine\\ShaderInputsParser\\ShaderInputsParser\\testGrammar\\Out\\cpp\\autogen templatesDir: C:\\Repos\\KiotoEngine\\ShaderInputsParser\\ShaderInputsParser\\Templates forceRegenerate"
+      "commandLineArgs": "inDir: C:\\Repos\\KiotoEngine\\ShaderInputsParser\\ShaderInputsParser\\testGrammar\\In hlslOutDir: C:\\Repos\\KiotoEngine\\ShaderInputsParser\\ShaderInputsParser\\testGrammar\\Out\\hlsl\\autogen cppOutDir: C:\\Repos\\KiotoEngine\\ShaderInputsParser\\ShaderInputsParser\\testGrammar\\Out\\cpp\\autogen templatesDir: C:\\Repos\\KiotoEngine\\ShaderInputsParser\\ShaderInputsParser\\Templates forceRegenerate forceRegenerate"
     }
   }
 }
