@@ -4,6 +4,7 @@ options { tokenVocab=ShaderInputsLexer; }
 
 inputFile : ( include
             | struct
+            | rootConstant
             | cbuffer
             | cbufferTempl
             | tex2d
@@ -22,6 +23,8 @@ cbufferTempl : CBUFFER_KEYWORD TRIG_BR_O (NAME | TYPE) TRIG_BR_C NAME arrayDimSp
 tex2d : TEX2D_KEYWORD NAME SEMI;
 
 sampler : SAMPLER_KEYWORD NAME SEMI;
+
+rootConstant : ROOT_CONSTANT_KEYWORD TYPE NAME SEMI annotationList;
 
 variable : TYPE NAME SEMI;
 

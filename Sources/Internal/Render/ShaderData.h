@@ -14,8 +14,7 @@ enum class ShaderProgramType
     Fragment = 1 << 1
 };
 
-using ShaderBufferLayoutTemplate = std::vector<ConstantBuffer>;
-using RenderObjectBufferLayout = std::vector<ConstantBuffer>;;
+using RenderObjectBufferLayout = std::vector<ConstantBuffer>;
 
 struct ShaderData
 {
@@ -26,5 +25,5 @@ struct ShaderData
     uint8 shaderPrograms = 0;
 };
 
-using ShaderDataAndBufferLayout = std::pair<ShaderData, ShaderBufferLayoutTemplate>;
+using ShaderDataAndBufferLayout = std::pair<ShaderData, RenderObjectBufferLayout>;
 }
