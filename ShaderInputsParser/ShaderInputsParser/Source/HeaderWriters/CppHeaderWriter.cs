@@ -57,7 +57,20 @@ namespace ShaderInputsParserApp.Source.HeaderWriters
             }
             return res.ToString();
         }
-
+        string WriteRootConstants(ShaderOutputContext ctx, TemplateGroup group)
+        {
+            StringBuilder res = new StringBuilder();
+            List<UniformConstant> consts = ctx.RootConstants;
+            foreach (var c in consts)
+            {
+                StringTemplate cBufferTemplate = group.GetInstanceOf("rootConstant");
+                cBufferTemplate.Add("name", c.Name);
+                cBufferTemplate.Add("reg", c.Bindpoint.Reg.ToString());
+                cBufferTemplate.Add("space", c.Bindpoint.Space.ToString());
+                res.Append(cBufferTemplate.Render() + '\n');
+            }
+            return res.ToString();
+        }
         string WriteTextureSets(ShaderOutputContext ctx, TemplateGroup group)
         {
             List<Texture> textures = ctx.Textures;
@@ -152,6 +165,7 @@ namespace ShaderInputsParserApp.Source.HeaderWriters
             TemplateGroup group = new Antlr4.StringTemplate.TemplateGroupFile(Program.TemplatesDir + "/cppTemplate.stg");
 
             string constantBuffers = WriteConstantBuffers(ctx, group);
+            string constants = WriteRootConstants(ctx, group);
             string textureSets = WriteTextureSets(ctx, group);
             string bindings = WriteBindings(ctx, group);
             string vertexLayouts = WriteVertexLayouts(ctx, group);
@@ -163,6 +177,7 @@ namespace ShaderInputsParserApp.Source.HeaderWriters
             headerTemplate.Add("name", filename);
             headerTemplate.Add("structs", structs);
             headerTemplate.Add("cbuffers", constantBuffers);
+            headerTemplate.Add("constants", constants);
             headerTemplate.Add("texSets", textureSets);
             headerTemplate.Add("shaderProgs", bindings);
             headerTemplate.Add("vertexLayout", vertexLayouts);

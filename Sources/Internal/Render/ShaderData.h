@@ -4,6 +4,7 @@
 #include "Render/VertexLayout.h"
 #include "Render/PipelineState.h"
 #include "Render/RendererPublic.h"
+#include "Render/UniformConstant.h"
 #include "Render/Texture/TextureSet.h"
 
 namespace Kioto::Renderer
@@ -15,6 +16,7 @@ enum class ShaderProgramType
 };
 
 using RenderObjectBufferLayout = std::vector<ConstantBuffer>;
+using RenderObjectConstants = std::vector<UniformConstant>;
 
 struct ShaderData
 {

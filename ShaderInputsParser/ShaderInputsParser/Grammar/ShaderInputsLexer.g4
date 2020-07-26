@@ -23,7 +23,7 @@ TEX2D_KEYWORD : 'texture2D';
 INCLUDE_KEYWORD : '#include';
 VERTEX_LAYOUT_KEYWORD : 'vertexLayout';
 SHADER_KEYWORD : 'shader';
-ROOT_CONSTANT_KEYWORD : 'uniform';
+UNIFORM_CONSTANT_KEYWORD : 'uniform';
 
 SHADER_TYPE : 'VS' | 'PS' | 'CS' | 'HS' | 'DS';
 V_SEMANTIC : 'POSITION' | 'NORMAL' | 'TEXCOORD' [0-9]? | 'COLOR' [0-9]?;

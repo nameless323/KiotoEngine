@@ -40,8 +40,8 @@ void GrayscaleRenderPass::BuildRenderPackets(CommandList* commandList, ResourceT
 
     Material* mat = m_renderObject->GetMaterial();
     Mesh* mesh = m_renderObject->GetMesh();
-    m_renderObject->HijackConstantBuffer(m_passName, "cbCameraBuffer", Renderer::GetMainCamera()->GetConstantBuffer().GetHandle());
-    m_renderObject->HijackConstantBuffer(m_passName, "cbEngineBuffer", Renderer::EngineBuffers::GetTimeBuffer().GetHandle());
+    m_renderObject->SetExternalCB(m_passName, "cbCameraBuffer", Renderer::GetMainCamera()->GetConstantBuffer().GetHandle());
+    m_renderObject->SetExternalCB(m_passName, "cbEngineBuffer", Renderer::EngineBuffers::GetTimeBuffer().GetHandle());
 
     mat->BuildMaterialForPass(this);
 

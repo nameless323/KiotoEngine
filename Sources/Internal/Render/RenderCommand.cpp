@@ -7,22 +7,6 @@
 
 namespace Kioto::Renderer::RenderCommandHelpers
 {
-RenderCommand CreateConstantBufferCommand(const ConstantBuffer& buffer, RenderPass* pass)
-{
-    SubmitConstantBufferCommand cbCmd;
-    cbCmd.BufferHandle = buffer.GetHandle();
-    cbCmd.Index = buffer.GetIndex();
-    cbCmd.Space = buffer.GetSpace();
-
-    RenderCommand command;
-    command.CommandType = eRenderCommandType::eSubmitConstantBuffer;
-    command.Command = cbCmd;
-
-    command.PassName = pass->GetName();
-
-    return command;
-}
-
 RenderCommand CreateRenderPacketCommand(RenderPacket packet, RenderPass* pass)
 {
     SubmitRenderPacketCommand rpCommand;

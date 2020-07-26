@@ -25,6 +25,9 @@ public:
 
     const RenderObjectBufferLayout& GetBufferLayoutTemplate() const;
     void SetBufferLayoutTemplate(const RenderObjectBufferLayout& layoutTemplate);
+    const RenderObjectConstants& GetRenderObjectConstants() const;
+    void SetRenderObjectConstants(const RenderObjectConstants& roConstants);
+
     RenderObjectBufferLayout CreateLayoutTemplateShalowCopy() const;
 
 private:
@@ -33,6 +36,8 @@ private:
     VertexLayoutHandle m_vertexLayout;
     ShaderData m_data;
     RenderObjectBufferLayout m_bufferLayoutTemplate;
+    RenderObjectConstants m_rootConstants;
+
     ShaderHandle m_handle; // [a_vorontcov] Separate handles for each define set?
 
     friend class Material;
@@ -75,6 +80,16 @@ inline RenderObjectBufferLayout Shader::CreateLayoutTemplateShalowCopy() const
     for (size_t i = 0; i < m_bufferLayoutTemplate.size(); ++i)
         m_bufferLayoutTemplate[i].MakeShallowCopy(res[i]);
     return res;
+}
+
+inline const RenderObjectConstants& Shader::GetRenderObjectConstants() const
+{
+    return m_rootConstants;
+}
+
+inline void Shader::SetRenderObjectConstants(const RenderObjectConstants& roConstants)
+{
+    m_rootConstants = roConstants;
 }
 
 }

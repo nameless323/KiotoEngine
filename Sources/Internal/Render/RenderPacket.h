@@ -16,6 +16,7 @@ public:
     TextureSetHandle TextureSet;
     MeshHandle Mesh;
     std::vector<ConstantBufferHandle> ConstantBufferHandles;
+    std::vector<uint32> UniformConstants;
 };
 
 using RenderPacketList = std::vector<RenderPacket>;

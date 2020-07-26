@@ -4,7 +4,7 @@ options { tokenVocab=ShaderInputsLexer; }
 
 inputFile : ( include
             | struct
-            | rootConstant
+            | uniformConstant
             | cbuffer
             | cbufferTempl
             | tex2d
@@ -24,7 +24,7 @@ tex2d : TEX2D_KEYWORD NAME SEMI;
 
 sampler : SAMPLER_KEYWORD NAME SEMI;
 
-rootConstant : ROOT_CONSTANT_KEYWORD TYPE NAME SEMI annotationList;
+uniformConstant : UNIFORM_CONSTANT_KEYWORD TYPE NAME SEMI annotationList;
 
 variable : TYPE NAME SEMI;
 

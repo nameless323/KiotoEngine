@@ -26,8 +26,8 @@ namespace Kioto::Renderer
         SetRenderTargets(commandList, resources);
         for (auto ro : m_renderObjects)
         {
-            ro->HijackConstantBuffer(m_passName, "cbCameraBuffer", Renderer::GetMainCamera()->GetConstantBuffer().GetHandle());
-            ro->HijackConstantBuffer(m_passName, "cbEngineBuffer", Renderer::EngineBuffers::GetTimeBuffer().GetHandle());
+            ro->SetExternalCB(m_passName, "cbCameraBuffer", Renderer::GetMainCamera()->GetConstantBuffer().GetHandle());
+            ro->SetExternalCB(m_passName, "cbEngineBuffer", Renderer::EngineBuffers::GetTimeBuffer().GetHandle());
 
             Material* mat = ro->GetMaterial();
             Mesh* mesh = ro->GetMesh();
@@ -82,7 +82,6 @@ namespace Kioto::Renderer
 
     void WireframeRenderPass::SetCameraConstantBuffers(CommandList* commandList)
     {
-        commandList->PushCommand(RenderCommandHelpers::CreateConstantBufferCommand(Renderer::GetMainCamera()->GetConstantBuffer(), this));
     }
 
     bool WireframeRenderPass::ConfigureInputsAndOutputs(ResourcesBlackboard& resources)

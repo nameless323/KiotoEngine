@@ -38,9 +38,13 @@ public:
     /// <summary>
     /// Hijacks cb handle in the render object. This is necessary when you need to set cb as a common cb (time, light), or just set per pass buffer (camera)
     /// </summary>
-    void HijackConstantBuffer(const std::string& passName, const std::string& cbName, ConstantBufferHandle newHandle); // [a_vorontcov] TODO: really fishy. rethink
+    void SetExternalCB(const std::string& passName, const std::string& cbName, ConstantBufferHandle newHandle); // [a_vorontcov] TODO: really fishy. rethink
+
+    template <typename T>
+    void SetConstant(const std::string& passName, const std::string& cName, T constant);
 
     std::vector<ConstantBufferHandle> GetCBHandles(const std::string& passName) const;
+    std::vector<uint32> GetConstants(const std::string& passName) const;
 
     const RenderObjectBufferLayout& GetBufferLayout(const PassName& passName);
     const TextureSet& GetTextureSet(const PassName& passName);
@@ -67,6 +71,7 @@ private:
     Material* m_material = nullptr;
     Mesh* m_mesh = nullptr;
     std::unordered_map<PassName, RenderObjectBufferLayout> m_renderObjectBuffers;
+    std::unordered_map<PassName, RenderObjectConstants> m_renderObjectConstants;
     std::unordered_map<PassName, TextureSet> m_textureSets; // [a_vorontcov] Buffers are unique for ro, but texture set is more a material thing. but does it matter for bindless textures and for this engine at all?
 
     const Matrix4* m_toWorld = nullptr;
@@ -138,6 +143,25 @@ inline const std::unordered_map<PassName, RenderObjectBufferLayout>& RenderObjec
 inline std::unordered_map<PassName, RenderObjectBufferLayout>& RenderObject::GetBuffersLayouts()
 {
     return m_renderObjectBuffers;
+}
+
+
+template <typename T>
+inline void RenderObject::SetConstant(const std::string& passName, const std::string& cName, T constant)
+{
+    if (!m_renderObjectConstants.contains(passName))
+    {
+        assert(false);
+        return;
+    }
+    RenderObjectConstants& constants = m_renderObjectConstants[passName];
+    auto& c = std::find_if(constants.begin(), constants.end(), [&cName](const UniformConstant& c) { return c.GetName() == cbName; });
+    if (c == constants.end())
+    {
+        assert(false);
+        return;
+    }
+    c->SetValue(constant);
 }
 
 }

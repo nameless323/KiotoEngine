@@ -106,7 +106,7 @@ namespace ShaderInputsParserApp.Source
 
         string WriteRootConstants(ShaderOutputContext ctx, TemplateGroup group)
         {
-            List<RootConstant> rootConstants = ctx.RootConstants;
+            List<UniformConstant> rootConstants = ctx.RootConstants;
             if (rootConstants.Count == 0)
                 return "";
 

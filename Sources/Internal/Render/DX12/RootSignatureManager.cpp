@@ -7,18 +7,26 @@
 
 namespace Kioto::Renderer
 {
-void RootSignatureManager::CreateRootSignature(const StateDX& state, const ShaderData& shaderData, const RenderObjectBufferLayout& bufferLayoutTemplate, ShaderHandle handle)
+void RootSignatureManager::CreateRootSignature(const StateDX& state, const ShaderData& shaderData, const RenderObjectBufferLayout& bufferLayoutTemplate, const RenderObjectConstants& constants, ShaderHandle handle)
 {
     using Microsoft::WRL::ComPtr;
 
     std::vector<CD3DX12_ROOT_PARAMETER1> rootParams;
- 
+
     for (size_t i = 0; i < bufferLayoutTemplate.size(); ++i)
     {
         CD3DX12_ROOT_PARAMETER1 param;
         param.InitAsConstantBufferView(bufferLayoutTemplate[i].GetIndex(), bufferLayoutTemplate[i].GetSpace());
         rootParams.push_back(std::move(param));
     }
+
+    for (size_t i = 0; i < constants.size(); ++i)
+    {
+        CD3DX12_ROOT_PARAMETER1 param;
+        param.InitAsConstants(1, constants[i].GetIndex(), constants[i].GetSpace());
+        rootParams.push_back(std::move(param));
+    }
+
     std::vector<D3D12_DESCRIPTOR_RANGE1> ranges; // [a_vorontcov] Careful, table remembers pointer to range.
     ranges.reserve(shaderData.textureSet.GetTexturesCount());
     if (shaderData.textureSet.GetTexturesCount() > 0)

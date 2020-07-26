@@ -19,7 +19,7 @@ namespace ShaderInputsParserApp.Source
     {
         public List<Structure> Structures { get; set; } = new List<Structure>();
         public List<ConstantBuffer> ConstantBuffers { get; set; } = new List<ConstantBuffer>();
-        public List<RootConstant> RootConstants { get; set; } = new List<RootConstant>();
+        public List<UniformConstant> RootConstants { get; set; } = new List<UniformConstant>();
         public List<Texture> Textures { get; set; } = new List<Texture>();
         public List<Sampler> Samplers { get; set; } = new List<Sampler>();
         public VertexLayout VertLayout { get; set; } = null;
@@ -95,12 +95,13 @@ namespace ShaderInputsParserApp.Source
 
             return name;
         }
-        public override string VisitRootConstant(ShaderInputsParser.RootConstantContext context)
+
+        public override string VisitUniformConstant(ShaderInputsParser.UniformConstantContext context)
         {
             AnnotationsVisitor annotVisitor = new AnnotationsVisitor();
             annotVisitor.Visit(context);
 
-            RootConstant constant = new RootConstant(context.TYPE().GetText(), context.NAME().GetText());
+            UniformConstant constant = new UniformConstant(context.TYPE().GetText(), context.NAME().GetText());
             constant.Annotations = new List<Annotation>(annotVisitor.Annotations);
             OutputContext.RootConstants.Add(constant);
             return "";

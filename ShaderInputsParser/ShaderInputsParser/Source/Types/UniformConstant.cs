@@ -4,9 +4,9 @@ using System.Text;
 
 namespace ShaderInputsParserApp.Source.Types
 {
-    class RootConstant : IBindable
+    class UniformConstant : IBindable
     {
-        public RootConstant(string type, string name)
+        public UniformConstant(string type, string name)
         {
             Type = type;
             Name = name;

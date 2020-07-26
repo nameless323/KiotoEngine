@@ -22,6 +22,7 @@ void ShaderManagerDX12::RegisterShader(Shader* shader)
     SInp::ShaderInputBase& parsedShader = SInp::KiotoShaders::GetShader(filename);
     shader->SetShaderData(parsedShader.GetShaderData()); // [a_vorontcov] TODO:: Move it?
     shader->SetBufferLayoutTemplate(parsedShader.GetLayoutTemplate());
+    shader->SetRenderObjectConstants(parsedShader.GetConstants());
 
     std::vector<ShaderDX12> shadersDX;
     if (shader->GetShaderData().shaderPrograms & uint8(ShaderProgramType::Vertex))

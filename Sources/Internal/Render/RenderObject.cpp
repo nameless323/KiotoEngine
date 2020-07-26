@@ -25,6 +25,7 @@ namespace Kioto::Renderer
 
             assert(m_renderObjectBuffers.count(pipelines.first) == 0);
             m_renderObjectBuffers[pipelines.first] = std::move(bufferLayout);
+            m_renderObjectConstants[pipelines.first] = std::move(shader->GetRenderObjectConstants());
         }
     }
 
@@ -71,7 +72,7 @@ namespace Kioto::Renderer
         SetBuffer("cbRenderObjectBuffer", roBuffer, passName);
     }
 
-    void RenderObject::HijackConstantBuffer(const std::string& passName, const std::string& cbName, ConstantBufferHandle newHandle)
+    void RenderObject::SetExternalCB(const std::string& passName, const std::string& cbName, ConstantBufferHandle newHandle)
     {
         if (!m_renderObjectBuffers.contains(passName))
         {
@@ -85,6 +86,7 @@ namespace Kioto::Renderer
             assert(false);
             return;
         }
+        assert(!cb->IsPerObjectBuffer());
         cb->SetHandle(newHandle);
     }
 
@@ -99,6 +101,19 @@ namespace Kioto::Renderer
         for (const auto& cb : layout)
             handles.push_back(cb.GetHandle());
         return handles;
+    }
+
+    std::vector<uint32> RenderObject::GetConstants(const std::string& passName) const
+    {
+        if (!m_renderObjectConstants.contains(passName))
+            return {};
+        const RenderObjectConstants& constants = m_renderObjectConstants.at(passName);
+
+        std::vector<uint32> values;
+        values.reserve(constants.size());
+        for (const auto& c : constants)
+            values.push_back(c.GetValue());
+        return values;
     }
 
 }

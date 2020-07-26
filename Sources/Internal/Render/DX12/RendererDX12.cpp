@@ -307,20 +307,7 @@ void RendererDX12::Present()
     for (auto& cmd : m_frameCommands)
     {
         assert(cmd.CommandType != eRenderCommandType::eInvalidCommand);
-        if (cmd.CommandType == eRenderCommandType::eSubmitConstantBuffer)
-        {
-            /*
-            const SubmitConstantBufferCommand& scbCommand = std::get<SubmitConstantBufferCommand>(cmd.Command);
-            assert(scbCommand.Space == EngineBuffers::EngineBuffersSpace);
-            if (scbCommand.Index == EngineBuffers::CameraBufferIndex)
-                m_currentCameraBuffer = scbCommand.BufferHandle;
-            else if (scbCommand.Index == EngineBuffers::TimeBufferIndex)
-                m_currentTimeBuffer = scbCommand.BufferHandle;
-            else
-                assert(false);
-                */
-        }
-        else if (cmd.CommandType == eRenderCommandType::eSetRenderTargets)
+        if (cmd.CommandType == eRenderCommandType::eSetRenderTargets)
         {
             const SetRenderTargetsCommand& srtCommand = std::get<SetRenderTargetsCommand>(cmd.Command);
             D3D12_CPU_DESCRIPTOR_HANDLE rtHandle;
@@ -373,6 +360,9 @@ void RendererDX12::Present()
                 UploadBufferDX12* buffer = m_constantBufferManager.FindBuffer(packet.ConstantBufferHandles[i]);
                 m_state.CommandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(i), buffer->GetFrameDataGpuAddress(currFrameInd));
             }
+            UINT constantsCount = static_cast<UINT>(packet.UniformConstants.size());
+            for (uint32 i = 0; i < constantsCount; ++i)
+                m_state.CommandList->SetGraphicsRoot32BitConstant(buffersCount + i, packet.UniformConstants[i], 0);
 
             ID3D12DescriptorHeap* currTexDescriptorHeap = m_textureManager.GetTextureHeap(packet.TextureSet);
             if (currTexDescriptorHeap != nullptr) // [a_vorontcov] TODO: No difference if one messed up with texset or if there is no textures for the draw. Not good at all. Rethink.
@@ -380,7 +370,7 @@ void RendererDX12::Present()
                 ID3D12DescriptorHeap* descHeap[] = { currTexDescriptorHeap };
                 m_state.CommandList->SetDescriptorHeaps(_countof(descHeap), descHeap);
 
-                m_state.CommandList->SetGraphicsRootDescriptorTable(buffersCount, currTexDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+                m_state.CommandList->SetGraphicsRootDescriptorTable(buffersCount + constantsCount, currTexDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
             }
 
             MeshDX12* currGeometry = m_meshManager.Find(packet.Mesh);
@@ -525,7 +515,7 @@ void RendererDX12::RegisterTexture(Texture* texture)
 void RendererDX12::RegisterShader(Shader* shader)
 {
     m_shaderManager.RegisterShader(shader);
-    m_rootSignatureManager.CreateRootSignature(m_state, shader->GetShaderData(), shader->GetBufferLayoutTemplate(), shader->GetHandle());
+    m_rootSignatureManager.CreateRootSignature(m_state, shader->GetShaderData(), shader->GetBufferLayoutTemplate(), shader->GetRenderObjectConstants(), shader->GetHandle());
     m_vertexLayoutManager.GenerateVertexLayout(shader);
 }
 
