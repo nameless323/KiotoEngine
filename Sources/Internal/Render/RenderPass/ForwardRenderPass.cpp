@@ -32,6 +32,7 @@ void ForwardRenderPass::BuildRenderPackets(CommandList* commandList, ResourceTab
     {
         ro->SetExternalCB(m_passName, "cbCameraBuffer", Renderer::GetMainCamera()->GetConstantBuffer().GetHandle());
         ro->SetExternalCB(m_passName, "cbEngineBuffer", Renderer::EngineBuffers::GetTimeBuffer().GetHandle());
+        ro->SetConstant(m_passName, "LIGHTS_COUNT", 4);
         Material* mat = ro->GetMaterial();
         Mesh* mesh = ro->GetMesh();
         mat->BuildMaterialForPass(this);
@@ -45,6 +46,7 @@ void ForwardRenderPass::BuildRenderPackets(CommandList* commandList, ResourceTab
         currPacket.Mesh = mesh->GetHandle();
         currPacket.Pass = GetHandle();
         currPacket.ConstantBufferHandles = std::move(ro->GetCBHandles(m_passName));
+        currPacket.UniformConstants = std::move(ro->GetConstants(m_passName));
 
         commandList->PushCommand(RenderCommandHelpers::CreateRenderPacketCommand(currPacket, this));
     }

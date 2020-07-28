@@ -111,7 +111,7 @@ m_cbs.push_back(std::move($cbname$));
 ////////////////////////////////
 >>
 
-rootConstant(name, reg, space) ::= <<
+uniformConstant(name, reg, space) ::= <<
 UniformConstant $name$("$name$", $reg$, $space$);
 m_uConsts.push_back(std::move($name$));
 

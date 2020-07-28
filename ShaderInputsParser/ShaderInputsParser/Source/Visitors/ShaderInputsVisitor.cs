@@ -19,7 +19,7 @@ namespace ShaderInputsParserApp.Source
     {
         public List<Structure> Structures { get; set; } = new List<Structure>();
         public List<ConstantBuffer> ConstantBuffers { get; set; } = new List<ConstantBuffer>();
-        public List<UniformConstant> RootConstants { get; set; } = new List<UniformConstant>();
+        public List<UniformConstant> UniformConstants { get; set; } = new List<UniformConstant>();
         public List<Texture> Textures { get; set; } = new List<Texture>();
         public List<Sampler> Samplers { get; set; } = new List<Sampler>();
         public VertexLayout VertLayout { get; set; } = null;
@@ -31,7 +31,7 @@ namespace ShaderInputsParserApp.Source
             ConstantBuffers.AddRange(other.ConstantBuffers);
             Textures.AddRange(other.Textures);
             Samplers.AddRange(other.Samplers);
-            RootConstants.AddRange(other.RootConstants);
+            UniformConstants.AddRange(other.UniformConstants);
             if (VertLayout != null && other.VertLayout != null)
                 throw new DuplicateBindpointException("Vertex layout is defined twice");
             if (VertLayout == null)
@@ -103,7 +103,7 @@ namespace ShaderInputsParserApp.Source
 
             UniformConstant constant = new UniformConstant(context.TYPE().GetText(), context.NAME().GetText());
             constant.Annotations = new List<Annotation>(annotVisitor.Annotations);
-            OutputContext.RootConstants.Add(constant);
+            OutputContext.UniformConstants.Add(constant);
             return "";
         }
         public override string VisitTex2d(ShaderInputsParser.Tex2dContext context)

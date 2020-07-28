@@ -41,7 +41,7 @@ template <typename T>
 inline void Renderer::UniformConstant::SetValue(T val)
 {
     assert(sizeof(T) == 4);
-    m_value = *reinterpret_cast(uint32*)(val);
+    m_value = *reinterpret_cast<uint32*>(&val);
 }
 
 inline uint32 UniformConstant::GetValue() const

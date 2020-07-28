@@ -155,7 +155,7 @@ inline void RenderObject::SetConstant(const std::string& passName, const std::st
         return;
     }
     RenderObjectConstants& constants = m_renderObjectConstants[passName];
-    auto& c = std::find_if(constants.begin(), constants.end(), [&cName](const UniformConstant& c) { return c.GetName() == cbName; });
+    auto& c = std::find_if(constants.begin(), constants.end(), [&cName](const UniformConstant& c) { return c.GetName() == cName; });
     if (c == constants.end())
     {
         assert(false);

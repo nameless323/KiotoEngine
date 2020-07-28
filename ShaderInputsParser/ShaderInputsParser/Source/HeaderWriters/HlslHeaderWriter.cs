@@ -106,7 +106,7 @@ namespace ShaderInputsParserApp.Source
 
         string WriteRootConstants(ShaderOutputContext ctx, TemplateGroup group)
         {
-            List<UniformConstant> rootConstants = ctx.RootConstants;
+            List<UniformConstant> rootConstants = ctx.UniformConstants;
             if (rootConstants.Count == 0)
                 return "";
 
@@ -116,9 +116,10 @@ namespace ShaderInputsParserApp.Source
 
             foreach (var rootConstant in rootConstants)
             {
-                StringTemplate cbufferTemplate = group.GetInstanceOf("cbufferTempl");
-                cbufferTemplate.Add("name", rootConstant.Name);
-                cbufferTemplate.Add("typename", rootConstant.Type);
+                StringTemplate cbufferTemplate = group.GetInstanceOf("cbuffer");
+                cbufferTemplate.Add("name", "cb_" + rootConstant.Name);
+                string member = rootConstant.Type + " " + rootConstant.Name + ";";
+                cbufferTemplate.Add("members", member);
                 cbufferTemplate.Add("reg", rootConstant.Bindpoint.Reg);
                 cbufferTemplate.Add("space", rootConstant.Bindpoint.Space);
                 result.Append(cbufferTemplate.Render() + '\n' + '\n');
@@ -199,7 +200,8 @@ namespace ShaderInputsParserApp.Source
             result.Append('\n');
 
             result.Append(WriteConstantBuffers(ctx, group));
-            result.Append(WriteRootConstants(ctx, group));
+            string constants = WriteRootConstants(ctx, group);
+            result.Append(constants);
             result.Append(WriteTextures(ctx, group));
             result.Append(WriteSamplers(ctx, group));
             result.Append(WriteVertexLayout(ctx, group));

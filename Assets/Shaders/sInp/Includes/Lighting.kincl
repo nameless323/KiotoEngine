@@ -7,3 +7,4 @@ struct Light
 };
 
 constantBuffer<Light> lights[256];
+uniform uint LIGHTS_COUNT;

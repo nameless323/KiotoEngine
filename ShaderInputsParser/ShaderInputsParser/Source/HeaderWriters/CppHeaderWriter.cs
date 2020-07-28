@@ -60,10 +60,10 @@ namespace ShaderInputsParserApp.Source.HeaderWriters
         string WriteRootConstants(ShaderOutputContext ctx, TemplateGroup group)
         {
             StringBuilder res = new StringBuilder();
-            List<UniformConstant> consts = ctx.RootConstants;
+            List<UniformConstant> consts = ctx.UniformConstants;
             foreach (var c in consts)
             {
-                StringTemplate cBufferTemplate = group.GetInstanceOf("rootConstant");
+                StringTemplate cBufferTemplate = group.GetInstanceOf("uniformConstant");
                 cBufferTemplate.Add("name", c.Name);
                 cBufferTemplate.Add("reg", c.Bindpoint.Reg.ToString());
                 cBufferTemplate.Add("space", c.Bindpoint.Space.ToString());
