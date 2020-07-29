@@ -21,8 +21,16 @@ public:
     void Serialize(YAML::Emitter& out) const override;
     void Deserialize(const YAML::Node& in) override;
 
+    Renderer::Light* GetLight();
+
 private:
     Renderer::Light m_light{};
 };
+
+inline Renderer::Light* LightComponent::GetLight()
+{
+    return &m_light;
+}
+
 REGISTER_COMPONENT(LightComponent);
 }

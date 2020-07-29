@@ -6,5 +6,5 @@ struct Light
     float AttenuationDistance;
 };
 
-constantBuffer<Light> lights[256];
+constantBuffer<Light> lights[256] %bindTo = 2, space = 1%;
 uniform uint LIGHTS_COUNT;

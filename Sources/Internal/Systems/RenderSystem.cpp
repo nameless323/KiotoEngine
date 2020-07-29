@@ -22,7 +22,8 @@ static constexpr uint32 MAX_LIGHTS_COUNT = 256;
 RenderSystem::RenderSystem()
 {
     m_renderPasses.reserve(Kioto::RenderOptions::MaxRenderPassesCount);
-    m_renderObjects.reserve(2048);
+    m_drawData.RenderObjects.reserve(2048);
+    m_drawData.Lights.reserve(MAX_LIGHTS_COUNT);
     m_components.reserve(2048);
     m_lights.reserve(256);
 }
@@ -55,14 +56,19 @@ void RenderSystem::Update(float32 dt)
         TransformComponent* tc = rc->GetEntity()->GetTransform();
         ro->SetToWorld(tc->GetToWorld());
         ro->SetToModel(tc->GetToModel());
-        m_renderObjects.push_back(ro); // [a_vorontcov] TODO: Don't like copying this around.
+        m_drawData.RenderObjects.push_back(ro); // [a_vorontcov] TODO: Don't like copying this around.
+    }
+    for (auto l : m_lights)
+    {
+        m_drawData.Lights.push_back(l->GetLight());
     }
     for (auto pass : m_renderPasses)
         m_renderGraph.AddPass(pass);
 
     m_renderGraph.SheduleGraph();
-    m_renderGraph.Execute(m_renderObjects);
-    m_renderObjects.clear();
+    m_renderGraph.Execute(m_drawData);
+    m_drawData.RenderObjects.clear();
+    m_drawData.Lights.clear();
 }
 
 void RenderSystem::Draw()

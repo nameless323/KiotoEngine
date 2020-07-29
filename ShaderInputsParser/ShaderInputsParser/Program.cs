@@ -7,6 +7,7 @@ using ShaderInputsParserApp.Source.Types;
 using System;
 using System.IO;
 using System.Text;
+using System.Linq;
 
 namespace ShaderInputsParserApp
 {
@@ -99,7 +100,9 @@ namespace ShaderInputsParserApp
 
         static bool CompareOutputsVersion(out DateTime lastUpdateTime, out string srcVerPath)
         {
-            string[] files = Directory.GetFiles(InputDir, "*.sinp", SearchOption.AllDirectories);
+            string[] includeFiles = Directory.GetFiles(InputDir, "*.kincl", SearchOption.AllDirectories);
+            string[] inpFiles = Directory.GetFiles(InputDir, "*.sinp", SearchOption.AllDirectories);
+            string[] files = inpFiles.Concat(includeFiles).ToArray();
             var srcModificationTime = Directory.GetLastWriteTime(InputDir);
             foreach (var filepath in files)
             {

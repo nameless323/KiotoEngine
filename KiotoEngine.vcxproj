@@ -259,6 +259,7 @@ RD /S /Q $(TargetDir)Assets
     <ClInclude Include="Sources\Internal\Render\Renderer.h" />
     <ClInclude Include="Sources\Internal\Render\RendererPublic.h" />
     <ClInclude Include="Sources\Internal\Render\RenderLayer.h" />
+    <ClInclude Include="Sources\Internal\Render\RenderPass\DrawData.h" />
     <ClInclude Include="Sources\Internal\Render\RenderPass\ForwardRenderPass.h" />
     <ClInclude Include="Sources\Internal\Render\RenderPass\GrayscaleRenderPass.h" />
     <ClInclude Include="Sources\Internal\Render\RenderPass\RenderPass.h" />

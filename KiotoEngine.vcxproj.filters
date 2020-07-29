@@ -390,6 +390,9 @@
     <ClInclude Include="Sources\Internal\Render\UniformConstant.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Sources\Internal\Render\RenderPass\DrawData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

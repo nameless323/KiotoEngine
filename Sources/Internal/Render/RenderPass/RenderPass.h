@@ -7,6 +7,7 @@
 #include "Math/Rect.h"
 #include "Render/RenderCommand.h"
 #include "Render/RendererPublic.h"
+#include "Render/RenderPass/DrawData.h"
 
 namespace Kioto::Renderer
 {
@@ -26,7 +27,6 @@ public:
     RenderPass(std::string name)
         : m_passName(name)
     {
-        m_renderObjects.resize(2048);
     }
 
     RenderPass(const RenderPass& other);
@@ -56,7 +56,7 @@ public:
     void SetPriority(uint32 priority);
     void SetRenderTargetCount(uint8 count);
     void SetHandle(RenderPassHandle handle);
-    void SetRenderObjects(std::vector<RenderObject*> renderObjects);
+    void SetDrawData(const DrawData* drawData);
 
     RectI GetScissor() const;
     RectI GetViewport() const;
@@ -92,7 +92,7 @@ protected:
     uint32 m_priority = PassPriority::MainPass;
 
     std::string m_passName;
-    std::vector<RenderObject*> m_renderObjects; // [a_vorontcov] TODO: think maybe just a pointer will be fine.
+    const DrawData* m_drawData = nullptr;
 };
 
 inline void RenderPass::SetScissor(const RectI& scissor)
@@ -155,9 +155,9 @@ inline void RenderPass::SetHandle(RenderPassHandle handle)
     m_handle = handle;
 }
 
-inline void RenderPass::SetRenderObjects(std::vector<RenderObject*> renderObjects)
+inline void RenderPass::SetDrawData(const DrawData* drawData)
 {
-    m_renderObjects = std::move(renderObjects);
+    m_drawData = drawData;
 }
 
 inline RectI RenderPass::GetScissor() const

@@ -7,6 +7,7 @@ namespace Kioto::Renderer
 {
 class RenderPass;
 class RenderObject;
+struct DrawData;
 
 class RenderGraph
 {
@@ -17,7 +18,7 @@ public:
     // TODO: [a_vorontcov] Maybe move ownership of passes here?
     void AddPass(RenderPass* renderPass);
     void SheduleGraph();
-    void Execute(std::vector<RenderObject*>& renderObjects); // [a_vorontcov] TODO: for now, normally call culling system for object for pass.
+    void Execute(DrawData& drawData); // [a_vorontcov] TODO: for now, normally call culling system for object for pass.
     void Submit();
     void Clear();
 

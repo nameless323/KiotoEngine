@@ -5,6 +5,7 @@
 #include "Core/ECS/SceneSystem.h"
 
 #include "Render/RenderGraph/RenderGraph.h"
+#include "Render/RenderPass/DrawData.h"
 
 namespace Kioto
 {
@@ -42,9 +43,10 @@ private:
     void TryRemoveRenderComponent(Entity* entity);
 
     std::vector<Renderer::RenderPass*> m_renderPasses;
-    std::vector<Renderer::RenderObject*> m_renderObjects;
     std::vector<RenderComponent*> m_components;
     std::vector<LightComponent*> m_lights;
+
+    Renderer::DrawData m_drawData;
     Renderer::ForwardRenderPass* m_forwardRenderPass = nullptr;
 
     Renderer::RenderGraph m_renderGraph;

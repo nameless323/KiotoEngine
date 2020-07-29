@@ -24,7 +24,7 @@ namespace Kioto::Renderer
     void WireframeRenderPass::BuildRenderPackets(CommandList* commandList, ResourceTable& resources)
     {
         SetRenderTargets(commandList, resources);
-        for (auto ro : m_renderObjects)
+        for (auto ro : m_drawData->RenderObjects)
         {
             ro->SetExternalCB(m_passName, "cbCameraBuffer", Renderer::GetMainCamera()->GetConstantBuffer().GetHandle());
             ro->SetExternalCB(m_passName, "cbEngineBuffer", Renderer::EngineBuffers::GetTimeBuffer().GetHandle());
