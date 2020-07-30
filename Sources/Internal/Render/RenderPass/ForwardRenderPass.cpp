@@ -30,12 +30,16 @@ void ForwardRenderPass::BuildRenderPackets(CommandList* commandList, ResourceTab
     SetPassConstantBuffers(commandList);
     SetCameraConstantBuffers(commandList);
     SetRenderTargets(commandList, resources);
+
+    for (uint32 i = 0; i < m_drawData->Lights.size(); ++i)
+        m_lightsBuffer.Set(m_drawData->Lights[i], i);
+
     for (auto ro : m_drawData->RenderObjects)
     {
         ro->SetExternalCB(m_passName, "cbCameraBuffer", Renderer::GetMainCamera()->GetConstantBuffer().GetHandle());
         ro->SetExternalCB(m_passName, "cbEngineBuffer", Renderer::EngineBuffers::GetTimeBuffer().GetHandle());
         ro->SetExternalCB(m_passName, "lights", m_lightsBuffer.GetHandle());
-        ro->SetConstant(m_passName, "LIGHTS_COUNT", 4);
+        ro->SetConstant(m_passName, "LIGHTS_COUNT", static_cast<uint32>(m_drawData->Lights.size()));
         Material* mat = ro->GetMaterial();
         Mesh* mesh = ro->GetMesh();
         mat->BuildMaterialForPass(this);

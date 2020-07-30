@@ -1,6 +1,6 @@
 struct Light
 {
-    float3 Color;
+    float4 Color;
     uint Type;
     float3 Direction;
     float AttenuationDistance;

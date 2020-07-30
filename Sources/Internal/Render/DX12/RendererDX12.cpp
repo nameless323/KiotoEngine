@@ -179,10 +179,14 @@ void RendererDX12::InitImGui()
 
 void RendererDX12::RenderImGui()
 {
+    m_profiler.BeginGpuEvent(m_state.CommandList.Get(), "ImGUI");
+
     m_state.CommandList->OMSetRenderTargets(1, &m_swapChain.GetCurrentBackBufferCPUHandle(m_state), false, &m_swapChain.GetDepthStencilCPUHandle());
     m_state.CommandList->SetDescriptorHeaps(1, &m_imguiDescriptorHeap);
     ImGui::Render();
     ImGui::ImplDX12RenderDrawData(ImGui::GetDrawData(), m_state.CommandList.Get());
+
+    m_profiler.EndGpuEvent(m_state.CommandList.Get());
 }
 
 void RendererDX12::ShutdownImGui()
