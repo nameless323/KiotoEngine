@@ -1,23 +1,25 @@
 #include "stdafx.h"
 
 #include "Render/DX12/Buffers/UploadBufferDX12.h"
+#include "Render/DX12/StateDX.h"
 
 namespace Kioto::Renderer
 {
-UploadBufferDX12::UploadBufferDX12(uint32 framesCount, byte* data, uint32 dataSize, bool isConstantBuffer, ID3D12Device* device)
+UploadBufferDX12::UploadBufferDX12(const StateDX& state, byte* data, uint32 elementSize, uint32 elementsCount, bool isConstantBuffer)
     : m_isConstantBuffer(isConstantBuffer)
-    , m_rawDataSize(dataSize)
-    , m_framesCount(framesCount)
+    , m_framesCount(state.FrameCount)
+    , m_elementsCount(elementsCount)
+    , m_rawDataSize(static_cast<size_t>(elementSize) * m_elementsCount)
 {
     if (m_isConstantBuffer)
-        m_frameDataSize = GetConstantBufferByteSize(dataSize);
+        m_frameDataSize = GetConstantBufferByteSize(m_rawDataSize);
     else
-        m_frameDataSize = dataSize;
+        m_frameDataSize = m_rawDataSize;
     m_bufferSize = m_framesCount * m_frameDataSize;
 
     CD3DX12_HEAP_PROPERTIES hProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
     CD3DX12_RESOURCE_DESC rDesc = CD3DX12_RESOURCE_DESC::Buffer(m_bufferSize);
-    HRESULT hr = device->CreateCommittedResource(
+    HRESULT hr = state.Device->CreateCommittedResource(
         &hProps,
         D3D12_HEAP_FLAG_NONE,
         &rDesc,
@@ -30,6 +32,27 @@ UploadBufferDX12::UploadBufferDX12(uint32 framesCount, byte* data, uint32 dataSi
 
     CD3DX12_RANGE readRange(0, 0);
     m_resource->Map(0, &readRange, reinterpret_cast<void**>(&m_data));
+
+    if (m_elementsCount > 1)
+    {
+        m_descriptorSize = state.CbvSrvUavDescriptorSize;
+        D3D12_DESCRIPTOR_HEAP_DESC heapDescr = {};
+        heapDescr.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+        heapDescr.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+        heapDescr.NumDescriptors = m_elementsCount;
+
+        ThrowIfFailed(state.Device->CreateDescriptorHeap(&heapDescr, IID_PPV_ARGS(&m_heap)));
+        CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_heap->GetCPUDescriptorHandleForHeapStart());
+        for (size_t i = 0; i < static_cast<size_t>(m_elementsCount) * m_framesCount; ++i)
+        {
+            D3D12_CONSTANT_BUFFER_VIEW_DESC desc;
+            desc.BufferLocation = m_resource->GetGPUVirtualAddress() + i * static_cast<size_t>(elementSize);
+            desc.SizeInBytes = elementSize;
+
+            state.Device->CreateConstantBufferView(&desc, handle);
+            handle.Offset(state.CbvSrvUavDescriptorSize);
+        }
+    }
 }
 
 UploadBufferDX12::~UploadBufferDX12()
@@ -84,4 +107,5 @@ constexpr uint32 UploadBufferDX12::GetConstantBufferByteSize(uint32 byteSize)
 {
     return (byteSize + 255) & ~255;
 }
+
 }

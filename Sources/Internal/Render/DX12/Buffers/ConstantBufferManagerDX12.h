@@ -30,12 +30,14 @@ private:
     struct TempCBData
     {
         ConstantBufferHandle CBHandle = InvalidHandle;
-        uint32 DataSize = 0;
+        uint32 ElementSize = 0;
+        uint32 ElementsCount = 0;
         byte* Data = nullptr;
 
-        TempCBData(ConstantBufferHandle cbHandle, uint32 dataSize, byte* data)
+        TempCBData(ConstantBufferHandle cbHandle, uint32 elementSize, uint32 elementsCount, byte* data)
             : CBHandle(cbHandle)
-            , DataSize(dataSize)
+            , ElementSize(elementSize)
+            , ElementsCount(elementsCount)
             , Data(data)
         {
         }

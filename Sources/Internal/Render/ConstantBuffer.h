@@ -40,6 +40,7 @@ public:
     T* GetBufferData();
     byte* GetBufferData();
     uint32 GetDataSize() const;
+    uint32 GetElemSize() const;
     uint32 GetElemCount() const;
     const std::string& GetName() const;
     template <typename T>
@@ -90,6 +91,11 @@ private:
 inline uint32 ConstantBuffer::GetElemCount() const
 {
     return m_elemCount;
+}
+
+inline uint32 ConstantBuffer::GetElemSize() const
+{
+    return m_elemSize;
 }
 
 inline const std::string& ConstantBuffer::GetName() const

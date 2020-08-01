@@ -362,7 +362,17 @@ void RendererDX12::Present()
             for (uint32 i = 0; i < buffersCount; ++i)
             {
                 UploadBufferDX12* buffer = m_constantBufferManager.FindBuffer(packet.ConstantBufferHandles[i]);
-                m_state.CommandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(i), buffer->GetFrameDataGpuAddress(currFrameInd));
+                if (!buffer->HasDescriptorHeap())
+                {
+                    m_state.CommandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(i), buffer->GetFrameDataGpuAddress(currFrameInd));
+                }
+                else
+                {
+                    ID3D12DescriptorHeap* heaps[] = { buffer->GetDescriptorHeap() };
+                    m_state.CommandList->SetDescriptorHeaps(_countof(heaps), heaps);
+
+                    m_state.CommandList->SetGraphicsRootDescriptorTable(i, buffer->GetDescriptorHandleForFrame(currFrameInd));
+                }
             }
             UINT constantsCount = static_cast<UINT>(packet.UniformConstants.size());
             for (uint32 i = 0; i < constantsCount; ++i)

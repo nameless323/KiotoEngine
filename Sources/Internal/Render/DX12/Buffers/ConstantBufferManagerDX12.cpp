@@ -42,7 +42,7 @@ void ConstantBufferManagerDX12::ProcessRegistrationQueue(const StateDX& state)
 {
     for (auto& tmpBuf : m_registrationQueue)
     {
-        UploadBufferDX12* buf = new UploadBufferDX12(StateDX::FrameCount, tmpBuf.Data, tmpBuf.DataSize, true, state.Device.Get());
+        UploadBufferDX12* buf = new UploadBufferDX12(state, tmpBuf.Data, tmpBuf.ElementSize, tmpBuf.ElementsCount, true);
         SafeDelete(m_constantBuffers[tmpBuf.CBHandle]);
         m_constantBuffers[tmpBuf.CBHandle] = buf;
     }
@@ -64,7 +64,7 @@ void ConstantBufferManagerDX12::RegisterConstantBuffer(ConstantBuffer* buffer)
 
     ConstantBufferHandle bufHandle = GetNewHandle();
     buffer->SetHandle(bufHandle);
-    m_registrationQueue.emplace_back(bufHandle, buffer->GetDataSize(), buffer->GetBufferData());
+    m_registrationQueue.emplace_back(bufHandle, buffer->GetElemSize(), buffer->GetElemCount(), buffer->GetBufferData());
     QueueConstantBufferForUpdate(*buffer);
 }
 
