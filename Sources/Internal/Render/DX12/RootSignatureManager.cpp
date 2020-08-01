@@ -34,6 +34,7 @@ void RootSignatureManager::CreateRootSignature(const StateDX& state, const Shade
             bRange->Flags = D3D12_DESCRIPTOR_RANGE_FLAG_NONE;
             bRange->RegisterSpace = bufferLayoutTemplate[i].GetSpace();
             bRange->RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
+            rootParams.push_back(std::move(param));
         }
     }
 

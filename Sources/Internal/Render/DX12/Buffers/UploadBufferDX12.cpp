@@ -9,10 +9,10 @@ UploadBufferDX12::UploadBufferDX12(const StateDX& state, byte* data, uint32 elem
     : m_isConstantBuffer(isConstantBuffer)
     , m_framesCount(state.FrameCount)
     , m_elementsCount(elementsCount)
-    , m_rawDataSize(static_cast<size_t>(elementSize) * m_elementsCount)
+    , m_rawDataSize(static_cast<size_t>(elementSize) * static_cast<size_t>(m_elementsCount))
 {
     if (m_isConstantBuffer)
-        m_frameDataSize = GetConstantBufferByteSize(m_rawDataSize);
+        m_frameDataSize = GetConstantBufferByteSize(static_cast<uint32>(m_rawDataSize));
     else
         m_frameDataSize = m_rawDataSize;
     m_bufferSize = m_framesCount * m_frameDataSize;

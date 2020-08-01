@@ -30,7 +30,7 @@ public:
     size_t GetBufferSize() const;
     uint32 GetFramesCount() const;
     ID3D12DescriptorHeap* GetDescriptorHeap() const;
-    D3D12_GPU_DESCRIPTOR_HANDLE& GetDescriptorHandleForFrame(uint32 frame) const;
+    D3D12_GPU_DESCRIPTOR_HANDLE GetDescriptorHandleForFrame(uint32 frame) const;
 
     D3D12_GPU_VIRTUAL_ADDRESS GetFrameDataGpuAddress(uint32 frame) const;
 
@@ -99,7 +99,7 @@ inline ID3D12DescriptorHeap* UploadBufferDX12::GetDescriptorHeap() const
 }
 
 
-inline D3D12_GPU_DESCRIPTOR_HANDLE& UploadBufferDX12::GetDescriptorHandleForFrame(uint32 frame) const
+inline D3D12_GPU_DESCRIPTOR_HANDLE UploadBufferDX12::GetDescriptorHandleForFrame(uint32 frame) const
 {
     CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_heap->GetCPUDescriptorHandleForHeapStart());
     handle.Offset(frame * m_elementsCount * m_descriptorSize);
