@@ -25,7 +25,6 @@ void RootSignatureManager::CreateRootSignature(const StateDX& state, const Shade
         }
         else
         {
-            CD3DX12_ROOT_PARAMETER1 param;
             cbRange.emplace_back();
             D3D12_DESCRIPTOR_RANGE1* bRange = &cbRange.back();
             bRange->NumDescriptors = bufferLayoutTemplate[i].GetElemCount();
@@ -34,6 +33,9 @@ void RootSignatureManager::CreateRootSignature(const StateDX& state, const Shade
             bRange->Flags = D3D12_DESCRIPTOR_RANGE_FLAG_NONE;
             bRange->RegisterSpace = bufferLayoutTemplate[i].GetSpace();
             bRange->RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
+
+            CD3DX12_ROOT_PARAMETER1 param;
+            param.InitAsDescriptorTable(1, bRange, D3D12_SHADER_VISIBILITY_ALL);
             rootParams.push_back(std::move(param));
         }
     }
@@ -56,7 +58,7 @@ void RootSignatureManager::CreateRootSignature(const StateDX& state, const Shade
         texRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 
         CD3DX12_ROOT_PARAMETER1 table;
-        table.InitAsDescriptorTable(1, &texRange, D3D12_SHADER_VISIBILITY_PIXEL);
+        table.InitAsDescriptorTable(1, &texRange, D3D12_SHADER_VISIBILITY_PIXEL); // [a_vorontcov] Could be anything. Need to add an annotation for it.
         rootParams.push_back(std::move(table));
     }
 

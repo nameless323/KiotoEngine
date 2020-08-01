@@ -371,7 +371,7 @@ void RendererDX12::Present()
                     ID3D12DescriptorHeap* heaps[] = { buffer->GetDescriptorHeap() };
                     m_state.CommandList->SetDescriptorHeaps(_countof(heaps), heaps);
 
-                    m_state.CommandList->SetGraphicsRootDescriptorTable(i, buffer->GetDescriptorHandleForFrame(currFrameInd));
+                    m_state.CommandList->SetGraphicsRootDescriptorTable(i, buffer->GetGpuDescriptorHandleForFrame(currFrameInd));
                 }
             }
             UINT constantsCount = static_cast<UINT>(packet.UniformConstants.size());

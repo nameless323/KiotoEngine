@@ -9,10 +9,14 @@ UploadBufferDX12::UploadBufferDX12(const StateDX& state, byte* data, uint32 elem
     : m_isConstantBuffer(isConstantBuffer)
     , m_framesCount(state.FrameCount)
     , m_elementsCount(elementsCount)
-    , m_rawDataSize(static_cast<size_t>(elementSize) * static_cast<size_t>(m_elementsCount))
 {
+    m_rawDataSize = static_cast<size_t>(elementSize) * static_cast<size_t>(m_elementsCount);
+    uint32 elementSizeAligned = 0;
     if (m_isConstantBuffer)
-        m_frameDataSize = GetConstantBufferByteSize(static_cast<uint32>(m_rawDataSize));
+    {
+        elementSizeAligned = GetConstantBufferByteSize(static_cast<uint32>(elementSize));
+        m_frameDataSize = elementSizeAligned * static_cast<size_t>(m_elementsCount);
+    }
     else
         m_frameDataSize = m_rawDataSize;
     m_bufferSize = m_framesCount * m_frameDataSize;
@@ -39,15 +43,15 @@ UploadBufferDX12::UploadBufferDX12(const StateDX& state, byte* data, uint32 elem
         D3D12_DESCRIPTOR_HEAP_DESC heapDescr = {};
         heapDescr.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
         heapDescr.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-        heapDescr.NumDescriptors = m_elementsCount;
+        heapDescr.NumDescriptors = m_elementsCount * m_framesCount;
 
         ThrowIfFailed(state.Device->CreateDescriptorHeap(&heapDescr, IID_PPV_ARGS(&m_heap)));
         CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_heap->GetCPUDescriptorHandleForHeapStart());
         for (size_t i = 0; i < static_cast<size_t>(m_elementsCount) * m_framesCount; ++i)
         {
             D3D12_CONSTANT_BUFFER_VIEW_DESC desc;
-            desc.BufferLocation = m_resource->GetGPUVirtualAddress() + i * static_cast<size_t>(elementSize);
-            desc.SizeInBytes = elementSize;
+            desc.BufferLocation = m_resource->GetGPUVirtualAddress() + i * elementSizeAligned;
+            desc.SizeInBytes = elementSizeAligned; // [a_vorontcov] Huggge waste of space
 
             state.Device->CreateConstantBufferView(&desc, handle);
             handle.Offset(state.CbvSrvUavDescriptorSize);
