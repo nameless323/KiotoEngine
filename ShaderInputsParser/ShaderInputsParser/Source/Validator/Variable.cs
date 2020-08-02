@@ -36,7 +36,9 @@ namespace ShaderInputsParserApp.Source.Types
 
         public static string ConvertCppType(string type)
         {
-            return s_toCppTypes[type];
+            if (s_toCppTypes.ContainsKey(type))
+                return s_toCppTypes[type];
+            return type;
         }
     }
 }

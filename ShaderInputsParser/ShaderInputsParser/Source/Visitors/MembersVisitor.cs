@@ -10,8 +10,19 @@ namespace ShaderInputsParserApp.Source.Visitors
     {
         public override object VisitVariable(ShaderInputsParser.VariableContext context)
         {
-            string name = context.NAME().GetText();
-            string type = context.TYPE().GetText();
+            string type;
+            string name;
+            if (context.TYPE() != null)
+            {
+                type = context.TYPE().GetText();
+                name = context.NAME()[0].GetText();
+            }
+            else
+            {
+                type = context.NAME()[0].GetText();
+                name = context.NAME()[1].GetText();
+            }
+
             ArrayDimVisitor arrayVisiotr = new ArrayDimVisitor();
             arrayVisiotr.Visit(context);
 

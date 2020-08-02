@@ -23,7 +23,7 @@ struct InstancesInfo
 struct Light
 {
     float3 Color;
-}
+};
 constantBuffer cbLightBuffer
 {
     Light l[12];
