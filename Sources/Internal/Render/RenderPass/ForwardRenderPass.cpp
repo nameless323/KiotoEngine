@@ -32,7 +32,9 @@ void ForwardRenderPass::BuildRenderPackets(CommandList* commandList, ResourceTab
     SetRenderTargets(commandList, resources);
 
     for (uint32 i = 0; i < m_drawData->Lights.size(); ++i)
-        m_lightsBuffer.Set(m_drawData->Lights[i], i);
+        m_lights.light[i] = *m_drawData->Lights[i];
+    m_lightsBuffer.Set(m_lights);
+
 
     for (auto ro : m_drawData->RenderObjects)
     {

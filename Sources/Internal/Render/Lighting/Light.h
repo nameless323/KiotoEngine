@@ -18,5 +18,7 @@ struct Light
     eLightType LightType = eLightType::Directional;
     Vector3 Direction{};
     float AttenuationDistance = 0.0f;
+
+    Light& operator=(const Light& other) = default;
 };
 };
