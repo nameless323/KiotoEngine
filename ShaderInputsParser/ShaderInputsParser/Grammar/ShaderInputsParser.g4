@@ -26,7 +26,7 @@ sampler : SAMPLER_KEYWORD NAME SEMI;
 
 uniformConstant : UNIFORM_CONSTANT_KEYWORD TYPE NAME SEMI annotationList;
 
-variable : TYPE NAME SEMI;
+variable : (TYPE | NAME) NAME arrayDimSpecifier? SEMI;
 
 annotationList : annotation*;
 

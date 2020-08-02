@@ -7,7 +7,7 @@ namespace ShaderInputsParserApp.Source
 {
     class VertexLayoutMember : Variable
     {
-        public VertexLayoutMember(string type, string name, string semantic, int semanticIndex) : base(type, name)
+        public VertexLayoutMember(string type, string name, string semantic, int semanticIndex) : base(type, name, 0)
         {
             Semantic = semantic;
             SemanticIndex = semanticIndex;

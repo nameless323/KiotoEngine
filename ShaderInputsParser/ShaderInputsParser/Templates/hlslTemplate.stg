@@ -1,6 +1,6 @@
 delimiters "$", "$"
 
-var(type, name) ::= "$type$ $name$;"
+var(type, name, dim) ::= "$type$ $name$$if(dim)$[$dim$]$endif$;"
 vlayoutvar(type, name, semantic) ::= "$type$ $name$ : $semantic$;"
 
 include(path) ::= "#include $path$;"

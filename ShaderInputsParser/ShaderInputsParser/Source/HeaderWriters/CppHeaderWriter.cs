@@ -149,6 +149,8 @@ namespace ShaderInputsParserApp.Source.HeaderWriters
                     StringTemplate memberTemplate = group.GetInstanceOf("structMember");
                     memberTemplate.Add("type", Variable.ConvertCppType(member.Type));
                     memberTemplate.Add("name", member.Name);
+                    if (member.Dimension > 0)
+                        memberTemplate.Add("dim", member.Dimension);
                     members.Append(memberTemplate.Render() + '\n');
                 }
                 StringTemplate structTemplate = group.GetInstanceOf("struct");

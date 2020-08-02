@@ -18,14 +18,16 @@ namespace ShaderInputsParserApp.Source.Types
             { "uint", "uint32" }
         };
 
-        public Variable(string type, string name)
+        public Variable(string type, string name, int dim)
         {
             Type = type;
             Name = name;
+            Dimension = dim;
         }
 
         public string Type { get; }
         public string Name { get; }
+        public int Dimension { get; } = 0;
 
         public static string ConvertHlslType(string type)
         {

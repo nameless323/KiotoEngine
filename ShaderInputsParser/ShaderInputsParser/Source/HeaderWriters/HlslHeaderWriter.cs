@@ -31,6 +31,8 @@ namespace ShaderInputsParserApp.Source
                     StringTemplate memberTemplate = group.GetInstanceOf("var");
                     memberTemplate.Add("type", Variable.ConvertHlslType(member.Type));
                     memberTemplate.Add("name", member.Name);
+                    if (member.Dimension > 0)
+                        memberTemplate.Add("dim", member.Dimension);
                     members.Append(memberTemplate.Render() + '\n');
                 }
                 StringTemplate structTemplate = group.GetInstanceOf("struct");

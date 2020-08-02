@@ -141,7 +141,7 @@ programNamePair(shaderProg, name) ::= <<
 m_progNames[$shaderProg$] = "$name$";
 >>
 
-structMember(type, name) ::= "$type$ $name$;"
+structMember(type, name, dim) ::= "$type$ $name$$if(dim)$[$dim$]$endif$;"
 
 struct(name, members) ::= <<
 struct $name$

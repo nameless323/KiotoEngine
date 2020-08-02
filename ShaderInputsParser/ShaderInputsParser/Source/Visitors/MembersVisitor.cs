@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ShaderInputsParserApp.Source
+namespace ShaderInputsParserApp.Source.Visitors
 {
     class MembersVisitor : ShaderInputsParserBaseVisitor<object>
     {
@@ -12,7 +12,10 @@ namespace ShaderInputsParserApp.Source
         {
             string name = context.NAME().GetText();
             string type = context.TYPE().GetText();
-            Variable var = new Variable(type, name);
+            ArrayDimVisitor arrayVisiotr = new ArrayDimVisitor();
+            arrayVisiotr.Visit(context);
+
+            Variable var = new Variable(type, name, arrayVisiotr.Size);
             Members.Add(var);
             return base.VisitVariable(context);
         }
