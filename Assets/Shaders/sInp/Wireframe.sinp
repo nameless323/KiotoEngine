@@ -1,6 +1,6 @@
 #include "Includes\EngineBuffers.kincl"
 
-constantBuffer cbRenderObjectBuffer
+constantBuffer cbRenderObject
 {
     float4x4 ToWorld;
     float4x4 ToModel;

@@ -26,8 +26,8 @@ namespace Kioto::Renderer
         SetRenderTargets(commandList, resources);
         for (auto ro : m_drawData->RenderObjects)
         {
-            ro->SetExternalCB(m_passName, "cbCameraBuffer", Renderer::GetMainCamera()->GetConstantBuffer().GetHandle());
-            ro->SetExternalCB(m_passName, "cbEngineBuffer", Renderer::EngineBuffers::GetTimeBuffer().GetHandle());
+            ro->SetExternalCB(m_passName, "cbCamera", Renderer::GetMainCamera()->GetConstantBuffer().GetHandle());
+            ro->SetExternalCB(m_passName, "cbEngine", Renderer::EngineBuffers::GetTimeBuffer().GetHandle());
 
             Material* mat = ro->GetMaterial();
             Mesh* mesh = ro->GetMesh();

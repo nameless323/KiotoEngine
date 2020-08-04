@@ -11,12 +11,12 @@ struct vOut
 vOut vs(vIn i)
 {
     vOut o;
-    float4 pos = mul(float4(i.position.xyz, 1.0f), cbRenderObjectBuffer.ToWorld);
+    float4 pos = mul(float4(i.position.xyz, 1.0f), cbRenderObject.ToWorld);
     o.wPos = pos.xyz;
-    pos = mul(pos, cbCameraBuffer.ViewProjection);
+    pos = mul(pos, cbCamera.ViewProjection);
     o.position = pos;
 
-    o.normal = mul(float4(i.normal.xyz, 0.0f), cbRenderObjectBuffer.ToWorld).xyz;
+    o.normal = mul(float4(i.normal.xyz, 0.0f), cbRenderObject.ToWorld).xyz;
     o.uv = i.uv;
     return o;
 }

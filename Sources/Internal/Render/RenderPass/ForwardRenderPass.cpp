@@ -38,8 +38,8 @@ void ForwardRenderPass::BuildRenderPackets(CommandList* commandList, ResourceTab
 
     for (auto ro : m_drawData->RenderObjects)
     {
-        ro->SetExternalCB(m_passName, "cbCameraBuffer", Renderer::GetMainCamera()->GetConstantBuffer().GetHandle());
-        ro->SetExternalCB(m_passName, "cbEngineBuffer", Renderer::EngineBuffers::GetTimeBuffer().GetHandle());
+        ro->SetExternalCB(m_passName, "cbCamera", Renderer::GetMainCamera()->GetConstantBuffer().GetHandle());
+        ro->SetExternalCB(m_passName, "cbEngine", Renderer::EngineBuffers::GetTimeBuffer().GetHandle());
         ro->SetExternalCB(m_passName, "lights", m_lightsBuffer.GetHandle());
         ro->SetConstant(m_passName, "LIGHTS_COUNT", static_cast<uint32>(m_drawData->Lights.size()));
         Material* mat = ro->GetMaterial();

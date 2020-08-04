@@ -66,10 +66,10 @@ namespace Kioto::Renderer
 
     void RenderObject::PrepareConstantBuffers(const std::string& passName)
     {
-        SInp::Fallback_sinp::CbRenderObjectBuffer roBuffer;
+        SInp::Fallback_sinp::CbRenderObject roBuffer;
         roBuffer.ToModel = GetToModel()->GetForGPU();
         roBuffer.ToWorld = GetToWorld()->GetForGPU();
-        SetBuffer("cbRenderObjectBuffer", roBuffer, passName);
+        SetBuffer("cbRenderObject", roBuffer, passName);
     }
 
     void RenderObject::SetExternalCB(const std::string& passName, const std::string& cbName, ConstantBufferHandle newHandle)

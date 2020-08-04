@@ -1,4 +1,4 @@
-constantBuffer cbEngineBuffer %bindTo = 0, space = 1%
+struct CbEngine
 {
     float4 Time; // [a_vorontsov] Time since start: (t / 20, t, t * 2, t * 3).
     float4 SinTime; // [a_vorontsov] Sin of time: (t / 4, t / 2, t, t * 2).
@@ -6,7 +6,9 @@ constantBuffer cbEngineBuffer %bindTo = 0, space = 1%
     float4 DeltaTime; // [a_vorontsov] Delta time: (dt, 1 / dt, smoothDt, 1 / smoothDt).
 };
 
-constantBuffer cbCameraBuffer %bindTo = 1, space = 1%
+constantBuffer<CbEngine> cbEngine %bindTo = 0, space = 1%;
+
+struct CbCamera
 {
     float4x4 ViewProjection;
     float4x4 View;
@@ -16,6 +18,8 @@ constantBuffer cbCameraBuffer %bindTo = 1, space = 1%
     float3 CamWorldPosition;
     float Pad1;
 };
+
+constantBuffer<CbCamera> cbCamera %bindTo = 1, space = 1%;
 
 sampler LinearClampSampler;
 sampler LinearWrapSampler;
