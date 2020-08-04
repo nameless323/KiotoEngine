@@ -15,6 +15,11 @@ namespace ShaderInputsParserApp.Source
         public DuplicateDefinedException(string message) : base(message) { }
         public DuplicateDefinedException(string message, System.Exception inner) : base(message, inner) { }
     }
+
+    class ShaderOutputGlobalContext
+    {
+        public List<Structure> Structures { get; set; } = new List<Structure>();
+    }
     class ShaderOutputContext
     {
         public List<Structure> Structures { get; set; } = new List<Structure>();
@@ -45,14 +50,27 @@ namespace ShaderInputsParserApp.Source
 
     class ShaderInputsVisitor : ShaderInputsParserBaseVisitor<string>
     {
+        public ShaderInputsVisitor(ShaderOutputGlobalContext ctx)
+        {
+            m_globalCtx = ctx;
+        }
         public override string VisitStruct(ShaderInputsParser.StructContext context)
         {
             string name = context.NAME().GetText();
 
             MembersVisitor visitor = new MembersVisitor();
             visitor.Visit(context);
+
+            AnnotationsVisitor annotVisitor = new AnnotationsVisitor();
+            annotVisitor.Visit(context);
+
             Structure structure = new Structure(name, visitor.Members);
-            OutputContext.Structures.Add(structure);
+            structure.Annotations = new List<Annotation>(annotVisitor.Annotations);
+
+            if (structure.IsCommon)
+                m_globalCtx.Structures.Add(structure);
+            else
+                OutputContext.Structures.Add(structure);
 
             return name;
         }
@@ -125,7 +143,7 @@ namespace ShaderInputsParserApp.Source
             ShaderInputsParser parser = Program.InitializeAntlr(includeContent);
             ShaderInputsParser.InputFileContext ictx = parser.inputFile();
 
-            ShaderInputsVisitor visitor = new ShaderInputsVisitor();
+            ShaderInputsVisitor visitor = new ShaderInputsVisitor(m_globalCtx);
             visitor.Visit(ictx);
 
             OutputContext.Merge(visitor.OutputContext);
@@ -160,5 +178,6 @@ namespace ShaderInputsParserApp.Source
             return base.VisitShadersBinding(context);
         }
         public ShaderOutputContext OutputContext { get; private set; } = new ShaderOutputContext();
+        ShaderOutputGlobalContext m_globalCtx;
     }
 }

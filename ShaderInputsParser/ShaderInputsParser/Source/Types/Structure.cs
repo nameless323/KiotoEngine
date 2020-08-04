@@ -18,5 +18,28 @@ namespace ShaderInputsParserApp.Source.Types
         public List<Variable> Members { get; set; }
 
         public int Bindpoint { get; set; } = 0;
+
+        public List<Annotation> Annotations
+        {
+            get
+            {
+                return m_annotations;
+            }
+            set
+            {
+                m_annotations = value;
+                foreach (var a in m_annotations)
+                {
+                    if (a.Name == "common")
+                    {
+                        IsCommon = true;
+                        return;
+                    }
+                }
+            }
+        }
+
+        List<Annotation> m_annotations = new List<Annotation>();
+        public bool IsCommon { get; set; } = false;
     }
 }

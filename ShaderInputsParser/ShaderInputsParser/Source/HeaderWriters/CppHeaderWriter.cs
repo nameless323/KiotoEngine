@@ -131,7 +131,8 @@ namespace ShaderInputsParserApp.Source.HeaderWriters
             return res.ToString();
         }
 
-        string WriteStructures(ShaderOutputContext ctx, TemplateGroup group, IEnumerable<IStructureType> structures)
+        // [a_vorontcov] TODO: Refactor - move method to other more common file.
+        public static string WriteStructures(TemplateGroup group, IEnumerable<IStructureType> structures)
         {
             if (structures.Count() == 0)
                 return "";
@@ -172,8 +173,8 @@ namespace ShaderInputsParserApp.Source.HeaderWriters
             string bindings = WriteBindings(ctx, group);
             string vertexLayouts = WriteVertexLayouts(ctx, group);
             string programNames = WriteProgramNames(ctx, group);
-            string structs = WriteStructures(ctx, group, ctx.Structures);
-            structs += WriteStructures(ctx, group, ctx.ConstantBuffers);
+            string structs = WriteStructures(group, ctx.Structures);
+            structs += WriteStructures(group, ctx.ConstantBuffers);
 
             StringTemplate headerTemplate = group.GetInstanceOf("header");
             headerTemplate.Add("name", filename);

@@ -17,6 +17,8 @@ header(name, cbuffers, constants, texSets, shaderProgs, vertexLayout, structs, s
 
 #include "Render/ShaderInputBase.h"
 
+#include "Render/Shaders/autogen/CommonStructures.h"
+
 namespace Kioto::Renderer::SInp
 {
 

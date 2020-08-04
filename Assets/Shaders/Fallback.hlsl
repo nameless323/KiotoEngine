@@ -26,9 +26,9 @@ float4 ps(vOut i) : SV_Target
     float3 normal = normalize(i.normal);
 
     float4 diffuse = Diffuse.Sample(LinearClampSampler, i.uv) * Mask.Sample(LinearClampSampler, i.uv);
-    for (uint i = 0; i < LIGHTS_COUNT; ++i)
+    //for (uint i = 0; i < LIGHTS_COUNT; ++i)
     {
-        diffuse.xyz = diffuse.xyz * lights[i].Color;
+        diffuse.xyz *= lights.light[0].Color;// diffuse.xyz * lights[i].Color;
     }
 
     return diffuse;

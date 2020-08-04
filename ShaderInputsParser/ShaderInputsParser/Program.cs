@@ -177,6 +177,7 @@ namespace ShaderInputsParserApp
 
             Console.WriteLine("Generating...\n");
             string[] files = Directory.GetFiles(InputDir, "*.sinp", SearchOption.AllDirectories);
+            ShaderOutputGlobalContext globalContext = new ShaderOutputGlobalContext();
             foreach (var filepath in files)
             {
                 Console.WriteLine("Parsing file " + filepath + '\n');
@@ -187,7 +188,7 @@ namespace ShaderInputsParserApp
                     ShaderInputsParser parser = InitializeAntlr(content);
                     ShaderInputsParser.InputFileContext ctx = parser.inputFile();
 
-                    ShaderInputsVisitor visitor = new ShaderInputsVisitor();
+                    ShaderInputsVisitor visitor = new ShaderInputsVisitor(globalContext);
                     visitor.Visit(ctx);
                     ShaderOutputContext outputCtx = visitor.OutputContext;
 
@@ -211,6 +212,10 @@ namespace ShaderInputsParserApp
                     throw;
                 }
             }
+            Console.WriteLine("Writing common structures...");
+            CommonStructHeaderWriter commonStructWriter = new CommonStructHeaderWriter();
+            commonStructWriter.WriteHeaders(globalContext);
+
             Console.WriteLine("Writing outputs...\n");
             FactoryWriter factoryWriter = new FactoryWriter();
             factoryWriter.WriteFactory(files);

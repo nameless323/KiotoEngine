@@ -29,6 +29,20 @@ constantBuffer cbLightBuffer
     Light l[12];
 };
 
+struct GlobalLight %common%
+{
+    Light moreLights[100];
+};
+
+struct GlobalLight %common%
+{
+    Light moreLights[100];
+};
+
+struct GlobalLight2 %common%
+{
+    Light moreLights[100];
+};
 
 constantBuffer<InstancesInfo> information[12];
 constantBuffer<InstancesInfo> informationUnbound[];
