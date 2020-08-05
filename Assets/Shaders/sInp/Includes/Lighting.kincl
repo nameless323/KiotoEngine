@@ -1,4 +1,4 @@
-struct Light
+struct Light %common%
 {
     float4 Color;
     uint Type;
@@ -6,7 +6,7 @@ struct Light
     float AttenuationDistance;
 };
 
-struct LightBuffer
+struct LightBuffer %common%
 {
     Light light[256];
 };

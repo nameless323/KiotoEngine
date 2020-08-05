@@ -24,15 +24,25 @@ namespace ShaderInputsParserApp.Source.HeaderWriters
         }
         public void WriteHeaders(ShaderOutputGlobalContext ctx)
         {
-            TemplateGroup structGroup = new Antlr4.StringTemplate.TemplateGroupFile(Program.TemplatesDir + "/cppTemplate.stg");
-            TemplateGroup cppGroup = new Antlr4.StringTemplate.TemplateGroupFile(Program.TemplatesDir + "/commonStructuresTemplate.stg");
-            string structures = CppHeaderWriter.WriteStructures(structGroup, RemoveDuplicates(ctx.Structures));
-            StringTemplate commonTemplate = cppGroup.GetInstanceOf("header");
-            commonTemplate.Add("structs", structures);
+            TemplateGroup structCppGroup = new Antlr4.StringTemplate.TemplateGroupFile(Program.TemplatesDir + "/cppTemplate.stg");
+            TemplateGroup commonGroup = new Antlr4.StringTemplate.TemplateGroupFile(Program.TemplatesDir + "/commonStructuresTemplate.stg");
+            var structWithoutDuplicates = RemoveDuplicates(ctx.Structures);
+            string cppStructures = CppHeaderWriter.WriteStructures(structCppGroup, structWithoutDuplicates);
+            StringTemplate commonTemplate = commonGroup.GetInstanceOf("cppHeader");
+            commonTemplate.Add("structs", cppStructures);
 
-            string filename = Program.CppOutputDir + "/CommonStructures.h";
+            string cppFilename = Program.CppOutputDir + "/CommonStructures.h";
 
-            System.IO.File.WriteAllText(filename, commonTemplate.Render());
+            System.IO.File.WriteAllText(cppFilename, commonTemplate.Render());
+
+            TemplateGroup structHlslGroup = new Antlr4.StringTemplate.TemplateGroupFile(Program.TemplatesDir + "/hlslTemplate.stg");
+            string hlslStructures = HlslHeadersWriter.WriteStructures(structHlslGroup, structWithoutDuplicates);
+            StringTemplate commonHlslTemplate = commonGroup.GetInstanceOf("hlslHeader");
+
+            commonHlslTemplate.Add("structs", hlslStructures);
+
+            string hlslFilename = Program.HlslOutputDir + "/CommonStructures.hlsl";
+            System.IO.File.WriteAllText(hlslFilename, commonHlslTemplate.Render());
         }
     }
 }

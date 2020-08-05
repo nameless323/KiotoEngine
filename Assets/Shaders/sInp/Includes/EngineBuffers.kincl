@@ -1,4 +1,4 @@
-struct CbEngine
+struct CbEngine %common%
 {
     float4 Time; // [a_vorontsov] Time since start: (t / 20, t, t * 2, t * 3).
     float4 SinTime; // [a_vorontsov] Sin of time: (t / 4, t / 2, t, t * 2).
@@ -8,7 +8,7 @@ struct CbEngine
 
 constantBuffer<CbEngine> cbEngine %bindTo = 0, space = 1%;
 
-struct CbCamera
+struct CbCamera %common%
 {
     float4x4 ViewProjection;
     float4x4 View;
