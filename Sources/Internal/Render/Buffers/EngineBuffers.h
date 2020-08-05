@@ -13,25 +13,6 @@ class ConstantBuffer;
 
 namespace Kioto::Renderer::EngineBuffers
 {
-struct CbEngineBuffer
-{
-    Vector4 Time;
-    Vector4 SinTime;
-    Vector4 CosTime;
-    Vector4 DeltaTime;
-};
-
-struct CbCameraBuffer
-{
-    Matrix4 ViewProjection;
-    Matrix4 View;
-    Vector4 RTParams;
-    Vector3 ProjParams;
-    float32 Pad0;
-    Vector3 CamWorldPosition;
-    float32 Pad1;
-};
-
 void Init();
 
 void GetTimeBufferCopy(ConstantBuffer& target);

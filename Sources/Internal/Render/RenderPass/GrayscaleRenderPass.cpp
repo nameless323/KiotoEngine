@@ -16,6 +16,8 @@
 #include "Render/Geometry/GeometryGenerator.h"
 #include "Render/Renderer.h"
 
+#include "Render/Shaders/autogen/sInp/Grayscale.h"
+
 namespace Kioto::Renderer
 {
 GrayscaleRenderPass::GrayscaleRenderPass()
@@ -40,8 +42,8 @@ void GrayscaleRenderPass::BuildRenderPackets(CommandList* commandList, ResourceT
 
     Material* mat = m_renderObject->GetMaterial();
     Mesh* mesh = m_renderObject->GetMesh();
-    m_renderObject->SetExternalCB(m_passName, "cbCamera", Renderer::GetMainCamera()->GetConstantBuffer().GetHandle());
-    m_renderObject->SetExternalCB(m_passName, "cbEngine", Renderer::EngineBuffers::GetTimeBuffer().GetHandle());
+    m_renderObject->SetExternalCB(m_passName, Renderer::SInp::Grayscale_sinp::cbCameraName, Renderer::GetMainCamera()->GetConstantBuffer().GetHandle());
+    m_renderObject->SetExternalCB(m_passName, Renderer::SInp::Grayscale_sinp::cbEngineName, Renderer::EngineBuffers::GetTimeBuffer().GetHandle());
 
     mat->BuildMaterialForPass(this);
 

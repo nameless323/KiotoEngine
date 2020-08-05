@@ -7,6 +7,8 @@
 #include "Render/Buffers/EngineBuffers.h"
 #include "Render/RendererPublic.h"
 
+#include "Render/Shaders/autogen/CommonStructures.h"
+
 namespace Kioto::Renderer
 {
 class Camera
@@ -118,7 +120,7 @@ public:
     void UpdateConstantBuffer();
 
 private:
-    EngineBuffers::CbCameraBuffer m_cbCamera;
+    SInp::CbCamera m_cbCamera;
     ConstantBuffer m_cameraBuffer; // [a_vorontcov] TODO: Really don't like it here.
 
     Matrix4 m_view = Matrix4::Identity;

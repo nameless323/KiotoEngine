@@ -4,12 +4,14 @@
 
 #include "Render/ConstantBuffer.h"
 
+#include "Render/Shaders/autogen/CommonStructures.h"
+
 namespace Kioto::Renderer::EngineBuffers
 {
 namespace
 {
-ConstantBuffer m_cameraBuffer("cbCamera", CameraBufferIndex, EngineBuffersSpace, sizeof(CbCameraBuffer));
-ConstantBuffer m_timeBuffer("cbEngine", TimeBufferIndex, EngineBuffersSpace, sizeof(CbEngineBuffer), 1, true);
+ConstantBuffer m_cameraBuffer("cbCamera", CameraBufferIndex, EngineBuffersSpace, sizeof(SInp::CbCamera));
+ConstantBuffer m_timeBuffer("cbEngine", TimeBufferIndex, EngineBuffersSpace, sizeof(SInp::CbEngine), 1, true);
 }
 
 void EngineBuffers::Init()

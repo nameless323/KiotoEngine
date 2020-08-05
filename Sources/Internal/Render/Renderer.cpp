@@ -11,6 +11,8 @@
 #include "Systems/EventSystem/EngineEvents.h"
 #include "Systems/EventSystem/EventSystem.h"
 
+#include "Render/Shaders/autogen/CommonStructures.h"
+
 namespace Kioto::Renderer
 {
 namespace
@@ -29,7 +31,7 @@ void UpdateTimeBuffer()
     ConstantBuffer& timeBuffer = EngineBuffers::GetTimeBuffer();
     assert(timeBuffer.IsAllocated());
     float32 timeFromStart = static_cast<float32>(GlobalTimer::GetTimeFromStart());
-    EngineBuffers::CbEngineBuffer timeBufferData;
+    SInp::CbEngine timeBufferData;
     timeBufferData.Time = { timeFromStart / 20.0f, timeFromStart, timeFromStart * 2, timeFromStart * 3 };
     timeBufferData.SinTime = { sin(timeFromStart / 4.0f), sin(timeFromStart / 2.0f), sin(timeFromStart), sin(timeFromStart * 2.0f) };
     timeBufferData.CosTime = { cos(timeFromStart / 4.0f), cos(timeFromStart / 2.0f), cos(timeFromStart), cos(timeFromStart * 2.0f) };

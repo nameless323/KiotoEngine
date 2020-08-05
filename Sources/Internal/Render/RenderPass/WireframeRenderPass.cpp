@@ -12,6 +12,8 @@
 #include "Render/RenderOptions.h"
 #include "Render/Shader.h"
 
+#include "Render/Shaders/autogen/sInp/Wireframe.h"
+
 namespace Kioto::Renderer
 {
     WireframeRenderPass::WireframeRenderPass()
@@ -26,8 +28,8 @@ namespace Kioto::Renderer
         SetRenderTargets(commandList, resources);
         for (auto ro : m_drawData->RenderObjects)
         {
-            ro->SetExternalCB(m_passName, "cbCamera", Renderer::GetMainCamera()->GetConstantBuffer().GetHandle());
-            ro->SetExternalCB(m_passName, "cbEngine", Renderer::EngineBuffers::GetTimeBuffer().GetHandle());
+            ro->SetExternalCB(m_passName, Renderer::SInp::Wireframe_sinp::cbCameraName, Renderer::GetMainCamera()->GetConstantBuffer().GetHandle());
+            ro->SetExternalCB(m_passName, Renderer::SInp::Wireframe_sinp::cbEngineName, Renderer::EngineBuffers::GetTimeBuffer().GetHandle());
 
             Material* mat = ro->GetMaterial();
             Mesh* mesh = ro->GetMesh();
