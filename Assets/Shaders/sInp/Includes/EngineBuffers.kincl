@@ -17,6 +17,8 @@ struct CbCamera %common%
     float Pad0;
     float3 CamWorldPosition;
     float Pad1;
+    float3 ViewDirection;
+    float Pad2;
 };
 
 constantBuffer<CbCamera> cbCamera %bindTo = 1, space = 1%;
