@@ -7,8 +7,8 @@ struct vOut
 
 vOut vs(vIn i)
 {
-    float4 pos = mul(float4(i.position.xyz, 1.0f), ToWorld);
-    pos = mul(pos, ViewProjection);
+    float4 pos = mul(float4(i.position.xyz, 1.0f), cbRenderObject.ToWorld);
+    pos = mul(pos, cbCamera.ViewProjection);
     vOut o;
     o.position = pos;
 

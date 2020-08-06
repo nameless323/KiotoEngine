@@ -12,6 +12,8 @@
 #include "Render/RenderOptions.h"
 #include "Render/Shader.h"
 
+#include "Render/Shaders/autogen/sInp/Wireframe.h"
+
 namespace Kioto::Renderer
 {
     WireframeRenderPass::WireframeRenderPass()
@@ -24,14 +26,16 @@ namespace Kioto::Renderer
     void WireframeRenderPass::BuildRenderPackets(CommandList* commandList, ResourceTable& resources)
     {
         SetRenderTargets(commandList, resources);
-        for (auto ro : m_renderObjects)
+        for (auto ro : m_drawData->RenderObjects)
         {
+            ro->SetExternalCB(m_passName, Renderer::SInp::Wireframe_sinp::cbCameraName, Renderer::GetMainCamera()->GetConstantBuffer().GetHandle());
+            ro->SetExternalCB(m_passName, Renderer::SInp::Wireframe_sinp::cbEngineName, Renderer::EngineBuffers::GetTimeBuffer().GetHandle());
+
             Material* mat = ro->GetMaterial();
             Mesh* mesh = ro->GetMesh();
             mat->BuildMaterialForPass(this);
 
-            ro->SetValueToBuffer("ToModel", ro->GetToModel()->GetForGPU(), m_passName);
-            ro->SetValueToBuffer("ToWorld", ro->GetToWorld()->GetForGPU(), m_passName);
+            ro->PrepareConstantBuffers(m_passName);
 
             RenderPacket currPacket = {};
             currPacket.Material = mat->GetHandle();
@@ -39,7 +43,7 @@ namespace Kioto::Renderer
             currPacket.TextureSet = ro->GetTextureSet(m_passName).GetHandle();
             currPacket.Mesh = mesh->GetHandle();
             currPacket.Pass = GetHandle();
-            currPacket.CBSet = ro->GetBufferLayout(m_passName).bufferSetHandle;
+            currPacket.ConstantBufferHandles = std::move(ro->GetCBHandles(m_passName));
 
             commandList->PushCommand(RenderCommandHelpers::CreateRenderPacketCommand(currPacket, this));
         }
@@ -80,7 +84,6 @@ namespace Kioto::Renderer
 
     void WireframeRenderPass::SetCameraConstantBuffers(CommandList* commandList)
     {
-        commandList->PushCommand(RenderCommandHelpers::CreateConstantBufferCommand(Renderer::GetMainCamera()->GetConstantBuffer(), this));
     }
 
     bool WireframeRenderPass::ConfigureInputsAndOutputs(ResourcesBlackboard& resources)

@@ -14,12 +14,18 @@
 #include "Render/RenderGraph/ResourcesBlackboard.h"
 #include "Render/RenderGraph/ResourceTable.h"
 
+#include "Render/Shaders/autogen/sInp/Fallback.h"
+#include "Render/Shaders/autogen/CommonStructures.h"
+
 namespace Kioto::Renderer
 {
 ForwardRenderPass::ForwardRenderPass()
     : RenderPass("Forward")
 {
+    assert(sizeof(Light) == sizeof(SInp::Light));
     Renderer::RegisterRenderPass(this);
+    Renderer::RegisterConstantBuffer(m_lightsBuffer);
+
     SetRenderTargetCount(1);
 }
 
@@ -28,14 +34,23 @@ void ForwardRenderPass::BuildRenderPackets(CommandList* commandList, ResourceTab
     SetPassConstantBuffers(commandList);
     SetCameraConstantBuffers(commandList);
     SetRenderTargets(commandList, resources);
-    for (auto ro : m_renderObjects)
+
+    for (uint32 i = 0; i < m_drawData->Lights.size(); ++i)
+        m_lights.light[i] = *m_drawData->Lights[i];
+    m_lightsBuffer.Set(m_lights);
+
+
+    for (auto ro : m_drawData->RenderObjects)
     {
+        ro->SetExternalCB(m_passName, Renderer::SInp::Fallback_sinp::cbCameraName, Renderer::GetMainCamera()->GetConstantBuffer().GetHandle());
+        ro->SetExternalCB(m_passName, Renderer::SInp::Fallback_sinp::cbEngineName, Renderer::EngineBuffers::GetTimeBuffer().GetHandle());
+        ro->SetExternalCB(m_passName, Renderer::SInp::Fallback_sinp::lightsName, m_lightsBuffer.GetHandle());
+        ro->SetConstant(m_passName, "LIGHTS_COUNT", static_cast<uint32>(m_drawData->Lights.size()));
         Material* mat = ro->GetMaterial();
         Mesh* mesh = ro->GetMesh();
         mat->BuildMaterialForPass(this);
 
-        ro->SetValueToBuffer("ToModel", ro->GetToModel()->GetForGPU(), m_passName);// [a_vorontcov] TODO: Move to render object?
-        ro->SetValueToBuffer("ToWorld", ro->GetToWorld()->GetForGPU(), m_passName);
+        ro->PrepareConstantBuffers(m_passName);
 
         RenderPacket currPacket = {};
         currPacket.Material = mat->GetHandle();
@@ -43,7 +58,8 @@ void ForwardRenderPass::BuildRenderPackets(CommandList* commandList, ResourceTab
         currPacket.TextureSet = ro->GetTextureSet(m_passName).GetHandle();
         currPacket.Mesh = mesh->GetHandle();
         currPacket.Pass = GetHandle();
-        currPacket.CBSet = ro->GetBufferLayout(m_passName).bufferSetHandle;
+        currPacket.ConstantBufferHandles = std::move(ro->GetCBHandles(m_passName));
+        currPacket.UniformConstants = std::move(ro->GetConstants(m_passName));
 
         commandList->PushCommand(RenderCommandHelpers::CreateRenderPacketCommand(currPacket, this));
     }
@@ -83,7 +99,6 @@ void ForwardRenderPass::SetPassConstantBuffers(CommandList* commandList)
 
 void ForwardRenderPass::SetCameraConstantBuffers(CommandList* commandList)
 {
-    commandList->PushCommand(RenderCommandHelpers::CreateConstantBufferCommand(Renderer::GetMainCamera()->GetConstantBuffer(), this));
 }
 
 bool ForwardRenderPass::ConfigureInputsAndOutputs(ResourcesBlackboard& resources)

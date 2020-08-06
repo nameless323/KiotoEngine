@@ -1,11 +1,13 @@
 ﻿using Antlr4.Runtime;
 using antlrGenerated;
+using Microsoft.VisualBasic.CompilerServices;
 using ShaderInputsParserApp.Source;
 using ShaderInputsParserApp.Source.HeaderWriters;
 using ShaderInputsParserApp.Source.Types;
 using System;
 using System.IO;
 using System.Text;
+using System.Linq;
 
 namespace ShaderInputsParserApp
 {
@@ -22,9 +24,7 @@ namespace ShaderInputsParserApp
         public static string HlslOutputDir { get; private set; }
         public static string CppOutputDir { get; private set; }
         public static string TemplatesDir { get; private set; }
-        public static string ShadersDir { get; private set; }
-
-        public static ShadersDirectoryManager ShadersDirManager;
+        static bool ForceRegenerate { get; set; } = false;
         public static ShaderInputsParser InitializeAntlr(string content)
         {
             AntlrInputStream inputStream = new AntlrInputStream(content);
@@ -57,11 +57,8 @@ namespace ShaderInputsParserApp
                     ++i;
                     TemplatesDir = args[i];
                 }
-                else if (args[i] == "shadersDir:")
-                {
-                    ++i;
-                    ShadersDir = args[i];
-                }
+                else if (args[i] == "forceRegenerate")
+                    ForceRegenerate = true;
             }
         }
 
@@ -96,6 +93,54 @@ namespace ShaderInputsParserApp
             Directory.CreateDirectory(CppOutputDir + "/sInp/");
         }
 
+        static void UpdateOutputVersionFile(DateTime lastUpdateTime, string srcVerPath)
+        {
+            File.WriteAllText(srcVerPath, lastUpdateTime.ToString());
+        }
+
+        static bool CompareOutputsVersion(out DateTime lastUpdateTime, out string srcVerPath)
+        {
+            string[] includeFiles = Directory.GetFiles(InputDir, "*.kincl", SearchOption.AllDirectories);
+            string[] inpFiles = Directory.GetFiles(InputDir, "*.sinp", SearchOption.AllDirectories);
+            string[] files = inpFiles.Concat(includeFiles).ToArray();
+            var srcModificationTime = Directory.GetLastWriteTime(InputDir);
+            foreach (var filepath in files)
+            {
+                var currModifTime = File.GetLastWriteTime(filepath);
+                if (DateTime.Compare(currModifTime, srcModificationTime) > 0)
+                    srcModificationTime = currModifTime;
+            }
+            // [a_vorontcov] Trim ms, we don't need it.
+            srcModificationTime = new DateTime(srcModificationTime.Year, srcModificationTime.Month, srcModificationTime.Day, srcModificationTime.Hour, srcModificationTime.Minute, srcModificationTime.Second);
+
+            lastUpdateTime = srcModificationTime;
+
+            srcVerPath = CppOutputDir + "/srcver";
+            if (File.Exists(srcVerPath))
+            {
+                string lastModifTimeStr = File.ReadAllText(srcVerPath);
+                var lastModifTime = DateTime.Parse(lastModifTimeStr);
+                if (DateTime.Compare(srcModificationTime, lastModifTime) > 0)
+                {
+                    Console.WriteLine("Previous generated time " + lastModifTimeStr + " Current shader inputs modification time " + srcModificationTime.ToString() + "\nRegenerating output files...");
+                    return false;
+                }
+                else
+                {
+                    if (!ForceRegenerate)
+                        Console.WriteLine("Previous generated time " + lastModifTimeStr + " Current shader inputs modification time " + srcModificationTime.ToString() + "\nNo regenaration needed. Shader inputs weren't changed");
+                    else
+                        Console.WriteLine("Previous generated time " + lastModifTimeStr + " Current shader inputs modification time " + srcModificationTime.ToString() + "\nNo regenaration needed, but forceRegenerate is set");
+                    return true;
+                }
+            }
+            else
+            {
+                Console.WriteLine("Shader inputs version file is not found. Creating the file and regenerating output files...");
+                return false;
+            }
+        }
+
         static void Main(string[] args)
         {
             ParseCommandLine(args);
@@ -111,11 +156,6 @@ namespace ShaderInputsParserApp
                 if (!Directory.Exists(TemplatesDir))
                     throw new InvalidCommandLineException("Template directory doesn't exist (" + TemplatesDir + ")");
 
-                if (ShadersDir == null)
-                    throw new InvalidCommandLineException("Shaders (shadersDir) directory isn't set in the command line");
-                if (!Directory.Exists(InputDir))
-                    throw new InvalidCommandLineException("Shaders directory doesn't exist (" + ShadersDir + ")");
-
                 if (HlslOutputDir == null)
                     throw new InvalidCommandLineException("Hlsl directory isn't set in the command line");
 
@@ -128,14 +168,19 @@ namespace ShaderInputsParserApp
                 Console.WriteLine(ex.Message);
             }
 
-            ShadersDirManager = new ShadersDirectoryManager(ShadersDir);
-
             CreateOutputDirectories(false);
 
-            string[] files = Directory.GetFiles(InputDir, "*.sinp", SearchOption.AllDirectories);
+            DateTime lastInputUpdateTime;
+            string updateTimeFilepath;
+            if (CompareOutputsVersion(out lastInputUpdateTime, out updateTimeFilepath) && !ForceRegenerate)
+                return;
 
+            Console.WriteLine("Generating...\n");
+            string[] files = Directory.GetFiles(InputDir, "*.sinp", SearchOption.AllDirectories);
+            ShaderOutputGlobalContext globalContext = new ShaderOutputGlobalContext();
             foreach (var filepath in files)
             {
+                Console.WriteLine("Parsing file " + filepath + '\n');
                 try
                 {
                     string content = File.ReadAllText(filepath);
@@ -143,13 +188,12 @@ namespace ShaderInputsParserApp
                     ShaderInputsParser parser = InitializeAntlr(content);
                     ShaderInputsParser.InputFileContext ctx = parser.inputFile();
 
-                    ShaderInputsVisitor visitor = new ShaderInputsVisitor();
+                    ShaderInputsVisitor visitor = new ShaderInputsVisitor(globalContext);
                     visitor.Visit(ctx);
                     ShaderOutputContext outputCtx = visitor.OutputContext;
 
-                    Validator validator = new Validator();
-
-                    validator.Validate(outputCtx.ConstantBuffers);
+                    //Validator validator = new Validator();
+                    //validator.Validate(outputCtx.ConstantBuffers);
 
                     BindpointManager bindpointManager = new BindpointManager();
                     bindpointManager.AssignBindpoints(outputCtx);
@@ -168,8 +212,20 @@ namespace ShaderInputsParserApp
                     throw;
                 }
             }
+            Console.WriteLine("Writing common structures...");
+            CommonStructHeaderWriter commonStructWriter = new CommonStructHeaderWriter();
+            commonStructWriter.WriteHeaders(globalContext);
+
+            Console.WriteLine("Writing outputs...\n");
             FactoryWriter factoryWriter = new FactoryWriter();
             factoryWriter.WriteFactory(files);
+            Console.WriteLine("Writing done\n");
+
+            UpdateOutputVersionFile(lastInputUpdateTime, updateTimeFilepath);
+
+            Console.Write("Output file timestamp updated\n");
+
+            Console.Write("\n******* SHADERS OUTPUT FILES ARE UPDATED WITH SUCESS ******\n");
         }
     }
 }

@@ -3,6 +3,7 @@ using ShaderInputsParserApp.Source.Types;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -12,35 +13,33 @@ namespace ShaderInputsParserApp.Source
     using StringTemplate = Antlr4.StringTemplate.Template;
     class HlslHeadersWriter : IHeaderWriter
     {
-        string WriteStructures(ShaderOutputContext ctx, TemplateGroup group)
+        public static string WriteStructures(TemplateGroup group, IEnumerable<IStructureType> structures)
         {
-            List<Structure> structures = ctx.Structures;
-            if (structures.Count == 0)
+            if (structures.Count() == 0)
                 return "";
 
             StringBuilder result = new StringBuilder();
 
-            result.Append("///////////////// STRUCTURES /////////////////// ");
-            result.Append('\n');
-
             foreach (var structure in structures)
             {
+                if (structure.Members == null) // [a_vorontcov] For example templated cb.
+                    continue;
+
                 StringBuilder members = new StringBuilder();
                 foreach (var member in structure.Members)
                 {
                     StringTemplate memberTemplate = group.GetInstanceOf("var");
                     memberTemplate.Add("type", Variable.ConvertHlslType(member.Type));
                     memberTemplate.Add("name", member.Name);
+                    if (member.Dimension > 0)
+                        memberTemplate.Add("dim", member.Dimension);
                     members.Append(memberTemplate.Render() + '\n');
                 }
                 StringTemplate structTemplate = group.GetInstanceOf("struct");
-                structTemplate.Add("name", structure.Name);
+                structTemplate.Add("name", structure.Typename);
                 structTemplate.Add("members", members);
                 result.Append(structTemplate.Render() + '\n' + '\n');
             }
-
-            result.Append('\n');
-            result.Append('\n');
 
             return result.ToString();
         }
@@ -89,19 +88,42 @@ namespace ShaderInputsParserApp.Source
 
             foreach (var constantBuffer in constantBuffers)
             {
-                StringBuilder membersString = new StringBuilder();
-                foreach (var member in constantBuffer.Members)
-                {
-                    StringTemplate varTemplate = group.GetInstanceOf("var");
-                    varTemplate.Add("type", Variable.ConvertHlslType(member.Type));
-                    varTemplate.Add("name", member.Name);
-                    membersString.Append(varTemplate.Render() + '\n');
-                }
-                StringTemplate cbufferTemplate = group.GetInstanceOf("cbuffer");
+                StringTemplate cbufferTemplate = group.GetInstanceOf("cbufferTempl");
                 cbufferTemplate.Add("name", constantBuffer.Name);
-                cbufferTemplate.Add("members", membersString);
+                cbufferTemplate.Add("typename", constantBuffer.Typename);
                 cbufferTemplate.Add("reg", constantBuffer.Bindpoint.Reg);
                 cbufferTemplate.Add("space", constantBuffer.Bindpoint.Space);
+                if (constantBuffer.Size != 0)
+                    cbufferTemplate.Add("isArray", "true");
+                if (constantBuffer.Size > 0)
+                    cbufferTemplate.Add("size", constantBuffer.Size);
+                result.Append(cbufferTemplate.Render() + '\n' + '\n');
+            }
+
+            result.Append('\n');
+            result.Append('\n');
+
+            return result.ToString();
+        }
+
+        string WriteRootConstants(ShaderOutputContext ctx, TemplateGroup group)
+        {
+            List<UniformConstant> rootConstants = ctx.UniformConstants;
+            if (rootConstants.Count == 0)
+                return "";
+
+            StringBuilder result = new StringBuilder();
+            result.Append("///////////////// ROOT CONSANTS /////////////////// ");
+            result.Append('\n');
+
+            foreach (var rootConstant in rootConstants)
+            {
+                StringTemplate cbufferTemplate = group.GetInstanceOf("cbuffer");
+                cbufferTemplate.Add("name", "cb_" + rootConstant.Name);
+                string member = rootConstant.Type + " " + rootConstant.Name + ";";
+                cbufferTemplate.Add("members", member);
+                cbufferTemplate.Add("reg", rootConstant.Bindpoint.Reg);
+                cbufferTemplate.Add("space", rootConstant.Bindpoint.Space);
                 result.Append(cbufferTemplate.Render() + '\n' + '\n');
             }
 
@@ -165,12 +187,26 @@ namespace ShaderInputsParserApp.Source
         {
             TemplateGroup group = new Antlr4.StringTemplate.TemplateGroupFile(Program.TemplatesDir + "/hlslTemplate.stg");
             StringBuilder result = new StringBuilder();
+            // [a_vorontcov] TODO: move this stuff to the hlsl tempate file.
             result.Append("//////////////////////////////////////////////// \n");
             result.Append("////////// AUTOGENERATED FILE, DO NOT EDIT !//// \n");
             result.Append("//////////////////////////////////////////////// \n");
 
-            result.Append(WriteStructures(ctx, group));
+            result.Append('\n');
+            result.Append("#include \"autogen/CommonStructures.hlsl\" \n\n"); // [a_vorontcov] The folder context is the shader folder context, so relative paths are related to it, not to autogenerated files.
+
+            result.Append("///////////////// STRUCTURES /////////////////// ");
+            result.Append('\n');
+
+            result.Append(WriteStructures(group, ctx.Structures));
+            result.Append(WriteStructures(group, ctx.ConstantBuffers));
+
+            result.Append('\n');
+            result.Append('\n');
+
             result.Append(WriteConstantBuffers(ctx, group));
+            string constants = WriteRootConstants(ctx, group);
+            result.Append(constants);
             result.Append(WriteTextures(ctx, group));
             result.Append(WriteSamplers(ctx, group));
             result.Append(WriteVertexLayout(ctx, group));

@@ -15,7 +15,6 @@ class RenderPass;
 class ShaderProgram;
 class Mesh;
 class ConstantBuffer;
-struct ConstantBufferSet;
 
 struct ShaderDefine
 {
@@ -108,5 +107,4 @@ using RenderPassHandle = SafeHandle<RenderPass>;
 using ShaderProgramHandle = SafeHandle<ShaderProgram>;
 using MeshHandle = SafeHandle<Mesh>;
 using ConstantBufferHandle = SafeHandle<ConstantBuffer>;
-using ConstantBufferSetHandle = SafeHandle<ConstantBufferSet>;
 }

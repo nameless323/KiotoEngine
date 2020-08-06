@@ -1,52 +1,21 @@
-#include "path\filename.txt";
+texture2D Diffuse;
+texture2D Mask;
 
-struct instanceData
+uniform float NUM_LIGHTS;
+
+constantBuffer cbRenderObjectBuffer
 {
-    float4x4 toWorld;
-    float4 color;
+    float4x4 ToWorld;
+    float4x4 ToModel;
 };
 
-struct particleSetting
-{
-    float4 color;
-    float4 velocity;
-    float playableByCats;
-    float colorAtten;
-};
-
-constantBuffer objectCb %bindTo=2, space=3, someAnnot%
-{
-    float4x4 toW;
-    float4x4 toO;
-};
-
-constantBuffer engineCb %bindTo=1, space = 4%
-{
-    float4 time;
-    float sinTime;
-};
-
-constantBuffer randomCb
-{
-    float ololosha;
-};
-
-constantBuffer randomCb2
-{
-    float ololosha;
-};
-
-texture2D mask;
-texture2D mask2;
-sampler pointSampler;
-sampler linearSampler;
+constantBuffer<float4x4> myCb[18];
 
 vertexLayout vIn
 {
     float3 position : POSITION;
     float3 normal : NORMAL;
     float2 uv : TEXCOORD0;
-    float2 uv5 : TEXCOORD5;
 };
 
-shader: VS vs_main, PS ps_main;
+shader: VS vs, PS ps;

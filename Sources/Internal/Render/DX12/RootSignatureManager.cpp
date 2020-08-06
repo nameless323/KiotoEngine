@@ -3,38 +3,62 @@
 #include "Render/Buffers/EngineBuffers.h"
 
 #include "Render/DX12/RootSignatureManager.h"
-#include "Render/DX12/Shader/ShaderParser.h"
 #include "Render/DX12/StateDX.h"
 
 namespace Kioto::Renderer
 {
-void RootSignatureManager::CreateRootSignature(const StateDX& state, const ShaderData& shaderData, const ShaderBufferLayoutTemplate& bufferLayoutTemplate, ShaderHandle handle)
+void RootSignatureManager::CreateRootSignature(const StateDX& state, const ShaderData& shaderData, const RenderObjectBufferLayout& bufferLayoutTemplate, const RenderObjectConstants& constants, ShaderHandle handle)
 {
     using Microsoft::WRL::ComPtr;
 
     std::vector<CD3DX12_ROOT_PARAMETER1> rootParams;
- 
+    std::vector<D3D12_DESCRIPTOR_RANGE1> cbRange;
+    cbRange.reserve(bufferLayoutTemplate.size());
+
     for (size_t i = 0; i < bufferLayoutTemplate.size(); ++i)
     {
+        if (bufferLayoutTemplate[i].GetElemCount() == 1)
+        {
+            CD3DX12_ROOT_PARAMETER1 param;
+            param.InitAsConstantBufferView(bufferLayoutTemplate[i].GetIndex(), bufferLayoutTemplate[i].GetSpace());
+            rootParams.push_back(std::move(param));
+        }
+        else
+        {
+            cbRange.emplace_back();
+            D3D12_DESCRIPTOR_RANGE1* bRange = &cbRange.back();
+            bRange->NumDescriptors = bufferLayoutTemplate[i].GetElemCount();
+            bRange->BaseShaderRegister = bufferLayoutTemplate[i].GetIndex();
+            bRange->OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+            bRange->Flags = D3D12_DESCRIPTOR_RANGE_FLAG_NONE;
+            bRange->RegisterSpace = bufferLayoutTemplate[i].GetSpace();
+            bRange->RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
+
+            CD3DX12_ROOT_PARAMETER1 param;
+            param.InitAsDescriptorTable(1, bRange, D3D12_SHADER_VISIBILITY_ALL);
+            rootParams.push_back(std::move(param));
+        }
+    }
+
+    for (size_t i = 0; i < constants.size(); ++i)
+    {
         CD3DX12_ROOT_PARAMETER1 param;
-        param.InitAsConstantBufferView(bufferLayoutTemplate[i].GetIndex(), bufferLayoutTemplate[i].GetSpace());
+        param.InitAsConstants(1, constants[i].GetIndex(), constants[i].GetSpace());
         rootParams.push_back(std::move(param));
     }
-    std::vector<D3D12_DESCRIPTOR_RANGE1> ranges; // [a_vorontcov] Careful, table remembers pointer to range.
-    ranges.reserve(shaderData.textureSet.GetTexturesCount());
+
+    D3D12_DESCRIPTOR_RANGE1 texRange;
     if (shaderData.textureSet.GetTexturesCount() > 0)
     {
-        ranges.emplace_back();
-        D3D12_DESCRIPTOR_RANGE1* texRange = &ranges.back();
-        texRange->NumDescriptors = shaderData.textureSet.GetTexturesCount();
-        texRange->BaseShaderRegister = 0;
-        texRange->OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
-        texRange->Flags = D3D12_DESCRIPTOR_RANGE_FLAG_NONE;
-        texRange->RegisterSpace = 0;
-        texRange->RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+        texRange.NumDescriptors = shaderData.textureSet.GetTexturesCount();
+        texRange.BaseShaderRegister = 0;
+        texRange.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+        texRange.Flags = D3D12_DESCRIPTOR_RANGE_FLAG_NONE;
+        texRange.RegisterSpace = 0;
+        texRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 
         CD3DX12_ROOT_PARAMETER1 table;
-        table.InitAsDescriptorTable(1, texRange, D3D12_SHADER_VISIBILITY_PIXEL);
+        table.InitAsDescriptorTable(1, &texRange, D3D12_SHADER_VISIBILITY_PIXEL); // [a_vorontcov] Could be anything. Need to add an annotation for it.
         rootParams.push_back(std::move(table));
     }
 

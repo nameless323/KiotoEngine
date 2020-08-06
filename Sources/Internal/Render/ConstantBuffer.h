@@ -4,6 +4,7 @@
 #include <variant>
 
 #include "Core/CoreTypes.h"
+#include "Core/CoreHelpers.h"
 
 #include "Math/Vector2.h"
 #include "Math/Vector3.h"
@@ -11,53 +12,43 @@
 #include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
 
+#include "Render/Buffers/EngineBuffers.h"
+
 #include "Render/RendererPublic.h"
+#include "Render/Renderer.h"
 
 namespace Kioto::Renderer
 {
-struct ConstantBufferSet
-{
-    ConstantBufferSetHandle Handle;
-    std::vector<ConstantBufferHandle> BuffersSet;
-};
-
 class ConstantBuffer
 {
 public:
-    enum class eReturnCode
-    {
-        Ok,
-        AlreadyAdded,
-        NotFound,
-        TypesDontMatch
-    };
-
     ConstantBuffer() {}
-    ConstantBuffer(uint16 index, uint16 space);
+    ConstantBuffer(std::string name, uint16 index, uint16 space, uint16 elemSize, uint16 elemCount = 1, bool allocate = false);
+    ConstantBuffer(std::string name, uint16 index, uint16 space);
+    template <typename T>
+    void Set(const T& val, uint16 elemOffset = 0, bool updateHWinstance = true);
+    template <typename T>
+    T* Get(uint16 elemOffset = 0);
+    void Reallocate();
+
     ConstantBuffer(const ConstantBuffer& other);
     ConstantBuffer(ConstantBuffer&& other);
     ~ConstantBuffer();
 
     ConstantBuffer& operator= (ConstantBuffer other);
-
-    eReturnCode Add(const std::string& name, float32 data, bool queueForUpdate = true);
-    eReturnCode Add(const std::string& name, const Vector2& data, bool queueForUpdate = true);
-    eReturnCode Add(const std::string& name, const Vector3& data, bool queueForUpdate = true);
-    eReturnCode Add(const std::string& name, const Vector4& data, bool queueForUpdate = true);
-    eReturnCode Add(const std::string& name, const Matrix3& data, bool queueForUpdate = true);
-    eReturnCode Add(const std::string& name, const Matrix4& data, bool queueForUpdate = true);
-
-    eReturnCode Set(const std::string& name, float32 data, bool queueForUpdate = true);
-    eReturnCode Set(const std::string& name, const Vector2& data, bool queueForUpdate = true);
-    eReturnCode Set(const std::string& name, const Vector3& data, bool queueForUpdate = true);
-    eReturnCode Set(const std::string& name, const Vector4& data, bool queueForUpdate = true);
-    eReturnCode Set(const std::string& name, const Matrix3& data, bool queueForUpdate = true);
-    eReturnCode Set(const std::string& name, const Matrix4& data, bool queueForUpdate = true);
-
-    void ComposeBufferData();
-    float32* GetBufferData();
+    template <typename T>
+    T* GetBufferData();
+    byte* GetBufferData();
     uint32 GetDataSize() const;
-    bool GetIsComposed() const;
+    uint32 GetElemSize() const;
+    uint32 GetElemCount() const;
+    const std::string& GetName() const;
+    template <typename T>
+    void SetElemCount(uint32 count, bool reallocate = false);
+    bool IsAllocated() const;
+
+    bool IsPerObjectBuffer() const;
+
     ConstantBufferHandle GetHandle() const;
     void SetHandle(ConstantBufferHandle handle);
     void ScheduleToUpdate();
@@ -66,38 +57,19 @@ public:
     uint16 GetSpace() const;
     uint32 GetKey() const;
 
-    void MakeShallowCopy(ConstantBuffer& target, bool queueForUpdate = true) const; // [a_vorontcov] Copies params, space and key.
+    void MakeShallowCopy(ConstantBuffer& target, bool queueForUpdate = true) const; // [a_vorontcov] Space and key. Doesn't copy memory itself.
 
 private:
-    enum class eTypeName : byte
-    {
-        v1 = 1,
-        v2 = 2,
-        v3 = 3,
-        v4 = 4,
-        m3 = 9,
-        m4 = 16
-    };
-
-    struct Param
-    {
-        std::string name;
-        eTypeName Type;
-        std::variant<float32, Vector2, Vector3, Vector4, Matrix3, Matrix4> Data;
-    };
-
-    bool Find(const std::string& name, uint32& offsetInData, Param*& resParam);
-
     uint16 m_index = 0;
     uint16 m_space = 0;
     uint32 m_key = 0;
-    bool m_isDirty = true;
-    bool m_regenerateMemLayout = true;
+    bool m_isAllocated = false;
 
-    std::vector<Param> m_params;
-    float32* m_memData = nullptr;
+    byte* m_memData = nullptr;
     uint32 m_dataSize = 0;
-    uint32 m_dataSize4ByteElem = 0;
+    uint32 m_elemCount = 0;
+    uint32 m_elemSize = 0;
+    std::string m_name;
 
     ConstantBufferHandle m_handle;
 
@@ -106,15 +78,83 @@ private:
         std::swap(l.m_index, r.m_index);
         std::swap(l.m_space, r.m_space);
         std::swap(l.m_key, r.m_key);
-        std::swap(l.m_isDirty, r.m_isDirty);
-        std::swap(l.m_regenerateMemLayout, r.m_regenerateMemLayout);
+        std::swap(l.m_isAllocated, r.m_isAllocated);
         std::swap(l.m_memData, r.m_memData);
         std::swap(l.m_dataSize, r.m_dataSize);
-        std::swap(l.m_dataSize4ByteElem, r.m_dataSize4ByteElem);
-        l.m_params.swap(r.m_params);
         std::swap(l.m_handle, r.m_handle);
+        std::swap(l.m_elemCount, r.m_elemCount);
+        std::swap(l.m_elemSize, r.m_elemSize);
+        std::swap(l.m_name, r.m_name);
     }
 };
+
+inline uint32 ConstantBuffer::GetElemCount() const
+{
+    return m_elemCount;
+}
+
+inline uint32 ConstantBuffer::GetElemSize() const
+{
+    return m_elemSize;
+}
+
+inline const std::string& ConstantBuffer::GetName() const
+{
+    return m_name;
+}
+
+template <typename T>
+inline void ConstantBuffer::SetElemCount(uint32 count, bool reallocate)
+{
+    m_elemCount = count;
+    SafeDeleteArray(m_memData);
+    m_isAllocated = false;
+    m_elemSize = sizeof(T);
+    m_dataSize = m_elemCount * m_elemSize;
+    if (reallocate)
+        Reallocate();
+}
+
+inline ConstantBuffer::ConstantBuffer(std::string name, uint16 index, uint16 space, uint16 elemSize, uint16 elemCount, bool allocate)
+    : m_name(std::move(name))
+    , m_index(index)
+    , m_space(space)
+    , m_key(m_index | m_space << 16)
+    , m_dataSize(elemSize * elemCount)
+    , m_elemCount(elemCount)
+    , m_elemSize(elemSize)
+{
+    if (allocate)
+    {
+        m_memData = new byte[m_dataSize];
+        m_isAllocated = true;
+    }
+}
+
+inline ConstantBuffer::ConstantBuffer(std::string name, uint16 index, uint16 space)
+    : m_name(std::move(name))
+    , m_index(index)
+    , m_space(space)
+    , m_key(m_index | m_space << 16)
+{
+}
+
+template <typename T>
+inline void ConstantBuffer::Set(const T& val, uint16 elemOffset, bool updateHWinstance)
+{
+    T* mem = reinterpret_cast<T*>(m_memData);
+    *(mem + elemOffset) = val;
+
+    if (updateHWinstance)
+        ScheduleToUpdate();
+}
+
+template <typename T>
+inline T* ConstantBuffer::Get(uint16 elemOffset)
+{
+    T* mem = reinterpret_cast<T*>(m_memData);
+    return mem + elemOffset;
+}
 
 inline uint16 ConstantBuffer::GetIndex() const
 {
@@ -131,7 +171,13 @@ inline uint32 ConstantBuffer::GetKey() const
     return m_key;
 }
 
-inline float32* ConstantBuffer::GetBufferData()
+template <typename T>
+inline T* ConstantBuffer::GetBufferData()
+{
+    return reinterpret_cast<T*>(m_memData);
+}
+
+inline byte* ConstantBuffer::GetBufferData()
 {
     return m_memData;
 }
@@ -141,9 +187,9 @@ inline uint32 ConstantBuffer::GetDataSize() const
     return m_dataSize;
 }
 
-inline bool ConstantBuffer::GetIsComposed() const
+inline bool ConstantBuffer::IsAllocated() const
 {
-    return !m_regenerateMemLayout;
+    return m_isAllocated;
 }
 
 inline ConstantBufferHandle ConstantBuffer::GetHandle() const
@@ -155,4 +201,64 @@ inline void ConstantBuffer::SetHandle(ConstantBufferHandle handle)
 {
     m_handle = handle;
 }
+
+inline void ConstantBuffer::Reallocate()
+{
+    SafeDeleteArray(m_memData);
+    m_memData = new byte[m_dataSize];
+    m_isAllocated = true;
+}
+
+inline ConstantBuffer::~ConstantBuffer()
+{
+    SafeDeleteArray(m_memData);
+}
+
+inline ConstantBuffer::ConstantBuffer(const ConstantBuffer& other)
+    : m_name(other.m_name)
+    , m_index(other.m_index)
+    , m_space(other.m_space)
+    , m_key(other.m_key)
+    , m_isAllocated(other.m_isAllocated)
+    , m_dataSize(other.m_dataSize)
+    , m_elemSize(other.m_elemSize)
+    , m_elemCount(other.m_elemCount)
+{
+    if (other.IsAllocated())
+        memcpy(m_memData, other.m_memData, other.m_dataSize);
+}
+
+inline ConstantBuffer::ConstantBuffer(ConstantBuffer&& other)
+{
+    swap(*this, other);
+}
+
+inline ConstantBuffer& ConstantBuffer::operator=(ConstantBuffer other)
+{
+    swap(*this, other);
+    return *this;
+}
+
+inline void ConstantBuffer::MakeShallowCopy(ConstantBuffer& target, bool queueForUpdate) const
+{
+    target.m_index = m_index;
+    target.m_space = m_space;
+    target.m_key = m_key;
+    target.m_elemCount = m_elemCount;
+    target.m_elemSize = m_elemSize;
+    target.m_dataSize = m_dataSize;
+    target.m_name = m_name;
+    target.m_isAllocated = false;
+}
+
+inline void ConstantBuffer::ScheduleToUpdate()
+{
+    Renderer::QueueConstantBufferForUpdate(*this);
+}
+
+inline bool ConstantBuffer::IsPerObjectBuffer() const
+{
+    return m_space != Renderer::EngineBuffers::EngineBuffersSpace;
+}
+
 }

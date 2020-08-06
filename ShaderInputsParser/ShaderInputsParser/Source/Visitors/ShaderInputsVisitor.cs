@@ -1,5 +1,7 @@
-﻿using antlrGenerated;
+﻿using Antlr4.Runtime.Misc;
+using antlrGenerated;
 using ShaderInputsParserApp.Source.Types;
+using ShaderInputsParserApp.Source.Visitors;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,10 +15,16 @@ namespace ShaderInputsParserApp.Source
         public DuplicateDefinedException(string message) : base(message) { }
         public DuplicateDefinedException(string message, System.Exception inner) : base(message, inner) { }
     }
+
+    class ShaderOutputGlobalContext
+    {
+        public List<Structure> Structures { get; set; } = new List<Structure>();
+    }
     class ShaderOutputContext
     {
         public List<Structure> Structures { get; set; } = new List<Structure>();
         public List<ConstantBuffer> ConstantBuffers { get; set; } = new List<ConstantBuffer>();
+        public List<UniformConstant> UniformConstants { get; set; } = new List<UniformConstant>();
         public List<Texture> Textures { get; set; } = new List<Texture>();
         public List<Sampler> Samplers { get; set; } = new List<Sampler>();
         public VertexLayout VertLayout { get; set; } = null;
@@ -28,6 +36,7 @@ namespace ShaderInputsParserApp.Source
             ConstantBuffers.AddRange(other.ConstantBuffers);
             Textures.AddRange(other.Textures);
             Samplers.AddRange(other.Samplers);
+            UniformConstants.AddRange(other.UniformConstants);
             if (VertLayout != null && other.VertLayout != null)
                 throw new DuplicateBindpointException("Vertex layout is defined twice");
             if (VertLayout == null)
@@ -41,14 +50,27 @@ namespace ShaderInputsParserApp.Source
 
     class ShaderInputsVisitor : ShaderInputsParserBaseVisitor<string>
     {
+        public ShaderInputsVisitor(ShaderOutputGlobalContext ctx)
+        {
+            m_globalCtx = ctx;
+        }
         public override string VisitStruct(ShaderInputsParser.StructContext context)
         {
             string name = context.NAME().GetText();
 
             MembersVisitor visitor = new MembersVisitor();
             visitor.Visit(context);
+
+            AnnotationsVisitor annotVisitor = new AnnotationsVisitor();
+            annotVisitor.Visit(context);
+
             Structure structure = new Structure(name, visitor.Members);
-            OutputContext.Structures.Add(structure);
+            structure.Annotations = new List<Annotation>(annotVisitor.Annotations);
+
+            if (structure.IsCommon)
+                m_globalCtx.Structures.Add(structure);
+            else
+                OutputContext.Structures.Add(structure);
 
             return name;
         }
@@ -67,6 +89,40 @@ namespace ShaderInputsParserApp.Source
             OutputContext.ConstantBuffers.Add(buffer);
 
             return name;
+        }
+        public override string VisitCbufferTempl(ShaderInputsParser.CbufferTemplContext context)
+        {
+            // In our grammar the cb name goes last whilst the typename first (if exist), if not, there is only one name, typename is a general type.
+            int cbufferNamePos = context.NAME().Length - 1;
+            string name = context.NAME()[cbufferNamePos].GetText();
+            string typename = "";
+            if (context.TYPE() != null)
+                typename = context.TYPE().GetText();
+            else if (context.NAME()[0] != null)
+                typename = context.NAME()[0].GetText();
+            ArrayDimVisitor arrayVisiotr = new ArrayDimVisitor();
+            arrayVisiotr.Visit(context);
+
+            AnnotationsVisitor annotVisitor = new AnnotationsVisitor();
+            annotVisitor.Visit(context);
+
+            ConstantBuffer buffer = new ConstantBuffer(name, typename);
+            buffer.Annotations = new List<Annotation>(annotVisitor.Annotations);
+            buffer.Size = arrayVisiotr.Size;
+            OutputContext.ConstantBuffers.Add(buffer);
+
+            return name;
+        }
+
+        public override string VisitUniformConstant(ShaderInputsParser.UniformConstantContext context)
+        {
+            AnnotationsVisitor annotVisitor = new AnnotationsVisitor();
+            annotVisitor.Visit(context);
+
+            UniformConstant constant = new UniformConstant(context.TYPE().GetText(), context.NAME().GetText());
+            constant.Annotations = new List<Annotation>(annotVisitor.Annotations);
+            OutputContext.UniformConstants.Add(constant);
+            return "";
         }
         public override string VisitTex2d(ShaderInputsParser.Tex2dContext context)
         {
@@ -87,7 +143,7 @@ namespace ShaderInputsParserApp.Source
             ShaderInputsParser parser = Program.InitializeAntlr(includeContent);
             ShaderInputsParser.InputFileContext ictx = parser.inputFile();
 
-            ShaderInputsVisitor visitor = new ShaderInputsVisitor();
+            ShaderInputsVisitor visitor = new ShaderInputsVisitor(m_globalCtx);
             visitor.Visit(ictx);
 
             OutputContext.Merge(visitor.OutputContext);
@@ -122,5 +178,6 @@ namespace ShaderInputsParserApp.Source
             return base.VisitShadersBinding(context);
         }
         public ShaderOutputContext OutputContext { get; private set; } = new ShaderOutputContext();
+        ShaderOutputGlobalContext m_globalCtx;
     }
 }

@@ -13,6 +13,8 @@ CURL_BR_O : '{';
 CURL_BR_C : '}';
 TRIG_BR_O : '<';
 TRIG_BR_C : '>';
+SQR_BR_O : '[';
+SQR_BR_C : ']';
 QUOTE : '"';
 STRUCT_KEYWORD : 'struct';
 CBUFFER_KEYWORD : 'constantBuffer';
@@ -21,12 +23,13 @@ TEX2D_KEYWORD : 'texture2D';
 INCLUDE_KEYWORD : '#include';
 VERTEX_LAYOUT_KEYWORD : 'vertexLayout';
 SHADER_KEYWORD : 'shader';
+UNIFORM_CONSTANT_KEYWORD : 'uniform';
 
 SHADER_TYPE : 'VS' | 'PS' | 'CS' | 'HS' | 'DS';
 V_SEMANTIC : 'POSITION' | 'NORMAL' | 'TEXCOORD' [0-9]? | 'COLOR' [0-9]?;
 
 NAME : LETTER+ LETTER_NUMBER*;
-VALUE : LETTER_NUMBER+;
+NUMBER : [0-9];
 SEMI : ';';
 COLON : ':';
 FILEPATH : ('\\' | LETTER_NUMBER)+ '.' LETTER_NUMBER+;

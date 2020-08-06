@@ -11,6 +11,8 @@
 #include "Systems/EventSystem/EngineEvents.h"
 #include "Systems/EventSystem/EventSystem.h"
 
+#include "Render/Shaders/autogen/CommonStructures.h"
+
 namespace Kioto::Renderer
 {
 namespace
@@ -24,17 +26,20 @@ float32 m_aspect = 1.0f;
 
 Camera* m_mainCamera;
 
-ConstantBuffer m_timeBuffer; // [a_vorontcov] Find a better place.
-
 void UpdateTimeBuffer()
 {
+    ConstantBuffer& timeBuffer = EngineBuffers::GetTimeBuffer();
+    assert(timeBuffer.IsAllocated());
     float32 timeFromStart = static_cast<float32>(GlobalTimer::GetTimeFromStart());
-    m_timeBuffer.Set("Time", Vector4(timeFromStart / 20.0f, timeFromStart, timeFromStart * 2, timeFromStart * 3), false);
-    m_timeBuffer.Set("SinTime", Vector4(sin(timeFromStart / 4.0f), sin(timeFromStart / 2.0f), sin(timeFromStart), sin(timeFromStart * 2.0f)), false);
-    m_timeBuffer.Set("CosTime", Vector4(cos(timeFromStart / 4.0f), cos(timeFromStart / 2.0f), cos(timeFromStart), cos(timeFromStart * 2.0f)), false);
+    SInp::CbEngine timeBufferData;
+    timeBufferData.Time = { timeFromStart / 20.0f, timeFromStart, timeFromStart * 2, timeFromStart * 3 };
+    timeBufferData.SinTime = { sin(timeFromStart / 4.0f), sin(timeFromStart / 2.0f), sin(timeFromStart), sin(timeFromStart * 2.0f) };
+    timeBufferData.CosTime = { cos(timeFromStart / 4.0f), cos(timeFromStart / 2.0f), cos(timeFromStart), cos(timeFromStart * 2.0f) };
+
     float32 dt = static_cast<float32>(GlobalTimer::GetDeltaTime());
     float32 smoothDt = static_cast<float32>(GlobalTimer::GetSmoothDt());
-    m_timeBuffer.Set("DeltaTime", Vector4(dt, 1.0f / dt, smoothDt, 1.0f / smoothDt));
+    timeBufferData.DeltaTime = Vector4(dt, 1.0f / dt, smoothDt, 1.0f / smoothDt);
+    timeBuffer.Set(timeBufferData);
 }
 }
 
@@ -48,10 +53,8 @@ void Init(eRenderApi api, uint16 width, uint16 height)
     if (api == eRenderApi::DirectX12)
         GameRenderer->Init(width, height);
 
-    EngineBuffers::GetTimeBufferCopy(m_timeBuffer);
-    m_timeBuffer.ComposeBufferData();
-    GameRenderer->RegisterConstantBuffer(m_timeBuffer);
-    GameRenderer->SetTimeBuffer(m_timeBuffer.GetHandle());
+    EngineBuffers::Init();
+    GameRenderer->RegisterConstantBuffer(EngineBuffers::GetTimeBuffer());
 }
 
 void Shutdown()

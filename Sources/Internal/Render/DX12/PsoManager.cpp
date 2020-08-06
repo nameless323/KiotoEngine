@@ -111,6 +111,7 @@ void PsoManager::BuildPipelineState(const StateDX& state, Material* mat, const R
     uint64 key = GetKey(mat->GetHandle(), pass->GetHandle());
     if (m_psos.find(key) != m_psos.end())
         return;
+
     D3D12_GRAPHICS_PIPELINE_STATE_DESC stateDesc = ParsePipelineState(mat, pass, sigManager, textureManager, shaderManager, vertexLayoutManager, backBufferFromat, defaultDepthStencilFormat);
     ID3D12PipelineState** pipeState = m_psos[key].GetAddressOf();
     ThrowIfFailed(state.Device->CreateGraphicsPipelineState(&stateDesc, IID_PPV_ARGS(pipeState)));

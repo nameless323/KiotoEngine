@@ -5,6 +5,7 @@
 #include "Core/ECS/SceneSystem.h"
 
 #include "Render/RenderGraph/RenderGraph.h"
+#include "Render/RenderPass/DrawData.h"
 
 namespace Kioto
 {
@@ -12,8 +13,10 @@ namespace Renderer
 {
 class RenderPass;
 class RenderObject;
+class ForwardRenderPass;
 }
 
+class LightComponent;
 class RenderComponent;
 
 class RenderSystem : public SceneSystem
@@ -33,9 +36,18 @@ public:
     void RemoveRenderPass(Renderer::RenderPass* pass);
 
 private:
+    void ParseLights(Entity* entity);
+    void ParseRenderComponents(Entity* entity);
+
+    void TryRemoveLight(Entity* entity);
+    void TryRemoveRenderComponent(Entity* entity);
+
     std::vector<Renderer::RenderPass*> m_renderPasses;
-    std::vector<Renderer::RenderObject*> m_renderObjects;
     std::vector<RenderComponent*> m_components;
+    std::vector<LightComponent*> m_lights;
+
+    Renderer::DrawData m_drawData;
+    Renderer::ForwardRenderPass* m_forwardRenderPass = nullptr;
 
     Renderer::RenderGraph m_renderGraph;
 };

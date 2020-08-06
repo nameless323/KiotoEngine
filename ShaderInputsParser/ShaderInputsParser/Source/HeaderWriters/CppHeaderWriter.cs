@@ -1,5 +1,7 @@
-﻿using System;
+﻿using ShaderInputsParserApp.Source.Types;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace ShaderInputsParserApp.Source.HeaderWriters
@@ -44,25 +46,44 @@ namespace ShaderInputsParserApp.Source.HeaderWriters
             List<ConstantBuffer> cbs = ctx.ConstantBuffers;
             foreach (var cb in cbs)
             {
-                StringBuilder membersResult = new StringBuilder();
-                foreach (var m in cb.Members)
-                {
-                    StringTemplate cBufferMemberTemplate = group.GetInstanceOf("cbmember");
-                    cBufferMemberTemplate.Add("cbname", cb.Name);
-                    cBufferMemberTemplate.Add("memberName", m.Name);
-                    cBufferMemberTemplate.Add("initVal", m_typesToKiotoDefaults[m.Type]);
-                    membersResult.Append(cBufferMemberTemplate.Render() + "\n");
-                }
                 StringTemplate cBufferTemplate = group.GetInstanceOf("cbuffer");
                 cBufferTemplate.Add("cbname", cb.Name);
                 cBufferTemplate.Add("reg", cb.Bindpoint.Reg.ToString());
                 cBufferTemplate.Add("space", cb.Bindpoint.Space.ToString());
-                cBufferTemplate.Add("addParams", membersResult.ToString());
-                res.Append(cBufferTemplate.Render() + '\n');
+                cBufferTemplate.Add("typename", cb.Typename);
+                if (cb.Size > 1)
+                    cBufferTemplate.Add("size", cb.Size);
+                    res.Append(cBufferTemplate.Render() + '\n');
             }
             return res.ToString();
         }
 
+        string WriteConstantBuffersNames(ShaderOutputContext ctx, TemplateGroup group)
+        {
+            StringBuilder res = new StringBuilder();
+            List<ConstantBuffer> cbs = ctx.ConstantBuffers;
+            foreach (var cb in cbs)
+            {
+                StringTemplate cBufferTemplate = group.GetInstanceOf("cbName");
+                cBufferTemplate.Add("name", cb.Name);
+                res.Append(cBufferTemplate.Render() + '\n');
+            }
+            return res.ToString();
+        }
+        string WriteRootConstants(ShaderOutputContext ctx, TemplateGroup group)
+        {
+            StringBuilder res = new StringBuilder();
+            List<UniformConstant> consts = ctx.UniformConstants;
+            foreach (var c in consts)
+            {
+                StringTemplate cBufferTemplate = group.GetInstanceOf("uniformConstant");
+                cBufferTemplate.Add("name", c.Name);
+                cBufferTemplate.Add("reg", c.Bindpoint.Reg.ToString());
+                cBufferTemplate.Add("space", c.Bindpoint.Space.ToString());
+                res.Append(cBufferTemplate.Render() + '\n');
+            }
+            return res.ToString();
+        }
         string WriteTextureSets(ShaderOutputContext ctx, TemplateGroup group)
         {
             List<Texture> textures = ctx.Textures;
@@ -123,24 +144,61 @@ namespace ShaderInputsParserApp.Source.HeaderWriters
             return res.ToString();
         }
 
+        // [a_vorontcov] TODO: Refactor - move method to other more common file.
+        public static string WriteStructures(TemplateGroup group, IEnumerable<IStructureType> structures)
+        {
+            if (structures.Count() == 0)
+                return "";
+
+            StringBuilder result = new StringBuilder();
+
+            foreach (var structure in structures)
+            {
+                if (structure.Members == null) // [a_vorontcov] For example templated cb.
+                    continue;
+
+                StringBuilder members = new StringBuilder();
+                foreach (var member in structure.Members)
+                {
+                    StringTemplate memberTemplate = group.GetInstanceOf("structMember");
+                    memberTemplate.Add("type", Variable.ConvertCppType(member.Type));
+                    memberTemplate.Add("name", member.Name);
+                    if (member.Dimension > 0)
+                        memberTemplate.Add("dim", member.Dimension);
+                    members.Append(memberTemplate.Render() + '\n');
+                }
+                StringTemplate structTemplate = group.GetInstanceOf("struct");
+                structTemplate.Add("name", structure.Typename);
+                structTemplate.Add("members", members);
+                result.Append(structTemplate.Render() + '\n');
+            }
+
+            return result.ToString();
+        }
+
         public void WriteHeaders(ShaderOutputContext ctx, string filename)
         {
             TemplateGroup group = new Antlr4.StringTemplate.TemplateGroupFile(Program.TemplatesDir + "/cppTemplate.stg");
 
             string constantBuffers = WriteConstantBuffers(ctx, group);
+            string constantBufferNames = WriteConstantBuffersNames(ctx, group);
+            string constants = WriteRootConstants(ctx, group);
             string textureSets = WriteTextureSets(ctx, group);
             string bindings = WriteBindings(ctx, group);
             string vertexLayouts = WriteVertexLayouts(ctx, group);
             string programNames = WriteProgramNames(ctx, group);
-            string shaderCode = Program.ShadersDirManager.GetShaderCode(filename);
+            string structs = WriteStructures(group, ctx.Structures);
+            structs += WriteStructures(group, ctx.ConstantBuffers);
 
             StringTemplate headerTemplate = group.GetInstanceOf("header");
             headerTemplate.Add("name", filename);
+            headerTemplate.Add("structs", structs);
             headerTemplate.Add("cbuffers", constantBuffers);
+            headerTemplate.Add("cbNames", constantBufferNames);
+            headerTemplate.Add("constants", constants);
             headerTemplate.Add("texSets", textureSets);
             headerTemplate.Add("shaderProgs", bindings);
             headerTemplate.Add("vertexLayout", vertexLayouts);
-            headerTemplate.Add("text", shaderCode);
             headerTemplate.Add("shaderProgNames", programNames);
             headerTemplate.Add("shaderPath", "Shaders/" + filename + ".hlsl");
 

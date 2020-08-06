@@ -23,6 +23,7 @@ class Entity;
 class CameraSystem;
 class RenderSystem;
 class EventSystem;
+class LightSystem;
 
 class Scene
 {

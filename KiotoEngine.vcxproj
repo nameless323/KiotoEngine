@@ -179,6 +179,7 @@ RD /S /Q $(TargetDir)Assets
     <ClInclude Include="Sources\Internal\AssetsSystem\FilesystemHelpers.h" />
     <ClInclude Include="Sources\Internal\AssetsSystem\RenderStateParamsConverter.h" />
     <ClInclude Include="Sources\Internal\Component\CameraComponent.h" />
+    <ClInclude Include="Sources\Internal\Component\LightComponent.h" />
     <ClInclude Include="Sources\Internal\Component\RenderComponent.h" />
     <ClInclude Include="Sources\Internal\Component\TransformComponent.h" />
     <ClInclude Include="Sources\Internal\Core\Core.h" />
@@ -194,6 +195,7 @@ RD /S /Q $(TargetDir)Assets
     <ClInclude Include="Sources\Internal\Math\TransformHelpers.h" />
     <ClInclude Include="Sources\Internal\Render\Color.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\KiotoDx12Mapping.h" />
+    <ClInclude Include="Sources\Internal\Render\Lighting\Light.h" />
     <ClInclude Include="Sources\Internal\Render\RenderGraph\RenderGraph.h" />
     <ClInclude Include="Sources\Internal\Render\RenderGraph\ResourcesBlackboard.h" />
     <ClInclude Include="Sources\Internal\Render\RenderGraph\ResourceTable.h" />
@@ -238,7 +240,6 @@ RD /S /Q $(TargetDir)Assets
     <ClInclude Include="Sources\Internal\Render\DX12\RootSignatureManager.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\ShaderDX12.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\ShaderManagerDX12.h" />
-    <ClInclude Include="Sources\Internal\Render\DX12\Shader\ShaderParser.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\StateDX.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\SwapChain.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\VertexLayoutDX12.h" />
@@ -258,6 +259,7 @@ RD /S /Q $(TargetDir)Assets
     <ClInclude Include="Sources\Internal\Render\Renderer.h" />
     <ClInclude Include="Sources\Internal\Render\RendererPublic.h" />
     <ClInclude Include="Sources\Internal\Render\RenderLayer.h" />
+    <ClInclude Include="Sources\Internal\Render\RenderPass\DrawData.h" />
     <ClInclude Include="Sources\Internal\Render\RenderPass\ForwardRenderPass.h" />
     <ClInclude Include="Sources\Internal\Render\RenderPass\GrayscaleRenderPass.h" />
     <ClInclude Include="Sources\Internal\Render\RenderPass\RenderPass.h" />
@@ -268,11 +270,13 @@ RD /S /Q $(TargetDir)Assets
     <ClInclude Include="Sources\Internal\Render\ShaderData.h" />
     <ClInclude Include="Sources\Internal\Render\ShaderInputBase.h" />
     <ClInclude Include="Sources\Internal\Render\Shaders\autogen\KiotoShaders.h" />
+    <ClInclude Include="Sources\Internal\Render\Shaders\autogen\CommonStructures.h" />
     <ClInclude Include="Sources\Internal\Render\Texture\TextureManager.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\Texture\TextureManagerDX12.h" />
     <ClInclude Include="Sources\Internal\Render\Texture\TextureSet.h" />
     <ClInclude Include="Sources\Internal\Render\Texture\Texture.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\Texture\TextureDX12.h" />
+    <ClInclude Include="Sources\Internal\Render\UniformConstant.h" />
     <ClInclude Include="Sources\Internal\Render\VertexLayout.h" />
     <ClInclude Include="Sources\Internal\Systems\CameraSystem.h" />
     <ClInclude Include="Sources\Internal\Systems\DebugSystem.h" />
@@ -280,9 +284,10 @@ RD /S /Q $(TargetDir)Assets
     <ClInclude Include="Sources\Internal\Systems\EventSystem\Event.h" />
     <ClInclude Include="Sources\Internal\Systems\EventSystem\EventSystem.h" />
     <ClInclude Include="Sources\Internal\Systems\RenderSystem.h" />
+    <ClInclude Include="Sources\Internal\Systems\SystemsSharedData.h" />
     <ClInclude Include="Sources\Internal\Systems\TransformSystem.h" />
+    <ClCompile Include="Sources\Internal\Component\LightComponent.cpp" />
     <ClCompile Include="Sources\Internal\Render\Shaders\autogen\KiotoShaders.cpp" />
-    <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\*.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -309,7 +314,6 @@ RD /S /Q $(TargetDir)Assets
     <ClCompile Include="Sources\Internal\Core\WindowsApplication.cpp" />
     <ClCompile Include="Sources\Internal\AssetsSystem\AssetsSystem.cpp" />
     <ClCompile Include="Sources\Internal\Render\Camera.cpp" />
-    <ClCompile Include="Sources\Internal\Render\ConstantBuffer.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\Buffers\ConstantBufferManagerDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\Buffers\DefaultHeapBuffer.cpp" />
     <ClCompile Include="Sources\Internal\Render\Buffers\EngineBuffers.cpp" />
@@ -322,7 +326,6 @@ RD /S /Q $(TargetDir)Assets
     <ClCompile Include="Sources\Internal\Render\DX12\RendererDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\RootSignatureManager.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\ShaderManagerDX12.cpp" />
-    <ClCompile Include="Sources\Internal\Render\DX12\Shader\ShaderParser.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\SwapChain.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\VertexLayoutManagerDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\Geometry\GeometryGenerator.cpp" />
@@ -346,6 +349,10 @@ RD /S /Q $(TargetDir)Assets
     <ClCompile Include="Sources\Internal\Render\RenderObject.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\Texture\TextureDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\Texture\TextureManagerDX12.cpp" />
+    <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\Fallback.h" />
+    <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\Grayscale.h" />
+    <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\UnlitMovingTex.h" />
+    <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\Wireframe.h" />
     <ClCompile Include="Sources\Internal\Render\Texture\TextureSet.cpp" />
     <ClCompile Include="Sources\Internal\Render\VertexLayout.cpp" />
     <ClCompile Include="Sources\Internal\Systems\CameraSystem.cpp" />

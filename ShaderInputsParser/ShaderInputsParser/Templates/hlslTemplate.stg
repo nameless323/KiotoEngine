@@ -1,6 +1,6 @@
 delimiters "$", "$"
 
-var(type, name) ::= "$type$ $name$;"
+var(type, name, dim) ::= "$type$ $name$$if(dim)$[$dim$]$endif$;"
 vlayoutvar(type, name, semantic) ::= "$type$ $name$ : $semantic$;"
 
 include(path) ::= "#include $path$;"
@@ -18,6 +18,8 @@ cbuffer $name$ : register(b$reg$, space$space$)
     $members$
 };
 >>
+
+cbufferTempl(name, typename, size, isArray, reg, space) ::= "ConstantBuffer<$typename$> $name$$if(isArray)$[$if(size)$$size$$endif$]$endif$ : register(b$reg$, space$space$);"
 
 tex2d(name, reg, space) ::= "Texture2D $name$ : register(t$reg$, space$space$);"
 

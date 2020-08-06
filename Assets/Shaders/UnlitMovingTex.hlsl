@@ -10,8 +10,8 @@ struct vOut
 
 vOut vs(vIn i)
 {
-    float4 pos = mul(float4(i.position.xyz, 1.0f), ToWorld);
-    pos = mul(pos, ViewProjection);
+    float4 pos = mul(float4(i.position.xyz, 1.0f), cbRenderObject.ToWorld);
+    pos = mul(pos, cbCamera.ViewProjection);
     vOut o;
     o.position = pos;
 
@@ -23,5 +23,5 @@ vOut vs(vIn i)
 
 float4 ps(vOut i) : SV_Target
 {
-    return Diffuse.Sample(LinearClampSampler, i.uv) * Mask.Sample(LinearWrapSampler, i.uv + Time.xx);// * (SinTime.w * 0.5f + 0.5f);
+    return Diffuse.Sample(LinearClampSampler, i.uv) * Mask.Sample(LinearWrapSampler, i.uv + cbEngine.Time.xx);// * (SinTime.w * 0.5f + 0.5f);
 }

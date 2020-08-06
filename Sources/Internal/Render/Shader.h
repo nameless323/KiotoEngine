@@ -5,7 +5,7 @@
 #include "AssetsSystem/Asset.h"
 #include "AssetsSystem/FilesystemHelpers.h"
 #include "Render/RendererPublic.h"
-#include "Render/DX12/Shader/ShaderParser.h"
+#include "Render/ShaderData.h"
 
 namespace Kioto::Renderer
 {
@@ -23,16 +23,21 @@ public:
     const ShaderData& GetShaderData() const;
     void SetShaderData(const ShaderData& data);
 
-    const ShaderBufferLayoutTemplate& GetBufferLayoutTemplate() const;
-    void SetBufferLayoutTemplate(const ShaderBufferLayoutTemplate& layoutTemplate);
-    ShaderBufferLayoutTemplate CreateLayoutTemplateShalowCopy() const;
+    const RenderObjectBufferLayout& GetBufferLayoutTemplate() const;
+    void SetBufferLayoutTemplate(const RenderObjectBufferLayout& layoutTemplate);
+    const RenderObjectConstants& GetRenderObjectConstants() const;
+    void SetRenderObjectConstants(const RenderObjectConstants& roConstants);
+
+    RenderObjectBufferLayout CreateLayoutTemplateShalowCopy() const;
 
 private:
     ShaderProgramHandle m_vsHandle;
     ShaderProgramHandle m_psHandle;
     VertexLayoutHandle m_vertexLayout;
     ShaderData m_data;
-    ShaderBufferLayoutTemplate m_bufferLayoutTemplate;
+    RenderObjectBufferLayout m_bufferLayoutTemplate;
+    RenderObjectConstants m_rootConstants;
+
     ShaderHandle m_handle; // [a_vorontcov] Separate handles for each define set?
 
     friend class Material;
@@ -58,23 +63,33 @@ inline const ShaderData& Shader::GetShaderData() const
     return m_data;
 }
 
-inline const ShaderBufferLayoutTemplate& Shader::GetBufferLayoutTemplate() const
+inline const RenderObjectBufferLayout& Shader::GetBufferLayoutTemplate() const
 {
     return m_bufferLayoutTemplate;
 }
 
-inline void Shader::SetBufferLayoutTemplate(const ShaderBufferLayoutTemplate& layoutTemplate)
+inline void Shader::SetBufferLayoutTemplate(const RenderObjectBufferLayout& layoutTemplate)
 {
     m_bufferLayoutTemplate = layoutTemplate;
 }
 
-inline ShaderBufferLayoutTemplate Shader::CreateLayoutTemplateShalowCopy() const
+inline RenderObjectBufferLayout Shader::CreateLayoutTemplateShalowCopy() const
 {
-    ShaderBufferLayoutTemplate res;
+    RenderObjectBufferLayout res;
     res.resize(m_bufferLayoutTemplate.size());
     for (size_t i = 0; i < m_bufferLayoutTemplate.size(); ++i)
         m_bufferLayoutTemplate[i].MakeShallowCopy(res[i]);
     return res;
+}
+
+inline const RenderObjectConstants& Shader::GetRenderObjectConstants() const
+{
+    return m_rootConstants;
+}
+
+inline void Shader::SetRenderObjectConstants(const RenderObjectConstants& roConstants)
+{
+    m_rootConstants = roConstants;
 }
 
 }

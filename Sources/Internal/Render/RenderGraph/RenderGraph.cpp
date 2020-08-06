@@ -5,6 +5,7 @@
 #include "Render/Renderer.h"
 #include "Render/RenderOptions.h"
 #include "Render/RenderPass/RenderPass.h"
+#include "Render/RenderPass/DrawData.h"
 
 namespace Kioto::Renderer
 {
@@ -38,11 +39,11 @@ void RenderGraph::SheduleGraph()
     }
 }
 
-void RenderGraph::Execute(std::vector<RenderObject*>& renderObjects)
+void RenderGraph::Execute(DrawData& drawData)
 {
     for (auto& submInfo : m_activePasses)
     {
-        submInfo.Pass->SetRenderObjects(renderObjects);
+        submInfo.Pass->SetDrawData(&drawData);
         submInfo.Pass->Setup();
     }
 

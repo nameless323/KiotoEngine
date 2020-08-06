@@ -15,7 +15,8 @@ public:
     VertexLayoutHandle VertexLayout;
     TextureSetHandle TextureSet;
     MeshHandle Mesh;
-    ConstantBufferSetHandle CBSet;
+    std::vector<ConstantBufferHandle> ConstantBufferHandles;
+    std::vector<uint32> UniformConstants;
 };
 
 using RenderPacketList = std::vector<RenderPacket>;

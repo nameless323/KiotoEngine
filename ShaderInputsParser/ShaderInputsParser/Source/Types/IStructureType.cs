@@ -7,7 +7,7 @@ namespace ShaderInputsParserApp.Source
 {
     interface IStructureType
     {
-        public string Name { get; set; }
+        public string Typename { get; set; }
         public List<Variable> Members { get; set; }
     }
 }

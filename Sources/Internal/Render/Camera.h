@@ -4,7 +4,10 @@
 #include "Core/CoreTypes.h"
 #include "Math/Matrix4.h"
 #include "Render/ConstantBuffer.h"
+#include "Render/Buffers/EngineBuffers.h"
 #include "Render/RendererPublic.h"
+
+#include "Render/Shaders/autogen/CommonStructures.h"
 
 namespace Kioto::Renderer
 {
@@ -117,6 +120,7 @@ public:
     void UpdateConstantBuffer();
 
 private:
+    SInp::CbCamera m_cbCamera;
     ConstantBuffer m_cameraBuffer; // [a_vorontcov] TODO: Really don't like it here.
 
     Matrix4 m_view = Matrix4::Identity;

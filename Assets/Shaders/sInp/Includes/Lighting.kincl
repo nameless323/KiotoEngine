@@ -1,0 +1,15 @@
+struct Light %common%
+{
+    float4 Color;
+    uint Type;
+    float3 Direction;
+    float AttenuationDistance;
+};
+
+struct LightBuffer %common%
+{
+    Light light[256];
+};
+
+constantBuffer<LightBuffer> lights %bindTo = 2, space = 1%;
+uniform uint LIGHTS_COUNT;

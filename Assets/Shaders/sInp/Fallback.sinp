@@ -1,9 +1,10 @@
 #include "Includes\EngineBuffers.kincl"
+#include "Includes\Lighting.kincl"
 
 texture2D Diffuse;
 texture2D Mask;
 
-constantBuffer cbRenderObjectBuffer
+constantBuffer cbRenderObject
 {
     float4x4 ToWorld;
     float4x4 ToModel;

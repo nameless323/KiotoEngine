@@ -30,19 +30,10 @@ void ConstantBufferManagerDX12::RegisterRenderObject(RenderObject& renderObject)
     for (auto& layoutElem : bufferLayouts)
     {
         RenderObjectBufferLayout& bufferLayout = layoutElem.second;
-        auto it = m_constantBufferSets.find(bufferLayout.bufferSetHandle);
-        if (it != m_constantBufferSets.end() && bufferLayout.bufferSetHandle != InvalidHandle)
-            continue;
-        if (bufferLayout.constantBuffers.size() == 0)
+        for (size_t i = 0; i < bufferLayout.size(); ++i)
         {
-            bufferLayout.bufferSetHandle = Renderer::EmptyConstantBufferSetHandle;
-            continue;
-        }
-        ConstantBufferSetHandle setHandle = GetNewHandle();
-        bufferLayout.bufferSetHandle = setHandle;
-        for (size_t i = 0; i < bufferLayout.constantBuffers.size(); ++i)
-        {
-            RegisterConstantBuffer(&bufferLayout.constantBuffers[i], setHandle);
+            if (bufferLayout[i].IsPerObjectBuffer())
+                RegisterConstantBuffer(&bufferLayout[i]);
         }
     }
 }
@@ -51,15 +42,14 @@ void ConstantBufferManagerDX12::ProcessRegistrationQueue(const StateDX& state)
 {
     for (auto& tmpBuf : m_registrationQueue)
     {
-        UploadBufferDX12* buf = new UploadBufferDX12(StateDX::FrameCount, tmpBuf.Data, tmpBuf.DataSize, true, state.Device.Get());
+        UploadBufferDX12* buf = new UploadBufferDX12(state, tmpBuf.Data, tmpBuf.ElementSize, tmpBuf.ElementsCount, true);
         SafeDelete(m_constantBuffers[tmpBuf.CBHandle]);
         m_constantBuffers[tmpBuf.CBHandle] = buf;
-        m_constantBufferSets[tmpBuf.CBSetHandle].push_back(buf);
     }
     m_registrationQueue.clear();
 }
 
-void ConstantBufferManagerDX12::RegisterConstantBuffer(ConstantBuffer* buffer, ConstantBufferSetHandle bufferSetHandle)
+void ConstantBufferManagerDX12::RegisterConstantBuffer(ConstantBuffer* buffer)
 {
     if (buffer->GetHandle() != InvalidHandle)
         return;
@@ -74,7 +64,7 @@ void ConstantBufferManagerDX12::RegisterConstantBuffer(ConstantBuffer* buffer, C
 
     ConstantBufferHandle bufHandle = GetNewHandle();
     buffer->SetHandle(bufHandle);
-    m_registrationQueue.emplace_back(bufHandle, bufferSetHandle, buffer->GetDataSize(), buffer->GetBufferData());
+    m_registrationQueue.emplace_back(bufHandle, buffer->GetElemSize(), buffer->GetElemCount(), buffer->GetBufferData());
     QueueConstantBufferForUpdate(*buffer);
 }
 
@@ -87,7 +77,7 @@ void ConstantBufferManagerDX12::QueueConstantBufferForUpdate(ConstantBuffer& buf
     if (itr == m_buffersToResetUpdatedFramesCount.cend())
         m_buffersToResetUpdatedFramesCount.push_back(&buffer); // [a_vorontcov] TODO: Very questionable.
 
-    auto it = std::find(m_updateQueues.cbegin(), m_updateQueues.cend(), &buffer);
+    auto it = std::find_if(m_updateQueues.cbegin(), m_updateQueues.cend(), [&buffer](const ConstantBuffer* b) { return b->GetHandle() == buffer.GetHandle(); });
     if (it != m_updateQueues.cend())
         return;
 
@@ -102,9 +92,12 @@ void ConstantBufferManagerDX12::ProcessBufferUpdates(UINT frameIndex)
     {
         UploadBufferDX12* uploadBuf = FindBuffer(cb->GetHandle());
 
-        assert(cb->GetIsComposed());
+        assert(cb->IsAllocated());
         if (uploadBuf == nullptr)
+        {
             assert(false);
+            continue;
+        }
 
         auto it = std::find(m_buffersToResetUpdatedFramesCount.cbegin(), m_buffersToResetUpdatedFramesCount.cend(), cb);
         if (it != m_buffersToResetUpdatedFramesCount.cend())
@@ -125,12 +118,6 @@ UploadBufferDX12* ConstantBufferManagerDX12::FindBuffer(ConstantBufferHandle han
     auto it = m_constantBuffers.find(handle);
     if (it == m_constantBuffers.end())
         return nullptr;
-    return it->second;
-}
-
-const std::vector<UploadBufferDX12*>& ConstantBufferManagerDX12::FindBuffers(ConstantBufferSetHandle handle) const
-{
-    auto it = m_constantBufferSets.find(handle);
     return it->second;
 }
 }

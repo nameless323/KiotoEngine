@@ -6,6 +6,8 @@
 #include "Render/Material.h"
 #include "Render/Shader.h"
 
+#include "Render/Shaders/autogen/sInp/Fallback.h"
+
 namespace Kioto::Renderer
 {
     void RenderObject::ComposeAllConstantBuffers()
@@ -13,15 +15,17 @@ namespace Kioto::Renderer
         for (auto& pipelines : m_material->GetPipelineStates())
         {
             Shader* shader = pipelines.second.Shader;
-            RenderObjectBufferLayout bufferLayout;
+            RenderObjectBufferLayout bufferLayout = shader->CreateLayoutTemplateShalowCopy();
 
-            bufferLayout.constantBuffers = shader->CreateLayoutTemplateShalowCopy();
-
-            for (auto& cb : bufferLayout.constantBuffers)
-                cb.ComposeBufferData();
+            for (auto& cb : bufferLayout)
+            {
+                if (cb.IsPerObjectBuffer())
+                    cb.Reallocate();
+            }
 
             assert(m_renderObjectBuffers.count(pipelines.first) == 0);
             m_renderObjectBuffers[pipelines.first] = std::move(bufferLayout);
+            m_renderObjectConstants[pipelines.first] = std::move(shader->GetRenderObjectConstants());
         }
     }
 
@@ -58,6 +62,58 @@ namespace Kioto::Renderer
     {
         assert(m_textureSets.contains(passName) && "Texture is missing in texture set");
         m_textureSets[passName].SetTexture(name, texture);
+    }
+
+    void RenderObject::PrepareConstantBuffers(const std::string& passName)
+    {
+        SInp::Fallback_sinp::CbRenderObject roBuffer;
+        roBuffer.ToModel = GetToModel()->GetForGPU();
+        roBuffer.ToWorld = GetToWorld()->GetForGPU();
+        SetBuffer("cbRenderObject", roBuffer, passName);
+    }
+
+    void RenderObject::SetExternalCB(const std::string& passName, const std::string& cbName, ConstantBufferHandle newHandle)
+    {
+        if (!m_renderObjectBuffers.contains(passName))
+        {
+            assert(false);
+            return;
+        }
+        RenderObjectBufferLayout& layout = m_renderObjectBuffers[passName];
+        auto& cb = std::find_if(layout.begin(), layout.end(), [&cbName](const ConstantBuffer& b) { return b.GetName() == cbName; });
+        if (cb == layout.end())
+        {
+            assert(false);
+            return;
+        }
+        assert(!cb->IsPerObjectBuffer());
+        cb->SetHandle(newHandle);
+    }
+
+    std::vector<Renderer::ConstantBufferHandle> RenderObject::GetCBHandles(const std::string& passName) const
+    {
+        if (!m_renderObjectBuffers.contains(passName))
+            return {};
+        const RenderObjectBufferLayout& layout = m_renderObjectBuffers.at(passName);
+
+        std::vector<Renderer::ConstantBufferHandle> handles;
+        handles.reserve(layout.size());
+        for (const auto& cb : layout)
+            handles.push_back(cb.GetHandle());
+        return handles;
+    }
+
+    std::vector<uint32> RenderObject::GetConstants(const std::string& passName) const
+    {
+        if (!m_renderObjectConstants.contains(passName))
+            return {};
+        const RenderObjectConstants& constants = m_renderObjectConstants.at(passName);
+
+        std::vector<uint32> values;
+        values.reserve(constants.size());
+        for (const auto& c : constants)
+            values.push_back(c.GetValue());
+        return values;
     }
 
 }

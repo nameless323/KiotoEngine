@@ -17,7 +17,6 @@ enum class eRenderCommandType
 {
     eInvalidCommand,
     eSetRenderTargets,
-    eSubmitConstantBuffer,
     eSubmitRenderPacket,
     eBeginGpuEvent,
     eEndGpuEvent,
@@ -189,7 +188,6 @@ private:
 
 namespace RenderCommandHelpers
 {
-RenderCommand CreateConstantBufferCommand(const ConstantBuffer& buffer, RenderPass* pass);
 RenderCommand CreateRenderPacketCommand(RenderPacket packet, RenderPass* pass);
 RenderCommand CreateSetRenderTargetCommand(SetRenderTargetsCommand setRTCmd, RenderPass* pass);
 RenderCommand CreateSetRenderTargetCommand(SetRenderTargetsCommand setRTCmd, RenderPass* pass);

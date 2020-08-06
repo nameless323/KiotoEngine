@@ -14,7 +14,7 @@ struct StateDX;
 class RootSignatureManager
 {
 public:
-    void CreateRootSignature(const StateDX& state, const ShaderData& shaderData, const ShaderBufferLayoutTemplate& bufferLayoutTemplate, ShaderHandle handle);  // [a_vorontcov] Root sig and shader 1 to 1 connection.
+    void CreateRootSignature(const StateDX& state, const ShaderData& shaderData, const RenderObjectBufferLayout& bufferLayoutTemplate, const RenderObjectConstants& constants, ShaderHandle handle);  // [a_vorontcov] Root sig and shader 1 to 1 connection.
     ID3D12RootSignature* GetRootSignature(ShaderHandle handle) const;
 
 private:
