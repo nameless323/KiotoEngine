@@ -16,14 +16,14 @@ vOut vs(vIn i)
     pos = mul(pos, cbCamera.ViewProjection);
     o.position = pos;
 
-    o.normal =i.normal.xyz;
+    o.normal = mul(float4(i.normal.xyz, 0.0f), cbRenderObject.ToWorld).xyz;
     o.uv = i.uv;
     return o;
 }
 
 float4 ps(vOut i) : SV_Target
 {
-    float3 N = mul(float4(normalize(i.normal.xyz), 0.0f), cbRenderObject.ToWorld).xyz;
+    float3 N = normalize(i.normal);
 
     float4 diffuse = Diffuse.Sample(LinearClampSampler, i.uv) * Mask.Sample(LinearClampSampler, i.uv);
     for (uint i = 0; i < LIGHTS_COUNT; ++i)
