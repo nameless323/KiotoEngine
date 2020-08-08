@@ -6,6 +6,8 @@
 #include "Render/Renderer.h"
 #include "Render/Buffers/EngineBuffers.h"
 
+#include "Core/Logger/Logger.h"
+
 namespace Kioto::Renderer
 {
 Camera::Camera(bool createBuffer)
@@ -22,7 +24,9 @@ void Camera::UpdateConstantBuffer()
     assert(m_cameraBuffer.GetHandle() != InvalidHandle && "Camera buffer was not created for this camera");
     m_cbCamera.ViewProjection = m_VP.GetForGPU();
     m_cbCamera.View = m_view.GetForGPU();
-    //m_cbCamera.ViewDirection = ViewDirection;
+    m_cbCamera.ViewDirection = m_toWorld.GetForward();
+    m_cbCamera.CamWorldPosition = m_toWorld.GetTranslation();
     m_cameraBuffer.Set(m_cbCamera);
 }
+
 }

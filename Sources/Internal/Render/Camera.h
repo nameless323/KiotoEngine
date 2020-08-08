@@ -93,6 +93,8 @@ public:
 
     void SetView(const Matrix4& view);
 
+    void SetToWorld(const Matrix4& toWorld);
+
     ///
     /// Get camera view matrix.
     ///
@@ -123,6 +125,7 @@ private:
     SInp::CbCamera m_cbCamera;
     ConstantBuffer m_cameraBuffer; // [a_vorontcov] TODO: Really don't like it here.
 
+    Matrix4 m_toWorld = Matrix4::Identity;
     Matrix4 m_view = Matrix4::Identity;
     Matrix4 m_projection = Matrix4::Identity;
     Matrix4 m_VP = Matrix4::Identity;
@@ -136,6 +139,13 @@ private:
     float32 m_aspect = 1.0f;
     bool m_isOrtho = false;
 };
+
+
+inline void Camera::SetToWorld(const Matrix4& toWorld)
+{
+    m_toWorld = toWorld;
+}
+
 
 inline void Camera::SetFovY(float32 fovY)
 {

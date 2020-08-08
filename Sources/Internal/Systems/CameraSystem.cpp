@@ -80,5 +80,6 @@ void CameraSystem::UpdateView(CameraComponent* cam)
 {
     Matrix4 m = cam->GetTransform()->GetToWorld();
     cam->GetCamera().SetView(m.InversedOrthonorm());
+    cam->GetCamera().SetToWorld(m);
 }
 }

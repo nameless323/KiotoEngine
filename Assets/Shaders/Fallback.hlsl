@@ -21,15 +21,19 @@ vOut vs(vIn i)
     return o;
 }
 
-float4 ps(vOut i) : SV_Target
+float4 ps(vOut pIn) : SV_Target
 {
-    float3 N = normalize(i.normal);
+    float3 N = normalize(pIn.normal);
 
-    float4 diffuse = Diffuse.Sample(LinearClampSampler, i.uv) * Mask.Sample(LinearClampSampler, i.uv);
+    float4 diffuse = float4(0, 0, 0, 0);
     for (uint i = 0; i < LIGHTS_COUNT; ++i)
     {
-        float3 L = normalize(lights.light[0].Direction);
-        diffuse.xyz *= lights.light[0].Color * max(0.0, dot(N, -L));// diffuse.xyz * lights[i].Color;
+        float3 L = normalize(lights.light[i].Direction);
+        float3 V = normalize(cbCamera.CamWorldPosition - pIn.wPos);
+        float3 halfVector = normalize(-L + V);
+        float d = max(0.0, dot(N, -L));
+        float s = pow(max(0.0, dot(N, halfVector)), 5);
+        diffuse.xyz += lights.light[i].Color * (d + s);// diffuse.xyz * lights[i].Color;
     }
 
     return diffuse;
