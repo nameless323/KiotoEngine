@@ -32,9 +32,8 @@ float4 ps(vOut pIn) : SV_Target
         float3 V = normalize(cbCamera.CamWorldPosition - pIn.wPos);
         float3 halfVector = normalize(-L + V);
         float d = max(0.0, dot(N, -L));
-        float s = pow(max(0.0, dot(N, halfVector)), 5);
+        float s = pow(max(0.0, dot(N, halfVector)), 64);
         diffuse.xyz += lights.light[i].Color * (d + s);// diffuse.xyz * lights[i].Color;
     }
-
     return diffuse;
 }
