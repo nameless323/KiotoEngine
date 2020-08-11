@@ -393,6 +393,12 @@
     <ClInclude Include="Sources\Internal\Render\RenderPass\DrawData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Sources\Internal\Render\Shaders\autogen\CommonStructures.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Internal\Render\RenderPass\EditorGizmosPass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -609,6 +615,12 @@
       <Filter>Header Files</Filter>
     </ClCompile>
     <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\Wireframe.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Internal\Render\RenderPass\EditorGizmosPass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\GizmosImpostor.h">
       <Filter>Header Files</Filter>
     </ClCompile>
   </ItemGroup>

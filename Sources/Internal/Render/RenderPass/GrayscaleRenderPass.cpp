@@ -84,14 +84,6 @@ void GrayscaleRenderPass::SetRenderTargets(CommandList* commandList, ResourceTab
     commandList->PushCommand(RenderCommandHelpers::CreateSetRenderTargetCommand(cmd, this));
 }
 
-void GrayscaleRenderPass::SetPassConstantBuffers(CommandList* commandList)
-{
-}
-
-void GrayscaleRenderPass::SetCameraConstantBuffers(CommandList* commandList)
-{
-}
-
 bool GrayscaleRenderPass::ConfigureInputsAndOutputs(ResourcesBlackboard& resources)
 {
     const RenderOptions& settings = KiotoCore::GetRenderSettings();

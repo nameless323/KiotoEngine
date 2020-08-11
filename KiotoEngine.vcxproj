@@ -260,6 +260,7 @@ RD /S /Q $(TargetDir)Assets
     <ClInclude Include="Sources\Internal\Render\RendererPublic.h" />
     <ClInclude Include="Sources\Internal\Render\RenderLayer.h" />
     <ClInclude Include="Sources\Internal\Render\RenderPass\DrawData.h" />
+    <ClInclude Include="Sources\Internal\Render\RenderPass\EditorGizmosPass.h" />
     <ClInclude Include="Sources\Internal\Render\RenderPass\ForwardRenderPass.h" />
     <ClInclude Include="Sources\Internal\Render\RenderPass\GrayscaleRenderPass.h" />
     <ClInclude Include="Sources\Internal\Render\RenderPass\RenderPass.h" />
@@ -287,6 +288,7 @@ RD /S /Q $(TargetDir)Assets
     <ClInclude Include="Sources\Internal\Systems\SystemsSharedData.h" />
     <ClInclude Include="Sources\Internal\Systems\TransformSystem.h" />
     <ClCompile Include="Sources\Internal\Component\LightComponent.cpp" />
+    <ClCompile Include="Sources\Internal\Render\RenderPass\EditorGizmosPass.cpp" />
     <ClCompile Include="Sources\Internal\Render\Shaders\autogen\KiotoShaders.cpp" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -350,6 +352,7 @@ RD /S /Q $(TargetDir)Assets
     <ClCompile Include="Sources\Internal\Render\DX12\Texture\TextureDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\Texture\TextureManagerDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\Fallback.h" />
+    <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\GizmosImpostor.h" />
     <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\Grayscale.h" />
     <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\UnlitMovingTex.h" />
     <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\Wireframe.h" />
