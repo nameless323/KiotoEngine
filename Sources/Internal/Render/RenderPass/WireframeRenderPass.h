@@ -15,7 +15,5 @@ namespace Kioto::Renderer
 
     private:
         void SetRenderTargets(CommandList* commandList, ResourceTable& resources) override;
-        void SetPassConstantBuffers(CommandList* commandList) override;
-        void SetCameraConstantBuffers(CommandList* commandList) override;
     };
 }

@@ -31,8 +31,6 @@ ForwardRenderPass::ForwardRenderPass()
 
 void ForwardRenderPass::BuildRenderPackets(CommandList* commandList, ResourceTable& resources)
 {
-    SetPassConstantBuffers(commandList);
-    SetCameraConstantBuffers(commandList);
     SetRenderTargets(commandList, resources);
 
     for (uint32 i = 0; i < m_drawData->Lights.size(); ++i)
@@ -90,15 +88,6 @@ void ForwardRenderPass::SetRenderTargets(CommandList* commandList, ResourceTable
     cmd.ClearStencilValue = 0;
 
     commandList->PushCommand(RenderCommandHelpers::CreateSetRenderTargetCommand(cmd, this));
-}
-
-void ForwardRenderPass::SetPassConstantBuffers(CommandList* commandList)
-{
-
-}
-
-void ForwardRenderPass::SetCameraConstantBuffers(CommandList* commandList)
-{
 }
 
 bool ForwardRenderPass::ConfigureInputsAndOutputs(ResourcesBlackboard& resources)

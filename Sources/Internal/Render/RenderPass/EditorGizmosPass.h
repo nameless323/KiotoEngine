@@ -18,6 +18,8 @@ public:
 private:
     void SetRenderTargets(CommandList* commandList, ResourceTable& resources) override;
 
+    void CreateNecessaryRenderObjects(const std::vector<Light*>& lights);
+
     void CreateMaterial();
     void CreateQuadMesh();
 

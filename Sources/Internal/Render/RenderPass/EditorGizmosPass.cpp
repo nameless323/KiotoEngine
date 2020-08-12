@@ -78,6 +78,7 @@ EditorGizmosPass::~EditorGizmosPass()
 
 void EditorGizmosPass::BuildRenderPackets(CommandList* commandList, ResourceTable& resources)
 {
+    CreateNecessaryRenderObjects(m_drawData->Lights);
     for (size_t i = 0; i < m_drawData->Lights.size(); ++i)
     {
         RenderObject* ro = m_renderObjects[i];
@@ -99,6 +100,25 @@ void EditorGizmosPass::BuildRenderPackets(CommandList* commandList, ResourceTabl
         commandList->PushCommand(RenderCommandHelpers::CreateRenderPacketCommand(currPacket, this));
     }
     commandList->PushCommand(RenderCommandHelpers::CreatePassEndsCommand(this));
+}
+
+void EditorGizmosPass::CreateNecessaryRenderObjects(const std::vector<Light*>& lights)
+{
+    int32 diff = int32(lights.size()) - int32(m_renderObjects.size());
+    if (diff <= 0)
+        return;
+    for (int32 i = 0; i < diff; ++i)
+    {
+        RenderObject* ro = new RenderObject();
+        ro->SetMaterial(m_material);
+        ro->SetMesh(m_quad);
+        Renderer::RegisterRenderObject(*ro);
+        m_renderObjects.push_back(ro);
+    }
+}
+
+void EditorGizmosPass::Cleanup()
+{
 }
 
 }

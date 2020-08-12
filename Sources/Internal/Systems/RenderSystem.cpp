@@ -60,6 +60,7 @@ void RenderSystem::Update(float32 dt)
     }
     for (auto l : m_lights)
     {
+        l->GetLight()->Position = l->GetEntity()->GetTransform()->GetWorldPosition();
         m_drawData.Lights.push_back(l->GetLight());
     }
     for (auto pass : m_renderPasses)
