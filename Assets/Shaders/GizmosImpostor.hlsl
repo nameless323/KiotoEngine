@@ -10,9 +10,11 @@ vOut vs(vIn i, uint vid : SV_VertexID)
 {
     vOut o;
 
-    float3 fwd = cbCamera.CamWorldPosition - impostorData.position.xyz;
-    float3 right = cross(fwd, float3(0, 1, 0));
-    float3 up = cross(fwd, right);
+    o.uv = i.position * 0.5 + 0.5;
+
+    float3 fwd = normalize(cbCamera.CamWorldPosition - impostorData.position.xyz);
+    float3 right = normalize(cross(float3(0, 1, 0), fwd));
+    float3 up = normalize(cross(fwd, right));
 
     float scale = impostorData.scale;
     right *= scale;
@@ -38,11 +40,10 @@ vOut vs(vIn i, uint vid : SV_VertexID)
 
     float4 pos = mul(float4(position, 1.0f), cbCamera.ViewProjection);
     o.position = pos;
-    o.uv = float2(0, 0);
     return o;
 }
 
 float4 ps(vOut i) : SV_Target
 {
-    return float4(1, 1, 1, 1);
+    return ImpostorSprite.Sample(LinearClampSampler, i.uv);
 }

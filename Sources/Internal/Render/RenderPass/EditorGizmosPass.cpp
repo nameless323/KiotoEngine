@@ -84,7 +84,7 @@ void EditorGizmosPass::BuildRenderPackets(CommandList* commandList, ResourceTabl
         RenderObject* ro = m_renderObjects[i];
         SInp::GizmosImpostor_sinp::ImpostorData data;
         data.position = m_drawData->Lights[i]->Position;
-        data.scale = 1.0f;
+        data.scale = 0.2f;
 
         ro->SetBuffer(SInp::GizmosImpostor_sinp::impostorDataName, data, m_passName);
         ro->SetExternalCB(m_passName, Renderer::SInp::GizmosImpostor_sinp::cbCameraName, Renderer::GetMainCamera()->GetConstantBuffer().GetHandle());
