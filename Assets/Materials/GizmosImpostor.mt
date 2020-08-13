@@ -4,3 +4,5 @@ passes:
         name: "EditorGizmos"
         pipelineConfig: "PipelineConfigs\\Default.pcfg"
         shader: "Shaders\\sInp\\GizmosImpostor.sinp"
+        textures:
+            ImpostorSprite: "Textures\\sun.dds"

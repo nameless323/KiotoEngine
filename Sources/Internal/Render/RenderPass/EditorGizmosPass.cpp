@@ -58,7 +58,7 @@ bool EditorGizmosPass::ConfigureInputsAndOutputs(ResourcesBlackboard& resources)
 
 void EditorGizmosPass::CreateMaterial()
 {
-    std::string matPath = AssetsSystem::GetAssetFullPath("Materials\\Grayscale.mt");
+    std::string matPath = AssetsSystem::GetAssetFullPath("Materials\\GizmosImpostor.mt");
     m_material = new Material(matPath);
     Renderer::RegisterRenderAsset(m_material);
 }
@@ -87,7 +87,9 @@ void EditorGizmosPass::BuildRenderPackets(CommandList* commandList, ResourceTabl
         data.scale = 1.0f;
 
         ro->SetBuffer(SInp::GizmosImpostor_sinp::impostorDataName, data, m_passName);
- 
+        ro->SetExternalCB(m_passName, Renderer::SInp::GizmosImpostor_sinp::cbCameraName, Renderer::GetMainCamera()->GetConstantBuffer().GetHandle());
+        ro->SetExternalCB(m_passName, Renderer::SInp::GizmosImpostor_sinp::cbEngineName, Renderer::EngineBuffers::GetTimeBuffer().GetHandle());
+
         m_material->BuildMaterialForPass(this);
 
         RenderPacket currPacket = {};
@@ -96,6 +98,7 @@ void EditorGizmosPass::BuildRenderPackets(CommandList* commandList, ResourceTabl
         currPacket.TextureSet = ro->GetTextureSet(m_passName).GetHandle();
         currPacket.Mesh = m_quad->GetHandle();
         currPacket.ConstantBufferHandles = std::move(ro->GetCBHandles(m_passName));
+        currPacket.Pass = GetHandle();
 
         commandList->PushCommand(RenderCommandHelpers::CreateRenderPacketCommand(currPacket, this));
     }

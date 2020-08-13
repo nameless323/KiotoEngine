@@ -14,6 +14,7 @@
 #include "Render/RenderPass/ForwardRenderPass.h"
 #include "Render/RenderPass/WireframeRenderPass.h"
 #include "Render/RenderPass/GrayscaleRenderPass.h"
+#include "Render/RenderPass/EditorGizmosPass.h"
 
 namespace Kioto
 {
@@ -32,6 +33,7 @@ void RenderSystem::Init()
 {
     m_forwardRenderPass = new Renderer::ForwardRenderPass();
     AddRenderPass(m_forwardRenderPass);
+    AddRenderPass(new Renderer::EditorGizmosPass());
     AddRenderPass(new Renderer::GrayscaleRenderPass());
     AddRenderPass(new Renderer::WireframeRenderPass());
 }

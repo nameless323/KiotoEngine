@@ -14,22 +14,26 @@ vOut vs(vIn i, uint vid : SV_VertexID)
     float3 right = cross(fwd, float3(0, 1, 0));
     float3 up = cross(fwd, right);
 
+    float scale = impostorData.scale;
+    right *= scale;
+    up *= scale;
+
     float3 position;
-    if (i == 0)
+    if (vid == 0)
     {
-        position = impostorData.position.xyz - right.xyz * scale + up.xyz * scale;
+        position = impostorData.position.xyz - right.xyz + up.xyz;
     }
-    else if (i == 1)
+    else if (vid == 1)
     {
-        position = impostorData.position.xyz - right.xyz * scale - up.xyz * scale;
+        position = impostorData.position.xyz - right.xyz - up.xyz;
     }
-    else if (i == 2)
+    else if (vid == 2)
     {
-        position = impostorData.position.xyz + right.xyz * scale + up.xyz * scale;
+        position = impostorData.position.xyz + right.xyz + up.xyz;
     }
-    else if (i == 3)
+    else if (vid == 3)
     {
-        position = impostorData.position.xyz + right.xyz * scale - up.xyz * scale;
+        position = impostorData.position.xyz + right.xyz - up.xyz;
     }
 
     float4 pos = mul(float4(position, 1.0f), cbCamera.ViewProjection);
@@ -38,7 +42,7 @@ vOut vs(vIn i, uint vid : SV_VertexID)
     return o;
 }
 
-float4 ps(vOut i)
+float4 ps(vOut i) : SV_Target
 {
     return float4(1, 1, 1, 1);
 }
