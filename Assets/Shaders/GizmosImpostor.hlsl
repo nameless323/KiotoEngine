@@ -45,5 +45,9 @@ vOut vs(vIn i, uint vid : SV_VertexID)
 
 float4 ps(vOut i) : SV_Target
 {
-    return ImpostorSprite.Sample(LinearClampSampler, i.uv);
+    float4 color = ImpostorSprite.Sample(LinearClampSampler, i.uv);
+    if (color.a < impostorData.cutoff)
+        discard;
+    color.xyz = impostorData.color;
+    return color;
 }
