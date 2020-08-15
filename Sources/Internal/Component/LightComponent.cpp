@@ -20,7 +20,7 @@ void LightComponent::Serialize(YAML::Emitter& out) const
     out << YAML::Key << "LightType" << YAML::Value << uint16(m_light.LightType);
     out << YAML::Key << "LightDir" << YAML::Value << m_light.Direction;
     out << YAML::Key << "LightColor" << YAML::Value << m_light.Color;
-    out << YAML::Key << "LightAtten" << YAML::Value << m_light.AttenuationDistance;
+    out << YAML::Key << "LightAtten" << YAML::Value << m_light.Attenuation;
 }
 
 void LightComponent::Deserialize(const YAML::Node& in)
@@ -32,7 +32,7 @@ void LightComponent::Deserialize(const YAML::Node& in)
     if (in["LightColor"])
         m_light.Color = in["LightColor"].as<Renderer::Color>();
     if (in["LightAtten"])
-        m_light.AttenuationDistance = in["LightAtten"].as<float32>();
+        m_light.Attenuation = in["LightAtten"].as<Vector3>();
 }
 
 }

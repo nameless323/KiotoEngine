@@ -18,7 +18,7 @@ struct Light
     Color Color{};
     eLightType LightType = eLightType::Directional;
     Vector3 Direction{};
-    float AttenuationDistance = 0.0f;
+    Vector3 Attenuation{};
 
     Light& operator=(const Light& other) = default;
 };

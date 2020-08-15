@@ -4,7 +4,7 @@ struct Light %common%
     float4 Color;
     uint Type;
     float3 Direction;
-    float AttenuationDistance;
+    float3 Attenuation;
 };
 
 struct LightBuffer %common%
