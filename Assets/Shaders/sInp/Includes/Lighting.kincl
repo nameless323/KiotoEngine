@@ -1,9 +1,10 @@
 struct Light %common%
 {
     float3 Position;
-    float4 Color;
     uint Type;
+    float4 Color;
     float3 Direction;
+    float Pad0;
     float3 Attenuation;
 };
 

@@ -15,9 +15,10 @@ enum class eLightType
 struct Light
 {
     Vector3 Position{};
-    Color Color{};
     eLightType LightType = eLightType::Directional;
+    Color Color{};
     Vector3 Direction{};
+    float32 Pad0;
     Vector3 Attenuation{};
 
     Light& operator=(const Light& other) = default;
