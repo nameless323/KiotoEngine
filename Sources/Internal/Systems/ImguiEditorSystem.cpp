@@ -87,8 +87,10 @@ void ImguiEditorSystem::Update(float32 dt)
             ImGui::InputFloat3("Direction", light->Direction.data);
             light->Direction.Normalize();
         }
-        if (light->LightType != Renderer::eLightType::Directional)
+        else if (light->LightType == Renderer::eLightType::Point)
         {
+            float32& radis = light->Attenuation.w;
+            ImGui::InputFloat("Radius", &radis);
             ImGui::InputFloat3("Attenuation", light->Attenuation.data);
         }
     }

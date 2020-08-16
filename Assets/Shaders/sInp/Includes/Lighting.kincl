@@ -5,7 +5,7 @@ struct Light %common%
     float4 Color;
     float3 Direction;
     float Pad0;
-    float3 Attenuation;
+    float4 Attenuation; // const, linear, quad terms and radius
 };
 
 struct LightBuffer %common%

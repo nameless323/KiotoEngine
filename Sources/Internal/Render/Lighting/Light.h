@@ -19,7 +19,7 @@ struct Light
     Color Color{};
     Vector3 Direction{};
     float32 Pad0;
-    Vector3 Attenuation{};
+    Vector4 Attenuation{};
 
     Light& operator=(const Light& other) = default;
 };

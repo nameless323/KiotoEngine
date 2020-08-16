@@ -32,7 +32,7 @@ void LightComponent::Deserialize(const YAML::Node& in)
     if (in["LightColor"])
         m_light.Color = in["LightColor"].as<Renderer::Color>();
     if (in["LightAtten"])
-        m_light.Attenuation = in["LightAtten"].as<Vector3>();
+        m_light.Attenuation = in["LightAtten"].as<Vector4>();
 }
 
 }

@@ -14,7 +14,7 @@ namespace Kioto
         };
 
         RenderModeOptions RenderMode = RenderModeOptions::Final;
-        Vector2i Resolution{ 1366, 768 };
+        Vector2i Resolution{ 1900, 1000 };
 
         static constexpr uint32 MaxRenderPassesCount = 128;
         static constexpr uint32 MaxRenderCommandsCount = 2048;
