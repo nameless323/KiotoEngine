@@ -95,7 +95,7 @@ void Update(float32 dt) // [a_vorontcov] TODO: set frame command buffers here.
     UpdateTimeBuffer();
     GameRenderer->Update(dt);
 
-    ImGui::Begin("Render stats || Renderer.cpp::Update(float dt)");
+    ImGui::Begin("Render stats || Renderer.cpp::Update(float dt)", NULL, ImGuiWindowFlags_NoFocusOnAppearing);
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
     ImGui::End();
 }

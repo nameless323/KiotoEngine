@@ -190,6 +190,8 @@ LRESULT WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     case WM_INPUT:
     {
+        if (ImGui::IsAnyWindowFocused())
+            return 0;
         // [a_vorontcov] Explanation of what's going on here - https://docs.microsoft.com/en-us/windows/desktop/inputdev/using-raw-input
 
         UINT dwSize;

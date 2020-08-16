@@ -35,7 +35,7 @@ namespace Kioto
         static std::string current_item = items[0];
         const static std::array<RenderOptions::RenderModeOptions, 3> renderModeOptions{ RenderOptions::RenderModeOptions::Final,RenderOptions::RenderModeOptions::Wireframe, RenderOptions::RenderModeOptions::FinalAndWireframe };
 
-        ImGui::Begin("Render options || DebugSystem.cpp::Update(float dt)");
+        ImGui::Begin("Render options || DebugSystem.cpp::Update(float dt)", NULL, ImGuiWindowFlags_NoFocusOnAppearing);
 
         ImGui::Text("Render mode");
         ImGui::SameLine();

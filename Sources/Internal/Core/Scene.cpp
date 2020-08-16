@@ -8,6 +8,7 @@
 #include "Systems/CameraSystem.h"
 #include "Systems/EventSystem/EventSystem.h"
 #include "Systems/DebugSystem.h"
+#include "Systems/ImguiEditorSystem.h"
 #include "Systems/TransformSystem.h"
 #include "Systems/RenderSystem.h"
 
@@ -47,6 +48,7 @@ void Scene::Init()
     AddSystemInternal(m_cameraSystem);
     m_renderSystem = new RenderSystem();
     AddSystemInternal(m_renderSystem);
+    AddSystemInternal({ new ImguiEditorSystem() });
     AddSystemInternal({ new DebugSystem() });
 
     for (auto system : m_systems)
