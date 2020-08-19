@@ -7,6 +7,8 @@
 #include "Component/TransformComponent.h"
 #include "Component/LightComponent.h"
 #include "Component/RenderComponent.h"
+#include "Render/RenderObject.h"
+#include "Render/Material.h"
 
 #include "Render/Color.h"
 
@@ -80,6 +82,43 @@ void ImguiEditorSystem::Update(float32 dt)
         ImGui::Text(renderComponent->GetMesh().c_str());
         ImGui::TextColored(ImVec4(0.3f, 0.6f, 0.4f, 1), "Material: "); ImGui::SameLine();
         ImGui::Text(renderComponent->GetMaterial().c_str());
+        auto& texDescr = renderComponent->GetRenderObject()->GetMaterial()->GetTextureAssetDescriptions();
+        if (texDescr.empty())
+            ImGui::TextColored(ImVec4(0.9f, 0.6f, 0.4f, 1), "\t -// No Textures Defined //-");
+        else
+            ImGui::TextColored(ImVec4(0.3f, 0.6f, 0.4f, 1), "Textures:");
+
+        for (auto& decsr : texDescr)
+        {
+            ImGui::TextColored(ImVec4(0.3f, 0.6f, 0.4f, 1), "\tFor pass: "); ImGui::SameLine();
+            ImGui::Text(decsr.first.c_str());
+            if (decsr.second.empty())
+                ImGui::TextColored(ImVec4(0.9f, 0.6f, 0.4f, 1), "\t\t -// No Textures Defined //-");
+
+            for (auto& texDesc : decsr.second)
+            {
+                ImGui::TextColored(ImVec4(0.3f, 0.6f, 0.4f, 1), "\t\t%s", texDesc.Name.c_str()); ImGui::SameLine();
+                ImGui::Text(texDesc.Path.c_str());
+            }
+        }
+        ImGui::Text("");
+        auto& cbDecr = renderComponent->GetRenderObject()->GetBuffersLayouts();
+        if (cbDecr.empty())
+            ImGui::TextColored(ImVec4(0.9f, 0.6f, 0.4f, 1), "\t -// No Constant Buffers Defined //-");
+        else
+            ImGui::TextColored(ImVec4(0.3f, 0.6f, 0.4f, 1), "Constant Buffers:");
+        for (auto& decsr : cbDecr)
+        {
+            ImGui::TextColored(ImVec4(0.3f, 0.6f, 0.4f, 1), "\tFor pass: "); ImGui::SameLine();
+            ImGui::Text(decsr.first.c_str());
+            if (decsr.second.empty())
+                ImGui::TextColored(ImVec4(0.9f, 0.6f, 0.4f, 1), "\t\t -// No Constant Buffers Defined //-");
+
+            for (auto& cb : decsr.second)
+            {
+                ImGui::TextColored(ImVec4(0.3f, 0.6f, 0.4f, 1), "\t\t%s : ", cb.GetName().c_str());
+            }
+        }
     }
 
     LightComponent* lightComponent = selectedEntity->GetComponent<LightComponent>();
