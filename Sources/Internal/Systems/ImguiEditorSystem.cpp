@@ -79,6 +79,7 @@ void ImguiEditorSystem::Update(float32 dt)
 
         const char* lightTypeNames[] = { "Directional", "Point", "Spot" };
         static int selectedType = 0;
+        selectedType = (int)light->LightType;
         ImGui::Combo("Light Type", &selectedType, lightTypeNames, IM_ARRAYSIZE(lightTypeNames));
         light->LightType = Renderer::eLightType(selectedType);
 
@@ -92,6 +93,19 @@ void ImguiEditorSystem::Update(float32 dt)
             float32& radis = light->Attenuation.w;
             ImGui::InputFloat("Radius", &radis);
             ImGui::InputFloat3("Attenuation", light->Attenuation.data);
+        }
+        else if (light->LightType == Renderer::eLightType::Spot)
+        {
+            ImGui::InputFloat3("Direction", light->Direction.data);
+            light->Direction.Normalize();
+            float32 innerRad = light->Attenuation.x;
+            float32 outerRad = light->Attenuation.y;
+            innerRad = Math::RadToDeg(innerRad);
+            outerRad = Math::RadToDeg(outerRad);
+            ImGui::InputFloat("Inner radius", &innerRad);
+            ImGui::InputFloat("Outer radius", &outerRad);
+            light->Attenuation.x = Math::DegToRad(innerRad);
+            light->Attenuation.y = Math::DegToRad(outerRad);
         }
     }
 
