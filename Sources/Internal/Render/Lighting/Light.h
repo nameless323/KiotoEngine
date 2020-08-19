@@ -19,7 +19,7 @@ struct Light
     Color Color{};
     Vector3 Direction{};
     float32 Pad0;
-    Vector4 Attenuation{};
+    Vector4 Data{}; // [a_vorontcov] See Lighting.kincl Light struct for more details.
 
     Light& operator=(const Light& other) = default;
 };

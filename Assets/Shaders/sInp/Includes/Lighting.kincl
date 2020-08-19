@@ -5,7 +5,7 @@ struct Light %common%
     float4 Color;
     float3 Direction;
     float Pad0;
-    float4 Attenuation; // const, linear, quad terms and radius
+    float4 Data; // const, linear, quad terms and radius (point) | innerRadius (rad) and outerRadius (rad) (spotlight)
 };
 
 struct LightBuffer %common%

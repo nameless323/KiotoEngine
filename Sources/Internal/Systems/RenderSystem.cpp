@@ -54,6 +54,8 @@ void RenderSystem::Update(float32 dt)
 {
     for (auto rc : m_components)
     {
+        if (!rc->GetIsEnabled())
+            continue;
         Renderer::RenderObject* ro = rc->GetRenderObject();
         TransformComponent* tc = rc->GetEntity()->GetTransform();
         ro->SetToWorld(tc->GetToWorld());
@@ -62,6 +64,8 @@ void RenderSystem::Update(float32 dt)
     }
     for (auto l : m_lights)
     {
+        if (!l->GetIsEnabled())
+            continue;
         l->GetLight()->Position = l->GetEntity()->GetTransform()->GetWorldPosition();
         m_drawData.Lights.push_back(l->GetLight());
     }

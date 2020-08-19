@@ -30,16 +30,16 @@ float CalculateLightAttenuation(Light light, float3 position)
     else if (light.Type == 1)
     {
         float distToLight = length(light.Position - position);
-        if (distToLight > light.Attenuation.w)
+        if (distToLight > light.Data.w)
             return 0.0;
-        return 1.0 / (light.Attenuation.x + light.Attenuation.y * distToLight + light.Attenuation.z * distToLight * distToLight);
+        return 1.0 / (light.Data.x + light.Data.y * distToLight + light.Data.z * distToLight * distToLight);
     }
     else if (light.Type = 2)
     {
         float3 toPoint = normalize(position - light.Position);
         float cosAngle = dot(toPoint, light.Direction);
-        float cosInner = cos(light.Attenuation.x);
-        float cosOuter = cos(light.Attenuation.y);
+        float cosInner = cos(light.Data.x);
+        float cosOuter = cos(light.Data.y);
         if (cosAngle < cosOuter)
             return 0.0;
         if (cosAngle > cosInner)

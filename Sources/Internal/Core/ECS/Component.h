@@ -50,6 +50,9 @@ public:
     KIOTO_API virtual uint64 GetType() const;
     KIOTO_API virtual const std::string& GetTypeName() const;
 
+    KIOTO_API virtual bool GetIsEnabled() const;
+    KIOTO_API virtual void SetIsEnabled(bool enabled);
+
     virtual void Serialize(YAML::Emitter& out) const abstract;
     virtual void Deserialize(const YAML::Node& in) abstract;
 
@@ -58,6 +61,7 @@ protected:
 
 private:
     Entity* m_entity = nullptr;
+    bool m_isEnabled = true;
 
     friend class Entity;
 };
@@ -67,7 +71,7 @@ inline Entity* Component::GetEntity() const
     return m_entity;
 }
 
-inline uint64 Component::GetType() const 
+inline uint64 Component::GetType() const
 {
     return -1;
 }
@@ -75,5 +79,15 @@ inline uint64 Component::GetType() const
 inline const std::string& Component::GetTypeName() const
 {
     return this->GetTypeName();
+}
+
+inline bool Component::GetIsEnabled() const
+{
+    return m_isEnabled;
+}
+
+inline void Component::SetIsEnabled(bool enabled)
+{
+    m_isEnabled = enabled;
 }
 }
