@@ -5,11 +5,11 @@
 
 namespace Kioto::Renderer
 {
-class GrayscaleRenderPass : public RenderPass
+class EditorGizmosPass : public RenderPass
 {
 public:
-    GrayscaleRenderPass();
-    ~GrayscaleRenderPass();
+    EditorGizmosPass();
+    ~EditorGizmosPass();
 
     bool ConfigureInputsAndOutputs(ResourcesBlackboard& resources) override;
     void BuildRenderPackets(CommandList* commandList, ResourceTable& resources) override;
@@ -18,11 +18,13 @@ public:
 private:
     void SetRenderTargets(CommandList* commandList, ResourceTable& resources) override;
 
+    void CreateNecessaryRenderObjects(const std::vector<Light*>& lights);
+
     void CreateMaterial();
     void CreateQuadMesh();
 
     Material* m_material = nullptr;
     Mesh* m_quad = nullptr;
-    RenderObject* m_renderObject = nullptr;
+    std::vector<RenderObject*> m_renderObjects;
 };
 }

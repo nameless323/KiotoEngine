@@ -14,6 +14,7 @@
 #include "Render/RenderPass/ForwardRenderPass.h"
 #include "Render/RenderPass/WireframeRenderPass.h"
 #include "Render/RenderPass/GrayscaleRenderPass.h"
+#include "Render/RenderPass/EditorGizmosPass.h"
 
 namespace Kioto
 {
@@ -32,6 +33,7 @@ void RenderSystem::Init()
 {
     m_forwardRenderPass = new Renderer::ForwardRenderPass();
     AddRenderPass(m_forwardRenderPass);
+    AddRenderPass(new Renderer::EditorGizmosPass());
     AddRenderPass(new Renderer::GrayscaleRenderPass());
     AddRenderPass(new Renderer::WireframeRenderPass());
 }
@@ -52,6 +54,8 @@ void RenderSystem::Update(float32 dt)
 {
     for (auto rc : m_components)
     {
+        if (!rc->GetIsEnabled())
+            continue;
         Renderer::RenderObject* ro = rc->GetRenderObject();
         TransformComponent* tc = rc->GetEntity()->GetTransform();
         ro->SetToWorld(tc->GetToWorld());
@@ -60,6 +64,9 @@ void RenderSystem::Update(float32 dt)
     }
     for (auto l : m_lights)
     {
+        if (!l->GetIsEnabled())
+            continue;
+        l->GetLight()->Position = l->GetEntity()->GetTransform()->GetWorldPosition();
         m_drawData.Lights.push_back(l->GetLight());
     }
     for (auto pass : m_renderPasses)

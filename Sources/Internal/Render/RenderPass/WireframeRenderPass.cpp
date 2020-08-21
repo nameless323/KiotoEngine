@@ -57,8 +57,6 @@ namespace Kioto::Renderer
 
     void WireframeRenderPass::SetRenderTargets(CommandList* commandList, ResourceTable& resources)
     {
-        SetPassConstantBuffers(commandList);
-        SetCameraConstantBuffers(commandList);
         bool isWireframe = KiotoCore::GetRenderSettings().RenderMode == RenderOptions::RenderModeOptions::Wireframe;
         SetRenderTargetsCommand cmd;
         cmd.SetRenderTargets(Renderer::DefaultBackBufferHandle);
@@ -75,15 +73,6 @@ namespace Kioto::Renderer
         cmd.ClearStencilValue = 0;
 
         commandList->PushCommand(RenderCommandHelpers::CreateSetRenderTargetCommand(cmd, this));
-    }
-
-    void WireframeRenderPass::SetPassConstantBuffers(CommandList* commandList)
-    {
-
-    }
-
-    void WireframeRenderPass::SetCameraConstantBuffers(CommandList* commandList)
-    {
     }
 
     bool WireframeRenderPass::ConfigureInputsAndOutputs(ResourcesBlackboard& resources)

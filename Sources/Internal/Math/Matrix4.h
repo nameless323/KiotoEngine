@@ -81,6 +81,9 @@ public:
     /// Get translation from the matrix.
     ///
     Vector3_<T> GetTranslation() const;
+    Vector3_<T> GetUp() const;
+    Vector3_<T> GetRight() const;
+    Vector3_<T> GetForward() const;
     ///
     /// Set translation vector to the matrix.
     ///
@@ -299,9 +302,27 @@ const T& Matrix4_<T>::operator()(int32 row, int32 col) const
 }
 
 template <typename T>
-Vector3_<T> Matrix4_<T>::GetTranslation() const
+inline Vector3_<T> Matrix4_<T>::GetTranslation() const
 {
     return { _30, _31, _32 };
+}
+
+template <typename T>
+inline Vector3_<T> Matrix4_<T>::GetRight() const
+{
+    return { _00, _01, _02 };
+}
+
+template <typename T>
+inline Vector3_<T> Matrix4_<T>::GetUp() const
+{
+    return { _10, _11, _12 };
+}
+
+template <typename T>
+inline Vector3_<T> Matrix4_<T>::GetForward() const
+{
+    return { _20, _21, _22 };
 }
 
 template <typename T>

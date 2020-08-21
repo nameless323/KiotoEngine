@@ -14,10 +14,12 @@ enum class eLightType
 
 struct Light
 {
-    Color Color{};
+    Vector3 Position{};
     eLightType LightType = eLightType::Directional;
+    Color Color{};
     Vector3 Direction{};
-    float AttenuationDistance = 0.0f;
+    float32 Pad0;
+    Vector4 Data{}; // [a_vorontcov] See Lighting.kincl Light struct for more details.
 
     Light& operator=(const Light& other) = default;
 };

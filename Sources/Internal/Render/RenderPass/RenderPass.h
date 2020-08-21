@@ -75,8 +75,6 @@ public:
 
 protected:
     virtual void SetRenderTargets(CommandList* commandList, ResourceTable& resources) abstract; // Set scissor, render targets, viewports
-    virtual void SetPassConstantBuffers(CommandList* commandList) abstract;
-    virtual void SetCameraConstantBuffers(CommandList* commandList) abstract;
 
     RectI m_scissor;
     RectI m_viewport;

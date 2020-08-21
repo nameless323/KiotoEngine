@@ -29,6 +29,16 @@ inline YAML::Emitter& operator << (YAML::Emitter& out, const Kioto::Vector3& v)
     return out;
 }
 
+inline YAML::Emitter& operator << (YAML::Emitter& out, const Kioto::Vector4& v)
+{
+    out << YAML::Flow;
+    out << YAML::BeginSeq;
+    for (Kioto::uint32 i = 0; i < 4; ++i)
+        out << v.data[i];
+    out << YAML::EndSeq;
+    return out;
+}
+
 inline YAML::Emitter& operator << (YAML::Emitter& out, const Kioto::Renderer::Color& c)
 {
     out << YAML::Flow;
@@ -73,6 +83,30 @@ struct convert<Kioto::Vector3>
         return true;
     }
 };
+
+template<>
+struct convert<Kioto::Vector4>
+{
+    static Node encode(const Kioto::Vector4& v)
+    {
+        Node node;
+        for (Kioto::uint32 i = 0; i < 4; ++i)
+            node.push_back(v.data[i]);
+        return node;
+    }
+
+    static bool decode(const Node& node, Kioto::Vector4& v)
+    {
+        if (!node.IsSequence() || node.size() != 4)
+        {
+            return false;
+        }
+        for (Kioto::uint32 i = 0; i < 4; ++i)
+            v.data[i] = node[i].as<float>();
+        return true;
+    }
+};
+
 
 template<>
 struct convert<Kioto::Matrix4>

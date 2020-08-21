@@ -1,0 +1,20 @@
+#include "Includes\EngineBuffers.kincl"
+
+texture2D ImpostorSprite;
+
+struct ImpostorData
+{
+    float3 position;
+    float scale;
+    float3 color;
+    float cutoff;
+};
+
+constantBuffer<ImpostorData> impostorData;
+
+vertexLayout vIn
+{
+    float3 position : POSITION;
+};
+
+shader: VS vs, PS ps;

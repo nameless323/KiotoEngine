@@ -1,5 +1,7 @@
 #include "autogen\Fallback.hlsl"
 
+#include "Includes\Lighting.hlsl"
+
 struct vOut
 {
     float4 position : SV_Position;
@@ -21,16 +23,14 @@ vOut vs(vIn i)
     return o;
 }
 
-float4 ps(vOut i) : SV_Target
+float4 ps(vOut pIn) : SV_Target
 {
-    float3 N = normalize(i.normal);
+    float3 N = normalize(pIn.normal);
 
-    float4 diffuse = Diffuse.Sample(LinearClampSampler, i.uv) * Mask.Sample(LinearClampSampler, i.uv);
+    float4 diffuse = float4(0, 0, 0, 0);
     for (uint i = 0; i < LIGHTS_COUNT; ++i)
     {
-        float3 L = normalize(lights.light[0].Direction);
-        diffuse.xyz *= lights.light[0].Color * max(0.0, dot(N, -L));// diffuse.xyz * lights[i].Color;
+        diffuse.xyz += BlinnPhong(lights.light[i], N, pIn.wPos);
     }
-
     return diffuse;
 }
