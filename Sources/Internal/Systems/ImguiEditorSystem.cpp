@@ -57,20 +57,71 @@ void ImguiEditorSystem::Update(float32 dt)
     const Entity* selectedEntity = m_entities[selectedEntityIndex];
 
     TransformComponent* transform = selectedEntity->GetTransform();
-    if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
-    {
-        Vector3 currPos = transform->GetWorldPosition();
-        ImGui::InputFloat3("Position", currPos.data);
-        transform->SetWorldPosition(currPos);
+    DrawTransformEditor(transform);
 
-        Quaternion currRot = transform->GetWorldRotation();
-        Vector3 rotEuler = Quaternion::ToEuler(currRot);
-        ImGui::InputFloat3("Rotation", rotEuler.data);
-        Quaternion finalRot = Quaternion::FromEuler(rotEuler.x, rotEuler.y, rotEuler.z);
-        transform->SetWorldRotation(finalRot);
-    }
 
     RenderComponent* renderComponent = selectedEntity->GetComponent<RenderComponent>();
+    DrawRenderEditor(renderComponent);
+
+
+    LightComponent* lightComponent = selectedEntity->GetComponent<LightComponent>();
+    DrawLightEditor(lightComponent);
+
+
+    ImGui::End();
+}
+
+void ImguiEditorSystem::DrawLightEditor(LightComponent* lightComponent)
+{
+    if (lightComponent != nullptr && ImGui::CollapsingHeader("Light", ImGuiTreeNodeFlags_DefaultOpen))
+    {
+        bool isEnabled = lightComponent->GetIsEnabled();
+        ImGui::Checkbox("Enabled", &isEnabled);
+        lightComponent->SetIsEnabled(isEnabled);
+        ImGui::Text("");
+
+        Renderer::Light* light = lightComponent->GetLight();
+        Renderer::Color col = light->Color;
+        ImGui::ColorPicker4("Light Color", col.data);
+        light->Color = col;
+
+        ImGui::Text("");
+
+        const char* lightTypeNames[] = { "Directional", "Point", "Spot" };
+        static int selectedType = 0;
+        selectedType = (int)light->LightType;
+        ImGui::Combo("Light Type", &selectedType, lightTypeNames, IM_ARRAYSIZE(lightTypeNames));
+        light->LightType = Renderer::eLightType(selectedType);
+
+        if (light->LightType == Renderer::eLightType::Directional)
+        {
+            ImGui::InputFloat3("Direction", light->Direction.data);
+            light->Direction.Normalize();
+        }
+        else if (light->LightType == Renderer::eLightType::Point)
+        {
+            float32& radis = light->Data.w;
+            ImGui::InputFloat("Radius", &radis);
+            ImGui::InputFloat3("Attenuation", light->Data.data);
+        }
+        else if (light->LightType == Renderer::eLightType::Spot)
+        {
+            ImGui::InputFloat3("Direction", light->Direction.data);
+            light->Direction.Normalize();
+            float32 innerRad = light->Data.x;
+            float32 outerRad = light->Data.y;
+            innerRad = Math::RadToDeg(innerRad);
+            outerRad = Math::RadToDeg(outerRad);
+            ImGui::InputFloat("Inner radius", &innerRad);
+            ImGui::InputFloat("Outer radius", &outerRad);
+            light->Data.x = Math::DegToRad(innerRad);
+            light->Data.y = Math::DegToRad(outerRad);
+        }
+    }
+}
+
+void ImguiEditorSystem::DrawRenderEditor(RenderComponent* renderComponent)
+{
     if (renderComponent != nullptr && ImGui::CollapsingHeader("Render", ImGuiTreeNodeFlags_DefaultOpen))
     {
         bool isEnabled = renderComponent->GetIsEnabled();
@@ -120,55 +171,30 @@ void ImguiEditorSystem::Update(float32 dt)
             }
         }
     }
+}
 
-    LightComponent* lightComponent = selectedEntity->GetComponent<LightComponent>();
-    if (lightComponent != nullptr && ImGui::CollapsingHeader("Light", ImGuiTreeNodeFlags_DefaultOpen))
+void ImguiEditorSystem::DrawTransformEditor(TransformComponent* transform)
+{
+    if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        bool isEnabled = lightComponent->GetIsEnabled();
-        ImGui::Checkbox("Enabled", &isEnabled);
-        lightComponent->SetIsEnabled(isEnabled);
-        ImGui::Text("");
+        Vector3 currPos = transform->GetWorldPosition();
+        ImGui::InputFloat3("Position", currPos.data);
+        transform->SetWorldPosition(currPos);
 
-        Renderer::Light* light = lightComponent->GetLight();
-        Renderer::Color col = light->Color;
-        ImGui::ColorPicker4("Light Color", col.data);
-        light->Color = col;
+        Quaternion currRot = transform->GetWorldRotation();
+        Vector3 rotEuler = Quaternion::ToEuler(currRot);
+        ImGui::InputFloat3("Rotation", rotEuler.data);
+        Quaternion finalRot = Quaternion::FromEuler(rotEuler.x, rotEuler.y, rotEuler.z);
+        transform->SetWorldRotation(finalRot);
 
-        ImGui::Text("");
+        Vector3& right = transform->Right();
+        Vector3& fwd = transform->Fwd();
+        Vector3& up = transform->Up();
 
-        const char* lightTypeNames[] = { "Directional", "Point", "Spot" };
-        static int selectedType = 0;
-        selectedType = (int)light->LightType;
-        ImGui::Combo("Light Type", &selectedType, lightTypeNames, IM_ARRAYSIZE(lightTypeNames));
-        light->LightType = Renderer::eLightType(selectedType);
-
-        if (light->LightType == Renderer::eLightType::Directional)
-        {
-            ImGui::InputFloat3("Direction", light->Direction.data);
-            light->Direction.Normalize();
-        }
-        else if (light->LightType == Renderer::eLightType::Point)
-        {
-            float32& radis = light->Data.w;
-            ImGui::InputFloat("Radius", &radis);
-            ImGui::InputFloat3("Attenuation", light->Data.data);
-        }
-        else if (light->LightType == Renderer::eLightType::Spot)
-        {
-            ImGui::InputFloat3("Direction", light->Direction.data);
-            light->Direction.Normalize();
-            float32 innerRad = light->Data.x;
-            float32 outerRad = light->Data.y;
-            innerRad = Math::RadToDeg(innerRad);
-            outerRad = Math::RadToDeg(outerRad);
-            ImGui::InputFloat("Inner radius", &innerRad);
-            ImGui::InputFloat("Outer radius", &outerRad);
-            light->Data.x = Math::DegToRad(innerRad);
-            light->Data.y = Math::DegToRad(outerRad);
-        }
+        ImGui::Text("Right   : % 8.4f, % 8.4f, % 8.4f", right.x, right.y, right.z);
+        ImGui::Text("Forward : % 8.4f, % 8.4f, % 8.4f", fwd.x, fwd.y, fwd.z);
+        ImGui::Text("Up      : % 8.4f, % 8.4f, % 8.4f", up.x, up.y, up.z);
     }
-
-    ImGui::End();
 }
 
 }
