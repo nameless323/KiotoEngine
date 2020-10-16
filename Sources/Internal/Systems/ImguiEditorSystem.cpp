@@ -57,21 +57,19 @@ void ImguiEditorSystem::Update(float32 dt)
     const Entity* selectedEntity = m_entities[selectedEntityIndex];
 
     TransformComponent* transform = selectedEntity->GetTransform();
-    DrawTransformEditor(transform);
-
+    DrawComponentEditor(transform);
 
     RenderComponent* renderComponent = selectedEntity->GetComponent<RenderComponent>();
-    DrawRenderEditor(renderComponent);
+    DrawComponentEditor(renderComponent);
 
 
     LightComponent* lightComponent = selectedEntity->GetComponent<LightComponent>();
-    DrawLightEditor(lightComponent);
-
+    DrawComponentEditor(lightComponent);
 
     ImGui::End();
 }
 
-void ImguiEditorSystem::DrawLightEditor(LightComponent* lightComponent)
+void ImguiEditorSystem::DrawComponentEditor(LightComponent* lightComponent)
 {
     if (lightComponent != nullptr && ImGui::CollapsingHeader("Light", ImGuiTreeNodeFlags_DefaultOpen))
     {
@@ -120,7 +118,7 @@ void ImguiEditorSystem::DrawLightEditor(LightComponent* lightComponent)
     }
 }
 
-void ImguiEditorSystem::DrawRenderEditor(RenderComponent* renderComponent)
+void ImguiEditorSystem::DrawComponentEditor(RenderComponent* renderComponent)
 {
     if (renderComponent != nullptr && ImGui::CollapsingHeader("Render", ImGuiTreeNodeFlags_DefaultOpen))
     {
@@ -173,7 +171,7 @@ void ImguiEditorSystem::DrawRenderEditor(RenderComponent* renderComponent)
     }
 }
 
-void ImguiEditorSystem::DrawTransformEditor(TransformComponent* transform)
+void ImguiEditorSystem::DrawComponentEditor(TransformComponent* transform)
 {
     if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
     {
