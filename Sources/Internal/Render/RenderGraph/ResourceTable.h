@@ -34,7 +34,7 @@ private:
 
 inline Texture* ResourceTable::GetResource(const std::string& name)
 {
-    assert(m_resources.contains(name) && "Resource wasn't added");
+    assert(m_resources.count(name) && "Resource wasn't added");
     return m_resources[name];
 }
 

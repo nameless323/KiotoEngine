@@ -44,7 +44,7 @@ ResourcesBlackboard* ResourceTable::GetBalackboardForPass(const RenderPass* pass
 
 void ResourceTable::ProcessCreationRequest(const ResourceCreationRequest& request)
 {
-    if (m_resources.contains(request.ResourceName))
+    if (m_resources.count(request.ResourceName))
     {
         const TextureDescriptor& desc = m_resources[request.ResourceName]->GetDescriptor();
         if (desc != request.Desc)
