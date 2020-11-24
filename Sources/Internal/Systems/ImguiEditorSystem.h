@@ -25,9 +25,9 @@ public:
     KIOTO_API void Update(float32 dt) override;
 
 private:
-    void DrawLightEditor(LightComponent* lightComponent);
-    void DrawRenderEditor(RenderComponent* renderComponent);
-    void DrawTransformEditor(TransformComponent* transform);
+    void DrawComponentEditor(LightComponent* lightComponent);
+    void DrawComponentEditor(RenderComponent* renderComponent);
+    void DrawComponentEditor(TransformComponent* transform);
 
     std::vector<Entity*> m_entities;
     std::vector<const char*> m_entitiesNames; // [a_vorontcov] meh :(

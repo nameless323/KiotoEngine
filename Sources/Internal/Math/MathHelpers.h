@@ -71,7 +71,7 @@ inline T Ceil(T val)
 FLOAT_TEMPLATE
 inline T Clamp(T val, T low, T top)
 {
-    return max(a, min(b, x));
+    return max(low, min(top, val));
 }
 
 ///

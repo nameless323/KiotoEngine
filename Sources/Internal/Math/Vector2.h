@@ -5,6 +5,7 @@
 #endif
 
 #include "Core/CoreTypes.h"
+#include "Math/MathHelpers.h"
 
 namespace Kioto
 {

@@ -60,7 +60,7 @@ namespace Kioto::Renderer
 
     void RenderObject::SetTexture(const std::string& name, Texture* texture, const std::string& passName)
     {
-        assert(m_textureSets.contains(passName) && "Texture is missing in texture set");
+        assert(m_textureSets.count(passName) && "Texture is missing in texture set");
         m_textureSets[passName].SetTexture(name, texture);
     }
 
@@ -74,7 +74,7 @@ namespace Kioto::Renderer
 
     void RenderObject::SetExternalCB(const std::string& passName, const std::string& cbName, ConstantBufferHandle newHandle)
     {
-        if (!m_renderObjectBuffers.contains(passName))
+        if (!m_renderObjectBuffers.count(passName))
         {
             assert(false);
             return;
@@ -92,7 +92,7 @@ namespace Kioto::Renderer
 
     std::vector<Renderer::ConstantBufferHandle> RenderObject::GetCBHandles(const std::string& passName) const
     {
-        if (!m_renderObjectBuffers.contains(passName))
+        if (!m_renderObjectBuffers.count(passName))
             return {};
         const RenderObjectBufferLayout& layout = m_renderObjectBuffers.at(passName);
 
@@ -105,7 +105,7 @@ namespace Kioto::Renderer
 
     std::vector<uint32> RenderObject::GetConstants(const std::string& passName) const
     {
-        if (!m_renderObjectConstants.contains(passName))
+        if (!m_renderObjectConstants.count(passName))
             return {};
         const RenderObjectConstants& constants = m_renderObjectConstants.at(passName);
 

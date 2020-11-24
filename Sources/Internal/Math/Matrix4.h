@@ -247,7 +247,7 @@ bool Matrix4_<T>::Inversed(Matrix4_<T>& res) const
     if (Math::IsZero(d))
         return false;
 
-    const Matrix4& m = *this;
+    const Matrix4_<T>& m = *this;
 
     d = 1.0f / d;
 

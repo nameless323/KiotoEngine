@@ -149,7 +149,7 @@ inline std::unordered_map<PassName, RenderObjectBufferLayout>& RenderObject::Get
 template <typename T>
 inline void RenderObject::SetConstant(const std::string& passName, const std::string& cName, T constant)
 {
-    if (!m_renderObjectConstants.contains(passName))
+    if (!m_renderObjectConstants.count(passName))
     {
         assert(false);
         return;

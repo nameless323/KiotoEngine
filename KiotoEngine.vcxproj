@@ -23,7 +23,7 @@
     <ProjectGuid>{8C10506B-14FC-496D-B373-9C2793C91A44}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>KiotoEngine</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -101,7 +101,8 @@
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;KIOTOENGINE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Sources\Internal;$(ProjectDir)Libs\yaml-cpp\include;$(ProjectDir)Sources\External;$(ProjectDir)Libs\fbx-sdk\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/Wv:18 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -191,6 +192,7 @@ RD /S /Q $(TargetDir)Assets
     <ClInclude Include="Sources\Internal\Core\ECS\Entity.h" />
     <ClInclude Include="Sources\Internal\Core\ECS\SceneSystem.h" />
     <ClInclude Include="Sources\Internal\Core\ECS\System.h" />
+    <ClInclude Include="Sources\Internal\Core\Reflection\Reflection.h" />
     <ClInclude Include="Sources\Internal\Math\Quaternion.h" />
     <ClInclude Include="Sources\Internal\Math\TransformHelpers.h" />
     <ClInclude Include="Sources\Internal\Render\Color.h" />
