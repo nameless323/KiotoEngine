@@ -67,7 +67,7 @@ void RenderSystem::Update(float32 dt)
         if (!l->GetIsEnabled())
             continue;
         l->GetLight()->Position = l->GetEntity()->GetTransform()->GetWorldPosition();
-        m_drawData.Lights.push_back(l->GetLight());
+        m_drawData.Lights.push_back(l);
     }
     for (auto pass : m_renderPasses)
         m_renderGraph.AddPass(pass);

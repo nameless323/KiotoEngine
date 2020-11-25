@@ -17,6 +17,8 @@
 #include "Render/Shaders/autogen/sInp/Fallback.h"
 #include "Render/Shaders/autogen/CommonStructures.h"
 
+#include "Component/LightComponent.h"
+
 namespace Kioto::Renderer
 {
 ForwardRenderPass::ForwardRenderPass()
@@ -34,7 +36,7 @@ void ForwardRenderPass::BuildRenderPackets(CommandList* commandList, ResourceTab
     SetRenderTargets(commandList, resources);
 
     for (uint32 i = 0; i < m_drawData->Lights.size(); ++i)
-        m_lights.light[i] = *m_drawData->Lights[i];
+        m_lights.light[i] = *m_drawData->Lights[i]->GetLight();
     m_lightsBuffer.Set(m_lights);
 
 
