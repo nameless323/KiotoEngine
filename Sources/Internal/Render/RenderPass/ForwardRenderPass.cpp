@@ -24,7 +24,6 @@ namespace Kioto::Renderer
 ForwardRenderPass::ForwardRenderPass()
     : RenderPass("Forward")
 {
-    assert(sizeof(Light) == sizeof(SInp::Light));
     Renderer::RegisterRenderPass(this);
     Renderer::RegisterConstantBuffer(m_lightsBuffer);
 
@@ -36,12 +35,12 @@ void ForwardRenderPass::BuildRenderPackets(CommandList* commandList, ResourceTab
     SetRenderTargets(commandList, resources);
 
     for (uint32 i = 0; i < m_drawData->Lights.size(); ++i)
-        m_lights.light[i] = *m_drawData->Lights[i]->GetLight();
+        m_lights.light[i] = std::move(m_drawData->Lights[i]->GetGraphicsLight());
     m_lightsBuffer.Set(m_lights);
 
 
     for (auto ro : m_drawData->RenderObjects)
-    {
+    { 
         ro->SetExternalCB(m_passName, Renderer::SInp::Fallback_sinp::cbCameraName, Renderer::GetMainCamera()->GetConstantBuffer().GetHandle());
         ro->SetExternalCB(m_passName, Renderer::SInp::Fallback_sinp::cbEngineName, Renderer::EngineBuffers::GetTimeBuffer().GetHandle());
         ro->SetExternalCB(m_passName, Renderer::SInp::Fallback_sinp::lightsName, m_lightsBuffer.GetHandle());

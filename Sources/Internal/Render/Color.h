@@ -18,6 +18,7 @@ public:
 
     Color();
     Color(float32 r_, float32 g_, float32 b_, float32 a_);
+    Vector4 ToVector4() const;
 
     static const Color DefaultBackgroundColor;
 };
@@ -29,6 +30,11 @@ inline Color::Color() : r(0.0f), g(0.0f), b(0.0f), a(0.0f)
 inline Color::Color(float32 r_, float32 g_, float32 b_, float32 a_)
     : r(r_), g(g_), b(b_), a(a_)
 {
+}
+
+inline Vector4 Color::ToVector4() const
+{
+    return { r, g, b, a };
 }
 
 inline const Color Color::DefaultBackgroundColor(0.45f, 0.45f, 0.45f, 1.0f);

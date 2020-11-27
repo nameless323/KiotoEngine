@@ -21,7 +21,7 @@ private:
 
     struct Lights
     {
-        Light light[256];
+        SInp::Light light[256];
     };
     ConstantBuffer m_lightsBuffer{ "lights", 2, 1, sizeof(Lights), 1, true };
     Lights m_lights;

@@ -17,8 +17,6 @@
 #include "Render/Geometry/GeometryGenerator.h"
 #include "Render/Renderer.h"
 
-#include "Component/LightComponent.h"
-
 #include "Render/Shaders/autogen/sInp/GizmosImpostor.h"
 
 namespace Kioto::Renderer
@@ -85,10 +83,10 @@ void EditorGizmosPass::BuildRenderPackets(CommandList* commandList, ResourceTabl
     {
         RenderObject* ro = m_renderObjects[i];
         SInp::GizmosImpostor_sinp::ImpostorData data;
-        data.position = m_drawData->Lights[i]->GetLight()->Position;
+        data.position = m_drawData->Lights[i]->Position;
         data.scale = 0.5f;
         data.cutoff = 0.8f;
-        data.color = Vector3(m_drawData->Lights[i]->GetLight()->Color.r, m_drawData->Lights[i]->GetLight()->Color.g, m_drawData->Lights[i]->GetLight()->Color.b);
+        data.color = Vector3(m_drawData->Lights[i]->Color.r, m_drawData->Lights[i]->Color.g, m_drawData->Lights[i]->Color.b);
 
         ro->SetBuffer(SInp::GizmosImpostor_sinp::impostorDataName, data, m_passName);
         ro->SetExternalCB(m_passName, Renderer::SInp::GizmosImpostor_sinp::cbCameraName, Renderer::GetMainCamera()->GetConstantBuffer().GetHandle());
@@ -109,7 +107,7 @@ void EditorGizmosPass::BuildRenderPackets(CommandList* commandList, ResourceTabl
     commandList->PushCommand(RenderCommandHelpers::CreatePassEndsCommand(this));
 }
 
-void EditorGizmosPass::CreateNecessaryRenderObjects(const std::vector<LightComponent*>& lights)
+void EditorGizmosPass::CreateNecessaryRenderObjects(const std::vector<Light*>& lights)
 {
     int32 diff = int32(lights.size()) - int32(m_renderObjects.size());
     if (diff <= 0)
