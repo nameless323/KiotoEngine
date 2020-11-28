@@ -131,11 +131,17 @@ private:
     Matrix4 m_VP = Matrix4::Identity;
     bool m_isProjDirty = true;
     float32 m_fovY = Math::DegToRad(60.0f);
-    float32 m_foxX = -1.0f;
+    float32 m_fovX = -1.0f;
     float32 m_nearPlane = 0.01f;
     float32 m_farPlane = 100.0f;
     float32 m_nearPlaneHeight = 0.0f;
     float32 m_farPlaneHeight = 0.0f;
+
+    // [a_vorontcov] Merge the setting with perspective camera settings (m_<near | far>PlaneHeight for example)
+    // but now this way it seems to be more controllable
+    float32 m_orthoWidth = 3.0f;
+    float32 m_orthoHeight = 3.0f;
+
     float32 m_aspect = 1.0f;
     bool m_isOrtho = false;
 };
@@ -234,14 +240,24 @@ inline Matrix4 Camera::GetVP() const
 
 inline void Camera::UpdateProjectionMatrix()
 {
-    m_projection = Matrix4::BuildProjectionFov(GetFovY(), GetAspect(), GetNearPlane(), GetFarPlane());
-    // [a_vorontcov] TODO: If cam - ortho, than other, but later.
+    if (!m_isOrtho)
+    {
+        m_projection = Matrix4::BuildProjectionFov(GetFovY(), GetAspect(), GetNearPlane(), GetFarPlane());
+        // [a_vorontcov] TODO: If cam - ortho, than other, but later.
 
-    m_nearPlaneHeight = 2.0f * m_nearPlane * std::tan(0.5f * m_fovY);
-    m_farPlaneHeight = 2.0f * m_farPlane * std::tan(0.5f * m_fovY);
+        m_nearPlaneHeight = 2.0f * m_nearPlane * std::tan(0.5f * m_fovY);
+        m_farPlaneHeight = 2.0f * m_farPlane * std::tan(0.5f * m_fovY);
 
-    float32 halfWidth = 0.5f * m_aspect * m_nearPlaneHeight;
-    m_foxX = 2.0f * atan(halfWidth / m_nearPlane);
+        float32 halfWidth = 0.5f * m_aspect * m_nearPlaneHeight;
+        m_fovX = 2.0f * atan(halfWidth / m_nearPlane);
+    }
+    else
+    {
+        assert(m_orthoHeight > 0.0f && m_orthoWidth > 0.0f && "Invalid params for an ortho camera");
+        float32 halfHeight = m_orthoHeight * 0.5f;
+        float32 halfWidth = m_orthoWidth * 0.5f;
+        m_projection = Matrix4::BuildOrtho(-halfWidth, halfWidth, -halfHeight, halfHeight, m_nearPlane, m_farPlane);
+    }
 
     m_isProjDirty = false;
 }
