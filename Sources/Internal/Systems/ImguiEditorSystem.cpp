@@ -225,10 +225,11 @@ void ImguiEditorSystem::DrawComponentEditor(CameraComponent* cameraComponent)
         {
             float32 fov = camera.GetFovY();
             fov = Math::RadToDeg(fov);
-            float32 aspect = camera.GetAspect();
             ImGui::InputFloat("FOV", &fov);
-            ImGui::InputFloat("Aspect", &aspect);
             camera.SetFovY(Math::DegToRad(fov));
+
+            float32 aspect = camera.GetAspect();
+            ImGui::InputFloat("Aspect", &aspect);
             camera.SetAspect(aspect);
         }
         else
@@ -236,7 +237,22 @@ void ImguiEditorSystem::DrawComponentEditor(CameraComponent* cameraComponent)
             float32 h = camera.GetOrthoHeight();
             float32 w = camera.GetOrthoWidth();
             ImGui::InputFloat("Ortho height", &h);
-            ImGui::InputFloat("Ortho width", &w);
+
+            static bool useAspect = false;
+            ImGui::Checkbox("Use aspect for width", &useAspect);
+
+            if (useAspect)
+            {
+                float32 aspect = camera.GetAspect();
+                ImGui::InputFloat("Aspect", &aspect);
+                camera.SetAspect(aspect);
+
+                w = h * aspect;
+            }
+            else
+            {
+                ImGui::InputFloat("Ortho width", &w);
+            }
             camera.SetOrthoHeight(h);
             camera.SetOrthoWidth(w);
         }
