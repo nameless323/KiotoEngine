@@ -13,6 +13,7 @@ class Entity;
 class LightComponent;
 class RenderComponent;
 class TransformComponent;
+class CameraComponent;
 
 class ImguiEditorSystem : public SceneSystem
 {
@@ -28,6 +29,7 @@ private:
     void DrawComponentEditor(LightComponent* lightComponent);
     void DrawComponentEditor(RenderComponent* renderComponent);
     void DrawComponentEditor(TransformComponent* transform);
+    void DrawComponentEditor(CameraComponent* cameraComponent);
 
     std::vector<Entity*> m_entities;
     std::vector<const char*> m_entitiesNames; // [a_vorontcov] meh :(
