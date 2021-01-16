@@ -81,6 +81,12 @@ public:
     ///
     bool GetOrthographic() const;
 
+    float32 GetOrthoHeight() const;
+    void SetOrthoHeight(float32 h);
+
+    float32 GetOrthoWidth() const;
+    void SetOrthoWidth(float32 w);
+
     ///
     /// Get height of near clipping plane.
     ///
@@ -214,6 +220,28 @@ inline bool Camera::GetOrthographic() const
     return m_isOrtho;
 }
 
+inline float32 Camera::GetOrthoHeight() const
+{
+    return m_orthoHeight;
+}
+
+inline void Camera::SetOrthoHeight(float32 h)
+{
+    m_orthoHeight = h;
+    m_isProjDirty = true;
+}
+
+inline float32 Camera::GetOrthoWidth() const
+{
+    return m_orthoWidth;
+}
+
+inline void Camera::SetOrthoWidth(float32 w)
+{
+    m_orthoWidth = w;
+    m_isProjDirty = true;
+}
+
 inline float32 Camera::GetNearPlaneHeight() const
 {
     return m_nearPlane;
@@ -243,7 +271,6 @@ inline void Camera::UpdateProjectionMatrix()
     if (!m_isOrtho)
     {
         m_projection = Matrix4::BuildProjectionFov(GetFovY(), GetAspect(), GetNearPlane(), GetFarPlane());
-        // [a_vorontcov] TODO: If cam - ortho, than other, but later.
 
         m_nearPlaneHeight = 2.0f * m_nearPlane * std::tan(0.5f * m_fovY);
         m_farPlaneHeight = 2.0f * m_farPlane * std::tan(0.5f * m_fovY);
