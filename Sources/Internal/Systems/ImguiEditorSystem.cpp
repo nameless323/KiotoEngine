@@ -131,6 +131,15 @@ void ImguiEditorSystem::DrawComponentEditor(RenderComponent* renderComponent)
         renderComponent->SetIsEnabled(isEnabled);
 
         ImGui::Text("");
+
+        bool isVisible = renderComponent->GetIsVisible();
+        ImGui::Checkbox("Is Visible", &isVisible);
+        renderComponent->SetIsVisible(isVisible);
+        bool castShadow = renderComponent->GetCastShadows();
+        ImGui::Checkbox("Cast shadow", &castShadow);
+        renderComponent->SetCastShadows(castShadow);
+
+        ImGui::Text("");
         ImGui::TextColored(ImVec4(0.3f, 0.6f, 0.4f, 1), "Mesh: "); ImGui::SameLine();
         ImGui::Text(renderComponent->GetMesh().c_str());
         ImGui::TextColored(ImVec4(0.3f, 0.6f, 0.4f, 1), "Material: "); ImGui::SameLine();

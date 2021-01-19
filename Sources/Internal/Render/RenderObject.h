@@ -32,6 +32,12 @@ public:
     void SetToModel(const Matrix4& mat);
     const Matrix4* GetToModel() const;
 
+    bool GetCastShadow() const;
+    void SetCastShadow(bool castShadow);
+
+    bool GetIsVisible() const;
+    void SetIsVisible(bool isVisible);
+
     void ComposeAllConstantBuffers();
     void RegisterAllTextureSets();
 
@@ -70,6 +76,8 @@ public:
 private:
     Material* m_material = nullptr;
     Mesh* m_mesh = nullptr;
+    bool m_castShadow = true; // [a_vorontcov] TODO: merge to one bitmask
+    bool m_isVisible = true;
     std::unordered_map<PassName, RenderObjectBufferLayout> m_renderObjectBuffers;
     std::unordered_map<PassName, RenderObjectConstants> m_renderObjectConstants;
     std::unordered_map<PassName, TextureSet> m_textureSets; // [a_vorontcov] Buffers are unique for ro, but texture set is more a material thing. but does it matter for bindless textures and for this engine at all?
@@ -121,6 +129,26 @@ inline void RenderObject::SetToModel(const Matrix4& mat)
 inline const Matrix4* RenderObject::GetToModel() const
 {
     return m_toModel;
+}
+
+inline bool RenderObject::GetCastShadow() const
+{
+    return m_castShadow;
+}
+
+inline void RenderObject::SetCastShadow(bool castShadow)
+{
+    m_castShadow = castShadow;
+}
+
+inline bool RenderObject::GetIsVisible() const
+{
+    return m_isVisible;
+}
+
+inline void RenderObject::SetIsVisible(bool isVisible)
+{
+    m_isVisible = isVisible;
 }
 
 inline const RenderObjectBufferLayout& RenderObject::GetBufferLayout(const PassName& passName)

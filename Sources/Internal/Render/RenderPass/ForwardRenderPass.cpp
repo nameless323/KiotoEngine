@@ -40,7 +40,10 @@ void ForwardRenderPass::BuildRenderPackets(CommandList* commandList, ResourceTab
 
 
     for (auto ro : m_drawData->RenderObjects)
-    { 
+    {
+        if (!ro->GetIsVisible())
+            continue;
+
         ro->SetExternalCB(m_passName, Renderer::SInp::Fallback_sinp::cbCameraName, Renderer::GetMainCamera()->GetConstantBuffer().GetHandle());
         ro->SetExternalCB(m_passName, Renderer::SInp::Fallback_sinp::cbEngineName, Renderer::EngineBuffers::GetTimeBuffer().GetHandle());
         ro->SetExternalCB(m_passName, Renderer::SInp::Fallback_sinp::lightsName, m_lightsBuffer.GetHandle());

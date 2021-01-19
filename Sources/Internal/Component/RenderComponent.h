@@ -30,6 +30,12 @@ public:
     const std::string& GetMaterial() const;
     const std::string& GetMesh() const;
 
+    bool GetCastShadows() const;
+    void SetCastShadows(bool castShadows);
+
+    bool GetIsVisible() const;
+    void SetIsVisible(bool isVisible);
+
     void SetRenderObject(Renderer::RenderObject* renderObject);
     Renderer::RenderObject* GetRenderObject() const;
 
