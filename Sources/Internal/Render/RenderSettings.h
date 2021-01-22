@@ -4,7 +4,7 @@
 
 namespace Kioto
 {
-    struct RenderOptions
+    struct RenderSettings
     {
         enum class RenderModeOptions
         {

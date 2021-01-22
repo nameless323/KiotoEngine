@@ -10,7 +10,7 @@
 #include "Core/CoreTypes.h"
 #include "Core/Input/Input.h"
 
-#include "Render/RenderOptions.h"
+#include "Render/RenderSettings.h"
 
 namespace Kioto
 {
@@ -21,7 +21,7 @@ void Update();
 void Shutdown();
 void ChangeFullscreenMode(bool fullScreen);
 void Resize(uint16 width, uint16 height, bool minimized);
-Kioto::RenderOptions& GetRenderSettings();
+Kioto::RenderSettings& GetRenderSettings();
 }
 
 namespace WindowsApplication

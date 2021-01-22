@@ -10,11 +10,12 @@
 #include "Render/Material.h"
 #include "Render/Shader.h"
 #include "Render/RenderObject.h"
-#include "Render/RenderOptions.h"
+#include "Render/RenderSettings.h"
 #include "Render/RenderPass/ForwardRenderPass.h"
 #include "Render/RenderPass/WireframeRenderPass.h"
 #include "Render/RenderPass/GrayscaleRenderPass.h"
 #include "Render/RenderPass/EditorGizmosPass.h"
+#include "Render/RenderPass/ShadowMapRenderPass.h"
 
 namespace Kioto
 {
@@ -22,7 +23,7 @@ static constexpr uint32 MAX_LIGHTS_COUNT = 256;
 
 RenderSystem::RenderSystem()
 {
-    m_renderPasses.reserve(Kioto::RenderOptions::MaxRenderPassesCount);
+    m_renderPasses.reserve(Kioto::RenderSettings::MaxRenderPassesCount);
     m_drawData.RenderObjects.reserve(2048);
     m_drawData.Lights.reserve(MAX_LIGHTS_COUNT);
     m_components.reserve(2048);
@@ -31,6 +32,7 @@ RenderSystem::RenderSystem()
 
 void RenderSystem::Init()
 {
+    AddRenderPass(new Renderer::ShadowMapRenderPass);
     m_forwardRenderPass = new Renderer::ForwardRenderPass();
     AddRenderPass(m_forwardRenderPass);
     AddRenderPass(new Renderer::EditorGizmosPass());

@@ -10,7 +10,7 @@
 #include "Render/RenderCommand.h"
 #include "Render/RenderObject.h"
 #include "Render/RenderPacket.h"
-#include "Render/RenderOptions.h"
+#include "Render/RenderSettings.h"
 #include "Render/Shader.h"
 #include "Render/RenderGraph/ResourcesBlackboard.h"
 #include "Render/RenderGraph/ResourceTable.h"

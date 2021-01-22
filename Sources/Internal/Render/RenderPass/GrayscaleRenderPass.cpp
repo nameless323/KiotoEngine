@@ -9,7 +9,7 @@
 #include "Render/RenderCommand.h"
 #include "Render/RenderObject.h"
 #include "Render/RenderPacket.h"
-#include "Render/RenderOptions.h"
+#include "Render/RenderSettings.h"
 #include "Render/Shader.h"
 #include "Render/RenderGraph/ResourcesBlackboard.h"
 #include "Render/RenderGraph/ResourceTable.h"
@@ -86,12 +86,12 @@ void GrayscaleRenderPass::SetRenderTargets(CommandList* commandList, ResourceTab
 
 bool GrayscaleRenderPass::ConfigureInputsAndOutputs(ResourcesBlackboard& resources)
 {
-    const RenderOptions& settings = KiotoCore::GetRenderSettings();
+    const RenderSettings& settings = KiotoCore::GetRenderSettings();
 
     resources.ScheduleRead("FwdTargetTexture");
 
-    if (settings.RenderMode == RenderOptions::RenderModeOptions::Final
-        || settings.RenderMode == RenderOptions::RenderModeOptions::FinalAndWireframe)
+    if (settings.RenderMode == RenderSettings::RenderModeOptions::Final
+        || settings.RenderMode == RenderSettings::RenderModeOptions::FinalAndWireframe)
         return true;
     return false;
 }

@@ -3,7 +3,7 @@
 #include "Render/RenderGraph/RenderGraph.h"
 
 #include "Render/Renderer.h"
-#include "Render/RenderOptions.h"
+#include "Render/RenderSettings.h"
 #include "Render/RenderPass/RenderPass.h"
 #include "Render/RenderPass/DrawData.h"
 
@@ -12,10 +12,10 @@ namespace Kioto::Renderer
 
 RenderGraph::RenderGraph()
 {
-    m_registredPasses.reserve(RenderOptions::MaxRenderPassesCount);
-    m_activePasses.reserve(RenderOptions::MaxRenderPassesCount);
+    m_registredPasses.reserve(RenderSettings::MaxRenderPassesCount);
+    m_activePasses.reserve(RenderSettings::MaxRenderPassesCount);
 
-    m_commandListPool.resize(RenderOptions::MaxRenderCommandsCount);
+    m_commandListPool.resize(RenderSettings::MaxRenderCommandsCount);
 }
 
 void RenderGraph::AddPass(RenderPass* renderPass)

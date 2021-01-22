@@ -9,7 +9,7 @@
 #include "Render/RenderCommand.h"
 #include "Render/RenderObject.h"
 #include "Render/RenderPacket.h"
-#include "Render/RenderOptions.h"
+#include "Render/RenderSettings.h"
 #include "Render/Shader.h"
 
 #include "Render/Shaders/autogen/sInp/Wireframe.h"
@@ -60,7 +60,7 @@ void WireframeRenderPass::Cleanup()
 
 void WireframeRenderPass::SetRenderTargets(CommandList* commandList, ResourceTable& resources)
 {
-    bool isWireframe = KiotoCore::GetRenderSettings().RenderMode == RenderOptions::RenderModeOptions::Wireframe;
+    bool isWireframe = KiotoCore::GetRenderSettings().RenderMode == RenderSettings::RenderModeOptions::Wireframe;
     SetRenderTargetsCommand cmd;
     cmd.SetRenderTargets(Renderer::DefaultBackBufferHandle);
     cmd.RenderTargetCount = GetRenderTargetCount();
@@ -80,9 +80,9 @@ void WireframeRenderPass::SetRenderTargets(CommandList* commandList, ResourceTab
 
 bool WireframeRenderPass::ConfigureInputsAndOutputs(ResourcesBlackboard& resources)
 {
-    const RenderOptions& settings = KiotoCore::GetRenderSettings();
-    if (settings.RenderMode == RenderOptions::RenderModeOptions::Wireframe
-        || settings.RenderMode == RenderOptions::RenderModeOptions::FinalAndWireframe)
+    const RenderSettings& settings = KiotoCore::GetRenderSettings();
+    if (settings.RenderMode == RenderSettings::RenderModeOptions::Wireframe
+        || settings.RenderMode == RenderSettings::RenderModeOptions::FinalAndWireframe)
         return true;
     return false;
 }
