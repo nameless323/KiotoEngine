@@ -21,6 +21,8 @@ public:
     Vector4 ToVector4() const;
 
     static const Color DefaultBackgroundColor;
+    static const Color Black;
+    static const Color White;
 };
 
 inline Color::Color() : r(0.0f), g(0.0f), b(0.0f), a(0.0f)
@@ -38,4 +40,6 @@ inline Vector4 Color::ToVector4() const
 }
 
 inline const Color Color::DefaultBackgroundColor(0.45f, 0.45f, 0.45f, 1.0f);
+inline const Color Color::Black(0.0f, 0.0f, 0.0f, 1.0f);
+inline const Color Color::White(1.0f, 1.0f, 1.0f, 1.0f);
 }

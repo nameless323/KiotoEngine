@@ -15,6 +15,8 @@
 #include "Render/RenderGraph/ResourcesBlackboard.h"
 #include "Render/RenderGraph/ResourceTable.h"
 
+#include "Render/Shaders/autogen/sInp/ShadowMap.h"
+
 namespace Kioto::Renderer
 {
 ShadowMapRenderPass::ShadowMapRenderPass()
@@ -47,7 +49,33 @@ bool ShadowMapRenderPass::ConfigureInputsAndOutputs(ResourcesBlackboard& resourc
 
 void ShadowMapRenderPass::BuildRenderPackets(CommandList* commandList, ResourceTable& resources)
 {
+    SetRenderTargets(commandList, resources);
 
+    for (auto ro : m_drawData->RenderObjects)
+    {
+        if (!ro->GetIsVisible() || !ro->GetCastShadow())
+            continue;
+
+        ro->SetExternalCB(m_passName, Renderer::SInp::ShadowMap_sinp::cbCameraName, Renderer::GetMainCamera()->GetConstantBuffer().GetHandle());
+        ro->SetExternalCB(m_passName, Renderer::SInp::ShadowMap_sinp::cbEngineName, Renderer::EngineBuffers::GetTimeBuffer().GetHandle());
+
+        Material* mat = ro->GetMaterial();
+        Mesh* mesh = ro->GetMesh();
+        mat->BuildMaterialForPass(this);
+
+        ro->PrepareConstantBuffers(m_passName);
+
+        RenderPacket currPacket = {};
+        currPacket.Material = mat->GetHandle();
+        currPacket.Shader = mat->GetPipelineState(m_passName).Shader->GetHandle();
+        currPacket.TextureSet = ro->GetTextureSet(m_passName).GetHandle();
+        currPacket.Mesh = mesh->GetHandle();
+        currPacket.Pass = GetHandle();
+        currPacket.ConstantBufferHandles = std::move(ro->GetCBHandles(m_passName));
+
+        commandList->PushCommand(RenderCommandHelpers::CreateRenderPacketCommand(currPacket, this));
+    }
+    commandList->PushCommand(RenderCommandHelpers::CreatePassEndsCommand(this));
 }
 
 void ShadowMapRenderPass::Cleanup()
@@ -57,7 +85,22 @@ void ShadowMapRenderPass::Cleanup()
 
 void ShadowMapRenderPass::SetRenderTargets(CommandList* commandList, ResourceTable& resources)
 {
+    SetRenderTargetsCommand cmd;
+    Texture* shadowMap = resources.GetResource("ShadowMap");
+    cmd.SetRenderTargets(shadowMap->GetHandle());
+    cmd.RenderTargetCount = GetRenderTargetCount();
+    cmd.DepthStencil = Renderer::InvalidHandle;
 
+    cmd.Viewport = { 0, 0, m_shadowmapSize, m_shadowmapSize };
+    cmd.Scissor = { 0, 0, m_shadowmapSize, m_shadowmapSize };
+    cmd.ClearDepth = true;
+    cmd.ClearDepthValue = 0.f;
+    cmd.ClearColor = true;
+    cmd.ClearColorValue = Color::Black;
+    cmd.ClearStencil = true;
+    cmd.ClearStencilValue = 0;
+
+    commandList->PushCommand(RenderCommandHelpers::CreateSetRenderTargetCommand(cmd, this));
 }
 
 }

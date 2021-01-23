@@ -17,6 +17,6 @@ private:
     void SetRenderTargets(CommandList* commandList, ResourceTable& resources) override;
 
     Mesh* m_debugQuad = nullptr;
-    uint32 m_shadowmapSize = 1024;
+    int32 m_shadowmapSize = 1024;
 };
 }
