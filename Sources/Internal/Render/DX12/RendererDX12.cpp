@@ -19,6 +19,10 @@
 #include "Render/Material.h"
 #include "Render/RenderPass/RenderPass.h"
 
+#ifdef _DEBUG
+#include "Core/Logger/Logger.h"
+#endif
+
 namespace Kioto::Renderer
 {
 
@@ -116,7 +120,7 @@ void RendererDX12::Init(uint16 width, uint16 height)
 
     m_textureManager.InitRtvHeap(m_state);
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && defined(LOG_ADAPTERS)
     LogAdapters();
 
     DXGI_ADAPTER_DESC adapterDesc;
@@ -126,7 +130,7 @@ void RendererDX12::Init(uint16 width, uint16 height)
     text += adapterDesc.Description;
     text += L"\n";
     text += L"****\n";
-    OutputDebugString(text.c_str());
+    LOG(WstrToStr(text));
 #endif
 }
 
@@ -135,6 +139,7 @@ void RendererDX12::LoadPipeline()
     WaitForGPU();
 }
 
+#define DUMP_RESOURCE_TRANSITIONS
 void RendererDX12::ResourceTransition(StateDX& dxState, TextureHandle resourceHandle, eResourceState destState)
 {
     TextureDX12* tex = m_textureManager.FindTexture(resourceHandle);
@@ -143,6 +148,11 @@ void RendererDX12::ResourceTransition(StateDX& dxState, TextureHandle resourceHa
     auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(tex->Resource.Get(), dxSrcState, dxDstState);
     m_state.CommandList->ResourceBarrier(1, &barrier);
     tex->SetCurrentState(dxDstState);
+
+#if defined(_DEBUG) && defined(DUMP_RESOURCE_TRANSITIONS)
+    LOG("Resource name: ", tex->GetDebugName(), " State before: ", dxSrcState, " State after: ", dxDstState);
+#endif
+
 }
 
 void RendererDX12::Shutdown()
@@ -158,8 +168,8 @@ void RendererDX12::Shutdown()
     ComPtr<IDXGIDebug1> dxgiDebug;
     if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&dxgiDebug))))
         dxgiDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_FLAGS(DXGI_DEBUG_RLO_SUMMARY | DXGI_DEBUG_RLO_IGNORE_INTERNAL));
+    LOG("************************Shutdown\n");
 #endif
-    OutputDebugStringA("************************Shutdown\n");
 }
 
 void RendererDX12::InitImGui()
@@ -328,7 +338,7 @@ void RendererDX12::Present()
                 dsHandle = m_swapChain.GetDepthStencilCPUHandle();
             else
             {
-                assert(false);
+                assert("RendererDX12: non default ds textures are not supported at the moment" && false);
                 // [a_vorontcov] TODO: ToBeImplemented dsHandle = m_textureManager.GetDsvHandle(srtCommand.GetDepthStencil());
             }
 
@@ -451,6 +461,7 @@ void RendererDX12::Present()
     }
 }
 
+#ifdef _DEBUG
 void RendererDX12::LogAdapters()
 {
     UINT i = 0;
@@ -464,7 +475,7 @@ void RendererDX12::LogAdapters()
         std::wstring text = L"--ADAPTER: ";
         text += adapterDesc.Description;
         text += L"\n";
-        OutputDebugString(text.c_str());
+        LOG(WstrToStr(text));
         adapterList.push_back(adapter);
         ++i;
     }
@@ -506,15 +517,16 @@ void RendererDX12::LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format
     {
         UINT n = x.RefreshRate.Numerator;
         UINT d = x.RefreshRate.Denominator;
-        std::wstring text =
-            L"Width = " + std::to_wstring(x.Width) + L"  " +
-            L"Height = " + std::to_wstring(x.Height) + L"  " +
-            L"Refresh = " + std::to_wstring(n) + L"/" + std::to_wstring(d) +
-            L"\n";
+        std::string text =
+            "Width = " + std::to_string(x.Width) + "  " +
+            "Height = " + std::to_string(x.Height) + "  " +
+            "Refresh = " + std::to_string(n) + "/" + std::to_string(d) +
+            "\n";
 
-        OutputDebugString(text.c_str());
+        LOG(text);
     }
 }
+#endif
 
 void RendererDX12::ChangeFullScreenMode(bool fullScreen)
 {

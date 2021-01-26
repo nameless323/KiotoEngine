@@ -28,7 +28,7 @@ template<typename ... TR>
 inline void WriteLog(const char* file, int line, const TR& ... rest)
 {
     std::stringstream ss;
-    ss << file << "(" << line << ")" << " | ";
+    ss << file << "(" << line << "): " << " | ";
     WriteLog(ss, rest...);
 }
 }

@@ -38,7 +38,7 @@ bool ShadowMapRenderPass::ConfigureInputsAndOutputs(ResourcesBlackboard& resourc
     desc.Height = m_shadowmapSize;
     desc.InitialState = eResourceState::Common;
     desc.FastClear = true;
-    desc.FastClearValue = Color{ 0.0f, 1.0f, 0.0f, 1.0f };
+    desc.FastClearValue = Color::Black;
     desc.Name = "ShadowMap";
 
     resources.NewTexture("ShadowMap", std::move(desc));
@@ -89,7 +89,7 @@ void ShadowMapRenderPass::SetRenderTargets(CommandList* commandList, ResourceTab
     Texture* shadowMap = resources.GetResource("ShadowMap");
     cmd.SetRenderTargets(shadowMap->GetHandle());
     cmd.RenderTargetCount = GetRenderTargetCount();
-    cmd.DepthStencil = Renderer::InvalidHandle;
+    cmd.DepthStencil = Renderer::DefaultDepthStencilHandle;
 
     cmd.Viewport = { 0, 0, m_shadowmapSize, m_shadowmapSize };
     cmd.Scissor = { 0, 0, m_shadowmapSize, m_shadowmapSize };

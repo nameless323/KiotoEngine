@@ -165,7 +165,7 @@ struct TextureDescriptor
     uint32 Height = 0;
     bool FastClear = true;
     std::variant<Color, Vector2> FastClearValue;
-    std::string Name = "";
+    std::string Name = ""; // [a_vorontcov] TODO: should be there only in debug config.
 
     friend bool operator== (const TextureDescriptor& lhs, const TextureDescriptor& rhs);
     friend bool operator!= (const TextureDescriptor& lhs, const TextureDescriptor& rhs);

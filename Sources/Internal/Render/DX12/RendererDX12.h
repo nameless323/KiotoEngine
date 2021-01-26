@@ -80,9 +80,11 @@ private:
     void ShutdownImGui();
     void GetHardwareAdapter(IDXGIFactory4* factory, IDXGIAdapter1** adapter);
     void WaitForGPU();
+#ifdef _DEBUG
     void LogAdapters();
     void LogAdapterOutputs(IDXGIAdapter* adapter);
     void LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format);
+#endif
     void LoadPipeline();
     void ResourceTransition(StateDX& dxState, TextureHandle resourceHandle, eResourceState destState);
 

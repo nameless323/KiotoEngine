@@ -35,6 +35,10 @@ void TextureDX12::CreateFromFile(ID3D12Device* device, ID3D12GraphicsCommandList
 
 void TextureDX12::CreateFromDescriptor(ID3D12Device* device, ID3D12GraphicsCommandList* commandList)
 {
+#ifdef _DEBUG
+    if (!m_isDescriptorInitialized)
+        assert("Initialize texture descriptor before creating the texture with the descriptor" && false);
+#endif
     D3D12_RESOURCE_DESC textureDesc = {};
     textureDesc.MipLevels = 1;
     textureDesc.Format = KiotoDx12Mapping::ResourceFormats[m_descriptor.Format];
