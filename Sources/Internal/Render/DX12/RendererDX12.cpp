@@ -139,7 +139,6 @@ void RendererDX12::LoadPipeline()
     WaitForGPU();
 }
 
-#define DUMP_RESOURCE_TRANSITIONS
 void RendererDX12::ResourceTransition(StateDX& dxState, TextureHandle resourceHandle, eResourceState destState)
 {
     TextureDX12* tex = m_textureManager.FindTexture(resourceHandle);

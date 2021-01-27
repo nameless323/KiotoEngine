@@ -75,6 +75,8 @@ void ShadowMapRenderPass::BuildRenderPackets(CommandList* commandList, ResourceT
 
         commandList->PushCommand(RenderCommandHelpers::CreateRenderPacketCommand(currPacket, this));
     }
+    Texture* shadowMap = resources.GetResource("ShadowMap");
+    commandList->PushCommand(RenderCommandHelpers::CreateResourceTransitonCommand(shadowMap->GetHandle(), eResourceState::PixelShaderResource, this)); // [a_vorontcov] Placeholder to prevent transition from rt to rt.
     commandList->PushCommand(RenderCommandHelpers::CreatePassEndsCommand(this));
 }
 

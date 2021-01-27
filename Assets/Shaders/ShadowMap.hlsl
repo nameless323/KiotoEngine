@@ -19,5 +19,5 @@ vOut vs(vIn inp)
 float4 ps(vOut inp) : SV_Target
 {
     float depth = inp.outPos.z / inp.outPos.w;
-    return float4(depth.xxx, 1.0f);
+    return float4(depth, 0.0f, 0.0f, 1.0f);
 }
