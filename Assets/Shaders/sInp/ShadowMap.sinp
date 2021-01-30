@@ -1,4 +1,7 @@
-#include "Includes\EngineBuffers.kincl"
+constantBuffer cbDepthVP
+{
+    float4x4 DepthVP;
+};
 
 constantBuffer cbRenderObject
 {

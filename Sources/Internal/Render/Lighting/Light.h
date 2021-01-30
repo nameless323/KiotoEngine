@@ -22,6 +22,9 @@ struct Light
     float32 Pad0;
     Vector4 Data{}; // [a_vorontcov] See Lighting.kincl Light struct for more details.
 
+    Matrix4 ShadowMatrix{};
+    bool CastShadow = false;
+
     Light& operator=(const Light& other) = default;
 
     SInp::Light GetGraphicsLight() const;

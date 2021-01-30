@@ -29,6 +29,7 @@ public:
 
     void ScheduleRead(std::string name);
     void ScheduleWrite(std::string name);
+    void ScheduleWriteDS(std::string name);
     void ScheduleUnorderedAccess(std::string name);
     const std::vector<ResourceTransitionRequest>& GetTransitionRequests() const;
     const std::vector<ResourceCreationRequest>& GetCreationRequest() const;

@@ -82,6 +82,11 @@ void ImguiEditorSystem::DrawComponentEditor(LightComponent* lightComponent)
         lightComponent->SetIsEnabled(isEnabled);
         ImGui::Text("");
 
+        bool castsShadows = lightComponent->GetLight()->CastShadow;
+        ImGui::Checkbox("Casts shadow", &castsShadows);
+        lightComponent->GetLight()->CastShadow = castsShadows;
+        ImGui::Text("");
+
         Renderer::Light* light = lightComponent->GetLight();
         Renderer::Color col = light->Color;
         ImGui::ColorPicker4("Light Color", col.data);

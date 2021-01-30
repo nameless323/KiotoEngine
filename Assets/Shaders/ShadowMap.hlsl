@@ -9,7 +9,7 @@ struct vOut
 vOut vs(vIn inp)
 {
     float4 pos = mul(float4(inp.position.xyz, 1.0f), cbRenderObject.ToWorld);
-    pos = mul(pos, cbCamera.ViewProjection);
+    pos = mul(pos, cbDepthVP.DepthVP);
     vOut o;
     o.position = pos;
     o.outPos = pos;

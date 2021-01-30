@@ -327,13 +327,13 @@ inline void Camera::BuildProjectionInternal(float32 fovY, float32 aspect, float3
 
     m_projection = Matrix4::BuildProjectionFov(GetFovY(), GetAspect(), GetNearPlane(), GetFarPlane());
 
-    m_isProjDirty = true;
+    m_isProjDirty = false;
 }
 
 inline void Camera::BuildOrthoInternal(float32 left, float32 right, float32 bottom, float32 top, float32 zNear, float32 zFar)
 {
     m_projection = Matrix4::BuildOrtho(left, right, bottom, top, zNear, zFar);
 
-    m_isProjDirty = true;
+    m_isProjDirty = false;
 }
 }
