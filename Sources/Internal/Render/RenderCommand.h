@@ -100,6 +100,11 @@ public:
         return DepthStencil;
     }
 
+    void SetDepthStencil(TextureHandle dsHandle)
+    {
+        DepthStencil = dsHandle;
+    }
+
     TextureHandle DepthStencil;
 
     RectI Scissor;

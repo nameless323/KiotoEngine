@@ -12,6 +12,7 @@ namespace Kioto::Renderer
 namespace
 {
 constexpr uint16 MaxRenderTargetViews = 256;
+constexpr uint16 MaxDepthStencilViews = 32;
 }
 
 TextureManagerDX12::TextureManagerDX12()
@@ -54,6 +55,15 @@ void TextureManagerDX12::InitRtvHeap(const StateDX& state)
     heapDescr.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
     heapDescr.NumDescriptors = MaxRenderTargetViews;
     ThrowIfFailed(state.Device->CreateDescriptorHeap(&heapDescr, IID_PPV_ARGS(&m_rtvHeap)));
+}
+
+void TextureManagerDX12::InitDsvHeap(const StateDX& state)
+{
+    D3D12_DESCRIPTOR_HEAP_DESC heapDescr = {};
+    heapDescr.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+    heapDescr.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+    heapDescr.NumDescriptors = MaxDepthStencilViews;
+    ThrowIfFailed(state.Device->CreateDescriptorHeap(&heapDescr, IID_PPV_ARGS(&m_dsvHeap)));
 }
 
 void TextureManagerDX12::UpdateTextureSetHeap(const StateDX& state, const TextureSet& texSet)
@@ -126,22 +136,29 @@ void TextureManagerDX12::ProcessRegistationQueue(const StateDX& state)
     for (auto& tex : m_textureQueue)
     {
         tex->Create(state.Device.Get(), state.CommandList.Get());
-        if (tex->GetIsFromMemoryAsset() && ((tex->GetDx12TextureFlags() & D3D12_RESOURCE_FLAGS::D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET) != 0))
+        if (tex->GetIsFromMemoryAsset())
         {
-            assert(m_rtvHeapOffsets.count(tex->GetHandle()) == 0);
-            m_rtvHeapOffsets[tex->GetHandle()] = m_currentRtvOffset;
+            if ((tex->GetDx12TextureFlags() & D3D12_RESOURCE_FLAGS::D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET) != 0)
+            {
+                assert(m_rtvHeapOffsets.count(tex->GetHandle()) == 0);
+                m_rtvHeapOffsets[tex->GetHandle()] = m_currentRtvOffset;
 
-            CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
-            handle.Offset(m_currentRtvOffset);
+                CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
+                handle.Offset(m_currentRtvOffset);
 
-            m_currentRtvOffset += state.RtvDescriptorSize;
+                m_currentRtvOffset += state.RtvDescriptorSize;
 
-            D3D12_RENDER_TARGET_VIEW_DESC texDescr = {};
-            texDescr.Format = tex->Resource->GetDesc().Format;
-            texDescr.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
-            texDescr.Texture2D = { 0, 0};
+                D3D12_RENDER_TARGET_VIEW_DESC texDescr = {};
+                texDescr.Format = tex->Resource->GetDesc().Format;
+                texDescr.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+                texDescr.Texture2D = { 0, 0 };
 
-            state.Device->CreateRenderTargetView(tex->Resource.Get(), &texDescr, handle);
+                state.Device->CreateRenderTargetView(tex->Resource.Get(), &texDescr, handle);
+            }
+            else if ((tex->GetDx12TextureFlags() & D3D12_RESOURCE_FLAGS::D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL) != 0)
+            {
+                todo
+            }
         }
     }
     m_textureQueue.clear();

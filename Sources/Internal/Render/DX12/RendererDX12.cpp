@@ -119,6 +119,7 @@ void RendererDX12::Init(uint16 width, uint16 height)
     InitImGui();
 
     m_textureManager.InitRtvHeap(m_state);
+    m_textureManager.InitDsvHeap(m_state);
 
 #if defined(_DEBUG) && defined(LOG_ADAPTERS)
     LogAdapters();
@@ -328,10 +329,17 @@ void RendererDX12::Present()
             const SetRenderTargetsCommand& srtCommand = std::get<SetRenderTargetsCommand>(cmd.Command);
             D3D12_CPU_DESCRIPTOR_HANDLE rtHandle;
             D3D12_CPU_DESCRIPTOR_HANDLE dsHandle;
-            if (srtCommand.GetRenderTarget(0) == DefaultBackBufferHandle)
-                rtHandle = m_swapChain.GetCurrentBackBufferCPUHandle(m_state);
-            else
-                rtHandle = m_textureManager.GetRtvHandle(srtCommand.GetRenderTarget(0));
+            D3D12_CPU_DESCRIPTOR_HANDLE* rtHandlePtr = nullptr;
+
+            TextureHandle currentRTHandle = srtCommand.GetRenderTarget(0);
+            if (currentRTHandle != InvalidHandle)
+            {
+                if (currentRTHandle  == DefaultBackBufferHandle)
+                    rtHandle = m_swapChain.GetCurrentBackBufferCPUHandle(m_state);
+                else
+                    rtHandle = m_textureManager.GetRtvHandle(currentRTHandle);
+                rtHandlePtr = &rtHandle;
+            }
 
             if (srtCommand.GetDepthStencil() == DefaultDepthStencilHandle)
                 dsHandle = m_swapChain.GetDepthStencilCPUHandle();
@@ -344,12 +352,12 @@ void RendererDX12::Present()
             m_state.CommandList->RSSetScissorRects(1, &DXRectFromKioto(srtCommand.Scissor));
             m_state.CommandList->RSSetViewports(1, &DXViewportFromKioto(srtCommand.Viewport));
 
-            if (srtCommand.ClearColor)
+            if (srtCommand.ClearColor && currentRTHandle != InvalidHandle)
                 m_state.CommandList->ClearRenderTargetView(rtHandle, srtCommand.ClearColorValue.data, 0, nullptr);
             if (srtCommand.ClearDepth)
                 m_state.CommandList->ClearDepthStencilView(dsHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
-            m_state.CommandList->OMSetRenderTargets(1, &rtHandle, false, &dsHandle);
+            m_state.CommandList->OMSetRenderTargets(1, rtHandlePtr, false, &dsHandle);
         }
         else if (cmd.CommandType == eRenderCommandType::eEndRenderPass)
         {

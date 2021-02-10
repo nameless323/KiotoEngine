@@ -25,7 +25,7 @@ ShadowMapRenderPass::ShadowMapRenderPass()
 {
     Renderer::RegisterRenderPass(this);
 
-    SetRenderTargetCount(1);
+    SetRenderTargetCount(0);
     m_debugQuad = GeometryGenerator::GetFullscreenQuad();
 }
 
@@ -33,13 +33,13 @@ bool ShadowMapRenderPass::ConfigureInputsAndOutputs(ResourcesBlackboard& resourc
 {
     TextureDescriptor desc;
     desc.Dimension = eResourceDim::Texture2D;
-    desc.Format = eResourceFormat::Format_R8G8B8A8_UNORM;
-    desc.Flags = eResourceFlags::AllowRenderTarget;
+    desc.Format = eResourceFormat::Format_D32_FLOAT;
+    desc.Flags = eResourceFlags::AllowDepthStencil;
     desc.Width = m_shadowmapSize;
     desc.Height = m_shadowmapSize;
     desc.InitialState = eResourceState::Common;
     desc.FastClear = true;
-    desc.FastClearValue = Color::Black;
+    desc.FastClearValue = 0;
     desc.Name = "ShadowMap";
 
     resources.NewTexture("ShadowMap", std::move(desc));
@@ -99,9 +99,10 @@ void ShadowMapRenderPass::SetRenderTargets(CommandList* commandList, ResourceTab
 {
     SetRenderTargetsCommand cmd;
     Texture* shadowMap = resources.GetResource("ShadowMap");
-    cmd.SetRenderTargets(shadowMap->GetHandle());
-    cmd.RenderTargetCount = GetRenderTargetCount();
-    cmd.DepthStencil = Renderer::DefaultDepthStencilHandle;
+    cmd.SetRenderTargets();
+    cmd.RenderTargetCount = 0;
+
+    cmd.SetDepthStencil(shadowMap->GetHandle());
 
     cmd.Viewport = { 0, 0, m_shadowmapSize, m_shadowmapSize };
     cmd.Scissor = { 0, 0, m_shadowmapSize, m_shadowmapSize };
