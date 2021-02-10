@@ -157,7 +157,20 @@ void TextureManagerDX12::ProcessRegistationQueue(const StateDX& state)
             }
             else if ((tex->GetDx12TextureFlags() & D3D12_RESOURCE_FLAGS::D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL) != 0)
             {
-                todo
+                assert(m_dsvHeapOffsets.count(tex->GetHandle()) == 0);
+                m_dsvHeapOffsets[tex->GetHandle()] = m_currentDsvOffset;
+
+                CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
+                handle.Offset(m_currentDsvOffset);
+
+                m_currentDsvOffset += state.DsvDescriptorSize;
+
+                D3D12_DEPTH_STENCIL_VIEW_DESC texDescr = {};
+                texDescr.Format = tex->Resource->GetDesc().Format;
+                texDescr.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+                texDescr.Texture2D = { 0 };
+
+                state.Device->CreateDepthStencilView(tex->Resource.Get(), &texDescr, handle);
             }
         }
     }
@@ -189,6 +202,14 @@ D3D12_CPU_DESCRIPTOR_HANDLE TextureManagerDX12::GetRtvHandle(TextureHandle handl
     CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
     rtvHandle.Offset(m_rtvHeapOffsets.at(handle));
     return rtvHandle;
+}
+
+D3D12_CPU_DESCRIPTOR_HANDLE TextureManagerDX12::GetDsvHandle(TextureHandle handle) const
+{
+    assert(m_dsvHeapOffsets.count(handle) == 1 && "The texture is not registred as a dsv");
+    CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
+    dsvHandle.Offset(m_dsvHeapOffsets.at(handle));
+    return dsvHandle;
 }
 
 }

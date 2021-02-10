@@ -35,6 +35,7 @@ public:
     TextureDX12* FindTexture(TextureHandle handle);
 
     D3D12_CPU_DESCRIPTOR_HANDLE GetRtvHandle(TextureHandle handle) const;
+    D3D12_CPU_DESCRIPTOR_HANDLE GetDsvHandle(TextureHandle handle) const;
 
 private:
     std::map<TextureSetHandle, Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>> m_textureHeaps; // [a_vorontcov] TODO: One tex heap for all textures?

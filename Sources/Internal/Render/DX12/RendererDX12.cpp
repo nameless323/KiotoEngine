@@ -330,23 +330,26 @@ void RendererDX12::Present()
             D3D12_CPU_DESCRIPTOR_HANDLE rtHandle;
             D3D12_CPU_DESCRIPTOR_HANDLE dsHandle;
             D3D12_CPU_DESCRIPTOR_HANDLE* rtHandlePtr = nullptr;
+            D3D12_CPU_DESCRIPTOR_HANDLE* dsHandlePtr = nullptr;
 
             TextureHandle currentRTHandle = srtCommand.GetRenderTarget(0);
             if (currentRTHandle != InvalidHandle)
             {
-                if (currentRTHandle  == DefaultBackBufferHandle)
+                if (currentRTHandle == DefaultBackBufferHandle)
                     rtHandle = m_swapChain.GetCurrentBackBufferCPUHandle(m_state);
                 else
                     rtHandle = m_textureManager.GetRtvHandle(currentRTHandle);
                 rtHandlePtr = &rtHandle;
             }
 
-            if (srtCommand.GetDepthStencil() == DefaultDepthStencilHandle)
-                dsHandle = m_swapChain.GetDepthStencilCPUHandle();
-            else
+            TextureHandle currentDSHandle = srtCommand.GetDepthStencil();
+            if (currentDSHandle != InvalidHandle)
             {
-                assert("RendererDX12: non default ds textures are not supported at the moment" && false);
-                // [a_vorontcov] TODO: ToBeImplemented dsHandle = m_textureManager.GetDsvHandle(srtCommand.GetDepthStencil());
+                if (currentDSHandle == DefaultDepthStencilHandle)
+                    dsHandle = m_swapChain.GetDepthStencilCPUHandle();
+                else
+                    dsHandle = m_textureManager.GetDsvHandle(currentDSHandle);
+                dsHandlePtr = &dsHandle;
             }
 
             m_state.CommandList->RSSetScissorRects(1, &DXRectFromKioto(srtCommand.Scissor));
@@ -354,10 +357,10 @@ void RendererDX12::Present()
 
             if (srtCommand.ClearColor && currentRTHandle != InvalidHandle)
                 m_state.CommandList->ClearRenderTargetView(rtHandle, srtCommand.ClearColorValue.data, 0, nullptr);
-            if (srtCommand.ClearDepth)
+            if (srtCommand.ClearDepth && currentDSHandle != InvalidHandle)
                 m_state.CommandList->ClearDepthStencilView(dsHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
-            m_state.CommandList->OMSetRenderTargets(1, rtHandlePtr, false, &dsHandle);
+            m_state.CommandList->OMSetRenderTargets(1, rtHandlePtr, false, dsHandlePtr);
         }
         else if (cmd.CommandType == eRenderCommandType::eEndRenderPass)
         {

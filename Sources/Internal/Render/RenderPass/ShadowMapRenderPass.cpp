@@ -39,7 +39,7 @@ bool ShadowMapRenderPass::ConfigureInputsAndOutputs(ResourcesBlackboard& resourc
     desc.Height = m_shadowmapSize;
     desc.InitialState = eResourceState::Common;
     desc.FastClear = true;
-    desc.FastClearValue = 0;
+    desc.FastClearValue = Vector2(0.0f, 0.0f);
     desc.Name = "ShadowMap";
 
     resources.NewTexture("ShadowMap", std::move(desc));

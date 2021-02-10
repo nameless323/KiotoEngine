@@ -60,7 +60,14 @@ void TextureDX12::CreateFromDescriptor(ID3D12Device* device, ID3D12GraphicsComma
     if (m_descriptor.FastClear)
     {
         clearValue.Format = textureDesc.Format;
-        memcpy(clearValue.Color, std::get<Color>(m_descriptor.FastClearValue).data, sizeof(float32) * 4);
+        if ((textureDesc.Flags & D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL) != 0)
+        {
+            Vector2 depthStencilClear = std::get<Vector2>(m_descriptor.FastClearValue);
+            clearValue.DepthStencil.Depth = depthStencilClear.x;
+            clearValue.DepthStencil.Stencil = static_cast<uint8>(depthStencilClear.y);
+        }
+        else
+            memcpy(clearValue.Color, std::get<Color>(m_descriptor.FastClearValue).data, sizeof(float32) * 4);
     }
 
     ThrowIfFailed(device->CreateCommittedResource(
