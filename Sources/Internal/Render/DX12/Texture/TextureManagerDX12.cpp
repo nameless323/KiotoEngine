@@ -60,7 +60,7 @@ void TextureManagerDX12::InitRtvHeap(const StateDX& state)
 void TextureManagerDX12::InitDsvHeap(const StateDX& state)
 {
     D3D12_DESCRIPTOR_HEAP_DESC heapDescr = {};
-    heapDescr.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+    heapDescr.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
     heapDescr.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
     heapDescr.NumDescriptors = MaxDepthStencilViews;
     ThrowIfFailed(state.Device->CreateDescriptorHeap(&heapDescr, IID_PPV_ARGS(&m_dsvHeap)));
