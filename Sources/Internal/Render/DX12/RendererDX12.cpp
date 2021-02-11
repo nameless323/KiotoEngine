@@ -327,6 +327,7 @@ void RendererDX12::Present()
         if (cmd.CommandType == eRenderCommandType::eSetRenderTargets)
         {
             const SetRenderTargetsCommand& srtCommand = std::get<SetRenderTargetsCommand>(cmd.Command);
+            UINT renderTargetCount = srtCommand.RenderTargetCount;
             D3D12_CPU_DESCRIPTOR_HANDLE rtHandle;
             D3D12_CPU_DESCRIPTOR_HANDLE dsHandle;
             D3D12_CPU_DESCRIPTOR_HANDLE* rtHandlePtr = nullptr;
@@ -360,7 +361,7 @@ void RendererDX12::Present()
             if (srtCommand.ClearDepth && currentDSHandle != InvalidHandle)
                 m_state.CommandList->ClearDepthStencilView(dsHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
-            m_state.CommandList->OMSetRenderTargets(1, rtHandlePtr, false, dsHandlePtr);
+            m_state.CommandList->OMSetRenderTargets(renderTargetCount, rtHandlePtr, false, dsHandlePtr);
         }
         else if (cmd.CommandType == eRenderCommandType::eEndRenderPass)
         {

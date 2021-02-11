@@ -3,7 +3,6 @@
 struct vOut
 {
     float4 position : SV_Position;
-    float4 outPos : TEXCOORD0;
 };
 
 vOut vs(vIn inp)
@@ -12,12 +11,9 @@ vOut vs(vIn inp)
     pos = mul(pos, cbDepthVP.DepthVP);
     vOut o;
     o.position = pos;
-    o.outPos = pos;
     return o;
 }
 
-float4 ps(vOut inp) : SV_Target
+void ps(vOut inp)
 {
-    float depth = inp.outPos.z / inp.outPos.w;
-    return float4(depth, 0.0f, 0.0f, 1.0f);
 }

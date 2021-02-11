@@ -43,7 +43,7 @@ bool ShadowMapRenderPass::ConfigureInputsAndOutputs(ResourcesBlackboard& resourc
     desc.Name = "ShadowMap";
 
     resources.NewTexture("ShadowMap", std::move(desc));
-    resources.ScheduleWrite("ShadowMap");
+    resources.ScheduleWriteDS("ShadowMap");
 
     return true;
 }
