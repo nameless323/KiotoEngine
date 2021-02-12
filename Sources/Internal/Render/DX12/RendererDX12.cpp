@@ -145,6 +145,9 @@ void RendererDX12::ResourceTransition(StateDX& dxState, TextureHandle resourceHa
     TextureDX12* tex = m_textureManager.FindTexture(resourceHandle);
     D3D12_RESOURCE_STATES dxSrcState = tex->GetCurrentState();
     D3D12_RESOURCE_STATES dxDstState = KiotoDx12Mapping::ResourceStates[destState];
+    if (dxSrcState == dxDstState)
+        return;
+
     auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(tex->Resource.Get(), dxSrcState, dxDstState);
     m_state.CommandList->ResourceBarrier(1, &barrier);
     tex->SetCurrentState(dxDstState);
