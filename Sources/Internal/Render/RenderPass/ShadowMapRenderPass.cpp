@@ -33,19 +33,23 @@ bool ShadowMapRenderPass::ConfigureInputsAndOutputs(ResourcesBlackboard& resourc
 {
     TextureDescriptor desc;
     desc.Dimension = eResourceDim::Texture2D;
-    desc.Format = eResourceFormat::Format_D32_FLOAT;
+    desc.Format = eResourceFormat::Format_D24_UNORM_S8_UINT;
     desc.Flags = eResourceFlags::AllowDepthStencil;
     desc.Width = m_shadowmapSize;
     desc.Height = m_shadowmapSize;
     desc.InitialState = eResourceState::Common;
     desc.FastClear = true;
-    desc.FastClearValue = Vector2(0.0f, 0.0f);
+    desc.FastClearValue = Vector2(1.0f, 0.0f);
     desc.Name = "ShadowMap";
 
     resources.NewTexture("ShadowMap", std::move(desc));
     resources.ScheduleWriteDS("ShadowMap");
 
-    return true;
+    const RenderSettings& settings = KiotoCore::GetRenderSettings();
+    if (settings.RenderMode == RenderSettings::RenderModeOptions::Final
+        || settings.RenderMode == RenderSettings::RenderModeOptions::FinalAndWireframe)
+        return true;
+    return false;
 }
 
 void ShadowMapRenderPass::BuildRenderPackets(CommandList* commandList, ResourceTable& resources)
