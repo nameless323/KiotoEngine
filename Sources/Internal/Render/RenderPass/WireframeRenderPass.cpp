@@ -60,7 +60,6 @@ void WireframeRenderPass::Cleanup()
 
 void WireframeRenderPass::SetRenderTargets(CommandList* commandList, ResourceTable& resources)
 {
-    bool isWireframe = KiotoCore::GetRenderSettings().RenderMode == RenderSettings::RenderModeOptions::Wireframe;
     SetRenderTargetsCommand cmd;
     cmd.SetRenderTargets(Renderer::DefaultBackBufferHandle);
     cmd.RenderTargetCount = GetRenderTargetCount();
@@ -68,11 +67,11 @@ void WireframeRenderPass::SetRenderTargets(CommandList* commandList, ResourceTab
 
     cmd.Viewport = { 0, 0, Renderer::GetWidth(), Renderer::GetHeight() };
     cmd.Scissor = { 0, 0, Renderer::GetWidth(), Renderer::GetHeight() };
-    cmd.ClearDepth = isWireframe;
+    cmd.ClearDepth = false;
     cmd.ClearDepthValue = 0.0f;
-    cmd.ClearColor = isWireframe;
+    cmd.ClearColor = false;
     cmd.ClearColorValue = Color::DefaultBackgroundColor;
-    cmd.ClearStencil = isWireframe;
+    cmd.ClearStencil = false;
     cmd.ClearStencilValue = 0;
 
     commandList->PushCommand(RenderCommandHelpers::CreateSetRenderTargetCommand(cmd, this));

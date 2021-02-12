@@ -116,6 +116,8 @@ public:
     ///
     Matrix4 GetVP() const;
 
+    Matrix4 GetToWorld() const;
+
     bool GetIsProjectionDirty() const
     {
         return m_isProjDirty;
@@ -270,6 +272,11 @@ inline Matrix4 Camera::GetProjection() const
 inline Matrix4 Camera::GetVP() const
 {
     return m_VP;
+}
+
+inline Matrix4 Camera::GetToWorld() const
+{
+    return m_toWorld;
 }
 
 inline void Camera::UpdateProjectionMatrix()

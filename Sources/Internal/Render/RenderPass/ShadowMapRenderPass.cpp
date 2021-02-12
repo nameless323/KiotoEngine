@@ -58,6 +58,8 @@ void ShadowMapRenderPass::BuildRenderPackets(CommandList* commandList, ResourceT
 
     for (auto light : m_drawData->Lights)
     {
+        if (!light->CastShadow)
+            continue;
         Matrix4 depthVP = BuildDepthVPMatrix(light);
         for (auto ro : m_drawData->RenderObjects)
         {
@@ -65,8 +67,8 @@ void ShadowMapRenderPass::BuildRenderPackets(CommandList* commandList, ResourceT
                 continue;
 
             Renderer::SInp::ShadowMap_sinp::CbDepthVP depthCB;
-            depthCB.DepthVP = depthVP;
-            depthCB.DepthVP = Renderer::GetMainCamera()->GetVP();
+            depthCB.DepthVP = depthVP.Tranposed();
+            //depthCB.DepthVP = Renderer::GetMainCamera()->GetVP();
 
             ro->SetBuffer(Renderer::SInp::ShadowMap_sinp::cbDepthVPName, depthCB, m_passName);
             //ro->SetExternalCB(m_passName, Renderer::SInp::ShadowMap_sinp::cbCameraName, Renderer::GetMainCamera()->GetConstantBuffer().GetHandle());
@@ -124,9 +126,10 @@ Kioto::Matrix4 ShadowMapRenderPass::BuildDepthVPMatrix(Light* light)
 {
     Camera m_shadowCamera{};
     Matrix4 toCamera = Matrix4::BuildLookAt(light->Position, light->Position + light->Direction, Vector3::Up);
-    toCamera.SetTranslation(light->Position);
+    //Matrix4 ctw = Renderer::GetMainCamera()->GetToWorld();
+    //toCamera = Matrix4::BuildLookAt(ctw.GetTranslation(), ctw.GetTranslation() + ctw.GetForward(), Vector3::Up);
     m_shadowCamera.SetView(toCamera);
-    m_shadowCamera.BuildOrtho(-30.0f, 30.0f, -30.0f, 30.0f, 0.01f, 30.0f);
+    m_shadowCamera.BuildOrtho(-30.0f, 30.0f, -30.0f, 30.0f, 0.01f, 50.0f);
     m_shadowCamera.UpdateViewProjectionMatrix();
     
     return m_shadowCamera.GetVP();
