@@ -62,6 +62,7 @@ void TextureDX12::CreateFromDescriptor(ID3D12Device* device, ID3D12GraphicsComma
         clearValue.Format = textureDesc.Format;
         if ((textureDesc.Flags & D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL) != 0)
         {
+            clearValue.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; // todo: [a_vorontcov] Again kinda hackish
             Vector2 depthStencilClear = std::get<Vector2>(m_descriptor.FastClearValue);
             clearValue.DepthStencil.Depth = depthStencilClear.x;
             clearValue.DepthStencil.Stencil = static_cast<uint8>(depthStencilClear.y);

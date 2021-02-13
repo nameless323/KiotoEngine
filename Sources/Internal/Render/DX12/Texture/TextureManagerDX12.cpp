@@ -79,6 +79,7 @@ void TextureManagerDX12::UpdateTextureSetHeap(const StateDX& state, const Textur
     // [a_vorontcov] TODO: maybe reuse the same heap and overwrite descriptors?
     ThrowIfFailed(state.Device->CreateDescriptorHeap(&heapDescr, IID_PPV_ARGS(&m_textureHeaps[texSet.GetHandle()])));
 
+
     CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_textureHeaps[texSet.GetHandle()]->GetCPUDescriptorHandleForHeapStart());
     for (uint32 i = 0; i < texSet.GetTexturesCount(); ++i)
     {
@@ -90,7 +91,8 @@ void TextureManagerDX12::UpdateTextureSetHeap(const StateDX& state, const Textur
 
         D3D12_SHADER_RESOURCE_VIEW_DESC texDescr = {};
         texDescr.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-        texDescr.Format = dxTex->Resource->GetDesc().Format;
+        bool isDepth = dxTex->Resource->GetDesc().Format == DXGI_FORMAT_R24G8_TYPELESS;
+        texDescr.Format = isDepth ? DXGI_FORMAT_R24_UNORM_X8_TYPELESS : dxTex->Resource->GetDesc().Format;
         texDescr.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
         texDescr.Texture2D.MipLevels = dxTex->Resource->GetDesc().MipLevels;
         texDescr.Texture2D.MostDetailedMip = 0;
@@ -166,7 +168,7 @@ void TextureManagerDX12::ProcessRegistationQueue(const StateDX& state)
                 m_currentDsvOffset += state.DsvDescriptorSize;
 
                 D3D12_DEPTH_STENCIL_VIEW_DESC texDescr = {};
-                texDescr.Format = tex->Resource->GetDesc().Format;
+                texDescr.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; //tex->Resource->GetDesc().Format; todo: [a_vorontcov] fix it
                 texDescr.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
                 texDescr.Texture2D = { 0 };
 

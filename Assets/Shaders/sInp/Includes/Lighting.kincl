@@ -15,3 +15,5 @@ struct LightBuffer %common%
 
 constantBuffer<LightBuffer> lights %bindTo = 2, space = 1%;
 uniform uint LIGHTS_COUNT;
+
+texture2D ShadowTexture;

@@ -38,6 +38,7 @@ void ForwardRenderPass::BuildRenderPackets(CommandList* commandList, ResourceTab
         m_lights.light[i] = std::move(m_drawData->Lights[i]->GetGraphicsLight());
     m_lightsBuffer.Set(m_lights);
 
+    Texture* shadowMap = resources.GetResource("ShadowMap");
 
     for (auto ro : m_drawData->RenderObjects)
     {
@@ -53,6 +54,8 @@ void ForwardRenderPass::BuildRenderPackets(CommandList* commandList, ResourceTab
         mat->BuildMaterialForPass(this);
 
         ro->PrepareConstantBuffers(m_passName);
+
+        ro->SetTexture("ShadowTexture", shadowMap, m_passName);
 
         RenderPacket currPacket = {};
         currPacket.Material = mat->GetHandle();
@@ -111,6 +114,8 @@ bool ForwardRenderPass::ConfigureInputsAndOutputs(ResourcesBlackboard& resources
 
     resources.NewTexture("FwdTargetTexture", std::move(desc));
     resources.ScheduleWrite("FwdTargetTexture");
+
+    resources.ScheduleRead("ShadowMap");
 
     if (settings.RenderMode == RenderSettings::RenderModeOptions::Final
         || settings.RenderMode == RenderSettings::RenderModeOptions::FinalAndWireframe)

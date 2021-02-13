@@ -14,7 +14,7 @@ vOut vs(vIn i)
     pos = mul(pos, cbCamera.ViewProjection);
     vOut o;
     o.position = pos;
-
+    
     o.dbg = float4(0.0f, 0.0f, i.position.x, 1.0f);
     o.normal = i.normal * 0.5f + 0.5f;
     o.uv = i.uv;
@@ -23,5 +23,6 @@ vOut vs(vIn i)
 
 float4 ps(vOut i) : SV_Target
 {
-    return Diffuse.Sample(LinearClampSampler, i.uv) * Mask.Sample(LinearWrapSampler, i.uv + cbEngine.Time.xx);// * (SinTime.w * 0.5f + 0.5f);
+    float shadow = ShadowTexture.Sample(LinearClampSampler, i.uv).r;
+    return Diffuse.Sample(LinearClampSampler, i.uv) * Mask.Sample(LinearWrapSampler, i.uv + cbEngine.Time.xx) * shadow;// * (SinTime.w * 0.5f + 0.5f);
 }

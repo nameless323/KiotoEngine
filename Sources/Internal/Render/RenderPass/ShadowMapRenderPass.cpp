@@ -33,7 +33,7 @@ bool ShadowMapRenderPass::ConfigureInputsAndOutputs(ResourcesBlackboard& resourc
 {
     TextureDescriptor desc;
     desc.Dimension = eResourceDim::Texture2D;
-    desc.Format = eResourceFormat::Format_D24_UNORM_S8_UINT;
+    desc.Format = eResourceFormat::Format_R24G8_TYPELESS;
     desc.Flags = eResourceFlags::AllowDepthStencil;
     desc.Width = m_shadowmapSize;
     desc.Height = m_shadowmapSize;
