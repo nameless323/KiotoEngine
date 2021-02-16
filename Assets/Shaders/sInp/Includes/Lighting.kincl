@@ -11,6 +11,7 @@ struct Light %common%
 struct LightBuffer %common%
 {
     Light light[256];
+    float4x4 shadowTransform;
 };
 
 constantBuffer<LightBuffer> lights %bindTo = 2, space = 1%;

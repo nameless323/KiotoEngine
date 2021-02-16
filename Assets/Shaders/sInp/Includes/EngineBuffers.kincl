@@ -25,3 +25,4 @@ constantBuffer<CbCamera> cbCamera %bindTo = 1, space = 1%;
 
 sampler LinearClampSampler;
 sampler LinearWrapSampler;
+sampler ShadowSampler;

@@ -15,7 +15,7 @@ struct StateDX;
 class UploadBufferDX12 final
 {
 public:
-    UploadBufferDX12(const StateDX& state, byte* data, uint32 elementSize, uint32 elementsCount, bool isConstantBuffer);
+    UploadBufferDX12(const StateDX& state, byte* data, uint32 elementSize, uint32 elementsCount, bool isConstantBuffer); // todo: [a_vorontcov] data is unused
     UploadBufferDX12(const UploadBufferDX12&) = delete;
     UploadBufferDX12(UploadBufferDX12&&) = delete;
     UploadBufferDX12& operator=(const UploadBufferDX12&) = delete;

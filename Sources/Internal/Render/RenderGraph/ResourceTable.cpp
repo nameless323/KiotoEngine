@@ -31,6 +31,7 @@ void ResourceTable::ClearBlackboards()
         m_blackboardsPool[i].second.Clear();
     }
     m_currIndex = 0;
+    m_passesSharedData = {};
 }
 
 ResourcesBlackboard* ResourceTable::GetBalackboardForPass(const RenderPass* pass)

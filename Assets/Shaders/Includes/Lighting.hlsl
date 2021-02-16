@@ -46,6 +46,6 @@ float3 BlinnPhong(Light light, float3 normal, float3 position)
 
     float atten = CalculateLightAttenuation(light, position);
     if (atten > 0)
-        return light.Color * (d + s) * atten;
+        return light.Color.xyz * (d + s) * atten;
     return float3(0, 0, 0);
 }

@@ -23,6 +23,5 @@ vOut vs(vIn i)
 
 float4 ps(vOut i) : SV_Target
 {
-    float shadow = ShadowTexture.Sample(LinearClampSampler, i.uv).r;
-    return Diffuse.Sample(LinearClampSampler, i.uv) * Mask.Sample(LinearWrapSampler, i.uv + cbEngine.Time.xx) * shadow;// * (SinTime.w * 0.5f + 0.5f);
+    return Diffuse.Sample(LinearClampSampler, i.uv) * Mask.Sample(LinearWrapSampler, i.uv + cbEngine.Time.xx);// * (SinTime.w * 0.5f + 0.5f);
 }

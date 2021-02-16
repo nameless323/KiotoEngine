@@ -68,6 +68,8 @@ void ShadowMapRenderPass::BuildRenderPackets(CommandList* commandList, ResourceT
 
             Renderer::SInp::ShadowMap_sinp::CbDepthVP depthCB;
             depthCB.DepthVP = depthVP.Tranposed();
+
+            resources.GetPassesSharedData().ShadowTransform = depthCB.DepthVP;
             //depthCB.DepthVP = Renderer::GetMainCamera()->GetVP();
 
             ro->SetBuffer(Renderer::SInp::ShadowMap_sinp::cbDepthVPName, depthCB, m_passName);

@@ -36,6 +36,7 @@ void ForwardRenderPass::BuildRenderPackets(CommandList* commandList, ResourceTab
 
     for (uint32 i = 0; i < m_drawData->Lights.size(); ++i)
         m_lights.light[i] = std::move(m_drawData->Lights[i]->GetGraphicsLight());
+    m_lights.shadowTransform = resources.GetPassesSharedData().ShadowTransform;
     m_lightsBuffer.Set(m_lights);
 
     Texture* shadowMap = resources.GetResource("ShadowMap");
