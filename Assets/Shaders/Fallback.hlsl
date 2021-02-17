@@ -38,11 +38,11 @@ float4 ps(vOut pIn) : SV_Target
     {
         float3 blinnPhong = BlinnPhong(lights.light[i], N, pIn.wPos);
         float shadow = 1.0f;
-        if (lights.light[i].Type == 0)
+        if (lights.light[i].Type == 0 && all((pIn.lightPos.xyz * 2.0f - 1.0f) < float3(1.0f, 1.0f, 1.0f)))
         {
-            shadow = ShadowTexture.SampleCmpLevelZero(ShadowSampler, pIn.lightPos.xy, pIn.lightPos.z);
-            shadow = ShadowTexture.SampleLevel(LinearClampSampler, pIn.lightPos.xy, 0).r;
-            shadow = shadow > pIn.lightPos.z - 0.0001;
+            shadow = ShadowTexture.SampleCmpLevelZero(ShadowSampler, pIn.lightPos.xy, pIn.lightPos.z - 0.003);
+            //shadow = ShadowTexture.SampleLevel(LinearClampSampler, pIn.lightPos.xy, 0).r;
+            //shadow = shadow > pIn.lightPos.z - 0.0001;
         }
         diffuse.xyz += (blinnPhong * shadow);
     }
