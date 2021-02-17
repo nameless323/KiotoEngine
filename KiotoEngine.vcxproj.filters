@@ -336,9 +336,6 @@
     <ClInclude Include="Sources\Internal\Render\RenderGraph\RenderGraph.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\Internal\Render\RenderOptions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Sources\Internal\Render\RenderGraph\ResourcesBlackboard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -403,6 +400,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Sources\Internal\Core\Reflection\Reflection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Internal\Render\RenderSettings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Internal\Render\RenderPass\ShadowMapRenderPass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -630,6 +633,9 @@
       <Filter>Header Files</Filter>
     </ClCompile>
     <ClCompile Include="Sources\Internal\Systems\ImguiEditorSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Internal\Render\RenderPass\ShadowMapRenderPass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

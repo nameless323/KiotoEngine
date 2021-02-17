@@ -9,6 +9,7 @@ inputFile : ( include
             | cbufferTempl
             | tex2d
             | sampler
+            | samplerCmp
             | vertexLayout
             | shadersBinding)*;
 
@@ -22,9 +23,11 @@ cbufferTempl : CBUFFER_KEYWORD TRIG_BR_O (NAME | TYPE) TRIG_BR_C NAME arrayDimSp
 
 tex2d : TEX2D_KEYWORD NAME SEMI;
 
-sampler : SAMPLER_KEYWORD NAME SEMI;
+sampler : SAMPLER_KEYWORD NAME annotationList SEMI;
 
-uniformConstant : UNIFORM_CONSTANT_KEYWORD TYPE NAME SEMI annotationList;
+samplerCmp : SAMPLER_CMP_KEYWORD NAME annotationList SEMI;
+
+uniformConstant : UNIFORM_CONSTANT_KEYWORD TYPE NAME annotationList SEMI;
 
 variable : (TYPE | NAME) NAME arrayDimSpecifier? SEMI;
 

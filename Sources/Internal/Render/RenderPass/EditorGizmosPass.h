@@ -26,5 +26,7 @@ private:
     Material* m_material = nullptr;
     Mesh* m_quad = nullptr;
     std::vector<RenderObject*> m_renderObjects;
+
+    bool m_thisFrameFwdPassEnabled = true;
 };
 }

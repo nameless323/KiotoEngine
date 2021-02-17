@@ -21,6 +21,7 @@ void LightComponent::Serialize(YAML::Emitter& out) const
     out << YAML::Key << "LightDir" << YAML::Value << m_light.Direction;
     out << YAML::Key << "LightColor" << YAML::Value << m_light.Color;
     out << YAML::Key << "LightData" << YAML::Value << m_light.Data;
+    out << YAML::Key << "CastShadow" << YAML::Value << m_light.CastShadow;
 }
 
 void LightComponent::Deserialize(const YAML::Node& in)
@@ -33,6 +34,8 @@ void LightComponent::Deserialize(const YAML::Node& in)
         m_light.Color = in["LightColor"].as<Renderer::Color>();
     if (in["LightData"])
         m_light.Data = in["LightData"].as<Vector4>();
+    if (in["CastShadow"])
+        m_light.CastShadow = in["CastShadow"].as<bool>();
 }
 
 }

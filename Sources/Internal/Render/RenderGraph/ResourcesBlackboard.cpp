@@ -32,6 +32,11 @@ void ResourcesBlackboard::ScheduleWrite(std::string name)
     m_transitionRequests.push_back({ name, eResourceState::RenderTarget });
 }
 
+void ResourcesBlackboard::ScheduleWriteDS(std::string name)
+{
+    m_transitionRequests.push_back({ name, eResourceState::DepthWrite });
+}
+
 void ResourcesBlackboard::ScheduleUnorderedAccess(std::string name)
 {
     m_transitionRequests.push_back({ name, eResourceState::UnorderedAccess });

@@ -34,6 +34,8 @@ public:
     D3D12_RESOURCE_STATES GetCurrentState() const;
     void SetCurrentState(D3D12_RESOURCE_STATES state);
 
+    const std::string& GetDebugName() const;
+
 private:
     void CreateFromFile(ID3D12Device* device, ID3D12GraphicsCommandList* commandList);
     void CreateFromDescriptor(ID3D12Device* device, ID3D12GraphicsCommandList* commandList);
@@ -48,6 +50,10 @@ private:
     D3D12_RESOURCE_FLAGS m_textureFlags = D3D12_RESOURCE_FLAGS(0);
 
     bool m_fromMemoryAsset = false;
+
+#ifdef _DEBUG
+    bool m_isDescriptorInitialized = false;
+#endif
 };
 
 inline DXGI_FORMAT TextureDX12::ToDXGIFormat(eResourceFormat format)
@@ -72,6 +78,9 @@ inline DXGI_FORMAT TextureDX12::GetFormat() const
 
 inline void TextureDX12::SetDescriptor(TextureDescriptor descriptor)
 {
+#ifdef _DEBUG
+    m_isDescriptorInitialized = true;
+#endif
     std::swap(m_descriptor, descriptor);
 }
 
@@ -104,6 +113,15 @@ inline D3D12_RESOURCE_STATES TextureDX12::GetCurrentState() const
 inline void TextureDX12::SetCurrentState(D3D12_RESOURCE_STATES state)
 {
     m_currentState = state;
+}
+
+inline const std::string& TextureDX12::GetDebugName() const
+{
+#ifdef _DEBUG
+    if (!m_isDescriptorInitialized)
+        assert("Initialize texture descriptor before query the texture for the name" && false);
+#endif
+    return m_descriptor.Name;
 }
 
 }

@@ -43,8 +43,8 @@ public:
         if (rt0 == InvalidHandle)
             return;
 
-            RenderTargetCount++;
-            RenderTargets[0] = rt0;
+        RenderTargetCount++;
+        RenderTargets[0] = rt0;
 
         if (rt1 == InvalidHandle)
             return;
@@ -98,6 +98,11 @@ public:
     TextureHandle GetDepthStencil() const
     {
         return DepthStencil;
+    }
+
+    void SetDepthStencil(TextureHandle dsHandle)
+    {
+        DepthStencil = dsHandle;
     }
 
     TextureHandle DepthStencil;

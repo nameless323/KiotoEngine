@@ -11,3 +11,7 @@ passes:
         name: "Wireframe"
         pipelineConfig: "PipelineConfigs\\Wireframe.pcfg"
         shader: "Shaders\\sInp\\Wireframe.sinp"
+    renderPass: 
+        name: "ShadowMap"
+        pipelineConfig: "PipelineConfigs\\Default.pcfg"
+        shader: "Shaders\\sInp\\ShadowMap.sinp"

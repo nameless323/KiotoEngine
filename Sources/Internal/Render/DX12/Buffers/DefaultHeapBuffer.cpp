@@ -9,11 +9,11 @@ namespace Kioto::Renderer
 DefaultHeapBuffer::DefaultHeapBuffer(const byte* data, uint32 dataSize, ID3D12GraphicsCommandList* commandList, ID3D12Device* device, D3D12_RESOURCE_STATES destinationState)
 {
     CD3DX12_HEAP_PROPERTIES uploadHeapProps(D3D12_HEAP_TYPE_UPLOAD);
-    CD3DX12_RESOURCE_DESC vertBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(dataSize);
+    CD3DX12_RESOURCE_DESC bufferDesc = CD3DX12_RESOURCE_DESC::Buffer(dataSize);
     ThrowIfFailed(device->CreateCommittedResource(
         &uploadHeapProps,
         D3D12_HEAP_FLAG_NONE,
-        &vertBufferDesc,
+        &bufferDesc,
         D3D12_RESOURCE_STATE_GENERIC_READ,
         nullptr,
         IID_PPV_ARGS(&m_uploadBuffer)));
@@ -28,7 +28,7 @@ DefaultHeapBuffer::DefaultHeapBuffer(const byte* data, uint32 dataSize, ID3D12Gr
     ThrowIfFailed(device->CreateCommittedResource(
         &heapProps,
         D3D12_HEAP_FLAG_NONE,
-        &vertBufferDesc,
+        &bufferDesc,
         D3D12_RESOURCE_STATE_COPY_DEST,
         nullptr,
         IID_PPV_ARGS(&m_buffer)));

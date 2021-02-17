@@ -9,7 +9,7 @@
 #include "Render/RenderCommand.h"
 #include "Render/RenderObject.h"
 #include "Render/RenderPacket.h"
-#include "Render/RenderOptions.h"
+#include "Render/RenderSettings.h"
 #include "Render/Shader.h"
 #include "Render/RenderGraph/ResourcesBlackboard.h"
 #include "Render/RenderGraph/ResourceTable.h"
@@ -17,12 +17,13 @@
 #include "Render/Shaders/autogen/sInp/Fallback.h"
 #include "Render/Shaders/autogen/CommonStructures.h"
 
+#include "Component/LightComponent.h"
+
 namespace Kioto::Renderer
 {
 ForwardRenderPass::ForwardRenderPass()
     : RenderPass("Forward")
 {
-    assert(sizeof(Light) == sizeof(SInp::Light));
     Renderer::RegisterRenderPass(this);
     Renderer::RegisterConstantBuffer(m_lightsBuffer);
 
@@ -34,12 +35,17 @@ void ForwardRenderPass::BuildRenderPackets(CommandList* commandList, ResourceTab
     SetRenderTargets(commandList, resources);
 
     for (uint32 i = 0; i < m_drawData->Lights.size(); ++i)
-        m_lights.light[i] = *m_drawData->Lights[i];
+        m_lights.light[i] = std::move(m_drawData->Lights[i]->GetGraphicsLight());
+    m_lights.shadowTransform = resources.GetPassesSharedData().ShadowTransform;
     m_lightsBuffer.Set(m_lights);
 
+    Texture* shadowMap = resources.GetResource("ShadowMap");
 
     for (auto ro : m_drawData->RenderObjects)
     {
+        if (!ro->GetIsVisible())
+            continue;
+
         ro->SetExternalCB(m_passName, Renderer::SInp::Fallback_sinp::cbCameraName, Renderer::GetMainCamera()->GetConstantBuffer().GetHandle());
         ro->SetExternalCB(m_passName, Renderer::SInp::Fallback_sinp::cbEngineName, Renderer::EngineBuffers::GetTimeBuffer().GetHandle());
         ro->SetExternalCB(m_passName, Renderer::SInp::Fallback_sinp::lightsName, m_lightsBuffer.GetHandle());
@@ -49,6 +55,8 @@ void ForwardRenderPass::BuildRenderPackets(CommandList* commandList, ResourceTab
         mat->BuildMaterialForPass(this);
 
         ro->PrepareConstantBuffers(m_passName);
+
+        ro->SetTexture("ShadowTexture", shadowMap, m_passName);
 
         RenderPacket currPacket = {};
         currPacket.Material = mat->GetHandle();
@@ -92,7 +100,7 @@ void ForwardRenderPass::SetRenderTargets(CommandList* commandList, ResourceTable
 
 bool ForwardRenderPass::ConfigureInputsAndOutputs(ResourcesBlackboard& resources)
 {
-    const RenderOptions& settings = KiotoCore::GetRenderSettings();
+    const RenderSettings& settings = KiotoCore::GetRenderSettings();
 
     TextureDescriptor desc;
     desc.Dimension = eResourceDim::Texture2D;
@@ -108,8 +116,10 @@ bool ForwardRenderPass::ConfigureInputsAndOutputs(ResourcesBlackboard& resources
     resources.NewTexture("FwdTargetTexture", std::move(desc));
     resources.ScheduleWrite("FwdTargetTexture");
 
-    if (settings.RenderMode == RenderOptions::RenderModeOptions::Final
-        || settings.RenderMode == RenderOptions::RenderModeOptions::FinalAndWireframe)
+    resources.ScheduleRead("ShadowMap");
+
+    if (settings.RenderMode == RenderSettings::RenderModeOptions::Final
+        || settings.RenderMode == RenderSettings::RenderModeOptions::FinalAndWireframe)
         return true;
     return false;
 }

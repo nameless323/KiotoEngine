@@ -70,8 +70,8 @@ namespace Kioto
 
         if (!res)
             LOG("Failed to load glTF: ", path);
-        else
-            LOG("Loaded glTF: ", path);
+        //else
+        //    LOG("Loaded glTF: ", path);
 
         return res;
     }

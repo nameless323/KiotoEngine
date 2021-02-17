@@ -1,0 +1,19 @@
+constantBuffer cbDepthVP
+{
+    float4x4 DepthVP;
+};
+
+constantBuffer cbRenderObject
+{
+    float4x4 ToWorld;
+    float4x4 ToModel;
+};
+
+vertexLayout vIn
+{
+    float3 position : POSITION;
+    float3 normal : NORMAL;
+    float2 uv : TEXCOORD0;
+};
+
+shader: VS vs, PS ps;

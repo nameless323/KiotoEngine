@@ -23,5 +23,6 @@ struct CbCamera %common%
 
 constantBuffer<CbCamera> cbCamera %bindTo = 1, space = 1%;
 
-sampler LinearClampSampler;
-sampler LinearWrapSampler;
+sampler LinearClampSampler %bindTo = 0%;
+sampler LinearWrapSampler %bindTo = 1%;
+samplerCmp ShadowSampler %bindTo = 2%;

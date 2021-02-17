@@ -12,6 +12,7 @@ namespace Kioto::Renderer
 namespace
 {
 constexpr uint16 MaxRenderTargetViews = 256;
+constexpr uint16 MaxDepthStencilViews = 32;
 }
 
 TextureManagerDX12::TextureManagerDX12()
@@ -56,6 +57,15 @@ void TextureManagerDX12::InitRtvHeap(const StateDX& state)
     ThrowIfFailed(state.Device->CreateDescriptorHeap(&heapDescr, IID_PPV_ARGS(&m_rtvHeap)));
 }
 
+void TextureManagerDX12::InitDsvHeap(const StateDX& state)
+{
+    D3D12_DESCRIPTOR_HEAP_DESC heapDescr = {};
+    heapDescr.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+    heapDescr.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+    heapDescr.NumDescriptors = MaxDepthStencilViews;
+    ThrowIfFailed(state.Device->CreateDescriptorHeap(&heapDescr, IID_PPV_ARGS(&m_dsvHeap)));
+}
+
 void TextureManagerDX12::UpdateTextureSetHeap(const StateDX& state, const TextureSet& texSet)
 {
     if (m_textureHeaps.find(texSet.GetHandle()) != m_textureHeaps.end())
@@ -69,6 +79,7 @@ void TextureManagerDX12::UpdateTextureSetHeap(const StateDX& state, const Textur
     // [a_vorontcov] TODO: maybe reuse the same heap and overwrite descriptors?
     ThrowIfFailed(state.Device->CreateDescriptorHeap(&heapDescr, IID_PPV_ARGS(&m_textureHeaps[texSet.GetHandle()])));
 
+
     CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_textureHeaps[texSet.GetHandle()]->GetCPUDescriptorHandleForHeapStart());
     for (uint32 i = 0; i < texSet.GetTexturesCount(); ++i)
     {
@@ -80,7 +91,8 @@ void TextureManagerDX12::UpdateTextureSetHeap(const StateDX& state, const Textur
 
         D3D12_SHADER_RESOURCE_VIEW_DESC texDescr = {};
         texDescr.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-        texDescr.Format = dxTex->Resource->GetDesc().Format;
+        bool isDepth = dxTex->Resource->GetDesc().Format == DXGI_FORMAT_R24G8_TYPELESS;
+        texDescr.Format = isDepth ? DXGI_FORMAT_R24_UNORM_X8_TYPELESS : dxTex->Resource->GetDesc().Format;
         texDescr.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
         texDescr.Texture2D.MipLevels = dxTex->Resource->GetDesc().MipLevels;
         texDescr.Texture2D.MostDetailedMip = 0;
@@ -126,22 +138,42 @@ void TextureManagerDX12::ProcessRegistationQueue(const StateDX& state)
     for (auto& tex : m_textureQueue)
     {
         tex->Create(state.Device.Get(), state.CommandList.Get());
-        if (tex->GetIsFromMemoryAsset() && ((tex->GetDx12TextureFlags() & D3D12_RESOURCE_FLAGS::D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET) != 0))
+        if (tex->GetIsFromMemoryAsset())
         {
-            assert(m_rtvHeapOffsets.count(tex->GetHandle()) == 0);
-            m_rtvHeapOffsets[tex->GetHandle()] = m_currentRtvOffset;
+            if ((tex->GetDx12TextureFlags() & D3D12_RESOURCE_FLAGS::D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET) != 0)
+            {
+                assert(m_rtvHeapOffsets.count(tex->GetHandle()) == 0);
+                m_rtvHeapOffsets[tex->GetHandle()] = m_currentRtvOffset;
 
-            CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
-            handle.Offset(m_currentRtvOffset);
+                CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
+                handle.Offset(m_currentRtvOffset);
 
-            m_currentRtvOffset += state.RtvDescriptorSize;
+                m_currentRtvOffset += state.RtvDescriptorSize;
 
-            D3D12_RENDER_TARGET_VIEW_DESC texDescr = {};
-            texDescr.Format = tex->Resource->GetDesc().Format;
-            texDescr.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
-            texDescr.Texture2D = { 0, 0};
+                D3D12_RENDER_TARGET_VIEW_DESC texDescr = {};
+                texDescr.Format = tex->Resource->GetDesc().Format;
+                texDescr.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+                texDescr.Texture2D = { 0, 0 };
 
-            state.Device->CreateRenderTargetView(tex->Resource.Get(), &texDescr, handle);
+                state.Device->CreateRenderTargetView(tex->Resource.Get(), &texDescr, handle);
+            }
+            else if ((tex->GetDx12TextureFlags() & D3D12_RESOURCE_FLAGS::D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL) != 0)
+            {
+                assert(m_dsvHeapOffsets.count(tex->GetHandle()) == 0);
+                m_dsvHeapOffsets[tex->GetHandle()] = m_currentDsvOffset;
+
+                CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
+                handle.Offset(m_currentDsvOffset);
+
+                m_currentDsvOffset += state.DsvDescriptorSize;
+
+                D3D12_DEPTH_STENCIL_VIEW_DESC texDescr = {};
+                texDescr.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; //tex->Resource->GetDesc().Format; todo: [a_vorontcov] fix it
+                texDescr.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+                texDescr.Texture2D = { 0 };
+
+                state.Device->CreateDepthStencilView(tex->Resource.Get(), &texDescr, handle);
+            }
         }
     }
     m_textureQueue.clear();
@@ -172,6 +204,14 @@ D3D12_CPU_DESCRIPTOR_HANDLE TextureManagerDX12::GetRtvHandle(TextureHandle handl
     CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
     rtvHandle.Offset(m_rtvHeapOffsets.at(handle));
     return rtvHandle;
+}
+
+D3D12_CPU_DESCRIPTOR_HANDLE TextureManagerDX12::GetDsvHandle(TextureHandle handle) const
+{
+    assert(m_dsvHeapOffsets.count(handle) == 1 && "The texture is not registred as a dsv");
+    CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
+    dsvHandle.Offset(m_dsvHeapOffsets.at(handle));
+    return dsvHandle;
 }
 
 }

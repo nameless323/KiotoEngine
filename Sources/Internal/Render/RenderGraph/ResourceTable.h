@@ -10,6 +10,11 @@ namespace Kioto::Renderer
 {
 using PassBlackboard = std::pair<RenderPass*, ResourcesBlackboard>;
 
+struct TransientSharedData // [a_vorontcov] todo: Bad idea.
+{
+    Matrix4 ShadowTransform;
+};
+
 class ResourceTable
 {
 public:
@@ -25,17 +30,26 @@ public:
 
     Texture* GetResource(const std::string& name);
 
+    TransientSharedData& GetPassesSharedData();
+
 private:
     std::vector<PassBlackboard> m_blackboardsPool;
     uint32 m_currIndex = 0;
 
     std::map<std::string, Texture*> m_resources;
+
+    TransientSharedData m_passesSharedData{};
 };
 
 inline Texture* ResourceTable::GetResource(const std::string& name)
 {
     assert(m_resources.count(name) && "Resource wasn't added");
     return m_resources[name];
+}
+
+inline TransientSharedData& ResourceTable::GetPassesSharedData()
+{
+    return m_passesSharedData;
 }
 
 }

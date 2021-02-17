@@ -1,13 +1,16 @@
 #pragma once
 
 #include "Render/RenderPass/RenderPass.h"
+#include "Render/Camera.h"
 
 namespace Kioto::Renderer
 {
-class WireframeRenderPass : public RenderPass
+struct Light;
+
+class ShadowMapRenderPass : public RenderPass
 {
 public:
-    WireframeRenderPass();
+    ShadowMapRenderPass();
 
     bool ConfigureInputsAndOutputs(ResourcesBlackboard& resources) override;
     void BuildRenderPackets(CommandList* commandList, ResourceTable& resources) override;
@@ -15,5 +18,9 @@ public:
 
 private:
     void SetRenderTargets(CommandList* commandList, ResourceTable& resources) override;
+    Matrix4 BuildDepthVPMatrix(Light* light);
+
+    Mesh* m_debugQuad = nullptr;
+    int32 m_shadowmapSize = 1024;
 };
 }

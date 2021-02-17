@@ -4,9 +4,11 @@
 
 #include "Core/ECS/Entity.h"
 
+#include "Component/CameraComponent.h"
 #include "Component/TransformComponent.h"
 #include "Component/LightComponent.h"
 #include "Component/RenderComponent.h"
+#include "Render/Camera.h"
 #include "Render/RenderObject.h"
 #include "Render/Material.h"
 
@@ -56,12 +58,14 @@ void ImguiEditorSystem::Update(float32 dt)
 
     const Entity* selectedEntity = m_entities[selectedEntityIndex];
 
+    CameraComponent* camera = selectedEntity->GetComponent<CameraComponent>();
+    DrawComponentEditor(camera);
+
     TransformComponent* transform = selectedEntity->GetTransform();
     DrawComponentEditor(transform);
 
     RenderComponent* renderComponent = selectedEntity->GetComponent<RenderComponent>();
     DrawComponentEditor(renderComponent);
-
 
     LightComponent* lightComponent = selectedEntity->GetComponent<LightComponent>();
     DrawComponentEditor(lightComponent);
@@ -76,6 +80,11 @@ void ImguiEditorSystem::DrawComponentEditor(LightComponent* lightComponent)
         bool isEnabled = lightComponent->GetIsEnabled();
         ImGui::Checkbox("Enabled", &isEnabled);
         lightComponent->SetIsEnabled(isEnabled);
+        ImGui::Text("");
+
+        bool castsShadows = lightComponent->GetLight()->CastShadow;
+        ImGui::Checkbox("Casts shadow", &castsShadows);
+        lightComponent->GetLight()->CastShadow = castsShadows;
         ImGui::Text("");
 
         Renderer::Light* light = lightComponent->GetLight();
@@ -125,6 +134,15 @@ void ImguiEditorSystem::DrawComponentEditor(RenderComponent* renderComponent)
         bool isEnabled = renderComponent->GetIsEnabled();
         ImGui::Checkbox("Enabled", &isEnabled);
         renderComponent->SetIsEnabled(isEnabled);
+
+        ImGui::Text("");
+
+        bool isVisible = renderComponent->GetIsVisible();
+        ImGui::Checkbox("Is Visible", &isVisible);
+        renderComponent->SetIsVisible(isVisible);
+        bool castShadow = renderComponent->GetCastShadows();
+        ImGui::Checkbox("Cast shadow", &castShadow);
+        renderComponent->SetCastShadows(castShadow);
 
         ImGui::Text("");
         ImGui::TextColored(ImVec4(0.3f, 0.6f, 0.4f, 1), "Mesh: "); ImGui::SameLine();
@@ -192,6 +210,66 @@ void ImguiEditorSystem::DrawComponentEditor(TransformComponent* transform)
         ImGui::Text("Right   : % 8.4f, % 8.4f, % 8.4f", right.x, right.y, right.z);
         ImGui::Text("Forward : % 8.4f, % 8.4f, % 8.4f", fwd.x, fwd.y, fwd.z);
         ImGui::Text("Up      : % 8.4f, % 8.4f, % 8.4f", up.x, up.y, up.z);
+    }
+}
+
+void ImguiEditorSystem::DrawComponentEditor(CameraComponent* cameraComponent)
+{
+    if (cameraComponent != nullptr && ImGui::CollapsingHeader("Camera", ImGuiTreeNodeFlags_DefaultOpen))
+    {
+        Renderer::Camera& camera = cameraComponent->GetCamera();
+        bool isOrtho = camera.GetOrthographic();
+        ImGui::Checkbox("Orthographic", &isOrtho);
+        camera.SetOrthographic(isOrtho);
+
+        ImGui::Text("");
+
+        float32 n = camera.GetNearPlane();
+        float32 f = camera.GetFarPlane();
+
+        ImGui::InputFloat("Near", &n);
+        ImGui::InputFloat("Far", &f);
+
+        camera.SetNearPlane(n);
+        camera.SetFarPlane(f);
+
+        ImGui::Text("");
+
+        if (!isOrtho)
+        {
+            float32 fov = camera.GetFovY();
+            fov = Math::RadToDeg(fov);
+            ImGui::InputFloat("FOV", &fov);
+            camera.SetFovY(Math::DegToRad(fov));
+
+            float32 aspect = camera.GetAspect();
+            ImGui::InputFloat("Aspect", &aspect);
+            camera.SetAspect(aspect);
+        }
+        else
+        {
+            float32 h = camera.GetOrthoHeight();
+            float32 w = camera.GetOrthoWidth();
+            ImGui::InputFloat("Ortho height", &h);
+
+            static bool useAspect = false;
+            ImGui::Checkbox("Use aspect for width", &useAspect);
+
+            if (useAspect)
+            {
+                float32 aspect = camera.GetAspect();
+                ImGui::InputFloat("Aspect", &aspect);
+                camera.SetAspect(aspect);
+
+                w = h * aspect;
+            }
+            else
+            {
+                ImGui::InputFloat("Ortho width", &w);
+            }
+            camera.SetOrthoHeight(h);
+            camera.SetOrthoWidth(w);
+        }
     }
 }
 

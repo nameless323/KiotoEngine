@@ -153,10 +153,29 @@ namespace ShaderInputsParserApp.Source
         public override string VisitSampler(ShaderInputsParser.SamplerContext context)
         {
             string name = context.NAME().GetText();
-            Sampler s = new Sampler(name);
+            Sampler s = new Sampler(name, false);
+
+            AnnotationsVisitor annotVisitor = new AnnotationsVisitor();
+            annotVisitor.Visit(context);
+            s.Annotations = new List<Annotation>(annotVisitor.Annotations);
+
             OutputContext.Samplers.Add(s);
             return base.VisitSampler(context);
         }
+
+        public override string VisitSamplerCmp(ShaderInputsParser.SamplerCmpContext context)
+        {
+            string name = context.NAME().GetText();
+            Sampler s = new Sampler(name, true);
+
+            AnnotationsVisitor annotVisitor = new AnnotationsVisitor();
+            annotVisitor.Visit(context);
+            s.Annotations = new List<Annotation>(annotVisitor.Annotations);
+
+            OutputContext.Samplers.Add(s);
+            return base.VisitSamplerCmp(context);
+        }
+
         public override string VisitVertexLayout(ShaderInputsParser.VertexLayoutContext context)
         {
             if (OutputContext.VertLayout != null)

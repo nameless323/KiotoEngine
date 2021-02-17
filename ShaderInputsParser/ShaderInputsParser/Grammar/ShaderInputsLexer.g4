@@ -19,6 +19,7 @@ QUOTE : '"';
 STRUCT_KEYWORD : 'struct';
 CBUFFER_KEYWORD : 'constantBuffer';
 SAMPLER_KEYWORD : 'sampler';
+SAMPLER_CMP_KEYWORD : 'samplerCmp';
 TEX2D_KEYWORD : 'texture2D';
 INCLUDE_KEYWORD : '#include';
 VERTEX_LAYOUT_KEYWORD : 'vertexLayout';

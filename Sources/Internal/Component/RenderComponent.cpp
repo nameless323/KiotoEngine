@@ -3,12 +3,33 @@
 #include "Component/RenderComponent.h"
 
 #include "Core/Yaml/YamlParser.h"
+#include "Render/RenderObject.h"
 
 namespace Kioto
 {
 Component* RenderComponent::Clone() const
 {
     return new RenderComponent();
+}
+
+bool RenderComponent::GetCastShadows() const
+{
+    return m_renderObject->GetCastShadow();
+}
+
+void RenderComponent::SetCastShadows(bool castShadows)
+{
+    m_renderObject->SetCastShadow(castShadows);
+}
+
+bool RenderComponent::GetIsVisible() const
+{
+    return m_renderObject->GetIsVisible();
+}
+
+void RenderComponent::SetIsVisible(bool isVisible)
+{
+    m_renderObject->SetIsVisible(isVisible);
 }
 
 void RenderComponent::Serialize(YAML::Emitter& out) const

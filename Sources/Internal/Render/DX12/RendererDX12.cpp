@@ -19,6 +19,10 @@
 #include "Render/Material.h"
 #include "Render/RenderPass/RenderPass.h"
 
+#ifdef _DEBUG
+#include "Core/Logger/Logger.h"
+#endif
+
 namespace Kioto::Renderer
 {
 
@@ -115,8 +119,9 @@ void RendererDX12::Init(uint16 width, uint16 height)
     InitImGui();
 
     m_textureManager.InitRtvHeap(m_state);
+    m_textureManager.InitDsvHeap(m_state);
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && defined(LOG_ADAPTERS)
     LogAdapters();
 
     DXGI_ADAPTER_DESC adapterDesc;
@@ -126,7 +131,7 @@ void RendererDX12::Init(uint16 width, uint16 height)
     text += adapterDesc.Description;
     text += L"\n";
     text += L"****\n";
-    OutputDebugString(text.c_str());
+    LOG(WstrToStr(text));
 #endif
 }
 
@@ -140,9 +145,17 @@ void RendererDX12::ResourceTransition(StateDX& dxState, TextureHandle resourceHa
     TextureDX12* tex = m_textureManager.FindTexture(resourceHandle);
     D3D12_RESOURCE_STATES dxSrcState = tex->GetCurrentState();
     D3D12_RESOURCE_STATES dxDstState = KiotoDx12Mapping::ResourceStates[destState];
+    if (dxSrcState == dxDstState)
+        return;
+
     auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(tex->Resource.Get(), dxSrcState, dxDstState);
     m_state.CommandList->ResourceBarrier(1, &barrier);
     tex->SetCurrentState(dxDstState);
+
+#if defined(_DEBUG) && defined(DUMP_RESOURCE_TRANSITIONS)
+    LOG("Resource name: ", tex->GetDebugName(), " State before: ", dxSrcState, " State after: ", dxDstState);
+#endif
+
 }
 
 void RendererDX12::Shutdown()
@@ -158,8 +171,8 @@ void RendererDX12::Shutdown()
     ComPtr<IDXGIDebug1> dxgiDebug;
     if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&dxgiDebug))))
         dxgiDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_FLAGS(DXGI_DEBUG_RLO_SUMMARY | DXGI_DEBUG_RLO_IGNORE_INTERNAL));
+    LOG("************************Shutdown\n");
 #endif
-    OutputDebugStringA("************************Shutdown\n");
 }
 
 void RendererDX12::InitImGui()
@@ -317,30 +330,41 @@ void RendererDX12::Present()
         if (cmd.CommandType == eRenderCommandType::eSetRenderTargets)
         {
             const SetRenderTargetsCommand& srtCommand = std::get<SetRenderTargetsCommand>(cmd.Command);
+            UINT renderTargetCount = srtCommand.RenderTargetCount;
             D3D12_CPU_DESCRIPTOR_HANDLE rtHandle;
             D3D12_CPU_DESCRIPTOR_HANDLE dsHandle;
-            if (srtCommand.GetRenderTarget(0) == DefaultBackBufferHandle)
-                rtHandle = m_swapChain.GetCurrentBackBufferCPUHandle(m_state);
-            else
-                rtHandle = m_textureManager.GetRtvHandle(srtCommand.GetRenderTarget(0));
+            D3D12_CPU_DESCRIPTOR_HANDLE* rtHandlePtr = nullptr;
+            D3D12_CPU_DESCRIPTOR_HANDLE* dsHandlePtr = nullptr;
 
-            if (srtCommand.GetDepthStencil() == DefaultDepthStencilHandle)
-                dsHandle = m_swapChain.GetDepthStencilCPUHandle();
-            else
+            TextureHandle currentRTHandle = srtCommand.GetRenderTarget(0);
+            if (currentRTHandle != InvalidHandle)
             {
-                assert(false);
-                // [a_vorontcov] TODO: ToBeImplemented dsHandle = m_textureManager.GetDsvHandle(srtCommand.GetDepthStencil());
+                if (currentRTHandle == DefaultBackBufferHandle)
+                    rtHandle = m_swapChain.GetCurrentBackBufferCPUHandle(m_state);
+                else
+                    rtHandle = m_textureManager.GetRtvHandle(currentRTHandle);
+                rtHandlePtr = &rtHandle;
+            }
+
+            TextureHandle currentDSHandle = srtCommand.GetDepthStencil();
+            if (currentDSHandle != InvalidHandle)
+            {
+                if (currentDSHandle == DefaultDepthStencilHandle)
+                    dsHandle = m_swapChain.GetDepthStencilCPUHandle();
+                else
+                    dsHandle = m_textureManager.GetDsvHandle(currentDSHandle);
+                dsHandlePtr = &dsHandle;
             }
 
             m_state.CommandList->RSSetScissorRects(1, &DXRectFromKioto(srtCommand.Scissor));
             m_state.CommandList->RSSetViewports(1, &DXViewportFromKioto(srtCommand.Viewport));
 
-            if (srtCommand.ClearColor)
+            if (srtCommand.ClearColor && currentRTHandle != InvalidHandle)
                 m_state.CommandList->ClearRenderTargetView(rtHandle, srtCommand.ClearColorValue.data, 0, nullptr);
-            if (srtCommand.ClearDepth)
+            if (srtCommand.ClearDepth && currentDSHandle != InvalidHandle)
                 m_state.CommandList->ClearDepthStencilView(dsHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
-            m_state.CommandList->OMSetRenderTargets(1, &rtHandle, false, &dsHandle);
+            m_state.CommandList->OMSetRenderTargets(renderTargetCount, rtHandlePtr, false, dsHandlePtr);
         }
         else if (cmd.CommandType == eRenderCommandType::eEndRenderPass)
         {
@@ -451,6 +475,7 @@ void RendererDX12::Present()
     }
 }
 
+#ifdef _DEBUG
 void RendererDX12::LogAdapters()
 {
     UINT i = 0;
@@ -464,7 +489,7 @@ void RendererDX12::LogAdapters()
         std::wstring text = L"--ADAPTER: ";
         text += adapterDesc.Description;
         text += L"\n";
-        OutputDebugString(text.c_str());
+        LOG(WstrToStr(text));
         adapterList.push_back(adapter);
         ++i;
     }
@@ -506,15 +531,16 @@ void RendererDX12::LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format
     {
         UINT n = x.RefreshRate.Numerator;
         UINT d = x.RefreshRate.Denominator;
-        std::wstring text =
-            L"Width = " + std::to_wstring(x.Width) + L"  " +
-            L"Height = " + std::to_wstring(x.Height) + L"  " +
-            L"Refresh = " + std::to_wstring(n) + L"/" + std::to_wstring(d) +
-            L"\n";
+        std::string text =
+            "Width = " + std::to_string(x.Width) + "  " +
+            "Height = " + std::to_string(x.Height) + "  " +
+            "Refresh = " + std::to_string(n) + "/" + std::to_string(d) +
+            "\n";
 
-        OutputDebugString(text.c_str());
+        LOG(text);
     }
 }
+#endif
 
 void RendererDX12::ChangeFullScreenMode(bool fullScreen)
 {

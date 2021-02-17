@@ -201,7 +201,7 @@ RD /S /Q $(TargetDir)Assets
     <ClInclude Include="Sources\Internal\Render\RenderGraph\RenderGraph.h" />
     <ClInclude Include="Sources\Internal\Render\RenderGraph\ResourcesBlackboard.h" />
     <ClInclude Include="Sources\Internal\Render\RenderGraph\ResourceTable.h" />
-    <ClInclude Include="Sources\Internal\Render\RenderOptions.h" />
+    <ClInclude Include="Sources\Internal\Render\RenderSettings.h" />
     <ClInclude Include="Sources\Internal\Core\FPSCounter.h" />
     <ClInclude Include="Sources\Internal\Core\Input\Input.h" />
     <ClInclude Include="Sources\Internal\Core\KiotoEngine.h" />
@@ -266,6 +266,7 @@ RD /S /Q $(TargetDir)Assets
     <ClInclude Include="Sources\Internal\Render\RenderPass\ForwardRenderPass.h" />
     <ClInclude Include="Sources\Internal\Render\RenderPass\GrayscaleRenderPass.h" />
     <ClInclude Include="Sources\Internal\Render\RenderPass\RenderPass.h" />
+    <ClInclude Include="Sources\Internal\Render\RenderPass\ShadowMapRenderPass.h" />
     <ClInclude Include="Sources\Internal\Render\RenderPass\WireframeRenderPass.h" />
     <ClInclude Include="Sources\Internal\Render\ResourceStates.h" />
     <ClInclude Include="Sources\Internal\Render\ScopedGpuProfiler.h" />
@@ -292,6 +293,7 @@ RD /S /Q $(TargetDir)Assets
     <ClInclude Include="Sources\Internal\Systems\TransformSystem.h" />
     <ClCompile Include="Sources\Internal\Component\LightComponent.cpp" />
     <ClCompile Include="Sources\Internal\Render\RenderPass\EditorGizmosPass.cpp" />
+    <ClCompile Include="Sources\Internal\Render\RenderPass\ShadowMapRenderPass.cpp" />
     <ClCompile Include="Sources\Internal\Render\Shaders\autogen\KiotoShaders.cpp" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />

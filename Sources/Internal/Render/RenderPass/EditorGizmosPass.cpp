@@ -10,7 +10,7 @@
 #include "Render/RenderCommand.h"
 #include "Render/RenderObject.h"
 #include "Render/RenderPacket.h"
-#include "Render/RenderOptions.h"
+#include "Render/RenderSettings.h"
 #include "Render/Shader.h"
 #include "Render/RenderGraph/ResourcesBlackboard.h"
 #include "Render/RenderGraph/ResourceTable.h"
@@ -35,17 +35,21 @@ EditorGizmosPass::EditorGizmosPass()
 
 void EditorGizmosPass::SetRenderTargets(CommandList* commandList, ResourceTable& resources)
 {
+    bool isWireframe = KiotoCore::GetRenderSettings().RenderMode == RenderSettings::RenderModeOptions::Wireframe;
     SetRenderTargetsCommand cmd;
-    cmd.SetRenderTargets(Renderer::DefaultBackBufferHandle);
+    TextureHandle rtHandle = m_thisFrameFwdPassEnabled ? resources.GetResource("FwdTargetTexture")->GetHandle() : Renderer::DefaultBackBufferHandle;
+    cmd.SetRenderTargets(rtHandle);
     cmd.RenderTargetCount = GetRenderTargetCount();
     cmd.DepthStencil = Renderer::DefaultDepthStencilHandle;
 
     cmd.Viewport = { 0, 0, Renderer::GetWidth(), Renderer::GetHeight() };
     cmd.Scissor = { 0, 0, Renderer::GetWidth(), Renderer::GetHeight() };
-    cmd.ClearDepth = false;
-    cmd.ClearDepthValue = 0.0f;
-    cmd.ClearColor = false;
-    cmd.ClearStencil = false;
+    cmd.ClearDepth = isWireframe;
+    cmd.ClearDepthValue = 1.0f;
+    cmd.ClearColor = isWireframe;
+    if (isWireframe)
+        cmd.ClearColorValue = Color::DefaultBackgroundColor;
+    cmd.ClearStencil = isWireframe;
     cmd.ClearStencilValue = 0;
 
     commandList->PushCommand(RenderCommandHelpers::CreateSetRenderTargetCommand(cmd, this));
@@ -53,6 +57,10 @@ void EditorGizmosPass::SetRenderTargets(CommandList* commandList, ResourceTable&
 
 bool EditorGizmosPass::ConfigureInputsAndOutputs(ResourcesBlackboard& resources)
 {
+    const RenderSettings& settings = KiotoCore::GetRenderSettings();
+    m_thisFrameFwdPassEnabled = (settings.RenderMode == RenderSettings::RenderModeOptions::Final || settings.RenderMode == RenderSettings::RenderModeOptions::FinalAndWireframe);
+    if (m_thisFrameFwdPassEnabled)
+        resources.ScheduleWrite("FwdTargetTexture");
     return true;
 }
 
@@ -78,6 +86,7 @@ EditorGizmosPass::~EditorGizmosPass()
 
 void EditorGizmosPass::BuildRenderPackets(CommandList* commandList, ResourceTable& resources)
 {
+    SetRenderTargets(commandList, resources);
     CreateNecessaryRenderObjects(m_drawData->Lights);
     for (size_t i = 0; i < m_drawData->Lights.size(); ++i)
     {

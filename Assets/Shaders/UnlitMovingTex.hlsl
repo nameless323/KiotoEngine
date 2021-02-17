@@ -14,7 +14,7 @@ vOut vs(vIn i)
     pos = mul(pos, cbCamera.ViewProjection);
     vOut o;
     o.position = pos;
-
+    
     o.dbg = float4(0.0f, 0.0f, i.position.x, 1.0f);
     o.normal = i.normal * 0.5f + 0.5f;
     o.uv = i.uv;
