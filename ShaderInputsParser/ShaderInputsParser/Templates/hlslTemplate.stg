@@ -24,3 +24,5 @@ cbufferTempl(name, typename, size, isArray, reg, space) ::= "ConstantBuffer<$typ
 tex2d(name, reg, space) ::= "Texture2D $name$ : register(t$reg$, space$space$);"
 
 sampler(name, reg, space) ::= "SamplerState $name$ : register(s$reg$, space$space$);"
+
+samplerCmp(name, reg, space) ::= "SamplerComparisonState $name$ : register(s$reg$, space$space$);"

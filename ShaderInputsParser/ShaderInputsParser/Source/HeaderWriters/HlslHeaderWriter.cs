@@ -170,7 +170,7 @@ namespace ShaderInputsParserApp.Source
 
             foreach (var sampler in samplers)
             {
-                StringTemplate samplerTemplate = group.GetInstanceOf("sampler");
+                StringTemplate samplerTemplate = sampler.IsCmpSampler ? group.GetInstanceOf("samplerCmp") : group.GetInstanceOf("sampler");
                 samplerTemplate.Add("name", sampler.Name);
                 samplerTemplate.Add("reg", sampler.Bindpoint.Reg);
                 samplerTemplate.Add("space", sampler.Bindpoint.Space);
