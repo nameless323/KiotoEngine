@@ -71,8 +71,9 @@ void TextureDX12::CreateFromDescriptor(ID3D12Device* device, ID3D12GraphicsComma
             memcpy(clearValue.Color, std::get<Color>(m_descriptor.FastClearValue).data, sizeof(float32) * 4);
     }
 
+    auto defaultHeapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
     ThrowIfFailed(device->CreateCommittedResource(
-        &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
+        &defaultHeapProps,
         D3D12_HEAP_FLAG_NONE,
         &textureDesc,
         D3D12_RESOURCE_STATE_COPY_DEST,

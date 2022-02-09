@@ -91,7 +91,8 @@ void SwapChain::Resize(const StateDX& state, uint16 width, uint16 height)
     dsClear.DepthStencil.Depth = 1.0f;
     dsClear.DepthStencil.Stencil = 0;
 
-    ThrowIfFailed(state.Device->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, &depthStencilDesc, D3D12_RESOURCE_STATE_COMMON, &dsClear, IID_PPV_ARGS(m_depthStencil.Resource.GetAddressOf())));
+    auto defaultHeapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+    ThrowIfFailed(state.Device->CreateCommittedResource(&defaultHeapProps, D3D12_HEAP_FLAG_NONE, &depthStencilDesc, D3D12_RESOURCE_STATE_COMMON, &dsClear, IID_PPV_ARGS(m_depthStencil.Resource.GetAddressOf())));
 
     D3D12_DEPTH_STENCIL_VIEW_DESC dsViewDesc = {};
     dsViewDesc.Flags = D3D12_DSV_FLAG_NONE;

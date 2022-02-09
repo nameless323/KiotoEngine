@@ -9,7 +9,7 @@
 
 #include <string>
 #include <functional>
-#include <windows.h>
+#include <Windows.h>
 
 #include "Core/Core.h"
 #include "Core/CoreTypes.h"

@@ -203,9 +203,9 @@ void ImguiEditorSystem::DrawComponentEditor(TransformComponent* transform)
         Quaternion finalRot = Quaternion::FromEuler(rotEuler.x, rotEuler.y, rotEuler.z);
         transform->SetWorldRotation(finalRot);
 
-        Vector3& right = transform->Right();
-        Vector3& fwd = transform->Fwd();
-        Vector3& up = transform->Up();
+        Vector3 right = transform->Right();
+        Vector3 fwd = transform->Fwd();
+        Vector3 up = transform->Up();
 
         ImGui::Text("Right   : % 8.4f, % 8.4f, % 8.4f", right.x, right.y, right.z);
         ImGui::Text("Forward : % 8.4f, % 8.4f, % 8.4f", fwd.x, fwd.y, fwd.z);

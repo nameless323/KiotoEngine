@@ -80,7 +80,7 @@ namespace Kioto::Renderer
             return;
         }
         RenderObjectBufferLayout& layout = m_renderObjectBuffers[passName];
-        auto& cb = std::find_if(layout.begin(), layout.end(), [&cbName](const ConstantBuffer& b) { return b.GetName() == cbName; });
+        auto cb = std::find_if(layout.begin(), layout.end(), [&cbName](const ConstantBuffer& b) { return b.GetName() == cbName; });
         if (cb == layout.end())
         {
             assert(false);

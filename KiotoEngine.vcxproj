@@ -23,7 +23,7 @@
     <ProjectGuid>{8C10506B-14FC-496D-B373-9C2793C91A44}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>KiotoEngine</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.22000.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -273,8 +273,14 @@ RD /S /Q $(TargetDir)Assets
     <ClInclude Include="Sources\Internal\Render\Shader.h" />
     <ClInclude Include="Sources\Internal\Render\ShaderData.h" />
     <ClInclude Include="Sources\Internal\Render\ShaderInputBase.h" />
-    <ClInclude Include="Sources\Internal\Render\Shaders\autogen\KiotoShaders.h" />
     <ClInclude Include="Sources\Internal\Render\Shaders\autogen\CommonStructures.h" />
+    <ClInclude Include="Sources\Internal\Render\Shaders\autogen\KiotoShaders.h" />
+    <ClInclude Include="Sources\Internal\Render\Shaders\autogen\sInp\Fallback.h" />
+    <ClInclude Include="Sources\Internal\Render\Shaders\autogen\sInp\GizmosImpostor.h" />
+    <ClInclude Include="Sources\Internal\Render\Shaders\autogen\sInp\Grayscale.h" />
+    <ClInclude Include="Sources\Internal\Render\Shaders\autogen\sInp\ShadowMap.h" />
+    <ClInclude Include="Sources\Internal\Render\Shaders\autogen\sInp\UnlitMovingTex.h" />
+    <ClInclude Include="Sources\Internal\Render\Shaders\autogen\sInp\Wireframe.h" />
     <ClInclude Include="Sources\Internal\Render\Texture\TextureManager.h" />
     <ClInclude Include="Sources\Internal\Render\DX12\Texture\TextureManagerDX12.h" />
     <ClInclude Include="Sources\Internal\Render\Texture\TextureSet.h" />
@@ -294,7 +300,6 @@ RD /S /Q $(TargetDir)Assets
     <ClCompile Include="Sources\Internal\Component\LightComponent.cpp" />
     <ClCompile Include="Sources\Internal\Render\RenderPass\EditorGizmosPass.cpp" />
     <ClCompile Include="Sources\Internal\Render\RenderPass\ShadowMapRenderPass.cpp" />
-    <ClCompile Include="Sources\Internal\Render\Shaders\autogen\KiotoShaders.cpp" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -356,11 +361,7 @@ RD /S /Q $(TargetDir)Assets
     <ClCompile Include="Sources\Internal\Render\RenderObject.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\Texture\TextureDX12.cpp" />
     <ClCompile Include="Sources\Internal\Render\DX12\Texture\TextureManagerDX12.cpp" />
-    <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\Fallback.h" />
-    <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\GizmosImpostor.h" />
-    <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\Grayscale.h" />
-    <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\UnlitMovingTex.h" />
-    <ClCompile Include="Sources\Internal\Render\Shaders\autogen\sInp\Wireframe.h" />
+    <ClCompile Include="Sources\Internal\Render\Shaders\autogen\KiotoShaders.cpp" />
     <ClCompile Include="Sources\Internal\Render\Texture\TextureSet.cpp" />
     <ClCompile Include="Sources\Internal\Render\VertexLayout.cpp" />
     <ClCompile Include="Sources\Internal\Systems\CameraSystem.cpp" />
