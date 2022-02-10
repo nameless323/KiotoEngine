@@ -72,7 +72,7 @@ bool Init(HINSTANCE hInstance, int32 nCmdShow, std::wstring caption)
 
     if (Hwnd == nullptr)
     {
-        MessageError(TEXT("Create window"));
+        MessageError(const_cast<wchar_t*>(TEXT("Create window")));
         return false;
     }
 

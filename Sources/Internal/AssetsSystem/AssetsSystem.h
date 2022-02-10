@@ -6,6 +6,7 @@
 
 #include "Asset.h"
 #include "Render/Renderer.h"
+#include "AssetsSystem/FilesystemHelpers.h"
 
 namespace Kioto::AssetsSystem // [a_vorontcov] Maybe to class and use with service locator.
 {

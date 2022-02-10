@@ -4,6 +4,7 @@
 #include <functional>
 #include <locale>
 #include <codecvt>
+#include <stringapiset.h>
 
 namespace Kioto
 {

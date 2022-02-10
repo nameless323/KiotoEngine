@@ -55,7 +55,7 @@ Matrix3_<T>::Matrix3_(const Matrix3_<T>& other)
 template <typename T>
 Matrix3_<T>::Matrix3_(const Vector3_<T>& r0, const Vector3_<T>& r1, const Vector3_<T>& r2)
 {
-    r[0] = r0; r[1] = r1; r[2] = r2; r[3] = r3;
+    r[0] = r0; r[1] = r1; r[2] = r2;
 }
 
 template <typename T>

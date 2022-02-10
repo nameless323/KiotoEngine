@@ -197,7 +197,9 @@ void RendererDX12::RenderImGui()
 {
     m_profiler.BeginGpuEvent(m_state.CommandList.Get(), "ImGUI");
 
-    m_state.CommandList->OMSetRenderTargets(1, &m_swapChain.GetCurrentBackBufferCPUHandle(m_state), false, &m_swapChain.GetDepthStencilCPUHandle());
+    auto chainBackBufferCPUHandle = m_swapChain.GetCurrentBackBufferCPUHandle(m_state);
+    auto chainDepthStencilHandle = m_swapChain.GetDepthStencilCPUHandle();
+    m_state.CommandList->OMSetRenderTargets(1, &chainBackBufferCPUHandle, false, &chainDepthStencilHandle);
     m_state.CommandList->SetDescriptorHeaps(1, &m_imguiDescriptorHeap);
     ImGui::Render();
     ImGui::ImplDX12RenderDrawData(ImGui::GetDrawData(), m_state.CommandList.Get());
@@ -356,8 +358,10 @@ void RendererDX12::Present()
                 dsHandlePtr = &dsHandle;
             }
 
-            m_state.CommandList->RSSetScissorRects(1, &DXRectFromKioto(srtCommand.Scissor));
-            m_state.CommandList->RSSetViewports(1, &DXViewportFromKioto(srtCommand.Viewport));
+            auto scissorRect = DXRectFromKioto(srtCommand.Scissor);
+            m_state.CommandList->RSSetScissorRects(1, &scissorRect);
+            auto viewport = DXViewportFromKioto(srtCommand.Viewport);
+            m_state.CommandList->RSSetViewports(1, &viewport);
 
             if (srtCommand.ClearColor && currentRTHandle != InvalidHandle)
                 m_state.CommandList->ClearRenderTargetView(rtHandle, srtCommand.ClearColorValue.data, 0, nullptr);

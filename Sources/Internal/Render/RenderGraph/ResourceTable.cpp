@@ -36,7 +36,7 @@ void ResourceTable::ClearBlackboards()
 
 ResourcesBlackboard* ResourceTable::GetBalackboardForPass(const RenderPass* pass)
 {
-    auto& it = std::find_if(m_blackboardsPool.begin(), m_blackboardsPool.end(),
+    auto it = std::find_if(m_blackboardsPool.begin(), m_blackboardsPool.end(),
         [&pass](const PassBlackboard& bb) { return bb.first == pass; });
 
     assert(it != m_blackboardsPool.end() && "Pass is unregistered for current frame");
