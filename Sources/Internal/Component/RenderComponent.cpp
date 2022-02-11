@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #include "Component/RenderComponent.h"
 
 #include "Core/Yaml/YamlParser.h"

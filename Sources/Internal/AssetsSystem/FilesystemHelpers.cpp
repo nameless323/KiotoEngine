@@ -1,9 +1,10 @@
-#include "stdafx.h"
-
 #include "AssetsSystem/FilesystemHelpers.h"
 
+#include <cassert>
 #include <fstream>
 #include <sstream>
+
+#include "Core/CoreHelpers.h"
 
 namespace Kioto::FilesystemHelpers
 {

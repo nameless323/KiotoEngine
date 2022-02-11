@@ -1,11 +1,11 @@
-#include "stdafx.h"
-
 #include "Render/DX12/RendererDX12.h"
 
 #include <array>
+#include <dxgidebug.h>
 #include <string>
 #include <vector>
 
+#include "DXHelpers.h"
 #include "Sources/External/Dx12Helpers/DDSTextureLoader.h"
 #include "Sources/External/IMGUI/imgui.h"
 #include "Sources/External/IMGUI/imgui_impl_dx12.h"

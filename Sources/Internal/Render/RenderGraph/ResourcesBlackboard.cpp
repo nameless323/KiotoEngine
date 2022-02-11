@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #include "Render/RenderGraph/ResourcesBlackboard.h"
 
 #include "Render/Renderer.h"

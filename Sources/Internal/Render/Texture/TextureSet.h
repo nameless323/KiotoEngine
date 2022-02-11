@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 #include "Core/CoreTypes.h"
 #include "Render/Texture/Texture.h"

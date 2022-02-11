@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #include "Render/Geometry/IntermediateMesh.h"
 
 #include <algorithm>

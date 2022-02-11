@@ -1,6 +1,6 @@
-#include "stdafx.h"
-
 #include "Render/RenderGraph/ResourceTable.h"
+
+#include "Core/CoreHelpers.h"
 #include "Render/Texture/Texture.h"
 #include "Render/Renderer.h"
 

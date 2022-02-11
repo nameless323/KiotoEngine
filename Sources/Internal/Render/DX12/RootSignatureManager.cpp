@@ -1,8 +1,9 @@
-#include "stdafx.h"
-
 #include "Render/Buffers/EngineBuffers.h"
 
 #include "Render/DX12/RootSignatureManager.h"
+
+#include "DXHelpers.h"
+#include "Dx12Helpers/d3dx12.h"
 #include "Render/DX12/StateDX.h"
 
 namespace Kioto::Renderer

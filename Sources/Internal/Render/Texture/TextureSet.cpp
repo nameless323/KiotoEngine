@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #include "Render/Texture/TextureSet.h"
 #include "Render/Renderer.h"
 

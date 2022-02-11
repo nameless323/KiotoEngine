@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #include "Render/DX12/Buffers/ConstantBufferManagerDX12.h"
 #include "Render/DX12/StateDX.h"
 #include "Render/RenderObject.h"

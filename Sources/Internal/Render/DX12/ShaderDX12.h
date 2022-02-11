@@ -6,6 +6,7 @@
 #include <d3d12.h>
 #include <wrl.h>
 
+#include "Dx12Helpers/d3dx12.h"
 #include "Render/ShaderData.h"
 
 namespace Kioto::Renderer

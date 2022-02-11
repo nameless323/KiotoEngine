@@ -1,9 +1,9 @@
-#include "stdafx.h"
-
 #include "Render/DX12/ShaderManagerDX12.h"
 
+#include "DXHelpers.h"
 #include "AssetsSystem/AssetsSystem.h"
 #include "Core/CoreHelpers.h"
+#include "Dx12Helpers/d3dx12.h"
 #include "Render/Shader.h"
 
 #include "Render/Shaders/autogen/KiotoShaders.h"

@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #include "Component/CameraComponent.h"
 
 #include "Core/ECS/Entity.h"

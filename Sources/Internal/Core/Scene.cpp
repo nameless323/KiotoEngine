@@ -1,7 +1,8 @@
-#include "stdafx.h"
-
 #include "Core/Scene.h"
 
+#include <debugapi.h>
+
+#include "CoreHelpers.h"
 #include "Core/ECS/SceneSystem.h"
 #include "Core/ECS/Entity.h"
 #include "Core/Timer/GlobalTimer.h"

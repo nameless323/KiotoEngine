@@ -7,6 +7,7 @@
 #include <windows.h>
 
 #include "Render/Geometry/Mesh.h"
+#include "Dx12Helpers/d3dx12.h"
 
 namespace Kioto::Renderer
 {

@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #include "Core/ECS/Component.h"
 
 namespace Kioto

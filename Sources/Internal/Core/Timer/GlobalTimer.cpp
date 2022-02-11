@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #include "Core/Timer/GlobalTimer.h"
 
 #include "Core/DataStructures/RingArray.h"

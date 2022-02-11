@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #include "yaml-cpp/yaml.h"
 
 #include "AssetsSystem/RenderStateParamsConverter.h"

@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #include "Core/ECS/Entity.h"
 
 #include "Core/CoreHelpers.h"

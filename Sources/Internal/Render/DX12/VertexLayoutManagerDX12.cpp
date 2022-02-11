@@ -1,6 +1,6 @@
-#include "stdafx.h"
-
 #include "Render/DX12/VertexLayoutManagerDX12.h"
+
+#include <d3d12.h>
 
 #include "Render/Shader.h"
 

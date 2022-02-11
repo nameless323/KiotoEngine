@@ -1,10 +1,9 @@
-#include "stdafx.h"
-
 #include "Render/Geometry/ParserGLTF.h"
 
 #include "AssetsSystem/FilesystemHelpers.h"
 #include "Core/Logger/Logger.h"
 #include "Render/Geometry/IntermediateMesh.h"
+#include "Render/Geometry/Mesh.h"
 
 #define TINYGLTF_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION

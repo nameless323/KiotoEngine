@@ -1,6 +1,6 @@
-#include "stdafx.h"
-
 #include "Systems/DebugSystem.h"
+
+#include <array>
 
 #include "Core/KiotoEngine.h"
 #include "Render/RenderSettings.h"
@@ -33,7 +33,7 @@ namespace Kioto
     {
         static std::array<std::string, 3> items = { "Final", "Wireframe", "FinalAndWireframe" };
         static std::string current_item = items[0];
-        const static std::array<RenderSettings::RenderModeOptions, 3> renderModeOptions{ RenderSettings::RenderModeOptions::Final,RenderSettings::RenderModeOptions::Wireframe, RenderSettings::RenderModeOptions::FinalAndWireframe };
+        const static std::array renderModeOptions{ RenderSettings::RenderModeOptions::Final,RenderSettings::RenderModeOptions::Wireframe, RenderSettings::RenderModeOptions::FinalAndWireframe };
 
         ImGui::Begin("Render options || DebugSystem.cpp::Update(float dt)", NULL, ImGuiWindowFlags_NoFocusOnAppearing);
 

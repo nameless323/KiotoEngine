@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #include "AssetsSystem/AssetsSystem.h"
 
 #include <yaml-cpp/yaml.h>

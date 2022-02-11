@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #include "Render/Material.h"
 
 #include "yaml-cpp/yaml.h"

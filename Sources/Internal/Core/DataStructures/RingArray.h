@@ -74,7 +74,7 @@ public:
     {
         if (m_buffer.empty() || m_valsAdded == 0)
             return {};
-        float32 valsToCount = static_cast<float32>(min(m_buffer.size(), m_valsAdded));
+        float32 valsToCount = static_cast<float32>(std::min<int32>(static_cast<uint32>(m_buffer.size()), m_valsAdded));
         return static_cast<T>(m_sum * (1.0f / valsToCount)); // [a_vorontcov] 1.0f / valsToCount for cases when for T type div operation with scalar is undefined, but mul is well defined.
     }
 

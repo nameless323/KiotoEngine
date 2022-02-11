@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #include "Systems/TransformSystem.h"
 
 #include "Core/ECS/Entity.h"

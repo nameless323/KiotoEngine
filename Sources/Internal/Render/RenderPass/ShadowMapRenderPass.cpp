@@ -1,10 +1,9 @@
-#include "stdafx.h"
-
 #include "Render/RenderPass/ShadowMapRenderPass.h"
 
 #include "Core/KiotoEngine.h"
 #include "Render/Camera.h"
 #include "Render/Geometry/GeometryGenerator.h"
+#include "Render/Geometry/Mesh.h"
 #include "Render/Lighting/Light.h"
 #include "Render/Material.h"
 #include "Render/Renderer.h"

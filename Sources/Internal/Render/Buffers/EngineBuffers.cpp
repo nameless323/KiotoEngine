@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #include "Render/Buffers/EngineBuffers.h"
 
 #include "Render/ConstantBuffer.h"

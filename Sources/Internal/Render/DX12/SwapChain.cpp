@@ -1,7 +1,10 @@
-#include "stdafx.h"
-
 #include "Core/WindowsApplication.h"
 #include "Render/DX12/SwapChain.h"
+
+#include <dxgi1_6.h>
+
+#include "DXHelpers.h"
+#include "Dx12Helpers/d3dx12.h"
 #include "Render/RendererPublic.h"
 
 namespace Kioto::Renderer
