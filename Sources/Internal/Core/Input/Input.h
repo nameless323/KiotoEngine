@@ -148,9 +148,9 @@ private:
     static std::array<bool, MAX_MOUSE_ARRAY_SIZE> m_prevFrameMouse;
     static std::array<bool, MAX_MOUSE_ARRAY_SIZE> m_prevPrevFrameMouse;
 
-    static Vector2i m_thisFrameMousePosRelative;
-    static Vector2i m_mouseRelative;
-    static int32 m_thisFrameMouseWheel;
-    static int32 m_mouseWheel;
+    static Vector2i mThisFrameMousePosRelative;
+    static Vector2i mMouseRelative;
+    static int32 mThisFrameMouseWheel;
+    static int32 mMouseWheel;
 };
 }

@@ -104,12 +104,12 @@ public:
 private:
     void AddSystemInternal(SceneSystem* system);
 
-    std::vector<SceneSystem*> m_systems; // [a_vorontcov] TODO: linked list in custom arena? Also, maybe updatable system or smth like that, to not call useless update.
-    std::vector<Entity*> m_entities; // [a_vorontcov] Same as above.
-    CameraSystem* m_cameraSystem = nullptr;
-    RenderSystem* m_renderSystem = nullptr;
+    std::vector<SceneSystem*> mSystems; // [a_vorontcov] TODO: linked list in custom arena? Also, maybe updatable system or smth like that, to not call useless update.
+    std::vector<Entity*> mEntities; // [a_vorontcov] Same as above.
+    CameraSystem* mCameraSystem = nullptr;
+    RenderSystem* mRenderSystem = nullptr;
 
-    std::string m_name = "";
+    std::string mName = "";
 };
 
 template <typename T, typename>
@@ -118,7 +118,7 @@ bool Scene::AddSystemBefore(SceneSystem* system)
     std::vector<SceneSystem*>::const_iterator* it = nullptr;
     bool success = FindSystem<T>(it);
     if (success)
-        m_systems.insert(it, system);
+        mSystems.insert(it, system);
     return success;
 }
 
@@ -128,7 +128,7 @@ bool Scene::AddSystemAfter(SceneSystem* system)
     std::vector<SceneSystem*>::const_iterator* it = nullptr;
     bool success = FindSystem<T>(it);
     if (success)
-        m_systems.insert(it + 1, system);
+        mSystems.insert(it + 1, system);
     return success;
 }
 
@@ -140,19 +140,19 @@ void Scene::RemoveSystem()
     if (success)
     {
         delete &(*it);
-        m_systems.erase(it);
+        mSystems.erase(it);
     }
 }
 
 template <typename T, typename U, typename>
 bool Scene::FindSystem(U* resultSystem) const
 {
-    auto it = std::find_if(m_systems.begin(), m_systems.end(),
+    auto it = std::find_if(mSystems.begin(), mSystems.end(),
         [](const SceneSystem* system)
         {
             return static_cast<T*>(system) != nullptr;
         });
-    if (it != m_systems.end())
+    if (it != mSystems.end())
     {
         resultSystem = it;
         return true;
@@ -162,11 +162,11 @@ bool Scene::FindSystem(U* resultSystem) const
 
 inline const std::vector<SceneSystem*>& Scene::GetSystems() const
 {
-    return m_systems;
+    return mSystems;
 }
 
 inline const CameraSystem* Scene::GetCameraSystem() const
 {
-    return m_cameraSystem;
+    return mCameraSystem;
 }
 }
