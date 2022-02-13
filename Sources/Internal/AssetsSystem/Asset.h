@@ -19,36 +19,36 @@ public:
     bool IsMemoryAsset() const;
 
 protected:
-    bool m_isMemoryAsset = true;
-    std::string m_assetPath;
+    bool mIsMemoryAsset = true;
+    std::string mAssetPath;
 };
 
 inline Asset::Asset()
-    : m_isMemoryAsset(true)
+    : mIsMemoryAsset(true)
 {
 }
 
 inline Asset::Asset(std::string assetPath) 
-    : m_assetPath(assetPath)
+    : mAssetPath(std::move(assetPath))
 {
-    if (!m_assetPath.empty())
-        m_isMemoryAsset = false;
+    if (!mAssetPath.empty())
+        mIsMemoryAsset = false;
 }
 
 inline std::string Asset::GetAssetPath() const
 {
-    return m_assetPath;
+    return mAssetPath;
 }
 
 inline void Asset::SetAssetPath(std::string path)
 {
-    std::swap(m_assetPath, path);
-    if (!m_assetPath.empty())
-        m_isMemoryAsset = false;
+    std::swap(mAssetPath, path);
+    if (!mAssetPath.empty())
+        mIsMemoryAsset = false;
 }
 
 inline bool Asset::IsMemoryAsset() const
 {
-    return m_isMemoryAsset;
+    return mIsMemoryAsset;
 }
 }
