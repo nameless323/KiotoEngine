@@ -88,12 +88,12 @@ else
 }```
 
 ## Naming
-Names are written in English, class members should start with m_ prefix.
+Names are written in English, class members should start with m prefix.
 ```cpp
 class MyClass
 {
 private:
-    int m_myInt;
+    int mMyInt;
 };
 ```
 
@@ -174,13 +174,13 @@ public:
     MyClass();
 
 private:
-    int32 m_width;
-    int32 m_height;
+    int32 mWidth;
+    int32 mHeight;
 };
 
 MyClass::MyClass()
-    : m_width(0) // Order preserved.
-    , m_heigth(0)
+    : mWidth(0) // Order preserved.
+    , mHeigth(0)
 {
 }
 ```
@@ -259,13 +259,13 @@ private: // Private goes last.
     template <typename T>
     T TemplateFun(T t);
 
-    int m_var0; // Then fields. [Author]
-    int m_var1;
+    int mVar0; // Then fields. [Author]
+    int mVar1;
 };
 
 inline void MyClass::FooOne()
 {
-    m_var0++;
+    mVar0++;
 }
 
 template <typename T>
@@ -286,19 +286,19 @@ T MyClass::TemplateFun(T t)
 namespace Kioto
 {
 MyClass::MyClass()
-    : m_var0(8) // In order of appearance in .h file. [Author]
-    , m_var1(2)
+    : mVar0(8) // In order of appearance in .h file. [Author]
+    , mVar1(2)
 {
-    for (int i = 0; i < m_var0; ++i)
+    for (int i = 0; i < mVar0; ++i)
     {
-        m_var1 += m_var0;
-        m_var1--;
+        mVar1 += mVar0;
+        mVar1--;
     }    
 }
 
 MyClass::~MyClass()
 {
-    m_var0 = 0;
+    mVar0 = 0;
 }
 
 void MyClass::Foo() // In order of appearance in .h file. [Author]
@@ -306,15 +306,15 @@ void MyClass::Foo() // In order of appearance in .h file. [Author]
     std::vector<int> myVector { 3, 4, 5 };
     for (auto i : myVector)
     {
-        my_var0 += i;
+        myVar0 += i;
     }
 }
 
 void MyClass::Bar()
 {
-    if (my_var0 > 0)
+    if (myVar0 > 0)
     {
-        my_var1 = 0;
+        myVar1 = 0;
     }
 }
 }
