@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #include "Render/ScopedGpuProfiler.h"
 
 #include "Render/RenderCommand.h"

@@ -1,7 +1,8 @@
-#include "stdafx.h"
-
 #include "Render/DX12/Texture/TextureManagerDX12.h"
 
+#include "Core/CoreHelpers.h"
+#include "Dx12Helpers/d3dx12.h"
+#include "Render/DX12/DXHelpers.h"
 #include "Render/DX12/StateDX.h"
 #include "Render/DX12/Texture/TextureDX12.h"
 #include "Render/Texture/Texture.h"

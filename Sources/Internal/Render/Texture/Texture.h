@@ -5,6 +5,7 @@
 #include <array>
 #include <variant>
 
+#include "Math/Vector2.h"
 #include "Render/Color.h"
 #include "Render/RendererPublic.h"
 #include "Render/ResourceStates.h"

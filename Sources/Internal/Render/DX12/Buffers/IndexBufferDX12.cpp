@@ -1,7 +1,6 @@
-#include "stdafx.h"
-
 #include "Render/DX12/Buffers/IndexBufferDX12.h"
 
+#include "Core/CoreHelpers.h"
 #include "Sources/External/Dx12Helpers/d3dx12.h"
 
 namespace Kioto::Renderer

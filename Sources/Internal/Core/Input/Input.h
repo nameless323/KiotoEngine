@@ -4,6 +4,7 @@
 
 #include "Core/CoreTypes.h"
 #include "Core/Core.h"
+#include "Math/Vector2.h"
 
 namespace Kioto
 {

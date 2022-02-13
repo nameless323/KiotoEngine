@@ -7,8 +7,6 @@
 //  [X] Platform: Keyboard arrays indexed using VK_* Virtual Key Codes, e.g. ImGui::IsKeyPressed(VK_SPACE).
 //  [X] Platform: Gamepad support. Enabled with 'io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad'.
 
-#include "stdafx.h"
-
 #include "Sources/External/IMGUI/imgui.h"
 #include "Sources/External/IMGUI/imgui_impl_win32.h"
 

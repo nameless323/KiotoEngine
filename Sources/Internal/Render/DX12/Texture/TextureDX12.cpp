@@ -1,9 +1,10 @@
-#include "stdafx.h"
-
 #include "Render/DX12/Texture/TextureDX12.h"
+
+#include <variant>
 
 #include "AssetsSystem/FilesystemHelpers.h"
 #include "Core/CoreHelpers.h"
+#include "Math/Vector2.h"
 #include "Render/DX12/KiotoDx12Mapping.h"
 #include "Sources/External/Dx12Helpers/DDSTextureLoader.h"
 #include "Render/Color.h"

@@ -4,6 +4,7 @@
 
 #include "Render/RendererPublic.h"
 #include "Render/DX12/ShaderDX12.h"
+#include "Dx12Helpers/d3dx12.h"
 
 namespace Kioto::Renderer
 {

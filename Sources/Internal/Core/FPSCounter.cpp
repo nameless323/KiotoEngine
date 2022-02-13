@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #include "Core/DataStructures/RingArray.h"
 
 namespace Kioto::FPSCounter
@@ -14,12 +12,12 @@ constexpr uint32 SmoothFpsCount = 60;
 RingArray<uint32, SmoothFpsCount> FPSValues;
 }
 
-Kioto::uint32 GetFPS()
+uint32 GetFPS()
 {
     return FPS;
 }
 
-Kioto::uint32 GetSmoothFPS()
+uint32 GetSmoothFPS()
 {
     return FPSValues.GetAverage();
 }

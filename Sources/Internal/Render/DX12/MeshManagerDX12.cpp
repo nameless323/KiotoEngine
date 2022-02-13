@@ -1,7 +1,8 @@
-#include "stdafx.h"
-
 #include "Render/DX12/MeshManagerDX12.h"
 
+#include <cassert>
+
+#include "Core/CoreHelpers.h"
 #include "Render/DX12/Geometry/MeshDX12.h"
 #include "Render/Geometry/Mesh.h"
 

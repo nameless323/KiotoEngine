@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #include "Render/RenderPass/RenderPass.h"
 
 #include "Render/Renderer.h"

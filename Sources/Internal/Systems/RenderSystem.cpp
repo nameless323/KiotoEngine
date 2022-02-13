@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #include "Systems/RenderSystem.h"
 
 #include "AssetsSystem/AssetsSystem.h"

@@ -1,10 +1,9 @@
-#include "stdafx.h"
-
 #include "Render/Geometry/Mesh.h"
 
 #include <map>
 
 #include "AssetsSystem/FilesystemHelpers.h"
+#include "Core/CoreHelpers.h"
 #include "Render/Geometry/MeshParser.h"
 #include "Render/Geometry/ParserFBX.h"
 #include "Render/Geometry/ParserGLTF.h"

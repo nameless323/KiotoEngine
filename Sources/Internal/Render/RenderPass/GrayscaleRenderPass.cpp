@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #include "Render/RenderPass/GrayscaleRenderPass.h"
 
 #include "Core/KiotoEngine.h"
@@ -14,6 +12,7 @@
 #include "Render/RenderGraph/ResourcesBlackboard.h"
 #include "Render/RenderGraph/ResourceTable.h"
 #include "Render/Geometry/GeometryGenerator.h"
+#include "Render/Geometry/Mesh.h"
 #include "Render/Renderer.h"
 
 #include "Render/Shaders/autogen/sInp/Grayscale.h"

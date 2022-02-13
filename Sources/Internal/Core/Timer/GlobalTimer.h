@@ -1,6 +1,7 @@
 #pragma once
 
 #include <chrono>
+#include <Windows.h>
 
 #include "Core/CoreTypes.h"
 

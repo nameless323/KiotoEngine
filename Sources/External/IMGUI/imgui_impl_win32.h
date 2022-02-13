@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <Windows.h>
 #include "Sources/External/IMGUI/imgui.h"
 
 namespace ImGui

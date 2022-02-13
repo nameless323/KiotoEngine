@@ -1,7 +1,6 @@
-#include "stdafx.h"
-
 #include "Render/DX12/PsoManager.h"
 
+#include "DXHelpers.h"
 #include "Render/DX12/KiotoDx12Mapping.h"
 #include "Render/DX12/RootSignatureManager.h"
 #include "Render/DX12/ShaderManagerDX12.h"

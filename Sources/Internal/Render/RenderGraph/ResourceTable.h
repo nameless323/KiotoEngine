@@ -4,6 +4,7 @@
 #include <map>
 #include <string>
 
+#include "Math/Matrix4.h"
 #include "Render/RenderGraph/ResourcesBlackboard.h"
 
 namespace Kioto::Renderer

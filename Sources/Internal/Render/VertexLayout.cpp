@@ -1,7 +1,6 @@
-#include "stdafx.h"
-
 #include "Render/VertexLayout.h"
 
+#include <cassert>
 #include <map>
 
 namespace Kioto::Renderer

@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #include "Systems/EventSystem/EventSystem.h"
 
 #include "Core/CoreHelpers.h"

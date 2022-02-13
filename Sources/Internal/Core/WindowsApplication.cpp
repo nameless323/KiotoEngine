@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #include "Core/WindowsApplication.h"
 
 #include "Sources/External/IMGUI/imgui_impl_win32.h"
@@ -7,6 +5,7 @@
 #include <functional>
 #include <Strsafe.h>
 
+#include "CoreHelpers.h"
 #include "Core/CoreTypes.h"
 #include "Core/Input/Input.h"
 

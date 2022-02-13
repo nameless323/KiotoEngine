@@ -1,7 +1,6 @@
-#include "stdafx.h"
-
 #include "Render/Geometry/Mesh.h"
 
+#include "Core/CoreHelpers.h"
 #include "Render/Geometry/IntermediateMesh.h"
 #include "Render/Geometry/MeshLoader.h"
 

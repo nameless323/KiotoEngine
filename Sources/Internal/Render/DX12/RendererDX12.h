@@ -2,6 +2,7 @@
 
 #include <array>
 #include <cstdio>
+#include <dxgi1_6.h>
 #include <exception>
 #include <memory>
 

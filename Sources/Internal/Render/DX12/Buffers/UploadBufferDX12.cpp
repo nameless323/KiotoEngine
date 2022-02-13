@@ -1,6 +1,8 @@
-#include "stdafx.h"
-
 #include "Render/DX12/Buffers/UploadBufferDX12.h"
+
+#include <cassert>
+
+#include "Render/DX12/DXHelpers.h"
 #include "Render/DX12/StateDX.h"
 
 namespace Kioto::Renderer

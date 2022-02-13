@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #include "Systems/EventSystem/EngineEvents.h"
 
 namespace Kioto

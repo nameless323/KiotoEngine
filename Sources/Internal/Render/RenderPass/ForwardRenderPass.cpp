@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #include "Render/RenderPass/ForwardRenderPass.h"
 
 #include "Core/KiotoEngine.h"
@@ -13,6 +11,7 @@
 #include "Render/Shader.h"
 #include "Render/RenderGraph/ResourcesBlackboard.h"
 #include "Render/RenderGraph/ResourceTable.h"
+#include "Render/Geometry/Mesh.h"
 
 #include "Render/Shaders/autogen/sInp/Fallback.h"
 #include "Render/Shaders/autogen/CommonStructures.h"

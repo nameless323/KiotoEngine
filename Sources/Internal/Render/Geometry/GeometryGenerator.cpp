@@ -1,12 +1,11 @@
 // Adapted from http://wiki.unity3d.com/index.php/ProceduralPrimitives
 
-#include "stdafx.h"
-
 #include "Render/Geometry/GeometryGenerator.h"
 
 #include <vector>
 #include <map>
 
+#include "Core/CoreHelpers.h"
 #include "Render/Renderer.h"
 #include "Render/Geometry/Mesh.h"
 #include "Render/VertexLayout.h"

@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #include "Systems/ImguiEditorSystem.h"
 
 #include "Core/ECS/Entity.h"

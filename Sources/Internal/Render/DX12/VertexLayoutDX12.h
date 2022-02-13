@@ -2,9 +2,11 @@
 
 #include <dxgiformat.h>
 #include <map>
+#include <d3d12.h>
 
 #include "Core/CoreTypes.h"
 #include "Render/VertexLayout.h"
+#include "Render/RendererPublic.h"
 
 namespace Kioto::Renderer
 {

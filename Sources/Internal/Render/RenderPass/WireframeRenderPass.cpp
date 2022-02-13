@@ -1,9 +1,8 @@
-#include "stdafx.h"
-
 #include "Render/RenderPass/WireframeRenderPass.h"
 
 #include "Core/KiotoEngine.h"
 #include "Render/Camera.h"
+#include "Render/Geometry/Mesh.h"
 #include "Render/Material.h"
 #include "Render/Renderer.h"
 #include "Render/RenderCommand.h"

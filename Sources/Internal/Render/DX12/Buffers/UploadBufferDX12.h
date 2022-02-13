@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cassert>
+
 #include "Core/CoreTypes.h"
 
 #include <d3d12.h>

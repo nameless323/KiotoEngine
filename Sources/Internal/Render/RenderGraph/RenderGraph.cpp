@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #include "Render/RenderGraph/RenderGraph.h"
 
 #include "Render/Renderer.h"

@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #include "Render/Renderer.h"
 
 #include "IMGUI/imgui.h"

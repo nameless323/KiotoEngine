@@ -1,7 +1,5 @@
 #pragma once
 
-#pragma once
-
 #include "Render/Geometry/MeshParser.h"
 
 #include "Render/Geometry/IntermediateMesh.h"

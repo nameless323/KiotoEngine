@@ -4,10 +4,12 @@
 #include <DirectXMath.h>
 #endif
 
-#include "Core/CoreTypes.h"
-
 #include <iostream>
 #include <iomanip>
+
+#include "Core/CoreTypes.h"
+#include "Math/MathHelpers.h"
+
 
 namespace Kioto
 {
