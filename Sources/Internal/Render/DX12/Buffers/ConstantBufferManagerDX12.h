@@ -43,10 +43,10 @@ private:
         }
     };
 
-    std::map<ConstantBufferHandle, UploadBufferDX12*> m_constantBuffers;
-    std::map<ConstantBufferHandle, UploadBufferDX12*> m_internalBuffers;
-    std::vector<ConstantBuffer*> m_updateQueues;
-    std::vector<ConstantBuffer*> m_buffersToResetUpdatedFramesCount;
-    std::vector<TempCBData> m_registrationQueue;
+    std::map<ConstantBufferHandle, UploadBufferDX12*> mConstantBuffers;
+    std::map<ConstantBufferHandle, UploadBufferDX12*> mInternalBuffers;
+    std::vector<ConstantBuffer*> mUpdateQueues;
+    std::vector<ConstantBuffer*> mBuffersToResetUpdatedFramesCount;
+    std::vector<TempCBData> mRegistrationQueue;
 };
 }

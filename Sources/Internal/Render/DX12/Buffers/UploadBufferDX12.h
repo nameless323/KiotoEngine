@@ -47,70 +47,70 @@ public:
     T GetHandle() const;
 
 private:
-    bool m_isConstantBuffer = false;
-    size_t m_frameDataSize = 0;
-    size_t m_rawDataSize = 0;
-    size_t m_bufferSize = 0;
-    uint32 m_framesCount = 0;
-    uint32 m_framesUpdated = 0;
-    uint32 m_elementsCount = 1;
-    uint32 m_descriptorSize = 0;
-    Microsoft::WRL::ComPtr<ID3D12Resource> m_resource;
-    byte* m_data = nullptr;
-    std::variant<ConstantBufferHandle> m_handle;
-    Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_heap;
+    bool mIsConstantBuffer = false;
+    size_t mFrameDataSize = 0;
+    size_t mRawDataSize = 0;
+    size_t mBufferSize = 0;
+    uint32 mFramesCount = 0;
+    uint32 mFramesUpdated = 0;
+    uint32 mElementsCount = 1;
+    uint32 mDescriptorSize = 0;
+    Microsoft::WRL::ComPtr<ID3D12Resource> mResource;
+    byte* mData = nullptr;
+    std::variant<ConstantBufferHandle> mHandle;
+    Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> mHeap;
 
     static constexpr uint32 GetConstantBufferByteSize(uint32 byteSize); // [a_vorontcov] Constant buffers must be 255 byte aligned.
 };
 
 inline void UploadBufferDX12::IncrementUpdatedFramesCount()
 {
-    ++m_framesUpdated;
+    ++mFramesUpdated;
 }
 
 inline void UploadBufferDX12::DecrementUpdatedFramesCount()
 {
-    --m_framesUpdated;
-    m_framesUpdated = m_framesUpdated < 0 ? 0 : m_framesUpdated;
+    --mFramesUpdated;
+    mFramesUpdated = mFramesUpdated < 0 ? 0 : mFramesUpdated;
 }
 
 inline void UploadBufferDX12::ResetUpdatedFramesCount()
 {
-    m_framesUpdated = 0;
+    mFramesUpdated = 0;
 }
 
 inline uint32 UploadBufferDX12::GetUpdatedFramesCount() const
 {
-    return m_framesUpdated;
+    return mFramesUpdated;
 }
 
 inline bool UploadBufferDX12::IsUpdated() const
 {
-    return m_framesUpdated >= m_framesCount;
+    return mFramesUpdated >= mFramesCount;
 }
 
 inline bool UploadBufferDX12::HasDescriptorHeap() const
 {
-    return m_elementsCount > 1;
+    return mElementsCount > 1;
 }
 
 inline ID3D12DescriptorHeap* UploadBufferDX12::GetDescriptorHeap() const
 {
     assert(HasDescriptorHeap());
-    return m_heap.Get();
+    return mHeap.Get();
 }
 
 
 inline D3D12_GPU_DESCRIPTOR_HANDLE UploadBufferDX12::GetGpuDescriptorHandleForFrame(uint32 frame) const
 {
-    CD3DX12_GPU_DESCRIPTOR_HANDLE handle(m_heap->GetGPUDescriptorHandleForHeapStart());
-    handle.Offset(frame * m_elementsCount * m_descriptorSize);
+    CD3DX12_GPU_DESCRIPTOR_HANDLE handle(mHeap->GetGPUDescriptorHandleForHeapStart());
+    handle.Offset(frame * mElementsCount * mDescriptorSize);
     return { handle.ptr };
 }
 
 template <typename T>
 T UploadBufferDX12::GetHandle() const
 {
-    return std::get<T>(m_handle);
+    return std::get<T>(mHandle);
 }
 }

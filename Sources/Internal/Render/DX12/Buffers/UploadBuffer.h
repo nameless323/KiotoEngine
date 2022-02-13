@@ -31,104 +31,104 @@ public:
     D3D12_GPU_VIRTUAL_ADDRESS GetElementGpuAddress(uint32 elem) const;
 
 private:
-    bool m_isConstantBuffer = false;
-    size_t m_elemSize = 0;
-    size_t m_bufferSize = 0;
-    uint32 m_elementsCount = 0;
-    Microsoft::WRL::ComPtr<ID3D12Resource> m_resource;
-    byte* m_data = nullptr;
+    bool mIsConstantBuffer = false;
+    size_t mElemSize = 0;
+    size_t mBufferSize = 0;
+    uint32 mElementsCount = 0;
+    Microsoft::WRL::ComPtr<ID3D12Resource> mResource;
+    byte* mData = nullptr;
 
     static constexpr uint32 GetConstantBufferByteSize(uint32 byteSize); // [a_vorontcov] Constant buffers must be 255 byte aligned.
 };
 
 template <typename T>
 UploadBuffer<T>::UploadBuffer(uint32 elementsCount, bool isConstantBuffer, ID3D12Device* device)
-    : m_isConstantBuffer(isConstantBuffer)
-    , m_elementsCount(elementsCount)
+    : mIsConstantBuffer(isConstantBuffer)
+    , mElementsCount(elementsCount)
 {
-    if (m_isConstantBuffer)
-        m_elemSize = GetConstantBufferByteSize(sizeof(T));
+    if (mIsConstantBuffer)
+        mElemSize = GetConstantBufferByteSize(sizeof(T));
     else
-        m_elemSize = sizeof(T);
-    m_bufferSize = m_elemSize * elementsCount;
+        mElemSize = sizeof(T);
+    mBufferSize = mElemSize * elementsCount;
 
     CD3DX12_HEAP_PROPERTIES hProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-    CD3DX12_RESOURCE_DESC rDesc = CD3DX12_RESOURCE_DESC::Buffer(m_bufferSize);
+    CD3DX12_RESOURCE_DESC rDesc = CD3DX12_RESOURCE_DESC::Buffer(mBufferSize);
     HRESULT hr = device->CreateCommittedResource(
         &hProps,
         D3D12_HEAP_FLAG_NONE,
         &rDesc,
         D3D12_RESOURCE_STATE_GENERIC_READ,
         nullptr,
-        IID_PPV_ARGS(&m_resource)
+        IID_PPV_ARGS(&mResource)
     );
     if (!SUCCEEDED(hr))
         return;
 
     CD3DX12_RANGE readRange(0, 0);
-    m_resource->Map(0, &readRange, reinterpret_cast<void**>(&m_data));
+    mResource->Map(0, &readRange, reinterpret_cast<void**>(&mData));
 }
 
 template <typename T>
 UploadBuffer<T>::~UploadBuffer()
 {
-    if (m_resource != nullptr)
-        m_resource->Unmap(0, nullptr);
-    m_data = nullptr;
+    if (mResource != nullptr)
+        mResource->Unmap(0, nullptr);
+    mData = nullptr;
 }
 
 template <typename T>
 ID3D12Resource* UploadBuffer<T>::GetResource() const
 {
-    return m_resource.Get();
+    return mResource.Get();
 }
 
 template <typename T>
 void UploadBuffer<T>::UploadData(uint32 elementIndex, const T& data)
 {
-    memcpy(m_data + elementIndex * m_elemSize, &data, sizeof(T));
+    memcpy(mData + elementIndex * mElemSize, &data, sizeof(T));
 }
 
 template <typename T>
 void UploadBuffer<T>::UploadData(const T* data)
 {
-    memcpy(m_data, data, m_bufferSize);
+    memcpy(mData, data, mBufferSize);
 }
 
 template <typename T>
 const byte* const UploadBuffer<T>::GetBufferStart() const
 {
-    return m_data;
+    return mData;
 }
 
 template <typename T>
 const byte* const UploadBuffer<T>::GetBufferEnd() const 
 {
-    return m_data + m_bufferSize;
+    return mData + mBufferSize;
 }
 
 template <typename T>
 size_t UploadBuffer<T>::GetElementSize() const
 {
-    return m_elemSize;
+    return mElemSize;
 }
 
 template <typename T>
 size_t UploadBuffer<T>::GetBufferSize() const
 {
-    return m_bufferSize;
+    return mBufferSize;
 }
 
 template <typename T>
 uint32 UploadBuffer<T>::GetElementsCount() const
 {
-    return m_elementsCount;
+    return mElementsCount;
 }
 
 template <typename T>
 D3D12_GPU_VIRTUAL_ADDRESS UploadBuffer<T>::GetElementGpuAddress(uint32 elem) const
 {
-    return m_resource->GetGPUVirtualAddress() + elem * m_elemSize;
+    return mResource->GetGPUVirtualAddress() + elem * mElemSize;
 }
 
 template <typename T>

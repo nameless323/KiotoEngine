@@ -7,15 +7,15 @@ namespace Kioto::Renderer
 {
 IndexBufferDX12::IndexBufferDX12(const byte* indexData, uint32 indexDataSize, ID3D12GraphicsCommandList* commandList, ID3D12Device* device, DXGI_FORMAT indexBufferFormat)
 {
-    m_buffer = new DefaultHeapBuffer(indexData, indexDataSize, commandList, device, D3D12_RESOURCE_STATE_INDEX_BUFFER);
+    mBuffer = new DefaultHeapBuffer(indexData, indexDataSize, commandList, device, D3D12_RESOURCE_STATE_INDEX_BUFFER);
 
-    m_indexBufferView.BufferLocation = m_buffer->GetBuffer()->GetGPUVirtualAddress();
-    m_indexBufferView.Format = indexBufferFormat;
-    m_indexBufferView.SizeInBytes = indexDataSize;
+    mIndexBufferView.BufferLocation = mBuffer->GetBuffer()->GetGPUVirtualAddress();
+    mIndexBufferView.Format = indexBufferFormat;
+    mIndexBufferView.SizeInBytes = indexDataSize;
 }
 
 IndexBufferDX12::~IndexBufferDX12()
 {
-    SafeDelete(m_buffer);
+    SafeDelete(mBuffer);
 }
 }
