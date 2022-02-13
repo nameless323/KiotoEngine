@@ -12,8 +12,8 @@ namespace Kioto::Renderer
 {
 void ShaderManagerDX12::RegisterShader(Shader* shader)
 {
-    auto it = m_shaders.find(shader->GetHandle());
-    if (it != m_shaders.cend())
+    auto it = mShaders.find(shader->GetHandle());
+    if (it != mShaders.cend())
         return;
     shader->SetHandle(GetNewHandle());
 
@@ -31,13 +31,13 @@ void ShaderManagerDX12::RegisterShader(Shader* shader)
     if (shader->GetShaderData().shaderPrograms & uint8(ShaderProgramType::Fragment))
         shadersDX.push_back(CompileDXShader(*shader, parsedShader.GetProgramName(ShaderProgramType::Fragment), "ps_5_1"));
 
-    m_shaders[shader->GetHandle()] = std::move(shadersDX);
+    mShaders[shader->GetHandle()] = std::move(shadersDX);
 }
 
 const CD3DX12_SHADER_BYTECODE* ShaderManagerDX12::GetShaderBytecode(ShaderHandle handle, ShaderProgramType type) const
 {
-    auto it = m_shaders.find(handle);
-    if (it == m_shaders.cend())
+    auto it = mShaders.find(handle);
+    if (it == mShaders.cend())
         return nullptr;
     auto& shaders = it->second;
     for (auto& dxShader : shaders)
@@ -50,8 +50,8 @@ const CD3DX12_SHADER_BYTECODE* ShaderManagerDX12::GetShaderBytecode(ShaderHandle
 
 const std::vector<ShaderDX12>* ShaderManagerDX12::GetDxShaders(ShaderHandle handle) const
 {
-    auto it = m_shaders.find(handle);
-    if (it == m_shaders.cend())
+    auto it = mShaders.find(handle);
+    if (it == mShaders.cend())
         return nullptr;
     return &it->second;
 }

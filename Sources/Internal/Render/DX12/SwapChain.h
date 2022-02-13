@@ -41,91 +41,91 @@ public:
     void ProceedToNextFrame();
 
 private:
-    const DXGI_FORMAT m_backBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
-    const DXGI_FORMAT m_depthStencilFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    const DXGI_FORMAT mBackBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+    const DXGI_FORMAT mDepthStencilFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
-    UINT m_width = -1;
-    UINT m_height = -1;
-    UINT m_currentFrameIndex = 0;
+    UINT mWidth = -1;
+    UINT mHeight = -1;
+    UINT mCurrentFrameIndex = 0;
 
-    bool m_isSwapChainChainInFullScreen = false;
-    bool m_isTearingSupported = false;
+    bool mIsSwapChainChainInFullScreen = false;
+    bool mIsTearingSupported = false;
 
-    Microsoft::WRL::ComPtr<IDXGISwapChain3> m_swapChain;
-    Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_rtvHeap;
-    Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_dsvHeap;
-    TextureDX12 m_backBuffers[StateDX::FrameCount];
-    TextureDX12 m_depthStencil;
+    Microsoft::WRL::ComPtr<IDXGISwapChain3> mSwapChain;
+    Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> mRtvHeap;
+    Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> mDsvHeap;
+    TextureDX12 mBackBuffers[StateDX::FrameCount];
+    TextureDX12 mDepthStencil;
 };
 
 inline TextureHandle SwapChain::GetCurrentBackBufferHandle() const
 {
-    return m_backBuffers[m_currentFrameIndex].GetHandle();
+    return mBackBuffers[mCurrentFrameIndex].GetHandle();
 }
 
 inline TextureHandle SwapChain::GetDepthStencilHandle() const
 {
-    return m_depthStencil.GetHandle();
+    return mDepthStencil.GetHandle();
 }
 
 inline UINT SwapChain::GetCurrentBackBufferIndex() const
 {
-    return m_swapChain->GetCurrentBackBufferIndex();
+    return mSwapChain->GetCurrentBackBufferIndex();
 }
 
 inline HRESULT SwapChain::SetFullscreenState(bool fullscreen, IDXGIOutput* output)
 {
-    return m_swapChain->SetFullscreenState(fullscreen, output);
+    return mSwapChain->SetFullscreenState(fullscreen, output);
 }
 
 inline UINT SwapChain::GetCurrentFrameIndex() const
 {
-    return m_currentFrameIndex;
+    return mCurrentFrameIndex;
 }
 
 inline DXGI_FORMAT SwapChain::GetBackBufferFormat() const
 {
-    return m_backBufferFormat;
+    return mBackBufferFormat;
 }
 
 inline DXGI_FORMAT SwapChain::GetDepthStencilFormat() const
 {
-    return m_depthStencilFormat;
+    return mDepthStencilFormat;
 }
 
 inline TextureDX12* SwapChain::GetBackBuffer(uint8 index)
 {
-    return &m_backBuffers[index];
+    return &mBackBuffers[index];
 }
 
 inline TextureDX12* SwapChain::GetDepthStencil()
 {
-    return &m_depthStencil;
+    return &mDepthStencil;
 }
 
 inline TextureDX12* SwapChain::GetCurrentBackBuffer()
 {
-    return &m_backBuffers[m_swapChain->GetCurrentBackBufferIndex()];
+    return &mBackBuffers[mSwapChain->GetCurrentBackBufferIndex()];
 }
 
 inline D3D12_CPU_DESCRIPTOR_HANDLE SwapChain::GetCpuDescriptorHandleForHeapStart() const
 {
-    return m_rtvHeap->GetCPUDescriptorHandleForHeapStart();
+    return mRtvHeap->GetCPUDescriptorHandleForHeapStart();
 }
 
 inline D3D12_GPU_DESCRIPTOR_HANDLE SwapChain::GetGpuDescriptorHandleForHeapStart() const
 {
-    return m_rtvHeap->GetGPUDescriptorHandleForHeapStart();
+    return mRtvHeap->GetGPUDescriptorHandleForHeapStart();
 }
 
 inline D3D12_CPU_DESCRIPTOR_HANDLE SwapChain::GetDepthStencilCPUHandle() const
 {
-    return m_dsvHeap->GetCPUDescriptorHandleForHeapStart();
+    return mDsvHeap->GetCPUDescriptorHandleForHeapStart();
 }
 
 inline D3D12_CPU_DESCRIPTOR_HANDLE SwapChain::GetCurrentBackBufferCPUHandle(const StateDX& state) const
 {
-    CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
+    CD3DX12_CPU_DESCRIPTOR_HANDLE handle(mRtvHeap->GetCPUDescriptorHandleForHeapStart());
     handle.Offset(GetCurrentBackBufferIndex() * state.RtvDescriptorSize);
     return handle;
 }

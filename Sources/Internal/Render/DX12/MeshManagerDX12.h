@@ -44,7 +44,7 @@ private:
         {}
     };
 
-    std::vector<TempMeshData> m_meshQueue;
-    std::map<MeshHandle, MeshDX12*> m_meshes;
+    std::vector<TempMeshData> mMeshQueue;
+    std::map<MeshHandle, MeshDX12*> mMeshes;
 };
 }

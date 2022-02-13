@@ -38,20 +38,20 @@ public:
     D3D12_CPU_DESCRIPTOR_HANDLE GetDsvHandle(TextureHandle handle) const;
 
 private:
-    std::map<TextureSetHandle, Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>> m_textureHeaps; // [a_vorontcov] TODO: One tex heap for all textures?
-    
-    std::map<TextureHandle, uint16> m_rtvHeapOffsets;
-    Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_rtvHeap;
-    uint16 m_currentRtvOffset = 0;
+    std::map<TextureSetHandle, Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>> mTextureHeaps; // [a_vorontcov] TODO: One tex heap for all textures
 
-    std::map<TextureHandle, uint16> m_dsvHeapOffsets;
-    Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_dsvHeap;
-    uint16 m_currentDsvOffset = 0;
+    std::map<TextureHandle, uint16> mRtvHeapOffsets;
+    Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> mRtvHeap;
+    uint16 mCurrentRtvOffset = 0;
 
-    std::vector<TextureDX12*> m_textureQueue;
-    std::vector<const TextureSet*> m_textureSetUpdateQueue;
+    std::map<TextureHandle, uint16> mDsvHeapOffsets;
+    Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> mDsvHeap;
+    uint16 mCurrentDsvOffset = 0;
 
-    std::map<TextureHandle, TextureDX12*> m_textures;
-    std::map<TextureHandle, TextureDX12*> m_notOwningTextures;
+    std::vector<TextureDX12*> mTextureQueue;
+    std::vector<const TextureSet*> mTextureSetUpdateQueue;
+
+    std::map<TextureHandle, TextureDX12*> mTextures;
+    std::map<TextureHandle, TextureDX12*> mNotOwningTextures;
 };
 }

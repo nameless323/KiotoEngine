@@ -89,34 +89,34 @@ private:
     void LoadPipeline();
     void ResourceTransition(StateDX& dxState, TextureHandle resourceHandle, eResourceState destState);
 
-    std::vector<RenderCommand> m_frameCommands;
-    GpuProfiler<PixProfiler> m_profiler;
+    std::vector<RenderCommand> mFrameCommands;
+    GpuProfiler<PixProfiler> mProfiler;
 
-    TextureManagerDX12 m_textureManager;
-    StateDX m_state;
-    SwapChain m_swapChain;
-    RootSignatureManager m_rootSignatureManager;
-    MeshManagerDX12 m_meshManager;
-    ShaderManagerDX12 m_shaderManager;
-    PsoManager m_piplineStateManager;
-    VertexLayoutManagerDX12 m_vertexLayoutManager;
-    ConstantBufferManagerDX12 m_constantBufferManager;
+    TextureManagerDX12 mTextureManager;
+    StateDX mState;
+    SwapChain mSwapChain;
+    RootSignatureManager mRootSignatureManager;
+    MeshManagerDX12 mMeshManager;
+    ShaderManagerDX12 mShaderManager;
+    PsoManager mPiplineStateManager;
+    VertexLayoutManagerDX12 mVertexLayoutManager;
+    ConstantBufferManagerDX12 mConstantBufferManager;
 
-    bool m_isTearingSupported = false; // [a_vorontcov] TODO: Properly handle when tearing is not supported.
-    UINT m_width = -1;
-    UINT m_height = -1;
-    bool m_isFullScreen = false;
+    bool mIsTearingSupported = false; // [a_vorontcov] TODO: Properly handle when tearing is not supported.
+    UINT mWidth = -1;
+    UINT mHeight = -1;
+    bool mIsFullScreen = false;
 
-    ID3D12DescriptorHeap* m_imguiDescriptorHeap = nullptr;
+    ID3D12DescriptorHeap* mImguiDescriptorHeap = nullptr;
 };
 
 inline TextureHandle RendererDX12::GetCurrentBackBufferHandle() const
 {
-    return m_swapChain.GetCurrentBackBufferHandle();
+    return mSwapChain.GetCurrentBackBufferHandle();
 }
 
 inline TextureHandle RendererDX12::GetDepthStencilHandle() const
 {
-    return m_swapChain.GetDepthStencilHandle();
+    return mSwapChain.GetDepthStencilHandle();
 }
 }

@@ -31,17 +31,17 @@ public:
     ShaderProgramType GetType() const;
 
 private:
-    ShaderProgramHandle m_handle;
-    ShaderProgramType m_type;
-    CD3DX12_SHADER_BYTECODE m_bytecode;
-    Microsoft::WRL::ComPtr<ID3DBlob> m_shaderBlob;
-    Microsoft::WRL::ComPtr<ID3DBlob> m_error;
-    bool m_compiled = false;
+    ShaderProgramHandle mHandle;
+    ShaderProgramType mType;
+    CD3DX12_SHADER_BYTECODE mBytecode;
+    Microsoft::WRL::ComPtr<ID3DBlob> mShaderBlob;
+    Microsoft::WRL::ComPtr<ID3DBlob> mError;
+    bool mCompiled = false;
 };
 
 inline bool ShaderDX12::operator== (const ShaderDX12& other) const
 {
-    return m_handle == other.m_handle;
+    return mHandle == other.mHandle;
 }
 
 inline bool ShaderDX12::operator!= (const ShaderDX12& other) const
@@ -51,19 +51,19 @@ inline bool ShaderDX12::operator!= (const ShaderDX12& other) const
 
 inline HRESULT ShaderDX12::Compile(LPCVOID shaderStr, SIZE_T size, LPCSTR sourceName, const D3D_SHADER_MACRO* defines, ID3DInclude* includes, LPCSTR entry, LPCSTR target, UINT flags1, UINT flags2)
 {
-    m_compiled = false;
+    mCompiled = false;
     if (std::string(entry) == "vs")
-        m_type = ShaderProgramType::Vertex;
+        mType = ShaderProgramType::Vertex;
     else if (std::string(entry) == "ps")
-        m_type = ShaderProgramType::Fragment;
+        mType = ShaderProgramType::Fragment;
     else
         throw "NOT IMPLEMENTED";
 
-    HRESULT hr = D3DCompile(shaderStr, size, sourceName, defines, D3D_COMPILE_STANDARD_FILE_INCLUDE, entry, target, flags1, flags2, &m_shaderBlob, &m_error);
+    HRESULT hr = D3DCompile(shaderStr, size, sourceName, defines, D3D_COMPILE_STANDARD_FILE_INCLUDE, entry, target, flags1, flags2, &mShaderBlob, &mError);
     if (SUCCEEDED(hr))
     {
-        m_bytecode = CD3DX12_SHADER_BYTECODE(m_shaderBlob.Get());
-        m_compiled = true;
+        mBytecode = CD3DX12_SHADER_BYTECODE(mShaderBlob.Get());
+        mCompiled = true;
     }
     return hr;
 }
@@ -75,19 +75,19 @@ inline HRESULT ShaderDX12::Compile(LPCVOID shaderStr, SIZE_T size, LPCSTR entry,
 
 inline HRESULT ShaderDX12::CompileFromFile(LPCWSTR fileName, const D3D_SHADER_MACRO* defines, ID3DInclude* includes, LPCSTR entry, LPCSTR target, UINT flags1, UINT flags2)
 {
-    m_compiled = false;
+    mCompiled = false;
     if (std::string(entry) == "vs")
-        m_type = ShaderProgramType::Vertex;
+        mType = ShaderProgramType::Vertex;
     else if (std::string(entry) == "ps")
-        m_type = ShaderProgramType::Fragment;
+        mType = ShaderProgramType::Fragment;
     else
         throw "NOT IMPLEMENTED";
 
-    HRESULT hr = D3DCompileFromFile(fileName, defines, D3D_COMPILE_STANDARD_FILE_INCLUDE, entry, target, flags1, flags2, &m_shaderBlob, &m_error);
+    HRESULT hr = D3DCompileFromFile(fileName, defines, D3D_COMPILE_STANDARD_FILE_INCLUDE, entry, target, flags1, flags2, &mShaderBlob, &mError);
     if (SUCCEEDED(hr))
     {
-        m_bytecode = CD3DX12_SHADER_BYTECODE(m_shaderBlob.Get());
-        m_compiled = true;
+        mBytecode = CD3DX12_SHADER_BYTECODE(mShaderBlob.Get());
+        mCompiled = true;
     }
     return hr;
 }
@@ -100,31 +100,31 @@ inline HRESULT ShaderDX12::CompileFromFile(LPCWSTR fileName, LPCSTR entry, LPCST
 
 inline void ShaderDX12::SetHandle(uint32 handle)
 {
-    m_handle = handle;
+    mHandle = handle;
 }
 
 inline ShaderProgramHandle ShaderDX12::GetHandle() const
 {
-    return m_handle;
+    return mHandle;
 }
 
 inline const CD3DX12_SHADER_BYTECODE& ShaderDX12::GetBytecode() const
 {
-    return m_bytecode;
+    return mBytecode;
 }
 
 inline char* ShaderDX12::GetErrorMsg() const
 {
-    return reinterpret_cast<char*>(m_error->GetBufferPointer());
+    return reinterpret_cast<char*>(mError->GetBufferPointer());
 }
 
 inline bool ShaderDX12::GetIsCompiled() const
 {
-    return m_compiled;
+    return mCompiled;
 }
 
 inline ShaderProgramType ShaderDX12::GetType() const
 {
-    return m_type;
+    return mType;
 }
 }
