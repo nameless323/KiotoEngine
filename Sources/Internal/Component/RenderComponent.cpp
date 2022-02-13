@@ -12,35 +12,35 @@ Component* RenderComponent::Clone() const
 
 bool RenderComponent::GetCastShadows() const
 {
-    return m_renderObject->GetCastShadow();
+    return mRenderObject->GetCastShadow();
 }
 
 void RenderComponent::SetCastShadows(bool castShadows)
 {
-    m_renderObject->SetCastShadow(castShadows);
+    mRenderObject->SetCastShadow(castShadows);
 }
 
 bool RenderComponent::GetIsVisible() const
 {
-    return m_renderObject->GetIsVisible();
+    return mRenderObject->GetIsVisible();
 }
 
 void RenderComponent::SetIsVisible(bool isVisible)
 {
-    m_renderObject->SetIsVisible(isVisible);
+    mRenderObject->SetIsVisible(isVisible);
 }
 
 void RenderComponent::Serialize(YAML::Emitter& out) const
 {
-    out << YAML::Key << "MatPath" << YAML::Value << m_materialPath;
-    out << YAML::Key << "MeshPath" << YAML::Value << m_meshPath;
+    out << YAML::Key << "MatPath" << YAML::Value << mMaterialPath;
+    out << YAML::Key << "MeshPath" << YAML::Value << mMeshPath;
 }
 
 void RenderComponent::Deserialize(const YAML::Node& in)
 {
     if (in["MatPath"])
-        m_materialPath = in["MatPath"].as<std::string>();
+        mMaterialPath = in["MatPath"].as<std::string>();
     if (in["MeshPath"])
-        m_meshPath = in["MeshPath"].as<std::string>();
+        mMeshPath = in["MeshPath"].as<std::string>();
 }
 }

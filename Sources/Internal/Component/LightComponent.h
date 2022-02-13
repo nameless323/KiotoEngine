@@ -24,12 +24,12 @@ public:
     Renderer::Light* GetLight();
 
 private:
-    Renderer::Light m_light{};
+    Renderer::Light mLight{};
 };
 
 inline Renderer::Light* LightComponent::GetLight()
 {
-    return &m_light;
+    return &mLight;
 }
 
 REGISTER_COMPONENT(LightComponent);

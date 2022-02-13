@@ -4,6 +4,6 @@ namespace Kioto
 {
 void Component::SetEntity(Entity* entity)
 {
-    m_entity = entity;
+    mEntity = entity;
 }
 }
