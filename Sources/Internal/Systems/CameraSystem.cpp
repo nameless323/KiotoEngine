@@ -11,12 +11,12 @@ namespace Kioto
 {
 CameraSystem::CameraSystem()
 {
-    m_components.reserve(4);
+    mComponents.reserve(4);
 }
 
 CameraSystem::~CameraSystem()
 {
-    m_components.clear();
+    mComponents.clear();
 }
 
 void CameraSystem::Init()
@@ -24,10 +24,10 @@ void CameraSystem::Init()
     EventSystem::GlobalEventSystem.Subscribe<OnMainWindowResized>({
         [this](std::shared_ptr<Event> e)
     {
-        if (m_mainCamera == nullptr)
+        if (mMainCamera == nullptr)
             return;
         OnMainWindowResized::Data* resizeData = reinterpret_cast<OnMainWindowResized::Data*>(e->GetEventData());
-        m_mainCamera->SetAspect(resizeData->aspect);
+        mMainCamera->SetAspect(resizeData->aspect);
     }
     }, this);
 }
@@ -37,7 +37,7 @@ void CameraSystem::OnEntityAdd(Entity* entity)
     CameraComponent* t = entity->GetComponent<CameraComponent>();
     if (t == nullptr)
         return;
-    m_components.push_back(t);
+    mComponents.push_back(t);
 }
 
 void CameraSystem::OnEntityRemove(Entity* entity)
@@ -45,18 +45,18 @@ void CameraSystem::OnEntityRemove(Entity* entity)
     CameraComponent* t = entity->GetComponent<CameraComponent>();
     if (t == nullptr)
         return;
-    auto it = std::find(m_components.begin(), m_components.end(), t);
-    if (it != m_components.end())
-        m_components.erase(it);
+    auto it = std::find(mComponents.begin(), mComponents.end(), t);
+    if (it != mComponents.end())
+        mComponents.erase(it);
 }
 
 void CameraSystem::Update(float32 dt)
 {
-    for (CameraComponent* camComponent : m_components)
+    for (CameraComponent* camComponent : mComponents)
     {
         Renderer::Camera& currCam = camComponent->GetCamera();
         if (camComponent->GetIsMain())
-            m_mainCamera = &currCam;
+            mMainCamera = &currCam;
 
         UpdateView(camComponent);
 
@@ -66,7 +66,7 @@ void CameraSystem::Update(float32 dt)
         currCam.UpdateViewProjectionMatrix();
         currCam.UpdateConstantBuffer(); // [a_vorontcov] TODO: Do in when something was really changed.
     }
-    Renderer::SetMainCamera(m_mainCamera);
+    Renderer::SetMainCamera(mMainCamera);
 }
 
 void CameraSystem::Shutdown()

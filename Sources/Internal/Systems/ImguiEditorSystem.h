@@ -31,7 +31,7 @@ private:
     void DrawComponentEditor(TransformComponent* transform);
     void DrawComponentEditor(CameraComponent* cameraComponent);
 
-    std::vector<Entity*> m_entities;
-    std::vector<const char*> m_entitiesNames; // [a_vorontcov] meh :(
+    std::vector<Entity*> mEntities;
+    std::vector<const char*> mEntitiesNames; // [a_vorontcov] meh :(
 };
 }

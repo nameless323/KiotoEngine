@@ -42,13 +42,13 @@ private:
     void TryRemoveLight(Entity* entity);
     void TryRemoveRenderComponent(Entity* entity);
 
-    std::vector<Renderer::RenderPass*> m_renderPasses;
-    std::vector<RenderComponent*> m_components;
-    std::vector<LightComponent*> m_lights;
+    std::vector<Renderer::RenderPass*> mRenderPasses;
+    std::vector<RenderComponent*> mComponents;
+    std::vector<LightComponent*> mLights;
 
-    Renderer::DrawData m_drawData;
-    Renderer::ForwardRenderPass* m_forwardRenderPass = nullptr;
+    Renderer::DrawData mDrawData;
+    Renderer::ForwardRenderPass* mForwardRenderPass = nullptr;
 
-    Renderer::RenderGraph m_renderGraph;
+    Renderer::RenderGraph mRenderGraph;
 };
 }

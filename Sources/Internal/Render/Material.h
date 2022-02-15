@@ -44,23 +44,23 @@ public:
 private:
     void DeserializeRenderPassConfig(const YAML::Node& pass);
 
-    MaterialHandle m_handle;
+    MaterialHandle mHandle;
 
     // [a_vorontcov] For each pass contains appropriate pipeline state
-    std::unordered_map<PassName, PipelineState> m_materialPipelineStates;
+    std::unordered_map<PassName, PipelineState> mMaterialPipelineStates;
     // [a_vorontcov] All textures for each pass
-    std::unordered_map<PassName, std::vector<TextureAssetDescription>> m_textures;
+    std::unordered_map<PassName, std::vector<TextureAssetDescription>> mTextures;
 
-    std::vector<RenderPassHandle> m_buildedPassesHandles;
+    std::vector<RenderPassHandle> mBuildedPassesHandles;
 };
 
 inline void Material::SetHandle(MaterialHandle handle)
 {
-    m_handle = handle;
+    mHandle = handle;
 }
 
 inline MaterialHandle Material::GetHandle() const
 {
-    return m_handle;
+    return mHandle;
 }
 }

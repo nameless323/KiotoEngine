@@ -6,12 +6,12 @@ namespace Kioto
 {
 TransformSystem::TransformSystem()
 {
-    m_components.reserve(512);
+    mComponents.reserve(512);
 }
 
 TransformSystem::~TransformSystem()
 {
-    m_components.clear();
+    mComponents.clear();
 }
 
 void TransformSystem::OnEntityAdd(Entity* entity)
@@ -19,7 +19,7 @@ void TransformSystem::OnEntityAdd(Entity* entity)
     TransformComponent* t = entity->GetTransform();
     if (t == nullptr) // [a_vorontcov] o.O
         return;
-    m_components.push_back(t);
+    mComponents.push_back(t);
 }
 
 void TransformSystem::OnEntityRemove(Entity* entity)
@@ -27,14 +27,14 @@ void TransformSystem::OnEntityRemove(Entity* entity)
     TransformComponent* t = entity->GetTransform();
     if (t == nullptr) // [a_vorontcov] o.O
         return;
-    auto it = std::find(m_components.begin(), m_components.end(), t);
-    if (it != m_components.end())
-        m_components.erase(it);
+    auto it = std::find(mComponents.begin(), mComponents.end(), t);
+    if (it != mComponents.end())
+        mComponents.erase(it);
 }
 
 void TransformSystem::Update(float32 dt)
 {
-    for (TransformComponent* currTransform : m_components)
+    for (TransformComponent* currTransform : mComponents)
     {
         if (currTransform->GetDirty())
         {

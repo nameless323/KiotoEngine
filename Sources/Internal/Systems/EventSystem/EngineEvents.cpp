@@ -14,6 +14,6 @@ void* OnEntityAddEvent::GetEventData()
 
 void* OnMainWindowResized::GetEventData()
 {
-    return &m_data;
+    return &mData;
 }
 }

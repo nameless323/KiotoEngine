@@ -23,17 +23,17 @@ public:
     const std::string& GetName() const;
 
 private:
-    std::string m_name;
-    uint32 m_value;
-    uint16 m_index;
-    uint16 m_space;
+    std::string mName;
+    uint32 mValue;
+    uint16 mIndex;
+    uint16 mSpace;
 };
 
 inline UniformConstant::UniformConstant(const std::string& name, uint16 index, uint16 space)
-    : m_name(name)
-    , m_index(index)
-    , m_space(space)
-    , m_value(0)
+    : mName(name)
+    , mIndex(index)
+    , mSpace(space)
+    , mValue(0)
 {
 }
 
@@ -41,27 +41,27 @@ template <typename T>
 inline void Renderer::UniformConstant::SetValue(T val)
 {
     assert(sizeof(T) == 4);
-    m_value = *reinterpret_cast<uint32*>(&val);
+    mValue = *reinterpret_cast<uint32*>(&val);
 }
 
 inline uint32 UniformConstant::GetValue() const
 {
-    return m_value;
+    return mValue;
 }
 
 inline uint16 UniformConstant::GetIndex() const
 {
-    return m_index;
+    return mIndex;
 }
 
 inline uint16 UniformConstant::GetSpace() const
 {
-    return m_space;
+    return mSpace;
 }
 
 inline const std::string& UniformConstant::GetName() const
 {
-    return m_name;
+    return mName;
 }
 
 }

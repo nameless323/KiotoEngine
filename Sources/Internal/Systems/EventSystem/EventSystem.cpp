@@ -5,15 +5,15 @@
 
 namespace Kioto
 {
-uint32 EventCallback::m_currentIndex = 0;
+uint32 EventCallback::mCurrentIndex = 0;
 constexpr uint32 EventsInitialCapacity = 128;
 
 EventSystem EventSystem::GlobalEventSystem;
 
 EventCallback::EventCallback(std::function<void(EventPtr)> callback)
 {
-    m_index = m_currentIndex++;
-    m_callback = callback;
+    mIndex = mCurrentIndex++;
+    mCallback = callback;
 }
 
 EventCallback::EventCallback(EventCallback&& other)
@@ -23,8 +23,8 @@ EventCallback::EventCallback(EventCallback&& other)
 
 EventCallback::EventCallback(const EventCallback& other)
 {
-    m_callback = other.m_callback;
-    m_index = other.m_index;
+    mCallback = other.mCallback;
+    mIndex = other.mIndex;
 }
 
 bool EventCallback::operator!=(const EventCallback& other) const
@@ -34,7 +34,7 @@ bool EventCallback::operator!=(const EventCallback& other) const
 
 bool EventCallback::operator==(const EventCallback& other) const
 {
-    return m_index == other.m_index;
+    return mIndex == other.mIndex;
 }
 
 EventCallback& EventCallback::operator=(EventCallback other)
@@ -45,14 +45,14 @@ EventCallback& EventCallback::operator=(EventCallback other)
 
 void EventCallback::operator()(EventPtr e)
 {
-    if (m_callback != nullptr)
-        m_callback(e);
+    if (mCallback != nullptr)
+        mCallback(e);
 }
 
 void EventSystem::RaiseEvent(EventPtr e)
 {
-    auto it = m_events.find(e->GetEventType());
-    if (it != m_events.end())
+    auto it = mEvents.find(e->GetEventType());
+    if (it != mEvents.end())
     {
         for (auto& fun : it->second)
             fun(e);
@@ -61,8 +61,8 @@ void EventSystem::RaiseEvent(EventPtr e)
 
 void EventSystem::Subscribe(EventType eType, EventCallback callback, void* context /*= nullptr*/)
 {
-    auto it = m_events.find(eType);
-    if (it != m_events.end())
+    auto it = mEvents.find(eType);
+    if (it != mEvents.end())
     {
         auto funIt = std::find_if(it->second.begin(), it->second.end(), [&callback](const CallbackWrapper& callbackWrapper)
         {
@@ -73,22 +73,22 @@ void EventSystem::Subscribe(EventType eType, EventCallback callback, void* conte
     }
     else
     {
-        m_events[eType].reserve(EventsInitialCapacity);
+        mEvents[eType].reserve(EventsInitialCapacity);
     }
-    m_events[eType].emplace_back(callback, context);
+    mEvents[eType].emplace_back(callback, context);
 }
 
 void EventSystem::Unsubscribe(EventType eType, EventCallback callback)
 {
-    auto it = m_events.find(eType);
-    if (it != m_events.end())
+    auto it = mEvents.find(eType);
+    if (it != mEvents.end())
     {
         auto funIt = std::find_if(it->second.begin(), it->second.end(), [&callback](const CallbackWrapper& callbackWrapper)
         {
             return callbackWrapper .GetCallback()== callback;
         });
         if (funIt != it->second.end())
-            m_events[eType].erase(funIt);
+            mEvents[eType].erase(funIt);
     }
 }
 
@@ -97,7 +97,7 @@ void EventSystem::Unsubscribe(void* context)
     if (context == nullptr)
         return;
 
-    for (auto& et : m_events)
+    for (auto& et : mEvents)
     {
         auto& vec = et.second;
         vec.erase(std::remove_if(vec.begin(), vec.end(), [context](const CallbackWrapper& cw) { return cw.GetContext() == context; }), vec.end());
@@ -106,6 +106,6 @@ void EventSystem::Unsubscribe(void* context)
 
 void EventSystem::Clear()
 {
-    m_events.clear();
+    mEvents.clear();
 }
 }

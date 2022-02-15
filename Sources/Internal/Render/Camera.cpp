@@ -10,19 +10,19 @@ Camera::Camera(bool createBuffer)
 {
     if (createBuffer)
     {
-        EngineBuffers::GetCameraBufferCopy(m_cameraBuffer); // [a_vorontcov] TODO: Reeeeeeeeeealy don't like it here. Create some kind of manager.
-        RegisterConstantBuffer(m_cameraBuffer);
+        EngineBuffers::GetCameraBufferCopy(mCameraBuffer); // [a_vorontcov] TODO: Reeeeeeeeeealy don't like it here. Create some kind of manager.
+        RegisterConstantBuffer(mCameraBuffer);
     }
 }
 
 void Camera::UpdateConstantBuffer()
 {
-    assert(m_cameraBuffer.GetHandle() != InvalidHandle && "Camera buffer was not created for this camera");
-    m_cbCamera.ViewProjection = m_VP.GetForGPU();
-    m_cbCamera.View = m_view.GetForGPU();
-    m_cbCamera.ViewDirection = m_toWorld.GetForward();
-    m_cbCamera.CamWorldPosition = m_toWorld.GetTranslation();
-    m_cameraBuffer.Set(m_cbCamera);
+    assert(mCameraBuffer.GetHandle() != InvalidHandle && "Camera buffer was not created for this camera");
+    mCbCamera.ViewProjection = mVp.GetForGPU();
+    mCbCamera.View = mView.GetForGPU();
+    mCbCamera.ViewDirection = mToWorld.GetForward();
+    mCbCamera.CamWorldPosition = mToWorld.GetTranslation();
+    mCameraBuffer.Set(mCbCamera);
 }
 
 }

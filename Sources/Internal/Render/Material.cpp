@@ -16,7 +16,7 @@ static const float32 CurrentVersion = 0.01f;
 Material::Material(const std::string& path)
     : Asset(path)
 {
-    m_buildedPassesHandles.reserve(32);
+    mBuildedPassesHandles.reserve(32);
 
     using namespace RenderParamsConverter;
     if (!FilesystemHelpers::CheckIfFileExist(path))
@@ -46,11 +46,11 @@ Material::~Material()
 
 void Material::BuildMaterialForPass(const RenderPass* pass)
 {
-    auto it = std::find(m_buildedPassesHandles.cbegin(), m_buildedPassesHandles.cend(), pass->GetHandle());
-    if (it != m_buildedPassesHandles.cend())
+    auto it = std::find(mBuildedPassesHandles.cbegin(), mBuildedPassesHandles.cend(), pass->GetHandle());
+    if (it != mBuildedPassesHandles.cend())
         return;
     Renderer::BuildMaterialForPass(*this, pass);
-    m_buildedPassesHandles.push_back(pass->GetHandle());
+    mBuildedPassesHandles.push_back(pass->GetHandle());
 }
 
 void Material::DeserializeRenderPassConfig(const YAML::Node& pass)
@@ -90,36 +90,36 @@ void Material::DeserializeRenderPassConfig(const YAML::Node& pass)
             texIter->Path = std::move(texPath);
         }
     }
-    m_materialPipelineStates[passName] = std::move(state);
-    m_textures[passName] = std::move(texDescriptions);
+    mMaterialPipelineStates[passName] = std::move(state);
+    mTextures[passName] = std::move(texDescriptions);
 }
 
 const PipelineState& Material::GetPipelineState(const PassName& passName) const
 {
-    assert(m_materialPipelineStates.count(passName) == 1);
-    return m_materialPipelineStates.at(passName);
+    assert(mMaterialPipelineStates.count(passName) == 1);
+    return mMaterialPipelineStates.at(passName);
 }
 
 PipelineState& Material::GetPipelineState(const PassName& passName)
 {
-    assert(m_materialPipelineStates.count(passName) == 1);
-    return m_materialPipelineStates.at(passName);
+    assert(mMaterialPipelineStates.count(passName) == 1);
+    return mMaterialPipelineStates.at(passName);
 }
 
 const std::unordered_map<PassName, PipelineState>& Material::GetPipelineStates() const
 {
-    return m_materialPipelineStates;
+    return mMaterialPipelineStates;
 }
 
 const std::vector<TextureAssetDescription>& Material::GetTextureAssetDescriptions(const PassName& passName) const
 {
-    assert(m_textures.count(passName) == 1);
-    return m_textures.at(passName);
+    assert(mTextures.count(passName) == 1);
+    return mTextures.at(passName);
 }
 
 const std::unordered_map<PassName, std::vector<TextureAssetDescription>>& Material::GetTextureAssetDescriptions() const
 {
-    return m_textures;
+    return mTextures;
 }
 
 }

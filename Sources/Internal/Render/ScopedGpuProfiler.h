@@ -13,6 +13,6 @@ public:
     ~ScopedGpuProfiler();
 
 private:
-    CommandList* m_cmdList = nullptr;
+    CommandList* mCmdList = nullptr;
 };
 }

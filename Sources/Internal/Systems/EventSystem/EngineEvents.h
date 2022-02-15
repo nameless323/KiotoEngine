@@ -45,6 +45,6 @@ public:
     void* GetEventData() override;
 
 private:
-    Data m_data{};
+    Data mData{};
 };
 }

@@ -24,6 +24,6 @@ public:
 private:
     void ComposeMatricies(TransformComponent* t);
 
-    std::vector<TransformComponent*> m_components;
+    std::vector<TransformComponent*> mComponents;
 };
 }

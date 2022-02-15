@@ -5,13 +5,13 @@
 namespace Kioto::Renderer
 {
 ScopedGpuProfiler::ScopedGpuProfiler(CommandList* cmdList, std::string name)
-    : m_cmdList(cmdList)
+    : mCmdList(cmdList)
 {
-    m_cmdList->PushCommand(RenderCommandHelpers::CreateBeginGpuEventCommand(std::move(name)));
+    mCmdList->PushCommand(RenderCommandHelpers::CreateBeginGpuEventCommand(std::move(name)));
 }
 
 ScopedGpuProfiler::~ScopedGpuProfiler()
 {
-    m_cmdList->PushCommand(RenderCommandHelpers::CreateEndGpuEventCommand());
+    mCmdList->PushCommand(RenderCommandHelpers::CreateEndGpuEventCommand());
 }
 }

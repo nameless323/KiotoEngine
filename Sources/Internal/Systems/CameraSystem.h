@@ -34,12 +34,12 @@ public:
 private:
     void UpdateView(CameraComponent* cam);
 
-    Renderer::Camera* m_mainCamera = nullptr;
-    std::vector<CameraComponent*> m_components;
+    Renderer::Camera* mMainCamera = nullptr;
+    std::vector<CameraComponent*> mComponents;
 };
 
 inline const Renderer::Camera* CameraSystem::GetMainCamera() const
 {
-    return m_mainCamera;
+    return mMainCamera;
 }
 }
