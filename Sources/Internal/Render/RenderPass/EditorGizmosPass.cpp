@@ -26,7 +26,7 @@ EditorGizmosPass::EditorGizmosPass()
     Renderer::RegisterRenderPass(this);
     SetRenderTargetCount(1);
 
-    m_renderObjects.reserve(256);
+    mRenderObjects.reserve(256);
 
     CreateQuadMesh();
     CreateMaterial();
@@ -36,7 +36,7 @@ void EditorGizmosPass::SetRenderTargets(CommandList* commandList, ResourceTable&
 {
     bool isWireframe = KiotoCore::GetRenderSettings().RenderMode == RenderSettings::RenderModeOptions::Wireframe;
     SetRenderTargetsCommand cmd;
-    TextureHandle rtHandle = m_thisFrameFwdPassEnabled ? resources.GetResource("FwdTargetTexture")->GetHandle() : Renderer::DefaultBackBufferHandle;
+    TextureHandle rtHandle = mThisFrameFwdPassEnabled ? resources.GetResource("FwdTargetTexture")->GetHandle() : Renderer::DefaultBackBufferHandle;
     cmd.SetRenderTargets(rtHandle);
     cmd.RenderTargetCount = GetRenderTargetCount();
     cmd.DepthStencil = Renderer::DefaultDepthStencilHandle;
@@ -57,8 +57,8 @@ void EditorGizmosPass::SetRenderTargets(CommandList* commandList, ResourceTable&
 bool EditorGizmosPass::ConfigureInputsAndOutputs(ResourcesBlackboard& resources)
 {
     const RenderSettings& settings = KiotoCore::GetRenderSettings();
-    m_thisFrameFwdPassEnabled = (settings.RenderMode == RenderSettings::RenderModeOptions::Final || settings.RenderMode == RenderSettings::RenderModeOptions::FinalAndWireframe);
-    if (m_thisFrameFwdPassEnabled)
+    mThisFrameFwdPassEnabled = (settings.RenderMode == RenderSettings::RenderModeOptions::Final || settings.RenderMode == RenderSettings::RenderModeOptions::FinalAndWireframe);
+    if (mThisFrameFwdPassEnabled)
         resources.ScheduleWrite("FwdTargetTexture");
     return true;
 }
@@ -66,48 +66,48 @@ bool EditorGizmosPass::ConfigureInputsAndOutputs(ResourcesBlackboard& resources)
 void EditorGizmosPass::CreateMaterial()
 {
     std::string matPath = AssetsSystem::GetAssetFullPath("Materials\\GizmosImpostor.mt");
-    m_material = new Material(matPath);
-    Renderer::RegisterRenderAsset(m_material);
+    mMaterial = new Material(matPath);
+    Renderer::RegisterRenderAsset(mMaterial);
 }
 
 void EditorGizmosPass::CreateQuadMesh()
 {
-    m_quad = GeometryGenerator::GetFullscreenQuad();
+    mQuad = GeometryGenerator::GetFullscreenQuad();
 }
 
 EditorGizmosPass::~EditorGizmosPass()
 {
-    SafeDelete(m_material);
-    for (auto ro : m_renderObjects)
+    SafeDelete(mMaterial);
+    for (auto ro : mRenderObjects)
         SafeDelete(ro);
-    m_renderObjects.clear();
+    mRenderObjects.clear();
 }
 
 void EditorGizmosPass::BuildRenderPackets(CommandList* commandList, ResourceTable& resources)
 {
     SetRenderTargets(commandList, resources);
-    CreateNecessaryRenderObjects(m_drawData->Lights);
-    for (size_t i = 0; i < m_drawData->Lights.size(); ++i)
+    CreateNecessaryRenderObjects(mDrawData->Lights);
+    for (size_t i = 0; i < mDrawData->Lights.size(); ++i)
     {
-        RenderObject* ro = m_renderObjects[i];
+        RenderObject* ro = mRenderObjects[i];
         SInp::GizmosImpostor_sinp::ImpostorData data;
-        data.position = m_drawData->Lights[i]->Position;
+        data.position = mDrawData->Lights[i]->Position;
         data.scale = 0.5f;
         data.cutoff = 0.8f;
-        data.color = Vector3(m_drawData->Lights[i]->Color.r, m_drawData->Lights[i]->Color.g, m_drawData->Lights[i]->Color.b);
+        data.color = Vector3(mDrawData->Lights[i]->Color.r, mDrawData->Lights[i]->Color.g, mDrawData->Lights[i]->Color.b);
 
-        ro->SetBuffer(SInp::GizmosImpostor_sinp::impostorDataName, data, m_passName);
-        ro->SetExternalCB(m_passName, Renderer::SInp::GizmosImpostor_sinp::cbCameraName, Renderer::GetMainCamera()->GetConstantBuffer().GetHandle());
-        ro->SetExternalCB(m_passName, Renderer::SInp::GizmosImpostor_sinp::cbEngineName, Renderer::EngineBuffers::GetTimeBuffer().GetHandle());
+        ro->SetBuffer(SInp::GizmosImpostor_sinp::impostorDataName, data, mPassName);
+        ro->SetExternalCB(mPassName, Renderer::SInp::GizmosImpostor_sinp::cbCameraName, Renderer::GetMainCamera()->GetConstantBuffer().GetHandle());
+        ro->SetExternalCB(mPassName, Renderer::SInp::GizmosImpostor_sinp::cbEngineName, Renderer::EngineBuffers::GetTimeBuffer().GetHandle());
 
-        m_material->BuildMaterialForPass(this);
+        mMaterial->BuildMaterialForPass(this);
 
         RenderPacket currPacket = {};
-        currPacket.Material = m_material->GetHandle();
-        currPacket.Shader = m_material->GetPipelineState(m_passName).Shader->GetHandle();
-        currPacket.TextureSet = ro->GetTextureSet(m_passName).GetHandle();
-        currPacket.Mesh = m_quad->GetHandle();
-        currPacket.ConstantBufferHandles = std::move(ro->GetCBHandles(m_passName));
+        currPacket.Material = mMaterial->GetHandle();
+        currPacket.Shader = mMaterial->GetPipelineState(mPassName).Shader->GetHandle();
+        currPacket.TextureSet = ro->GetTextureSet(mPassName).GetHandle();
+        currPacket.Mesh = mQuad->GetHandle();
+        currPacket.ConstantBufferHandles = std::move(ro->GetCBHandles(mPassName));
         currPacket.Pass = GetHandle();
 
         commandList->PushCommand(RenderCommandHelpers::CreateRenderPacketCommand(currPacket, this));
@@ -117,16 +117,16 @@ void EditorGizmosPass::BuildRenderPackets(CommandList* commandList, ResourceTabl
 
 void EditorGizmosPass::CreateNecessaryRenderObjects(const std::vector<Light*>& lights)
 {
-    int32 diff = int32(lights.size()) - int32(m_renderObjects.size());
+    int32 diff = int32(lights.size()) - int32(mRenderObjects.size());
     if (diff <= 0)
         return;
     for (int32 i = 0; i < diff; ++i)
     {
         RenderObject* ro = new RenderObject();
-        ro->SetMaterial(m_material);
-        ro->SetMesh(m_quad);
+        ro->SetMaterial(mMaterial);
+        ro->SetMesh(mQuad);
         Renderer::RegisterRenderObject(*ro);
-        m_renderObjects.push_back(ro);
+        mRenderObjects.push_back(ro);
     }
 }
 

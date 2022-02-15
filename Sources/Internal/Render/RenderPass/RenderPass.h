@@ -25,7 +25,7 @@ class RenderPass // [a_vorontcov] Add render target and depth stencil resource s
 {
 public:
     RenderPass(std::string name)
-        : m_passName(name)
+        : mPassName(name)
     {
     }
 
@@ -76,150 +76,150 @@ public:
 protected:
     virtual void SetRenderTargets(CommandList* commandList, ResourceTable& resources) abstract; // Set scissor, render targets, viewports
 
-    RectI m_scissor;
-    RectI m_viewport;
-    bool m_clearColor = true;
-    bool m_clearDepth = true;
-    float32 m_clearDepthValue = 0.0f;
-    bool m_clearStencil = true;
-    int32 m_clearStencilValue = 1;
-    uint8 m_renderTargetCount = -1;
-    RenderPassHandle m_handle = InvalidHandle;
-    std::array<TextureHandle, MaxRenderTargetsCount> m_renderTargets;
-    TextureHandle m_depthStencil;
-    uint32 m_priority = PassPriority::MainPass;
+    RectI mScissor;
+    RectI mViewport;
+    bool mClearColor = true;
+    bool mClearDepth = true;
+    float32 mClearDepthValue = 0.0f;
+    bool mClearStencil = true;
+    int32 mClearStencilValue = 1;
+    uint8 mRenderTargetCount = -1;
+    RenderPassHandle mHandle = InvalidHandle;
+    std::array<TextureHandle, MaxRenderTargetsCount> mRenderTargets;
+    TextureHandle mDepthStencil;
+    uint32 mPriority = PassPriority::MainPass;
 
-    std::string m_passName;
-    const DrawData* m_drawData = nullptr;
+    std::string mPassName;
+    const DrawData* mDrawData = nullptr;
 };
 
 inline void RenderPass::SetScissor(const RectI& scissor)
 {
-    m_scissor = scissor;
+    mScissor = scissor;
 }
 
 inline void RenderPass::SetViewport(const RectI& viewport)
 {
-    m_viewport = viewport;
+    mViewport = viewport;
 }
 
 inline void RenderPass::SetClearColor(bool clearColor)
 {
-    m_clearColor = clearColor;
+    mClearColor = clearColor;
 }
 
 inline void RenderPass::SetClearDepth(bool clearDepth)
 {
-    m_clearDepth = clearDepth;
+    mClearDepth = clearDepth;
 }
 
 inline void RenderPass::SetClearDepthValue(float32 clearDepthValue)
 {
-    m_clearDepthValue = clearDepthValue;
+    mClearDepthValue = clearDepthValue;
 }
 
 inline void RenderPass::SetClearStencil(bool clearStencil)
 {
-    m_clearStencilValue = clearStencil;
+    mClearStencilValue = clearStencil;
 }
 
 inline void RenderPass::SetClearStencilValue(int32 clearStencilValue)
 {
-    m_clearStencilValue = clearStencilValue;
+    mClearStencilValue = clearStencilValue;
 }
 
 inline void RenderPass::SetRenderTarget(uint32 index, TextureHandle tex)
 {
-    m_renderTargets[index] = tex;
+    mRenderTargets[index] = tex;
 }
 
 inline void RenderPass::SetDepthStencil(TextureHandle depthStencil)
 {
-    m_depthStencil = depthStencil;
+    mDepthStencil = depthStencil;
 }
 
 inline void RenderPass::SetPriority(uint32 priority)
 {
-    m_priority = priority;
+    mPriority = priority;
 }
 
 inline void RenderPass::SetRenderTargetCount(uint8 count)
 {
-    m_renderTargetCount = count;
+    mRenderTargetCount = count;
 }
 
 inline void RenderPass::SetHandle(RenderPassHandle handle)
 {
-    m_handle = handle;
+    mHandle = handle;
 }
 
 inline void RenderPass::SetDrawData(const DrawData* drawData)
 {
-    m_drawData = drawData;
+    mDrawData = drawData;
 }
 
 inline RectI RenderPass::GetScissor() const
 {
-    return m_scissor;
+    return mScissor;
 }
 
 inline RectI RenderPass::GetViewport() const
 {
-    return m_viewport;
+    return mViewport;
 }
 
 inline bool RenderPass::GetClearColor() const
 {
-    return m_clearColor;
+    return mClearColor;
 }
 
 inline bool RenderPass::GetClearDepth() const
 {
-    return m_clearDepth;
+    return mClearDepth;
 }
 
 inline float32 RenderPass::GetClearDepthValue() const
 {
-    return m_clearDepthValue;
+    return mClearDepthValue;
 }
 
 inline bool RenderPass::GetClearStencil() const
 {
-    return m_clearStencil;
+    return mClearStencil;
 }
 
 inline int32 RenderPass::GetClearStencilValue() const
 {
-    return m_clearStencilValue;
+    return mClearStencilValue;
 }
 
 inline TextureHandle RenderPass::GetRenderTarget(int32 index) const
 {
-    return m_renderTargets[index];
+    return mRenderTargets[index];
 }
 
 inline TextureHandle RenderPass::GetDepthStencil() const
 {
-    return m_depthStencil;
+    return mDepthStencil;
 }
 
 inline uint32 RenderPass::GetPriority() const
 {
-    return m_priority;
+    return mPriority;
 }
 
 inline uint8 RenderPass::GetRenderTargetCount() const
 {
-    return m_renderTargetCount;
+    return mRenderTargetCount;
 }
 
 inline RenderPassHandle RenderPass::GetHandle() const
 {
-    return m_handle;
+    return mHandle;
 }
 
 inline const std::string& RenderPass::GetName() const
 {
-    return m_passName;
+    return mPassName;
 }
 }

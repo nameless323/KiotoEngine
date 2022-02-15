@@ -25,7 +25,7 @@ ShadowMapRenderPass::ShadowMapRenderPass()
     Renderer::RegisterRenderPass(this);
 
     SetRenderTargetCount(0);
-    m_debugQuad = GeometryGenerator::GetFullscreenQuad();
+    mDebugQuad = GeometryGenerator::GetFullscreenQuad();
 }
 
 bool ShadowMapRenderPass::ConfigureInputsAndOutputs(ResourcesBlackboard& resources)
@@ -34,8 +34,8 @@ bool ShadowMapRenderPass::ConfigureInputsAndOutputs(ResourcesBlackboard& resourc
     desc.Dimension = eResourceDim::Texture2D;
     desc.Format = eResourceFormat::Format_R24G8_TYPELESS;
     desc.Flags = eResourceFlags::AllowDepthStencil;
-    desc.Width = m_shadowmapSize;
-    desc.Height = m_shadowmapSize;
+    desc.Width = mShadowmapSize;
+    desc.Height = mShadowmapSize;
     desc.InitialState = eResourceState::Common;
     desc.FastClear = true;
     desc.FastClearValue = Vector2(1.0f, 0.0f);
@@ -55,12 +55,12 @@ void ShadowMapRenderPass::BuildRenderPackets(CommandList* commandList, ResourceT
 {
     SetRenderTargets(commandList, resources);
 
-    for (auto light : m_drawData->Lights)
+    for (auto light : mDrawData->Lights)
     {
         if (!light->CastShadow)
             continue;
         Matrix4 depthVP = BuildDepthVPMatrix(light);
-        for (auto ro : m_drawData->RenderObjects)
+        for (auto ro : mDrawData->RenderObjects)
         {
             if (!ro->GetIsVisible() || !ro->GetCastShadow())
                 continue;
@@ -71,7 +71,7 @@ void ShadowMapRenderPass::BuildRenderPackets(CommandList* commandList, ResourceT
             resources.GetPassesSharedData().ShadowTransform = depthCB.DepthVP;
             //depthCB.DepthVP = Renderer::GetMainCamera()->GetVP();
 
-            ro->SetBuffer(Renderer::SInp::ShadowMap_sinp::cbDepthVPName, depthCB, m_passName);
+            ro->SetBuffer(Renderer::SInp::ShadowMap_sinp::cbDepthVPName, depthCB, mPassName);
             //ro->SetExternalCB(m_passName, Renderer::SInp::ShadowMap_sinp::cbCameraName, Renderer::GetMainCamera()->GetConstantBuffer().GetHandle());
             //ro->SetExternalCB(m_passName, Renderer::SInp::ShadowMap_sinp::cbEngineName, Renderer::EngineBuffers::GetTimeBuffer().GetHandle());
 
@@ -79,15 +79,15 @@ void ShadowMapRenderPass::BuildRenderPackets(CommandList* commandList, ResourceT
             Mesh* mesh = ro->GetMesh();
             mat->BuildMaterialForPass(this);
 
-            ro->PrepareConstantBuffers(m_passName);
+            ro->PrepareConstantBuffers(mPassName);
 
             RenderPacket currPacket = {};
             currPacket.Material = mat->GetHandle();
-            currPacket.Shader = mat->GetPipelineState(m_passName).Shader->GetHandle();
-            currPacket.TextureSet = ro->GetTextureSet(m_passName).GetHandle();
+            currPacket.Shader = mat->GetPipelineState(mPassName).Shader->GetHandle();
+            currPacket.TextureSet = ro->GetTextureSet(mPassName).GetHandle();
             currPacket.Mesh = mesh->GetHandle();
             currPacket.Pass = GetHandle();
-            currPacket.ConstantBufferHandles = std::move(ro->GetCBHandles(m_passName));
+            currPacket.ConstantBufferHandles = std::move(ro->GetCBHandles(mPassName));
 
             commandList->PushCommand(RenderCommandHelpers::CreateRenderPacketCommand(currPacket, this));
         }
@@ -111,8 +111,8 @@ void ShadowMapRenderPass::SetRenderTargets(CommandList* commandList, ResourceTab
 
     cmd.SetDepthStencil(shadowMap->GetHandle());
 
-    cmd.Viewport = { 0, 0, m_shadowmapSize, m_shadowmapSize };
-    cmd.Scissor = { 0, 0, m_shadowmapSize, m_shadowmapSize };
+    cmd.Viewport = { 0, 0, mShadowmapSize, mShadowmapSize };
+    cmd.Scissor = { 0, 0, mShadowmapSize, mShadowmapSize };
     cmd.ClearDepth = true;
     cmd.ClearDepthValue = 0.f;
     cmd.ClearColor = true;

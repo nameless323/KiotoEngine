@@ -25,27 +25,27 @@ WireframeRenderPass::WireframeRenderPass()
 void WireframeRenderPass::BuildRenderPackets(CommandList* commandList, ResourceTable& resources)
 {
     SetRenderTargets(commandList, resources);
-    for (auto ro : m_drawData->RenderObjects)
+    for (auto ro : mDrawData->RenderObjects)
     {
         if (!ro->GetIsVisible())
             continue;
 
-        ro->SetExternalCB(m_passName, Renderer::SInp::Wireframe_sinp::cbCameraName, Renderer::GetMainCamera()->GetConstantBuffer().GetHandle());
-        ro->SetExternalCB(m_passName, Renderer::SInp::Wireframe_sinp::cbEngineName, Renderer::EngineBuffers::GetTimeBuffer().GetHandle());
+        ro->SetExternalCB(mPassName, Renderer::SInp::Wireframe_sinp::cbCameraName, Renderer::GetMainCamera()->GetConstantBuffer().GetHandle());
+        ro->SetExternalCB(mPassName, Renderer::SInp::Wireframe_sinp::cbEngineName, Renderer::EngineBuffers::GetTimeBuffer().GetHandle());
 
         Material* mat = ro->GetMaterial();
         Mesh* mesh = ro->GetMesh();
         mat->BuildMaterialForPass(this);
 
-        ro->PrepareConstantBuffers(m_passName);
+        ro->PrepareConstantBuffers(mPassName);
 
         RenderPacket currPacket = {};
         currPacket.Material = mat->GetHandle();
-        currPacket.Shader = mat->GetPipelineState(m_passName).Shader->GetHandle();
-        currPacket.TextureSet = ro->GetTextureSet(m_passName).GetHandle();
+        currPacket.Shader = mat->GetPipelineState(mPassName).Shader->GetHandle();
+        currPacket.TextureSet = ro->GetTextureSet(mPassName).GetHandle();
         currPacket.Mesh = mesh->GetHandle();
         currPacket.Pass = GetHandle();
-        currPacket.ConstantBufferHandles = std::move(ro->GetCBHandles(m_passName));
+        currPacket.ConstantBufferHandles = std::move(ro->GetCBHandles(mPassName));
 
         commandList->PushCommand(RenderCommandHelpers::CreateRenderPacketCommand(currPacket, this));
     }

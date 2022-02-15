@@ -29,12 +29,12 @@ private:
         CommandList* CmdList;
     };
 
-    std::vector<RenderPass*> m_registredPasses;
-    std::vector<PassSubmitionInfo> m_activePasses;
+    std::vector<RenderPass*> mRegistredPasses;
+    std::vector<PassSubmitionInfo> mActivePasses;
 
-    std::vector<CommandList> m_commandListPool;
-    uint32 m_currentCommandListIndex = 0;
+    std::vector<CommandList> mCommandListPool;
+    uint32 mCurrentCommandListIndex = 0;
 
-    ResourceTable m_resourceTable;
+    ResourceTable mResourceTable;
 };
 }

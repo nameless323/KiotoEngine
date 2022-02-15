@@ -24,7 +24,7 @@ ForwardRenderPass::ForwardRenderPass()
     : RenderPass("Forward")
 {
     Renderer::RegisterRenderPass(this);
-    Renderer::RegisterConstantBuffer(m_lightsBuffer);
+    Renderer::RegisterConstantBuffer(mLightsBuffer);
 
     SetRenderTargetCount(1);
 }
@@ -33,38 +33,38 @@ void ForwardRenderPass::BuildRenderPackets(CommandList* commandList, ResourceTab
 {
     SetRenderTargets(commandList, resources);
 
-    for (uint32 i = 0; i < m_drawData->Lights.size(); ++i)
-        m_lights.light[i] = std::move(m_drawData->Lights[i]->GetGraphicsLight());
-    m_lights.shadowTransform = resources.GetPassesSharedData().ShadowTransform;
-    m_lightsBuffer.Set(m_lights);
+    for (uint32 i = 0; i < mDrawData->Lights.size(); ++i)
+        mLights.Light[i] = std::move(mDrawData->Lights[i]->GetGraphicsLight());
+    mLights.ShadowTransform = resources.GetPassesSharedData().ShadowTransform;
+    mLightsBuffer.Set(mLights);
 
     Texture* shadowMap = resources.GetResource("ShadowMap");
 
-    for (auto ro : m_drawData->RenderObjects)
+    for (auto ro : mDrawData->RenderObjects)
     {
         if (!ro->GetIsVisible())
             continue;
 
-        ro->SetExternalCB(m_passName, Renderer::SInp::Fallback_sinp::cbCameraName, Renderer::GetMainCamera()->GetConstantBuffer().GetHandle());
-        ro->SetExternalCB(m_passName, Renderer::SInp::Fallback_sinp::cbEngineName, Renderer::EngineBuffers::GetTimeBuffer().GetHandle());
-        ro->SetExternalCB(m_passName, Renderer::SInp::Fallback_sinp::lightsName, m_lightsBuffer.GetHandle());
-        ro->SetConstant(m_passName, "LIGHTS_COUNT", static_cast<uint32>(m_drawData->Lights.size()));
+        ro->SetExternalCB(mPassName, Renderer::SInp::Fallback_sinp::cbCameraName, Renderer::GetMainCamera()->GetConstantBuffer().GetHandle());
+        ro->SetExternalCB(mPassName, Renderer::SInp::Fallback_sinp::cbEngineName, Renderer::EngineBuffers::GetTimeBuffer().GetHandle());
+        ro->SetExternalCB(mPassName, Renderer::SInp::Fallback_sinp::lightsName, mLightsBuffer.GetHandle());
+        ro->SetConstant(mPassName, "LIGHTS_COUNT", static_cast<uint32>(mDrawData->Lights.size()));
         Material* mat = ro->GetMaterial();
         Mesh* mesh = ro->GetMesh();
         mat->BuildMaterialForPass(this);
 
-        ro->PrepareConstantBuffers(m_passName);
+        ro->PrepareConstantBuffers(mPassName);
 
-        ro->SetTexture("ShadowTexture", shadowMap, m_passName);
+        ro->SetTexture("ShadowTexture", shadowMap, mPassName);
 
         RenderPacket currPacket = {};
         currPacket.Material = mat->GetHandle();
-        currPacket.Shader = mat->GetPipelineState(m_passName).Shader->GetHandle();
-        currPacket.TextureSet = ro->GetTextureSet(m_passName).GetHandle();
+        currPacket.Shader = mat->GetPipelineState(mPassName).Shader->GetHandle();
+        currPacket.TextureSet = ro->GetTextureSet(mPassName).GetHandle();
         currPacket.Mesh = mesh->GetHandle();
         currPacket.Pass = GetHandle();
-        currPacket.ConstantBufferHandles = std::move(ro->GetCBHandles(m_passName));
-        currPacket.UniformConstants = std::move(ro->GetConstants(m_passName));
+        currPacket.ConstantBufferHandles = std::move(ro->GetCBHandles(mPassName));
+        currPacket.UniformConstants = std::move(ro->GetConstants(mPassName));
 
         commandList->PushCommand(RenderCommandHelpers::CreateRenderPacketCommand(currPacket, this));
     }

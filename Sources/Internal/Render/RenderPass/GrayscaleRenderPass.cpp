@@ -28,10 +28,10 @@ GrayscaleRenderPass::GrayscaleRenderPass()
     CreateQuadMesh();
     CreateMaterial();
 
-    m_renderObject = new RenderObject();
-    m_renderObject->SetMaterial(m_material);
-    m_renderObject->SetMesh(m_quad);
-    Renderer::RegisterRenderObject(*m_renderObject);
+    mRenderObject = new RenderObject();
+    mRenderObject->SetMaterial(mMaterial);
+    mRenderObject->SetMesh(mQuad);
+    Renderer::RegisterRenderObject(*mRenderObject);
 }
 
 void GrayscaleRenderPass::BuildRenderPackets(CommandList* commandList, ResourceTable& resources)
@@ -39,22 +39,22 @@ void GrayscaleRenderPass::BuildRenderPackets(CommandList* commandList, ResourceT
     SetRenderTargets(commandList, resources);
     Texture* input = resources.GetResource("FwdTargetTexture");
 
-    Material* mat = m_renderObject->GetMaterial();
-    Mesh* mesh = m_renderObject->GetMesh();
-    m_renderObject->SetExternalCB(m_passName, Renderer::SInp::Grayscale_sinp::cbCameraName, Renderer::GetMainCamera()->GetConstantBuffer().GetHandle());
-    m_renderObject->SetExternalCB(m_passName, Renderer::SInp::Grayscale_sinp::cbEngineName, Renderer::EngineBuffers::GetTimeBuffer().GetHandle());
+    Material* mat = mRenderObject->GetMaterial();
+    Mesh* mesh = mRenderObject->GetMesh();
+    mRenderObject->SetExternalCB(mPassName, Renderer::SInp::Grayscale_sinp::cbCameraName, Renderer::GetMainCamera()->GetConstantBuffer().GetHandle());
+    mRenderObject->SetExternalCB(mPassName, Renderer::SInp::Grayscale_sinp::cbEngineName, Renderer::EngineBuffers::GetTimeBuffer().GetHandle());
 
     mat->BuildMaterialForPass(this);
 
-    m_renderObject->SetTexture("InputColor", input, m_passName);
+    mRenderObject->SetTexture("InputColor", input, mPassName);
 
     RenderPacket currPacket = {};
     currPacket.Material = mat->GetHandle();
-    currPacket.Shader = mat->GetPipelineState(m_passName).Shader->GetHandle();
-    currPacket.TextureSet = m_renderObject->GetTextureSet(m_passName).GetHandle();
+    currPacket.Shader = mat->GetPipelineState(mPassName).Shader->GetHandle();
+    currPacket.TextureSet = mRenderObject->GetTextureSet(mPassName).GetHandle();
     currPacket.Mesh = mesh->GetHandle();
     currPacket.Pass = GetHandle();
-    currPacket.ConstantBufferHandles = std::move(m_renderObject->GetCBHandles(m_passName));
+    currPacket.ConstantBufferHandles = std::move(mRenderObject->GetCBHandles(mPassName));
 
     commandList->PushCommand(RenderCommandHelpers::CreateRenderPacketCommand(currPacket, this));
 
@@ -98,19 +98,19 @@ bool GrayscaleRenderPass::ConfigureInputsAndOutputs(ResourcesBlackboard& resourc
 void GrayscaleRenderPass::CreateMaterial()
 {
     std::string matPath = AssetsSystem::GetAssetFullPath("Materials\\Grayscale.mt");
-    m_material = new Material(matPath);
-    Renderer::RegisterRenderAsset(m_material);
+    mMaterial = new Material(matPath);
+    Renderer::RegisterRenderAsset(mMaterial);
 }
 
 void GrayscaleRenderPass::CreateQuadMesh()
 {
-    m_quad = GeometryGenerator::GetFullscreenQuad();
+    mQuad = GeometryGenerator::GetFullscreenQuad();
 }
 
 GrayscaleRenderPass::~GrayscaleRenderPass()
 {
-    SafeDelete(m_material);
-    SafeDelete(m_renderObject);
+    SafeDelete(mMaterial);
+    SafeDelete(mRenderObject);
 }
 
 }
