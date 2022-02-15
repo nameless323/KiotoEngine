@@ -93,15 +93,15 @@ public:
 
     friend void swap(Mesh& l, Mesh& r)
     {
-        std::swap(l.m_vertexData, r.m_vertexData);
-        std::swap(l.m_vertexDataSize, r.m_vertexDataSize);
+        std::swap(l.mVertexData, r.mVertexData);
+        std::swap(l.mVertexDataSize, r.mVertexDataSize);
 
-        std::swap(l.m_indexData, r.m_indexData);
-        std::swap(l.m_indexDataSize, r.m_indexDataSize);
+        std::swap(l.mIndexData, r.mIndexData);
+        std::swap(l.mIndexDataSize, r.mIndexDataSize);
 
-        std::swap(l.m_vertexCount, r.m_vertexCount);
-        std::swap(l.m_indexCount, r.m_indexCount);
-        swap(l.m_layout, r.m_layout);
+        std::swap(l.mVertexCount, r.mVertexCount);
+        std::swap(l.mIndexCount, r.mIndexCount);
+        swap(l.mLayout, r.mLayout);
     }
 
     inline static constexpr uint32 MaxTexcoordCount = 8;
@@ -110,33 +110,33 @@ public:
 private:
     void LayoutFromIntermediateMesh(const IntermediateMesh& iMesh);
 
-    byte* m_vertexData = nullptr;
-    uint32 m_vertexDataSize = 0;
+    byte* mVertexData = nullptr;
+    uint32 mVertexDataSize = 0;
 
-    byte* m_indexData = nullptr;
-    uint32 m_indexDataSize = 0;
+    byte* mIndexData = nullptr;
+    uint32 mIndexDataSize = 0;
 
-    uint32 m_vertexCount = 0;
-    uint32 m_indexCount = 0;
-    VertexLayout m_layout;
+    uint32 mVertexCount = 0;
+    uint32 mIndexCount = 0;
+    VertexLayout mLayout;
 
-    MeshHandle m_handle;
+    MeshHandle mHandle;
 };
 
 inline uint32* Mesh::GetIndexPtr(uint32 i)
 {
-    assert(i < m_indexCount);
-    return reinterpret_cast<uint32*>(m_indexData + sizeof(uint32) * i);
+    assert(i < mIndexCount);
+    return reinterpret_cast<uint32*>(mIndexData + sizeof(uint32) * i);
 }
 
 template <typename T>
 inline T* Mesh::GetVertexElementPtr(uint32 i, eVertexSemantic semantic, uint8 semanticIndex)
 {
-    assert(i < m_vertexCount);
-    const SemanticDesc* e = m_layout.FindElement(semantic, semanticIndex);
+    assert(i < mVertexCount);
+    const SemanticDesc* e = mLayout.FindElement(semantic, semanticIndex);
     if (e == nullptr)
         return nullptr;
-    return reinterpret_cast<T*>(m_vertexData + static_cast<uint64>(m_layout.GetVertexStride()) * static_cast<uint64>(i) + e->Offset);
+    return reinterpret_cast<T*>(mVertexData + static_cast<uint64>(mLayout.GetVertexStride()) * static_cast<uint64>(i) + e->Offset);
 }
 
 inline Vector3* Mesh::GetPositionPtr(uint32 i)
@@ -161,7 +161,7 @@ inline Vector4* Mesh::GetColorPtr(uint32 i)
 
 inline eDataFormat Mesh::GetVertexElementFormat(eVertexSemantic semantic, uint8 semanticIndex) const
 {
-    const SemanticDesc* e = m_layout.FindElement(semantic, semanticIndex);
+    const SemanticDesc* e = mLayout.FindElement(semantic, semanticIndex);
     if (e == nullptr)
         return eDataFormat::UNKNOWN;
     return e->Format;
@@ -169,46 +169,46 @@ inline eDataFormat Mesh::GetVertexElementFormat(eVertexSemantic semantic, uint8 
 
 inline const byte* Mesh::GetVertexData() const
 {
-    return m_vertexData;
+    return mVertexData;
 }
 
 inline uint32 Mesh::GetVertexDataSize() const
 {
-    return m_vertexDataSize;
+    return mVertexDataSize;
 }
 
 inline uint32 Mesh::GetVertexDataStride() const
 {
-    return m_layout.GetVertexStride();
+    return mLayout.GetVertexStride();
 }
 
 inline uint32 Mesh::GetVertexCount() const
 {
-    return m_vertexCount;
+    return mVertexCount;
 }
 
 inline uint32 Mesh::GetIndexCount() const
 {
-    return m_indexCount;
+    return mIndexCount;
 }
 
 inline const byte* Mesh::GetIndexData() const
 {
-    return m_indexData;
+    return mIndexData;
 }
 
 inline uint32 Mesh::GetIndexDataSize() const
 {
-    return m_indexDataSize;
+    return mIndexDataSize;
 }
 
 inline MeshHandle Mesh::GetHandle() const
 {
-    return m_handle;
+    return mHandle;
 }
 
 inline void Mesh::SetHandle(MeshHandle handle)
 {
-    m_handle = handle;
+    mHandle = handle;
 }
 }

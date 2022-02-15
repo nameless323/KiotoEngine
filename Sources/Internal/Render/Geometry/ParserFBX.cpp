@@ -28,19 +28,19 @@ Vector2 FbxVector2ToKioto(const FbxVector2& vec)
 void ParserFBX::Init()
 {
     bool result = false;
-    m_fbxManager = FbxManager::Create();
-    if (m_fbxManager == nullptr)
+    mFbxManager = FbxManager::Create();
+    if (mFbxManager == nullptr)
     {
         throw "Cant create manager.";
     }
 
-    FbxIOSettings* ios = FbxIOSettings::Create(m_fbxManager, IOSROOT);
-    m_fbxManager->SetIOSettings(ios);
+    FbxIOSettings* ios = FbxIOSettings::Create(mFbxManager, IOSROOT);
+    mFbxManager->SetIOSettings(ios);
 }
 
 void ParserFBX::Shutdown()
 {
-    m_fbxManager->Destroy();
+    mFbxManager->Destroy();
 }
 
 Renderer::Mesh* ParserFBX::ParseMesh(const std::string& path)
@@ -54,11 +54,11 @@ Renderer::Mesh* ParserFBX::ParseMesh(const std::string& path)
 
 void ParserFBX::ParseMesh(Renderer::Mesh* dst)
 {
-    FbxScene* scene = FbxScene::Create(m_fbxManager, "ImportFbxScene");
+    FbxScene* scene = FbxScene::Create(mFbxManager, "ImportFbxScene");
     if (scene == nullptr)
         assert(false);
 
-    bool res = LoadScene(m_fbxManager, scene, dst->GetAssetPath().c_str());
+    bool res = LoadScene(mFbxManager, scene, dst->GetAssetPath().c_str());
     FbxDocumentInfo* sceneInfo = scene->GetSceneInfo();
     TraverseHiererchy(scene, dst);
     scene->Destroy(true);
@@ -80,8 +80,8 @@ bool ParserFBX::LoadScene(FbxManager* manager, FbxScene* scene, const char* file
 
     FbxManager::GetFileFormatVersion(skdMajor, sdkMinor, sdkRevision);
 
-    FbxImporter* importer = FbxImporter::Create(m_fbxManager, "");
-    bool importStatus = importer->Initialize(filename, -1, m_fbxManager->GetIOSettings());
+    FbxImporter* importer = FbxImporter::Create(mFbxManager, "");
+    bool importStatus = importer->Initialize(filename, -1, mFbxManager->GetIOSettings());
     importer->GetFileVersion(fileMajor, fileMinor, fileRevision);
     if (!importStatus)
     {
