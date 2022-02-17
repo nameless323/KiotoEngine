@@ -10,7 +10,7 @@ namespace Kioto::Renderer
 {
     void RenderObject::ComposeAllConstantBuffers()
     {
-        for (auto& pipelines : m_material->GetPipelineStates())
+        for (auto& pipelines : mMaterial->GetPipelineStates())
         {
             Shader* shader = pipelines.second.Shader;
             RenderObjectBufferLayout bufferLayout = shader->CreateLayoutTemplateShalowCopy();
@@ -21,18 +21,18 @@ namespace Kioto::Renderer
                     cb.Reallocate();
             }
 
-            assert(m_renderObjectBuffers.count(pipelines.first) == 0);
-            m_renderObjectBuffers[pipelines.first] = std::move(bufferLayout);
-            m_renderObjectConstants[pipelines.first] = std::move(shader->GetRenderObjectConstants());
+            assert(mRenderObjectBuffers.count(pipelines.first) == 0);
+            mRenderObjectBuffers[pipelines.first] = std::move(bufferLayout);
+            mRenderObjectConstants[pipelines.first] = std::move(shader->GetRenderObjectConstants());
         }
     }
 
     void RenderObject::RegisterAllTextureSets()
     {
-        for (auto& textureAssetDescriptionsForPasses : m_material->GetTextureAssetDescriptions())
+        for (auto& textureAssetDescriptionsForPasses : mMaterial->GetTextureAssetDescriptions())
         {
             const PassName& passName = textureAssetDescriptionsForPasses.first;
-            PipelineState& state = m_material->GetPipelineState(passName);
+            PipelineState& state = mMaterial->GetPipelineState(passName);
             Shader* shader = state.Shader;
             TextureSet set;
             for (auto& texDescr : textureAssetDescriptionsForPasses.second)
@@ -45,21 +45,21 @@ namespace Kioto::Renderer
                 }
                 set.AddTexture(texDescr.Name, texDescr.Offset, tex);
             }
-            assert(m_textureSets.count(passName) == 0);
-            m_textureSets[passName] = std::move(set);
-            if (m_textureSets[passName].GetTexturesCount() > 0)
+            assert(mTextureSets.count(passName) == 0);
+            mTextureSets[passName] = std::move(set);
+            if (mTextureSets[passName].GetTexturesCount() > 0)
             {
                 // [a_vorontcov] TODO: easy to mess up. rethink
-                Renderer::RegisterTextureSet(m_textureSets[passName]);
-                Renderer::QueueTextureSetForUpdate(m_textureSets[passName]);
+                Renderer::RegisterTextureSet(mTextureSets[passName]);
+                Renderer::QueueTextureSetForUpdate(mTextureSets[passName]);
             }
         }
     }
 
     void RenderObject::SetTexture(const std::string& name, Texture* texture, const std::string& passName)
     {
-        assert(m_textureSets.count(passName) && "Texture is missing in texture set");
-        m_textureSets[passName].SetTexture(name, texture);
+        assert(mTextureSets.count(passName) && "Texture is missing in texture set");
+        mTextureSets[passName].SetTexture(name, texture);
     }
 
     void RenderObject::PrepareConstantBuffers(const std::string& passName)
@@ -72,12 +72,12 @@ namespace Kioto::Renderer
 
     void RenderObject::SetExternalCB(const std::string& passName, const std::string& cbName, ConstantBufferHandle newHandle)
     {
-        if (!m_renderObjectBuffers.count(passName))
+        if (!mRenderObjectBuffers.count(passName))
         {
             assert(false);
             return;
         }
-        RenderObjectBufferLayout& layout = m_renderObjectBuffers[passName];
+        RenderObjectBufferLayout& layout = mRenderObjectBuffers[passName];
         auto cb = std::find_if(layout.begin(), layout.end(), [&cbName](const ConstantBuffer& b) { return b.GetName() == cbName; });
         if (cb == layout.end())
         {
@@ -90,9 +90,9 @@ namespace Kioto::Renderer
 
     std::vector<Renderer::ConstantBufferHandle> RenderObject::GetCBHandles(const std::string& passName) const
     {
-        if (!m_renderObjectBuffers.count(passName))
+        if (!mRenderObjectBuffers.count(passName))
             return {};
-        const RenderObjectBufferLayout& layout = m_renderObjectBuffers.at(passName);
+        const RenderObjectBufferLayout& layout = mRenderObjectBuffers.at(passName);
 
         std::vector<Renderer::ConstantBufferHandle> handles;
         handles.reserve(layout.size());
@@ -103,9 +103,9 @@ namespace Kioto::Renderer
 
     std::vector<uint32> RenderObject::GetConstants(const std::string& passName) const
     {
-        if (!m_renderObjectConstants.count(passName))
+        if (!mRenderObjectConstants.count(passName))
             return {};
-        const RenderObjectConstants& constants = m_renderObjectConstants.at(passName);
+        const RenderObjectConstants& constants = mRenderObjectConstants.at(passName);
 
         std::vector<uint32> values;
         values.reserve(constants.size());

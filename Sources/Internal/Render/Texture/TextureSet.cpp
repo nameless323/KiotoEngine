@@ -4,10 +4,10 @@
 namespace Kioto::Renderer
 {
 TextureSet::TextureSet(const TextureSet& other)
-    : m_data(other.m_data)
-    , m_maxOffset(other.m_maxOffset)
-    , m_needRebuild(other.m_needRebuild)
-    , m_handle(other.m_handle)
+    : mData(other.mData)
+    , mMaxOffset(other.mMaxOffset)
+    , mNeedRebuild(other.mNeedRebuild)
+    , mHandle(other.mHandle)
 {
 }
 
@@ -31,7 +31,7 @@ TextureSet::eReturnCode TextureSet::AddTexture(const std::string& name, uint16 o
     newElem.Name = name;
     newElem.Texture = texture;
     newElem.Offset = offset;
-    m_data.push_back(std::move(newElem));
+    mData.push_back(std::move(newElem));
 
     return eReturnCode::Ok;
 }
@@ -51,8 +51,8 @@ TextureSet::eReturnCode TextureSet::SetTexture(const std::string& name, Texture*
 
 bool TextureSet::Find(const std::string& name, TextureSetData*& data)
 {
-    auto it = std::find_if(m_data.begin(), m_data.end(), [&name](const TextureSetData& d) { return d.Name == name; });
-    if (it == m_data.end())
+    auto it = std::find_if(mData.begin(), mData.end(), [&name](const TextureSetData& d) { return d.Name == name; });
+    if (it == mData.end())
         return false;
     data = &(*it);
     return true;
@@ -61,20 +61,20 @@ bool TextureSet::Find(const std::string& name, TextureSetData*& data)
 uint16 TextureSet::GetTextureOffset(const std::string& name) const
 {
     // [a_vorontcov] TODO: Refactor -> Find
-    auto it = std::find_if(m_data.begin(), m_data.end(), [&name](const TextureSetData& d) { return d.Name == name; });
-    if (it == m_data.end())
+    auto it = std::find_if(mData.begin(), mData.end(), [&name](const TextureSetData& d) { return d.Name == name; });
+    if (it == mData.end())
         return -1;
     return it->Offset;
 }
 
 uint16 TextureSet::GetTextureOffset(uint32 index) const
 {
-    return m_data[index].Offset;
+    return mData[index].Offset;
 }
 
 const std::string* TextureSet::GetTextureName(uint32 index) const
 {
-    return &m_data[index].Name;
+    return &mData[index].Name;
 }
 
 }

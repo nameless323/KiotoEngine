@@ -13,11 +13,11 @@ using Microsoft::WRL::ComPtr;
 
 void SwapChain::Init(const StateDX& state, bool isTearingSupported, uint16 width, uint16 height)
 {
-    for (auto& res : m_backBuffers)
+    for (auto& res : mBackBuffers)
         res.SetHandle(GetNewHandle());
-    m_depthStencil.SetHandle(GetNewHandle());
+    mDepthStencil.SetHandle(GetNewHandle());
 
-    m_isTearingSupported = isTearingSupported;
+    mIsTearingSupported = isTearingSupported;
 
     DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
     swapChainDesc.BufferCount = StateDX::FrameCount;
@@ -35,45 +35,45 @@ void SwapChain::Init(const StateDX& state, bool isTearingSupported, uint16 width
 
     if (isTearingSupported)
         state.Factory->MakeWindowAssociation(WindowsApplication::GetHWND(), DXGI_MWA_NO_ALT_ENTER);
-    ThrowIfFailed(swapChain.As(&m_swapChain));
+    ThrowIfFailed(swapChain.As(&mSwapChain));
 
     D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
     rtvHeapDesc.NumDescriptors = StateDX::FrameCount;
     rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
     rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 
-    ThrowIfFailed(state.Device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&m_rtvHeap)));
+    ThrowIfFailed(state.Device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&mRtvHeap)));
 
     D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
     dsvHeapDesc.NumDescriptors = 1;
     dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
     dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
 
-    ThrowIfFailed(state.Device->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&m_dsvHeap)));
+    ThrowIfFailed(state.Device->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&mDsvHeap)));
 }
 
 void SwapChain::Resize(const StateDX& state, uint16 width, uint16 height)
 {
-    m_currentFrameIndex = 0;
+    mCurrentFrameIndex = 0;
 
-    m_depthStencil.Resource.Reset();
-    for (auto& swapChainBuffer : m_backBuffers)
+    mDepthStencil.Resource.Reset();
+    for (auto& swapChainBuffer : mBackBuffers)
         swapChainBuffer.Resource.Reset();
 
     UINT flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-    if (m_isTearingSupported)
+    if (mIsTearingSupported)
         flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
-    ThrowIfFailed(m_swapChain->ResizeBuffers(StateDX::FrameCount, width, height, m_backBufferFormat, flags));
+    ThrowIfFailed(mSwapChain->ResizeBuffers(StateDX::FrameCount, width, height, mBackBufferFormat, flags));
 
     BOOL fullscreenState;
-    ThrowIfFailed(m_swapChain->GetFullscreenState(&fullscreenState, nullptr));
-    m_isSwapChainChainInFullScreen = fullscreenState;
+    ThrowIfFailed(mSwapChain->GetFullscreenState(&fullscreenState, nullptr));
+    mIsSwapChainChainInFullScreen = fullscreenState;
 
-    CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
+    CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(mRtvHeap->GetCPUDescriptorHandleForHeapStart());
     for (UINT i = 0; i < StateDX::FrameCount; ++i)
     {
-        ThrowIfFailed(m_swapChain->GetBuffer(i, IID_PPV_ARGS(&m_backBuffers[i].Resource)));
-        state.Device->CreateRenderTargetView(m_backBuffers[i].Resource.Get(), nullptr, rtvHandle);
+        ThrowIfFailed(mSwapChain->GetBuffer(i, IID_PPV_ARGS(&mBackBuffers[i].Resource)));
+        state.Device->CreateRenderTargetView(mBackBuffers[i].Resource.Get(), nullptr, rtvHandle);
         rtvHandle.Offset(state.RtvDescriptorSize);
     }
 
@@ -95,7 +95,7 @@ void SwapChain::Resize(const StateDX& state, uint16 width, uint16 height)
     dsClear.DepthStencil.Stencil = 0;
 
     auto defaultHeapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-    ThrowIfFailed(state.Device->CreateCommittedResource(&defaultHeapProps, D3D12_HEAP_FLAG_NONE, &depthStencilDesc, D3D12_RESOURCE_STATE_COMMON, &dsClear, IID_PPV_ARGS(m_depthStencil.Resource.GetAddressOf())));
+    ThrowIfFailed(state.Device->CreateCommittedResource(&defaultHeapProps, D3D12_HEAP_FLAG_NONE, &depthStencilDesc, D3D12_RESOURCE_STATE_COMMON, &dsClear, IID_PPV_ARGS(mDepthStencil.Resource.GetAddressOf())));
 
     D3D12_DEPTH_STENCIL_VIEW_DESC dsViewDesc = {};
     dsViewDesc.Flags = D3D12_DSV_FLAG_NONE;
@@ -103,20 +103,20 @@ void SwapChain::Resize(const StateDX& state, uint16 width, uint16 height)
     dsViewDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
     dsViewDesc.Texture2D.MipSlice = 0;
 
-    state.Device->CreateDepthStencilView(m_depthStencil.Resource.Get(), &dsViewDesc, m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
+    state.Device->CreateDepthStencilView(mDepthStencil.Resource.Get(), &dsViewDesc, mDsvHeap->GetCPUDescriptorHandleForHeapStart());
 
-    auto transition = CD3DX12_RESOURCE_BARRIER::Transition(m_depthStencil.Resource.Get(), D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE);
+    auto transition = CD3DX12_RESOURCE_BARRIER::Transition(mDepthStencil.Resource.Get(), D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE);
     state.CommandList->ResourceBarrier(1, &transition);
 }
 
 void SwapChain::Present()
 {
-    UINT presentFlags = (m_isTearingSupported && !m_isSwapChainChainInFullScreen) ? DXGI_PRESENT_ALLOW_TEARING : 0;
-    ThrowIfFailed(m_swapChain->Present(0, presentFlags));
+    UINT presentFlags = (mIsTearingSupported && !mIsSwapChainChainInFullScreen) ? DXGI_PRESENT_ALLOW_TEARING : 0;
+    ThrowIfFailed(mSwapChain->Present(0, presentFlags));
 }
 
 void SwapChain::ProceedToNextFrame()
 {
-    m_currentFrameIndex = (m_currentFrameIndex + 1) % StateDX::FrameCount;
+    mCurrentFrameIndex = (mCurrentFrameIndex + 1) % StateDX::FrameCount;
 }
 }

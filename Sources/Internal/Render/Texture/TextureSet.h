@@ -49,10 +49,10 @@ public:
 
     friend void swap(TextureSet& l, TextureSet& r)
     {
-        l.m_data.swap(r.m_data);
-        std::swap(l.m_maxOffset, r.m_maxOffset);
-        std::swap(l.m_needRebuild, r.m_needRebuild);
-        std::swap(l.m_handle, r.m_handle);
+        l.mData.swap(r.mData);
+        std::swap(l.mMaxOffset, r.mMaxOffset);
+        std::swap(l.mNeedRebuild, r.mNeedRebuild);
+        std::swap(l.mHandle, r.mHandle);
     }
 
 private:
@@ -65,51 +65,51 @@ private:
 
     bool Find(const std::string& name, TextureSetData*& data);
 
-    std::vector<TextureSetData> m_data;
-    uint16 m_maxOffset = 0;
-    bool m_needRebuild = true;
+    std::vector<TextureSetData> mData;
+    uint16 mMaxOffset = 0;
+    bool mNeedRebuild = true;
 
-    TextureSetHandle m_handle;
+    TextureSetHandle mHandle;
 };
 
 inline uint16 TextureSet::GetTexturesCount() const
 {
-    return static_cast<uint16>(m_data.size());
+    return static_cast<uint16>(mData.size());
 }
 
 inline uint16 TextureSet::GetMaxOffset() const
 {
-    return m_maxOffset;
+    return mMaxOffset;
 }
 
 inline bool TextureSet::GetRebuildState() const
 {
-    return m_needRebuild;
+    return mNeedRebuild;
 }
 
 inline void TextureSet::SetRebuildState(bool newState)
 {
-    m_needRebuild = newState;
+    mNeedRebuild = newState;
 }
 
 inline void TextureSet::SetHandle(TextureSetHandle handle)
 {
-    m_handle = handle;
+    mHandle = handle;
 }
 
 inline TextureSetHandle TextureSet::GetHandle() const
 {
-    return m_handle;
+    return mHandle;
 }
 
 inline const Texture* TextureSet::GetTexture(uint32 index) const
 {
-    return m_data[index].Texture;
+    return mData[index].Texture;
 }
 
 inline bool TextureSet::operator==(const TextureSet& other) const
 {
-    return m_handle == other.GetHandle();
+    return mHandle == other.GetHandle();
 }
 
 inline bool TextureSet::operator!=(const TextureSet& other) const

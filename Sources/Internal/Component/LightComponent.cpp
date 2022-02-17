@@ -8,32 +8,32 @@ namespace Kioto
 Component* LightComponent::Clone() const
 {
     LightComponent* newComponent = new LightComponent();
-    newComponent->m_light = m_light;
+    newComponent->mLight = mLight;
     return newComponent;
 }
 
 void LightComponent::Serialize(YAML::Emitter& out) const
 {
     using ::operator<<;
-    out << YAML::Key << "LightType" << YAML::Value << uint16(m_light.LightType);
-    out << YAML::Key << "LightDir" << YAML::Value << m_light.Direction;
-    out << YAML::Key << "LightColor" << YAML::Value << m_light.Color;
-    out << YAML::Key << "LightData" << YAML::Value << m_light.Data;
-    out << YAML::Key << "CastShadow" << YAML::Value << m_light.CastShadow;
+    out << YAML::Key << "LightType" << YAML::Value << uint16(mLight.LightType);
+    out << YAML::Key << "LightDir" << YAML::Value << mLight.Direction;
+    out << YAML::Key << "LightColor" << YAML::Value << mLight.Color;
+    out << YAML::Key << "LightData" << YAML::Value << mLight.Data;
+    out << YAML::Key << "CastShadow" << YAML::Value << mLight.CastShadow;
 }
 
 void LightComponent::Deserialize(const YAML::Node& in)
 {
     if (in["LightType"])
-        m_light.LightType = Renderer::eLightType(in["LightType"].as<uint16>());
+        mLight.LightType = Renderer::eLightType(in["LightType"].as<uint16>());
     if (in["LightDir"])
-        m_light.Direction = in["LightDir"].as<Vector3>();
+        mLight.Direction = in["LightDir"].as<Vector3>();
     if (in["LightColor"])
-        m_light.Color = in["LightColor"].as<Renderer::Color>();
+        mLight.Color = in["LightColor"].as<Renderer::Color>();
     if (in["LightData"])
-        m_light.Data = in["LightData"].as<Vector4>();
+        mLight.Data = in["LightData"].as<Vector4>();
     if (in["CastShadow"])
-        m_light.CastShadow = in["CastShadow"].as<bool>();
+        mLight.CastShadow = in["CastShadow"].as<bool>();
 }
 
 }

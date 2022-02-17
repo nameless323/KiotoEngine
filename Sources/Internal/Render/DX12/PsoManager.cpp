@@ -108,19 +108,19 @@ D3D12_GRAPHICS_PIPELINE_STATE_DESC ParsePipelineState(Material* mat, const Rende
 void PsoManager::BuildPipelineState(const StateDX& state, Material* mat, const RenderPass* pass, const RootSignatureManager& sigManager, TextureManagerDX12* textureManager, ShaderManagerDX12* shaderManager, VertexLayoutManagerDX12* vertexLayoutManager, DXGI_FORMAT backBufferFromat, DXGI_FORMAT defaultDepthStencilFormat)
 {
     uint64 key = GetKey(mat->GetHandle(), pass->GetHandle());
-    if (m_psos.find(key) != m_psos.end())
+    if (mPsos.find(key) != mPsos.end())
         return;
 
     D3D12_GRAPHICS_PIPELINE_STATE_DESC stateDesc = ParsePipelineState(mat, pass, sigManager, textureManager, shaderManager, vertexLayoutManager, backBufferFromat, defaultDepthStencilFormat);
-    ID3D12PipelineState** pipeState = m_psos[key].GetAddressOf();
+    ID3D12PipelineState** pipeState = mPsos[key].GetAddressOf();
     ThrowIfFailed(state.Device->CreateGraphicsPipelineState(&stateDesc, IID_PPV_ARGS(pipeState)));
 }
 
 ID3D12PipelineState* PsoManager::GetPipelineState(MaterialHandle matHandle, RenderPassHandle renderPassHandle)
 {
     uint64 key = GetKey(matHandle, renderPassHandle);
-    auto it = m_psos.find(key);
-    if (it == m_psos.end())
+    auto it = mPsos.find(key);
+    if (it == mPsos.end())
         return nullptr;
     return it->second.Get();
 }

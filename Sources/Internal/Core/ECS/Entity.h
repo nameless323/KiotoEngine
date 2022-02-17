@@ -39,9 +39,9 @@ public:
     void Deserialize(const YAML::Node& in);
 
 private:
-    std::vector<Component*> m_components; // [a_vorontcov] Bad, bad thing...
-    std::string m_name = "Entity";
-    TransformComponent* m_transform = nullptr;
+    std::vector<Component*> mComponents; // [a_vorontcov] Bad, bad thing...
+    std::string mName = "Entity";
+    TransformComponent* mTransform = nullptr;
 
     friend void swap(Entity& e1, Entity& e2);
 };
@@ -49,15 +49,15 @@ private:
 template <typename T, typename>
 void Entity::RemoveComponent()
 {
-    auto it = std::find_if(m_components.begin(), m_components.end(), 
+    auto it = std::find_if(mComponents.begin(), mComponents.end(), 
         [](Component* c) 
         {
             return typename T::GetTypeS() == c->GetType();
         });
-    if (it != m_components.end())
+    if (it != mComponents.end())
     {
         delete &(*it);
-        m_components.erase(it);
+        mComponents.erase(it);
     }
 }
 
@@ -72,27 +72,27 @@ T* Entity::GetComponent() const
 
 inline const std::vector<Component*>& Entity::GetComponents() const
 {
-    return m_components;
+    return mComponents;
 }
 
 inline void swap(Entity& e1, Entity& e2)
 {
     using std::swap;
-    swap(e1.m_components, e2.m_components);
+    swap(e1.mComponents, e2.mComponents);
 }
 
 inline TransformComponent* Entity::GetTransform() const
 {
-    return m_transform;
+    return mTransform;
 }
 
 inline const std::string& Entity::GetName() const
 {
-    return m_name;
+    return mName;
 }
 
 inline void Entity::SetName(std::string name)
 {
-    std::swap(m_name, name);
+    std::swap(mName, name);
 }
 }

@@ -10,20 +10,20 @@ namespace Kioto::Renderer
 {
 MeshManagerDX12::MeshManagerDX12()
 {
-    m_meshQueue.reserve(256);
+    mMeshQueue.reserve(256);
 }
 
 MeshManagerDX12::~MeshManagerDX12()
 {
-    for (auto& mesh : m_meshes)
+    for (auto& mesh : mMeshes)
         SafeDelete(mesh.second);
-    m_meshes.clear();
+    mMeshes.clear();
 }
 
 void MeshManagerDX12::RegisterMesh(Mesh* mesh)
 {
-    auto it = m_meshes.find(mesh->GetHandle());
-    if (it != m_meshes.end())
+    auto it = mMeshes.find(mesh->GetHandle());
+    if (it != mMeshes.end())
     {
         assert(false);
         return;
@@ -31,22 +31,22 @@ void MeshManagerDX12::RegisterMesh(Mesh* mesh)
     MeshDX12* dxmesh = new MeshDX12();
     dxmesh->SetHandle(GetNewHandle());
     mesh->SetHandle(dxmesh->GetHandle());
-    m_meshes[mesh->GetHandle()] = dxmesh;
+    mMeshes[mesh->GetHandle()] = dxmesh;
 
-    m_meshQueue.emplace_back(mesh->GetVertexData(), mesh->GetIndexData(), mesh->GetVertexDataSize(), mesh->GetIndexDataSize(), mesh->GetVertexDataStride(), mesh->GetVertexCount(), mesh->GetIndexCount(), dxmesh);
+    mMeshQueue.emplace_back(mesh->GetVertexData(), mesh->GetIndexData(), mesh->GetVertexDataSize(), mesh->GetIndexDataSize(), mesh->GetVertexDataStride(), mesh->GetVertexCount(), mesh->GetIndexCount(), dxmesh);
 }
 
 void MeshManagerDX12::ProcessRegistrationQueue(const StateDX& state)
 {
-    for (auto& m : m_meshQueue)
+    for (auto& m : mMeshQueue)
         m.DstMesh->Create(m.VertexData, m.IndexData, m.VertexDataSize, m.IndexDataSize, m.VertexDataStride, m.VertexCount, m.IndexCount, state);
-    m_meshQueue.clear();
+    mMeshQueue.clear();
 }
 
 MeshDX12* MeshManagerDX12::Find(MeshHandle handle)
 {
-    auto it = m_meshes.find(handle);
-    if (it == m_meshes.end())
+    auto it = mMeshes.find(handle);
+    if (it == mMeshes.end())
         return nullptr;
     return it->second;
 }

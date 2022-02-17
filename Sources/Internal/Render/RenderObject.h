@@ -61,8 +61,8 @@ public:
     template<typename T>
     bool SetBuffer(const std::string& name, T&& val, const PassName& passName, uint32 elemOffset = 0)
     {
-        assert(m_renderObjectBuffers.count(passName) == 1);
-        for (auto& cb : m_renderObjectBuffers[passName])
+        assert(mRenderObjectBuffers.count(passName) == 1);
+        for (auto& cb : mRenderObjectBuffers[passName])
         {
             if (cb.GetName() == name)
             {
@@ -74,21 +74,21 @@ public:
     }
 
 private:
-    Material* m_material = nullptr;
-    Mesh* m_mesh = nullptr;
-    bool m_castShadow = true; // [a_vorontcov] TODO: merge to one bitmask
-    bool m_isVisible = true;
-    std::unordered_map<PassName, RenderObjectBufferLayout> m_renderObjectBuffers;
-    std::unordered_map<PassName, RenderObjectConstants> m_renderObjectConstants;
-    std::unordered_map<PassName, TextureSet> m_textureSets; // [a_vorontcov] Buffers are unique for ro, but texture set is more a material thing. but does it matter for bindless textures and for this engine at all?
+    Material* mMaterial = nullptr;
+    Mesh* mMesh = nullptr;
+    bool mCastShadow = true; // [a_vorontcov] TODO: merge to one bitmask
+    bool mIsVisible = true;
+    std::unordered_map<PassName, RenderObjectBufferLayout> mRenderObjectBuffers;
+    std::unordered_map<PassName, RenderObjectConstants> mRenderObjectConstants;
+    std::unordered_map<PassName, TextureSet> mTextureSets; // [a_vorontcov] Buffers are unique for ro, but texture set is more a material thing. but does it matter for bindless textures and for this engine at all?
 
-    const Matrix4* m_toWorld = nullptr;
-    const Matrix4* m_toModel = nullptr;
+    const Matrix4* mToWorld = nullptr;
+    const Matrix4* mToModel = nullptr;
 };
 
 inline void RenderObject::SetMaterial(Material* material, bool composeBuffersAndTextures /* = true */)
 {
-    m_material = material;
+    mMaterial = material;
     if (composeBuffersAndTextures)
     {
         ComposeAllConstantBuffers();
@@ -98,91 +98,91 @@ inline void RenderObject::SetMaterial(Material* material, bool composeBuffersAnd
 
 inline Material* RenderObject::GetMaterial() const
 {
-    return m_material;
+    return mMaterial;
 }
 
 inline void RenderObject::SetMesh(Mesh* mesh)
 {
-    m_mesh = mesh;
+    mMesh = mesh;
 }
 
 inline Mesh* RenderObject::GetMesh() const
 {
-    return m_mesh;
+    return mMesh;
 }
 
 inline void RenderObject::SetToWorld(const Matrix4& mat)
 {
-    m_toWorld = &mat;
+    mToWorld = &mat;
 }
 
 inline const Matrix4* RenderObject::GetToWorld() const
 {
-    return m_toWorld;
+    return mToWorld;
 }
 
 inline void RenderObject::SetToModel(const Matrix4& mat)
 {
-    m_toModel = &mat;
+    mToModel = &mat;
 }
 
 inline const Matrix4* RenderObject::GetToModel() const
 {
-    return m_toModel;
+    return mToModel;
 }
 
 inline bool RenderObject::GetCastShadow() const
 {
-    return m_castShadow;
+    return mCastShadow;
 }
 
 inline void RenderObject::SetCastShadow(bool castShadow)
 {
-    m_castShadow = castShadow;
+    mCastShadow = castShadow;
 }
 
 inline bool RenderObject::GetIsVisible() const
 {
-    return m_isVisible;
+    return mIsVisible;
 }
 
 inline void RenderObject::SetIsVisible(bool isVisible)
 {
-    m_isVisible = isVisible;
+    mIsVisible = isVisible;
 }
 
 inline const RenderObjectBufferLayout& RenderObject::GetBufferLayout(const PassName& passName)
 {
-    assert(m_renderObjectBuffers.count(passName) == 1);
-    return m_renderObjectBuffers.at(passName);
+    assert(mRenderObjectBuffers.count(passName) == 1);
+    return mRenderObjectBuffers.at(passName);
 }
 
 inline const TextureSet& RenderObject::GetTextureSet(const PassName& passName)
 {
-    assert(m_textureSets.count(passName) == 1);
-    return m_textureSets.at(passName);
+    assert(mTextureSets.count(passName) == 1);
+    return mTextureSets.at(passName);
 }
 
 inline const std::unordered_map<PassName, RenderObjectBufferLayout>& RenderObject::GetBuffersLayouts() const
 {
-    return m_renderObjectBuffers;
+    return mRenderObjectBuffers;
 }
 
 inline std::unordered_map<PassName, RenderObjectBufferLayout>& RenderObject::GetBuffersLayouts()
 {
-    return m_renderObjectBuffers;
+    return mRenderObjectBuffers;
 }
 
 
 template <typename T>
 inline void RenderObject::SetConstant(const std::string& passName, const std::string& cName, T constant)
 {
-    if (!m_renderObjectConstants.count(passName))
+    if (!mRenderObjectConstants.count(passName))
     {
         assert(false);
         return;
     }
-    RenderObjectConstants& constants = m_renderObjectConstants[passName];
+    RenderObjectConstants& constants = mRenderObjectConstants[passName];
     auto c = std::find_if(constants.begin(), constants.end(), [&cName](const UniformConstant& c) { return c.GetName() == cName; });
     if (c == constants.end())
     {

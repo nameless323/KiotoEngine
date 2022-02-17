@@ -20,12 +20,12 @@ public:
     ID3D12Resource* GetBuffer() const;
 
 private:
-    Microsoft::WRL::ComPtr<ID3D12Resource> m_buffer;
-    Microsoft::WRL::ComPtr<ID3D12Resource> m_uploadBuffer; // [a_vorontcov] TODO:: Check if command list was executed and release ptr. But maybe its not nessesary.
+    Microsoft::WRL::ComPtr<ID3D12Resource> mBuffer;
+    Microsoft::WRL::ComPtr<ID3D12Resource> mUploadBuffer; // [a_vorontcov] TODO:: Check if command list was executed and release ptr. But maybe its not nessesary.
 };
 
 inline ID3D12Resource* DefaultHeapBuffer::GetBuffer() const
 {
-    return m_buffer.Get();
+    return mBuffer.Get();
 }
 }

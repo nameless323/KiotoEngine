@@ -7,15 +7,15 @@ namespace Kioto::Renderer
 {
 VertexBufferDX12::VertexBufferDX12(const byte* vertexData, uint32 vertexDataSize, uint32 vertexStride, ID3D12GraphicsCommandList* commandList, ID3D12Device* device)
 {
-    m_buffer = new DefaultHeapBuffer(vertexData, vertexDataSize, commandList, device, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+    mBuffer = new DefaultHeapBuffer(vertexData, vertexDataSize, commandList, device, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 
-    m_vertexBufferView.BufferLocation = m_buffer->GetBuffer()->GetGPUVirtualAddress();
-    m_vertexBufferView.StrideInBytes = vertexStride;
-    m_vertexBufferView.SizeInBytes = vertexDataSize;
+    mVertexBufferView.BufferLocation = mBuffer->GetBuffer()->GetGPUVirtualAddress();
+    mVertexBufferView.StrideInBytes = vertexStride;
+    mVertexBufferView.SizeInBytes = vertexDataSize;
 }
 
 VertexBufferDX12::~VertexBufferDX12()
 {
-    SafeDelete(m_buffer);
+    SafeDelete(mBuffer);
 }
 }

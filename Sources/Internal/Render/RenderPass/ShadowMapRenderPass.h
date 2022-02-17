@@ -20,7 +20,7 @@ private:
     void SetRenderTargets(CommandList* commandList, ResourceTable& resources) override;
     Matrix4 BuildDepthVPMatrix(Light* light);
 
-    Mesh* m_debugQuad = nullptr;
-    int32 m_shadowmapSize = 1024;
+    Mesh* mDebugQuad = nullptr;
+    int32 mShadowmapSize = 1024;
 };
 }

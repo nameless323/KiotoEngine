@@ -48,50 +48,50 @@ public:
     void Reset();
 
 private:
-    TimePoint m_start;
-    TimePoint m_end;
-    std::vector<TimePoint> m_timestamps;
-    float64 m_delta = 0;
+    TimePoint mStart;
+    TimePoint mEnd;
+    std::vector<TimePoint> mTimestamps;
+    float64 mDelta = 0;
 };
 
 inline PerformanceTimer::PerformanceTimer()
 {
-    m_timestamps.reserve(32);
-    m_start = m_end = SteadyClock::now();
+    mTimestamps.reserve(32);
+    mStart = mEnd = SteadyClock::now();
 }
 
 inline void PerformanceTimer::Start()
 {
-    m_start = m_end = SteadyClock::now();
+    mStart = mEnd = SteadyClock::now();
 }
 
 inline void PerformanceTimer::Stop()
 {
-    m_end = SteadyClock::now();
-    m_delta = Duration<std::milli>(m_end - m_start).count();
+    mEnd = SteadyClock::now();
+    mDelta = Duration<std::milli>(mEnd - mStart).count();
 }
 
 inline void PerformanceTimer::Lap()
 {
-    m_timestamps.emplace_back(std::chrono::steady_clock::now());
+    mTimestamps.emplace_back(std::chrono::steady_clock::now());
 }
 
 inline double PerformanceTimer::GetDeltaMs()
 {
-    return m_delta;
+    return mDelta;
 }
 
 inline std::vector<float64> PerformanceTimer::GetLaps()
 {
     std::vector<float64> res;
-    for (const auto& e : m_timestamps)
-        res.emplace_back(Duration<std::milli>(e - m_start).count());
+    for (const auto& e : mTimestamps)
+        res.emplace_back(Duration<std::milli>(e - mStart).count());
     return res;
 }
 
 inline void PerformanceTimer::Reset()
 {
-    m_timestamps.clear();
-    m_start = m_end = SteadyClock::now();
+    mTimestamps.clear();
+    mStart = mEnd = SteadyClock::now();
 }
 }

@@ -16,7 +16,7 @@ class RingArray
 {
 public:
     template <typename... T>
-    RingArray(T&&... args) : m_buffer({ std::forward<T>(args)... })
+    RingArray(T&&... args) : mBuffer({ std::forward<T>(args)... })
     {
         RecalculateSum();
     }
@@ -28,8 +28,8 @@ public:
 
     RingArray(const RingArray<T, ContainerSize>& rhs) : RingArray()
     {
-        m_buffer = rhs.m_buffer;
-        m_sum = rhs.m_sum;
+        mBuffer = rhs.mBuffer;
+        mSum = rhs.mSum;
     }
 
     RingArray(RingArray<T, ContainerSize>&& rhs) : RingArray()
@@ -47,72 +47,72 @@ public:
 
     void Reset()
     {
-        m_buffer = {};
-        m_sum = {};
+        mBuffer = {};
+        mSum = {};
     }
 
     template <typename U, typename = std::enable_if_t<std::is_convertible_v<T, std::remove_reference_t<U>>> >
     void Reset(U&& value)
     {
         if (value == U{})
-            m_valsAdded = 0;
-        m_buffer.fill(std::forward<const U>(value));
+            mValsAdded = 0;
+        mBuffer.fill(std::forward<const U>(value));
         RecalculateSum();
     }
 
     template <typename U, typename = std::enable_if_t<std::is_convertible_v<T, std::remove_reference_t<U>>> >
     void Add(U&& value)
     {
-        m_sum -= m_buffer[m_i];
-        m_buffer[m_i] = value;
-        m_sum += value;
-        m_i = ++m_i % m_buffer.size();
-        ++m_valsAdded;
+        mSum -= mBuffer[mI];
+        mBuffer[mI] = value;
+        mSum += value;
+        mI = ++mI % mBuffer.size();
+        ++mValsAdded;
     }
 
     T GetAverage()
     {
-        if (m_buffer.empty() || m_valsAdded == 0)
+        if (mBuffer.empty() || mValsAdded == 0)
             return {};
-        float32 valsToCount = static_cast<float32>(std::min<int32>(static_cast<uint32>(m_buffer.size()), m_valsAdded));
-        return static_cast<T>(m_sum * (1.0f / valsToCount)); // [a_vorontcov] 1.0f / valsToCount for cases when for T type div operation with scalar is undefined, but mul is well defined.
+        float32 valsToCount = static_cast<float32>(std::min<int32>(static_cast<uint32>(mBuffer.size()), mValsAdded));
+        return static_cast<T>(mSum * (1.0f / valsToCount)); // [a_vorontcov] 1.0f / valsToCount for cases when for T type div operation with scalar is undefined, but mul is well defined.
     }
 
     T GetMax(std::function<bool(const T&, const T&)> comparer = std::less<T>())
     {
-        return *std::max_element(std::begin(m_buffer), std::end(m_buffer), comparer);
+        return *std::max_element(std::begin(mBuffer), std::end(mBuffer), comparer);
     }
 
     T GetMin(std::function<bool(const T&, const T&)> comparer = std::less<T>())
     {
-        return *std::min_element(std::begin(m_buffer), std::end(m_buffer), comparer);
+        return *std::min_element(std::begin(mBuffer), std::end(mBuffer), comparer);
     }
 
     friend void swap(RingArray<T, ContainerSize>& rhs, RingArray<T, ContainerSize>& lhs)
     {
-        std::swap(rhs.m_sum, lhs.m_sum);
-        std::swap(rhs.m_i, lhs.m_i);
-        std::swap(rhs.m_valsAdded, lhs.m_valsAdded);
-        std::swap(rhs.m_buffer, lhs.m_buffer);
+        std::swap(rhs.mSum, lhs.mSum);
+        std::swap(rhs.mI, lhs.mI);
+        std::swap(rhs.mValsAdded, lhs.mValsAdded);
+        std::swap(rhs.mBuffer, lhs.mBuffer);
     }
 
 private:
-    inline void RecalculateSum();
+    void RecalculateSum();
 
-    std::array<T, ContainerSize> m_buffer = {};
-    uint32 m_i = 0;
-    uint32 m_valsAdded = 0;
-    T m_sum = {};
+    std::array<T, ContainerSize> mBuffer = {};
+    uint32 mI = 0;
+    uint32 mValsAdded = 0;
+    T mSum = {};
 };
 
 template <typename T, size_t ContainerSize>
 void RingArray<T, ContainerSize>::RecalculateSum()
 {
-    m_sum = {};
-    m_i = 0;
-    for (auto& i : m_buffer)
+    mSum = {};
+    mI = 0;
+    for (auto& i : mBuffer)
     {
-        m_sum += i;
+        mSum += i;
     }
 }
 }

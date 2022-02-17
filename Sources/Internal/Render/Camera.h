@@ -18,12 +18,12 @@ public:
 
     ConstantBufferHandle GetConstantBufferHandle() const
     {
-        return m_cameraBuffer.GetHandle();
+        return mCameraBuffer.GetHandle();
     }
 
     const ConstantBuffer& GetConstantBuffer() const
     {
-        return m_cameraBuffer;
+        return mCameraBuffer;
     }
 
     ///
@@ -120,7 +120,7 @@ public:
 
     bool GetIsProjectionDirty() const
     {
-        return m_isProjDirty;
+        return mIsProjDirty;
     }
 
     void UpdateProjectionMatrix();
@@ -136,211 +136,211 @@ private:
     void BuildProjectionInternal(float32 fovY, float32 aspect, float32 zNear, float32 zFar);
     void BuildOrthoInternal(float32 left, float32 right, float32 bottom, float32 top, float32 zNear, float32 zFar);
 
-    SInp::CbCamera m_cbCamera;
-    ConstantBuffer m_cameraBuffer; // [a_vorontcov] TODO: Really don't like it here.
+    SInp::CbCamera mCbCamera;
+    ConstantBuffer mCameraBuffer; // [a_vorontcov] TODO: Really don't like it here.
 
-    Matrix4 m_toWorld = Matrix4::Identity;
-    Matrix4 m_view = Matrix4::Identity;
-    Matrix4 m_projection = Matrix4::Identity;
-    Matrix4 m_VP = Matrix4::Identity;
-    bool m_isProjDirty = true;
-    float32 m_fovY = Math::DegToRad(60.0f);
-    float32 m_fovX = -1.0f;
-    float32 m_nearPlane = 0.01f;
-    float32 m_farPlane = 100.0f;
-    float32 m_nearPlaneHeight = 0.0f;
-    float32 m_farPlaneHeight = 0.0f;
+    Matrix4 mToWorld = Matrix4::Identity;
+    Matrix4 mView = Matrix4::Identity;
+    Matrix4 mProjection = Matrix4::Identity;
+    Matrix4 mVp = Matrix4::Identity;
+    bool mIsProjDirty = true;
+    float32 mFovY = Math::DegToRad(60.0f);
+    float32 mFovX = -1.0f;
+    float32 mNearPlane = 0.01f;
+    float32 mFarPlane = 100.0f;
+    float32 mNearPlaneHeight = 0.0f;
+    float32 mFarPlaneHeight = 0.0f;
 
     // [a_vorontcov] Merge the setting with perspective camera settings (m_<near | far>PlaneHeight for example)
     // but now this way it seems to be more controllable
-    float32 m_orthoWidth = 3.0f;
-    float32 m_orthoHeight = 3.0f;
+    float32 mOrthoWidth = 3.0f;
+    float32 mOrthoHeight = 3.0f;
 
-    float32 m_aspect = 1.0f;
-    bool m_isOrtho = false;
+    float32 mAspect = 1.0f;
+    bool mIsOrtho = false;
 };
 
 
 inline void Camera::SetToWorld(const Matrix4& toWorld)
 {
-    m_toWorld = toWorld;
+    mToWorld = toWorld;
 }
 
 
 inline void Camera::SetFovY(float32 fovY)
 {
-    m_fovY = fovY;
-    m_isProjDirty = true;
+    mFovY = fovY;
+    mIsProjDirty = true;
 }
 
 inline void Camera::SetFovYDeg(float32 fovY)
 {
-    m_fovY = Math::DegToRad(fovY);
-    m_isProjDirty = true;
+    mFovY = Math::DegToRad(fovY);
+    mIsProjDirty = true;
 }
 
 inline void Camera::SetNearPlane(float32 nearPlane)
 {
-    m_nearPlane = nearPlane;
-    m_isProjDirty = true;
+    mNearPlane = nearPlane;
+    mIsProjDirty = true;
 }
 
 inline void Camera::SetFarPlane(float32 farPlane)
 {
-    m_farPlane = farPlane;
-    m_isProjDirty = true;
+    mFarPlane = farPlane;
+    mIsProjDirty = true;
 }
 
 inline void Camera::SetAspect(float32 aspect)
 {
-    m_aspect = aspect;
-    m_isProjDirty = true;
+    mAspect = aspect;
+    mIsProjDirty = true;
 }
 
 inline void Camera::SetOrthographic(bool ortho)
 {
-    m_isOrtho = ortho;
-    m_isProjDirty = true;
+    mIsOrtho = ortho;
+    mIsProjDirty = true;
 }
 
 inline float32 Camera::GetFovY() const
 {
-    return m_fovY;
+    return mFovY;
 }
 
 inline float32 Camera::GetNearPlane() const
 {
-    return m_nearPlane;
+    return mNearPlane;
 }
 
 inline float32 Camera::GetFarPlane() const
 {
-    return m_farPlane;
+    return mFarPlane;
 }
 
 inline float32 Camera::GetAspect() const
 {
-    return m_aspect;
+    return mAspect;
 }
 
 inline bool Camera::GetOrthographic() const
 {
-    return m_isOrtho;
+    return mIsOrtho;
 }
 
 inline float32 Camera::GetOrthoHeight() const
 {
-    return m_orthoHeight;
+    return mOrthoHeight;
 }
 
 inline void Camera::SetOrthoHeight(float32 h)
 {
-    m_orthoHeight = h;
-    m_isProjDirty = true;
+    mOrthoHeight = h;
+    mIsProjDirty = true;
 }
 
 inline float32 Camera::GetOrthoWidth() const
 {
-    return m_orthoWidth;
+    return mOrthoWidth;
 }
 
 inline void Camera::SetOrthoWidth(float32 w)
 {
-    m_orthoWidth = w;
-    m_isProjDirty = true;
+    mOrthoWidth = w;
+    mIsProjDirty = true;
 }
 
 inline float32 Camera::GetNearPlaneHeight() const
 {
-    return m_nearPlane;
+    return mNearPlane;
 }
 inline float32 Camera::GetFarPlaneHeight() const
 {
-    return m_farPlane;
+    return mFarPlane;
 }
 
 inline Matrix4 Camera::GetView() const
 {
-    return m_view;
+    return mView;
 }
 
 inline Matrix4 Camera::GetProjection() const
 {
-    return m_projection;
+    return mProjection;
 }
 
 inline Matrix4 Camera::GetVP() const
 {
-    return m_VP;
+    return mVp;
 }
 
 inline Matrix4 Camera::GetToWorld() const
 {
-    return m_toWorld;
+    return mToWorld;
 }
 
 inline void Camera::UpdateProjectionMatrix()
 {
-    if (!m_isOrtho)
+    if (!mIsOrtho)
     {
-        BuildProjectionInternal(m_fovY, m_aspect, m_nearPlane, m_farPlane);
+        BuildProjectionInternal(mFovY, mAspect, mNearPlane, mFarPlane);
     }
     else
     {
-        assert(m_orthoHeight > 0.0f && m_orthoWidth > 0.0f && "Invalid params for an ortho camera");
-        float32 halfHeight = m_orthoHeight * 0.5f;
-        float32 halfWidth = m_orthoWidth * 0.5f;
-        BuildOrthoInternal(-halfWidth, halfWidth, -halfHeight, halfHeight, m_nearPlane, m_farPlane);
+        assert(mOrthoHeight > 0.0f && mOrthoWidth > 0.0f && "Invalid params for an ortho camera");
+        float32 halfHeight = mOrthoHeight * 0.5f;
+        float32 halfWidth = mOrthoWidth * 0.5f;
+        BuildOrthoInternal(-halfWidth, halfWidth, -halfHeight, halfHeight, mNearPlane, mFarPlane);
     }
 }
 
 inline void Camera::UpdateViewProjectionMatrix()
 {
-    m_VP = m_view * m_projection;
+    mVp = mView * mProjection;
 }
 
 inline void Camera::SetView(const Matrix4& view)
 {
-    m_view = view;
+    mView = view;
 }
 
 inline void Camera::BuildProjection(float32 fovY, float32 aspect, float32 zNear, float32 zFar)
 {
-    m_fovY = fovY;
-    m_nearPlane = zNear;
-    m_farPlane = zFar;
-    m_aspect = aspect;
+    mFovY = fovY;
+    mNearPlane = zNear;
+    mFarPlane = zFar;
+    mAspect = aspect;
 
-    BuildProjectionInternal(m_fovY, m_aspect, m_nearPlane, m_farPlane);
+    BuildProjectionInternal(mFovY, mAspect, mNearPlane, mFarPlane);
 }
 
 inline void Camera::BuildOrtho(float32 left, float32 right, float32 bottom, float32 top, float32 zNear, float32 zFar)
 {
-    m_orthoWidth = left * 2;
-    m_orthoHeight = top * 2;
-    m_nearPlane = zNear;
-    m_farPlane = zFar;
+    mOrthoWidth = left * 2;
+    mOrthoHeight = top * 2;
+    mNearPlane = zNear;
+    mFarPlane = zFar;
 
     BuildOrthoInternal(left, right, bottom, top, zNear, zFar);
 }
 
 inline void Camera::BuildProjectionInternal(float32 fovY, float32 aspect, float32 zNear, float32 zFar)
 {
-    m_nearPlaneHeight = 2.0f * m_nearPlane * std::tan(0.5f * m_fovY);
-    m_farPlaneHeight = 2.0f * m_farPlane * std::tan(0.5f * m_fovY);
+    mNearPlaneHeight = 2.0f * mNearPlane * std::tan(0.5f * mFovY);
+    mFarPlaneHeight = 2.0f * mFarPlane * std::tan(0.5f * mFovY);
 
-    float32 halfWidth = 0.5f * m_aspect * m_nearPlaneHeight;
-    m_fovX = 2.0f * atan(halfWidth / m_nearPlane);
+    float32 halfWidth = 0.5f * mAspect * mNearPlaneHeight;
+    mFovX = 2.0f * atan(halfWidth / mNearPlane);
 
-    m_projection = Matrix4::BuildProjectionFov(GetFovY(), GetAspect(), GetNearPlane(), GetFarPlane());
+    mProjection = Matrix4::BuildProjectionFov(GetFovY(), GetAspect(), GetNearPlane(), GetFarPlane());
 
-    m_isProjDirty = false;
+    mIsProjDirty = false;
 }
 
 inline void Camera::BuildOrthoInternal(float32 left, float32 right, float32 bottom, float32 top, float32 zNear, float32 zFar)
 {
-    m_projection = Matrix4::BuildOrtho(left, right, bottom, top, zNear, zFar);
+    mProjection = Matrix4::BuildOrtho(left, right, bottom, top, zNear, zFar);
 
-    m_isProjDirty = false;
+    mIsProjDirty = false;
 }
 }

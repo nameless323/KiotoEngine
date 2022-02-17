@@ -15,10 +15,10 @@ namespace Kioto::Renderer
 {
 void TextureDX12::Create(ID3D12Device* device, ID3D12GraphicsCommandList* commandList)
 {
-    if (m_fromMemoryAsset)
+    if (mFromMemoryAsset)
     {
         CreateFromDescriptor(device, commandList);
-        SetName(Resource.Get(), Kioto::StrToWstr(m_descriptor.Name).c_str());
+        SetName(Resource.Get(), Kioto::StrToWstr(mDescriptor.Name).c_str());
     }
     else
     {
@@ -31,45 +31,45 @@ void TextureDX12::CreateFromFile(ID3D12Device* device, ID3D12GraphicsCommandList
 {
     HRESULT texRes = DirectX::CreateDDSTextureFromFile12(device, commandList, Path.c_str(), Resource, UploadResource);
     ThrowIfFailed(texRes);
-    m_currentState = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+    mCurrentState = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 }
 
 void TextureDX12::CreateFromDescriptor(ID3D12Device* device, ID3D12GraphicsCommandList* commandList)
 {
 #ifdef _DEBUG
-    if (!m_isDescriptorInitialized)
+    if (!mIsDescriptorInitialized)
         assert("Initialize texture descriptor before creating the texture with the descriptor" && false);
 #endif
     D3D12_RESOURCE_DESC textureDesc = {};
     textureDesc.MipLevels = 1;
-    textureDesc.Format = KiotoDx12Mapping::ResourceFormats[m_descriptor.Format];
-    textureDesc.Width = m_descriptor.Width;
-    textureDesc.Height = m_descriptor.Height;
+    textureDesc.Format = KiotoDx12Mapping::ResourceFormats[mDescriptor.Format];
+    textureDesc.Width = mDescriptor.Width;
+    textureDesc.Height = mDescriptor.Height;
 
     for (const auto& flag : FlagsArray)
     {
-        if (((uint16)m_descriptor.Flags & (uint16)flag) != 0)
-            m_textureFlags |= KiotoDx12Mapping::ResourceFlags[m_descriptor.Flags];
+        if (((uint16)mDescriptor.Flags & (uint16)flag) != 0)
+            mTextureFlags |= KiotoDx12Mapping::ResourceFlags[mDescriptor.Flags];
     }
-    textureDesc.Flags = m_textureFlags;
+    textureDesc.Flags = mTextureFlags;
     textureDesc.DepthOrArraySize = 1;
     textureDesc.SampleDesc.Count = 1;
     textureDesc.SampleDesc.Quality = 0;
-    textureDesc.Dimension = KiotoDx12Mapping::ResourceDimensions[m_descriptor.Dimension];
+    textureDesc.Dimension = KiotoDx12Mapping::ResourceDimensions[mDescriptor.Dimension];
 
     D3D12_CLEAR_VALUE clearValue;
-    if (m_descriptor.FastClear)
+    if (mDescriptor.FastClear)
     {
         clearValue.Format = textureDesc.Format;
         if ((textureDesc.Flags & D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL) != 0)
         {
             clearValue.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; // todo: [a_vorontcov] Again kinda hackish
-            Vector2 depthStencilClear = std::get<Vector2>(m_descriptor.FastClearValue);
+            Vector2 depthStencilClear = std::get<Vector2>(mDescriptor.FastClearValue);
             clearValue.DepthStencil.Depth = depthStencilClear.x;
             clearValue.DepthStencil.Stencil = static_cast<uint8>(depthStencilClear.y);
         }
         else
-            memcpy(clearValue.Color, std::get<Color>(m_descriptor.FastClearValue).data, sizeof(float32) * 4);
+            memcpy(clearValue.Color, std::get<Color>(mDescriptor.FastClearValue).data, sizeof(float32) * 4);
     }
 
     auto defaultHeapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
@@ -78,9 +78,9 @@ void TextureDX12::CreateFromDescriptor(ID3D12Device* device, ID3D12GraphicsComma
         D3D12_HEAP_FLAG_NONE,
         &textureDesc,
         D3D12_RESOURCE_STATE_COPY_DEST,
-        m_descriptor.FastClear ? &clearValue : nullptr,
+        mDescriptor.FastClear ? &clearValue : nullptr,
         IID_PPV_ARGS(&Resource)));
-    m_currentState = D3D12_RESOURCE_STATE_COPY_DEST;
+    mCurrentState = D3D12_RESOURCE_STATE_COPY_DEST;
 }
 
 }

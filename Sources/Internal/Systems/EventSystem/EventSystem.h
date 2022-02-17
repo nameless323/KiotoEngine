@@ -63,9 +63,9 @@ public:
     static EventCallback MakeCallback(T* context);
 
 private:
-    uint32 m_index = 0;
-    std::function<void(EventPtr)> m_callback;
-    static uint32 m_currentIndex;
+    uint32 mIndex = 0;
+    std::function<void(EventPtr)> mCallback;
+    static uint32 mCurrentIndex;
 
     friend void swap(EventCallback& e1, EventCallback& e2);
 };
@@ -106,27 +106,27 @@ private:
     {
     public:
         CallbackWrapper(EventCallback callback, void* context)
-            : m_callback(callback), m_context(context)
+            : mCallback(callback), mContext(context)
         {}
         void operator()(EventPtr e)
         {
-            m_callback(e);
+            mCallback(e);
         }
         const EventCallback& GetCallback() const
         {
-            return m_callback;
+            return mCallback;
         }
         void* GetContext() const
         {
-            return m_context;
+            return mContext;
         }
 
     private:
-        EventCallback m_callback;
-        void* m_context = nullptr;
+        EventCallback mCallback;
+        void* mContext = nullptr;
     };
 
-    std::map<EventType, std::vector<CallbackWrapper>> m_events; // [a_vorontcov] TODO: test on big amount of events for memory and performance. Maybe unordered map will be faster.
+    std::map<EventType, std::vector<CallbackWrapper>> mEvents; // [a_vorontcov] TODO: test on big amount of events for memory and performance. Maybe unordered map will be faster.
 };
 
 template <typename T, void(T::* callback)(EventPtr)>
@@ -138,8 +138,8 @@ static EventCallback EventCallback::MakeCallback(T* context)
 inline void swap(EventCallback& e1, EventCallback& e2)
 {
     using namespace std;
-    std::swap(e1.m_index, e2.m_index);
-    swap(e1.m_callback, e2.m_callback);
+    std::swap(e1.mIndex, e2.mIndex);
+    swap(e1.mCallback, e2.mCallback);
 }
 
 template <typename EvType, typename>

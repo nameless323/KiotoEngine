@@ -17,7 +17,7 @@ public:
     const std::vector<ShaderDX12>* GetDxShaders(ShaderHandle handle) const;
 
 private:
-    std::map<ShaderHandle, std::vector<ShaderDX12>> m_shaders;
+    std::map<ShaderHandle, std::vector<ShaderDX12>> mShaders;
 
     ShaderDX12 CompileDXShader(const Shader& shader, const std::string& entryName, const std::string& shaderModel);
 

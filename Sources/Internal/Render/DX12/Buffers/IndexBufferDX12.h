@@ -25,17 +25,17 @@ public:
     const D3D12_INDEX_BUFFER_VIEW& GetIndexBufferView() const;
 
 private:
-    DefaultHeapBuffer* m_buffer = nullptr;
-    D3D12_INDEX_BUFFER_VIEW m_indexBufferView{};
+    DefaultHeapBuffer* mBuffer = nullptr;
+    D3D12_INDEX_BUFFER_VIEW mIndexBufferView{};
 };
 
 inline const D3D12_INDEX_BUFFER_VIEW& IndexBufferDX12::GetIndexBufferView() const
 {
-    return m_indexBufferView;
+    return mIndexBufferView;
 }
 
 inline ID3D12Resource* IndexBufferDX12::GetIndexBuffer() const
 {
-    return m_buffer->GetBuffer();
+    return mBuffer->GetBuffer();
 }
 }

@@ -60,15 +60,15 @@ protected:
     virtual void SetEntity(Entity* entity);
 
 private:
-    Entity* m_entity = nullptr;
-    bool m_isEnabled = true;
+    Entity* mEntity = nullptr;
+    bool mIsEnabled = true;
 
     friend class Entity;
 };
 
 inline Entity* Component::GetEntity() const
 {
-    return m_entity;
+    return mEntity;
 }
 
 inline uint64 Component::GetType() const
@@ -83,11 +83,11 @@ inline const std::string& Component::GetTypeName() const
 
 inline bool Component::GetIsEnabled() const
 {
-    return m_isEnabled;
+    return mIsEnabled;
 }
 
 inline void Component::SetIsEnabled(bool enabled)
 {
-    m_isEnabled = enabled;
+    mIsEnabled = enabled;
 }
 }

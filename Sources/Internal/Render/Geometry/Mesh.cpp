@@ -21,13 +21,13 @@ Mesh::Mesh(const std::string& path)
 
 Mesh::Mesh(const Mesh& other)
     : Asset(other.GetAssetPath())
-    , m_vertexData(other.m_vertexData)
-    , m_vertexDataSize(other.m_vertexDataSize)
-    , m_indexData(other.m_indexData)
-    , m_indexDataSize(other.m_indexDataSize)
-    , m_vertexCount(other.m_vertexCount)
-    , m_indexCount(other.m_indexCount)
-    , m_layout(other.m_layout)
+    , mVertexData(other.mVertexData)
+    , mVertexDataSize(other.mVertexDataSize)
+    , mIndexData(other.mIndexData)
+    , mIndexDataSize(other.mIndexDataSize)
+    , mVertexCount(other.mVertexCount)
+    , mIndexCount(other.mIndexCount)
+    , mLayout(other.mLayout)
 {
 }
 
@@ -39,79 +39,79 @@ Mesh::Mesh(Mesh&& other)
 
 Mesh::~Mesh()
 {
-    SafeDelete(m_vertexData);
-    SafeDelete(m_indexData);
+    SafeDelete(mVertexData);
+    SafeDelete(mIndexData);
 }
 
 void Mesh::InitFromLayout(Renderer::VertexLayout layout, uint32 vertexCount, uint32 indexCount)
 {
-    m_vertexCount = vertexCount;
-    m_indexCount = indexCount;
-    swap(m_layout, layout);
+    mVertexCount = vertexCount;
+    mIndexCount = indexCount;
+    swap(mLayout, layout);
 
-    SafeDelete(m_vertexData);
-    m_vertexDataSize = m_layout.GetVertexStride() * vertexCount;
+    SafeDelete(mVertexData);
+    mVertexDataSize = mLayout.GetVertexStride() * vertexCount;
 
-    SafeDelete(m_indexData);
-    m_indexDataSize = indexCount * sizeof(uint32);
+    SafeDelete(mIndexData);
+    mIndexDataSize = indexCount * sizeof(uint32);
 
-    m_vertexData = new byte[m_vertexDataSize];
-    m_indexData = new byte[m_indexDataSize];
+    mVertexData = new byte[mVertexDataSize];
+    mIndexData = new byte[mIndexDataSize];
 }
 
 void Mesh::FromIntermediateMesh(const IntermediateMesh& iMesh)
 {
-    SafeDelete(m_vertexData);
-    SafeDelete(m_indexData);
+    SafeDelete(mVertexData);
+    SafeDelete(mIndexData);
 
-    m_layout.Clear();
+    mLayout.Clear();
 
-    m_indexCount = static_cast<uint32>(iMesh.Indices.size());
-    m_vertexCount = static_cast<uint32>(iMesh.Vertices.size());
+    mIndexCount = static_cast<uint32>(iMesh.Indices.size());
+    mVertexCount = static_cast<uint32>(iMesh.Vertices.size());
 
     LayoutFromIntermediateMesh(iMesh);
-    m_vertexDataSize = m_layout.GetVertexStride() * m_vertexCount;
-    m_indexDataSize = m_indexCount * sizeof(uint32);
+    mVertexDataSize = mLayout.GetVertexStride() * mVertexCount;
+    mIndexDataSize = mIndexCount * sizeof(uint32);
 
-    m_vertexData = new byte[m_vertexDataSize];
-    m_indexData = new byte[m_indexDataSize];
+    mVertexData = new byte[mVertexDataSize];
+    mIndexData = new byte[mIndexDataSize];
 
-    for (uint32 i = 0; i < m_indexCount; ++i)
+    for (uint32 i = 0; i < mIndexCount; ++i)
         *GetIndexPtr(i) = iMesh.Indices[i];
 
-    uint32 elemCount = m_layout.GetElementsCount();
+    uint32 elemCount = mLayout.GetElementsCount();
     for (uint32 vElem = 0; vElem < elemCount; vElem++)
     {
-        if (m_layout.GetElement(vElem).Semantic == Renderer::eVertexSemantic::Position)
+        if (mLayout.GetElement(vElem).Semantic == Renderer::eVertexSemantic::Position)
         {
-            for (uint32 i = 0; i < m_vertexCount; ++i)
+            for (uint32 i = 0; i < mVertexCount; ++i)
                 *GetPositionPtr(i) = iMesh.Vertices[i].Pos.GetVec3();
         }
-        else if (m_layout.GetElement(vElem).Semantic == Renderer::eVertexSemantic::Normal)
+        else if (mLayout.GetElement(vElem).Semantic == Renderer::eVertexSemantic::Normal)
         {
-            for (uint32 i = 0; i < m_vertexCount; ++i)
+            for (uint32 i = 0; i < mVertexCount; ++i)
                 *GetNormalPtr(i) = iMesh.Vertices[i].Norm.GetVec3();
         }
-        else if (m_layout.GetElement(vElem).Semantic == Renderer::eVertexSemantic::Tangent)
+        else if (mLayout.GetElement(vElem).Semantic == Renderer::eVertexSemantic::Tangent)
         {
-            for (uint32 i = 0; i < m_vertexCount; ++i)
+            for (uint32 i = 0; i < mVertexCount; ++i)
                 *GetVertexElementPtr<Vector3>(i, Renderer::eVertexSemantic::Tangent, 0) = iMesh.Vertices[i].Tangent.GetVec3();
         }
-        else if (m_layout.GetElement(vElem).Semantic == Renderer::eVertexSemantic::Bitangent)
+        else if (mLayout.GetElement(vElem).Semantic == Renderer::eVertexSemantic::Bitangent)
         {
-            for (uint32 i = 0; i < m_vertexCount; ++i)
+            for (uint32 i = 0; i < mVertexCount; ++i)
                 *GetVertexElementPtr<Vector3>(i, Renderer::eVertexSemantic::Bitangent, 0) = iMesh.Vertices[i].Bitangent.GetVec3();
         }
-        else if (const Renderer::SemanticDesc& desc = m_layout.GetElement(vElem); desc.Semantic == Renderer::eVertexSemantic::Texcoord)
+        else if (const Renderer::SemanticDesc& desc = mLayout.GetElement(vElem); desc.Semantic == Renderer::eVertexSemantic::Texcoord)
         {
             uint32 texSemIndex = desc.SemanticIndex;
-            for (uint32 i = 0; i < m_vertexCount; ++i)
+            for (uint32 i = 0; i < mVertexCount; ++i)
                 *GetVertexElementPtr<Vector2>(i, Renderer::eVertexSemantic::Texcoord, texSemIndex) = iMesh.Vertices[i].Uv[texSemIndex];
         }
-        else if (const Renderer::SemanticDesc& desc = m_layout.GetElement(vElem); desc.Semantic == Renderer::eVertexSemantic::Color)
+        else if (const Renderer::SemanticDesc& desc = mLayout.GetElement(vElem); desc.Semantic == Renderer::eVertexSemantic::Color)
         {
             uint32 texSemIndex = desc.SemanticIndex;
-            for (uint32 i = 0; i < m_vertexCount; ++i)
+            for (uint32 i = 0; i < mVertexCount; ++i)
                 *GetVertexElementPtr<Vector4>(i, Renderer::eVertexSemantic::Color, texSemIndex) = iMesh.Vertices[i].Color[texSemIndex];
         }
     }
@@ -119,23 +119,23 @@ void Mesh::FromIntermediateMesh(const IntermediateMesh& iMesh)
 
 void Mesh::LayoutFromIntermediateMesh(const IntermediateMesh& iMesh)
 {
-    m_layout.AddElement(Renderer::eVertexSemantic::Position, 0, Renderer::eDataFormat::R8_G8_B8);
+    mLayout.AddElement(Renderer::eVertexSemantic::Position, 0, Renderer::eDataFormat::R8_G8_B8);
     if ((iMesh.LayoutMask & IntermediateMesh::Normal) != 0)
-        m_layout.AddElement(Renderer::eVertexSemantic::Normal, 0, Renderer::eDataFormat::R8_G8_B8);
+        mLayout.AddElement(Renderer::eVertexSemantic::Normal, 0, Renderer::eDataFormat::R8_G8_B8);
     if ((iMesh.LayoutMask & IntermediateMesh::Tanget) != 0)
-        m_layout.AddElement(Renderer::eVertexSemantic::Tangent, 0, Renderer::eDataFormat::R8_G8_B8);
+        mLayout.AddElement(Renderer::eVertexSemantic::Tangent, 0, Renderer::eDataFormat::R8_G8_B8);
     if ((iMesh.LayoutMask & IntermediateMesh::Bitangent) != 0)
-        m_layout.AddElement(Renderer::eVertexSemantic::Bitangent, 0, Renderer::eDataFormat::R8_G8_B8);
+        mLayout.AddElement(Renderer::eVertexSemantic::Bitangent, 0, Renderer::eDataFormat::R8_G8_B8);
 
     for (uint32 uvSemIndex = 0; uvSemIndex < MaxTexcoordCount; ++uvSemIndex)
     {
         if ((iMesh.LayoutMask & (IntermediateMesh::UV0 << uvSemIndex)) != 0)
-            m_layout.AddElement(Renderer::eVertexSemantic::Texcoord, uvSemIndex, Renderer::eDataFormat::R8_G8);
+            mLayout.AddElement(Renderer::eVertexSemantic::Texcoord, uvSemIndex, Renderer::eDataFormat::R8_G8);
     }
     for (uint32 colSemIndex = 0; colSemIndex < MaxTexcoordCount; ++colSemIndex)
     {
         if ((iMesh.LayoutMask & (IntermediateMesh::Color0 << colSemIndex)) != 0)
-            m_layout.AddElement(Renderer::eVertexSemantic::Color, colSemIndex, Renderer::eDataFormat::R8_G8_B8_A8);
+            mLayout.AddElement(Renderer::eVertexSemantic::Color, colSemIndex, Renderer::eDataFormat::R8_G8_B8_A8);
     }
 }
 

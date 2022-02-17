@@ -36,12 +36,12 @@ public:
     bool GetNeedUpdatable() const;
 
 private:
-    bool m_updatable = true;
+    bool mUpdatable = true;
 };
 
 inline bool SceneSystem::GetNeedUpdatable() const
 {
-    return m_updatable;
+    return mUpdatable;
 }
 
 inline void SceneSystem::Init()

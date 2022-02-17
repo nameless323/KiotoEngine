@@ -55,7 +55,7 @@ RendererDX12::RendererDX12()
 
 void RendererDX12::Init(uint16 width, uint16 height)
 {
-    m_frameCommands.reserve(4096);
+    mFrameCommands.reserve(4096);
 
     UINT dxgiFactoryFlags = 0;
 #ifdef _DEBUG
@@ -68,58 +68,58 @@ void RendererDX12::Init(uint16 width, uint16 height)
         }
     }
 #endif
-    ThrowIfFailed(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&m_state.Factory)));
+    ThrowIfFailed(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&mState.Factory)));
 
     BOOL allowTearing = FALSE;
     ComPtr<IDXGIFactory5> factory5;
-    ThrowIfFailed(m_state.Factory.As(&factory5));
+    ThrowIfFailed(mState.Factory.As(&factory5));
     HRESULT hr = factory5->CheckFeatureSupport(DXGI_FEATURE_PRESENT_ALLOW_TEARING, &allowTearing, sizeof(allowTearing));
-    m_isTearingSupported = SUCCEEDED(hr) && allowTearing;
+    mIsTearingSupported = SUCCEEDED(hr) && allowTearing;
 
     ComPtr<IDXGIAdapter1> hardwareAdapter;
-    GetHardwareAdapter(m_state.Factory.Get(), &hardwareAdapter);
+    GetHardwareAdapter(mState.Factory.Get(), &hardwareAdapter);
 
-    ThrowIfFailed(D3D12CreateDevice(hardwareAdapter.Get(), D3D_FEATURE_LEVEL_12_1, IID_PPV_ARGS(&m_state.Device)));
+    ThrowIfFailed(D3D12CreateDevice(hardwareAdapter.Get(), D3D_FEATURE_LEVEL_12_1, IID_PPV_ARGS(&mState.Device)));
 
     D3D12_FEATURE_DATA_D3D12_OPTIONS options;
-    m_state.Device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS, &options, sizeof(D3D12_FEATURE_DATA_D3D12_OPTIONS));
+    mState.Device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS, &options, sizeof(D3D12_FEATURE_DATA_D3D12_OPTIONS));
 
     D3D12_COMMAND_QUEUE_DESC queueDesc = {};
     queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
     queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 
-    ThrowIfFailed(m_state.Device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&m_state.CommandQueue)));
-    NAME_D3D12_OBJECT(m_state.CommandQueue);
+    ThrowIfFailed(mState.Device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&mState.CommandQueue)));
+    NAME_D3D12_OBJECT(mState.CommandQueue);
 
-    m_swapChain.Init(m_state, m_isTearingSupported, width, height);
+    mSwapChain.Init(mState, mIsTearingSupported, width, height);
     for (uint8 i = 0; i < StateDX::FrameCount; ++i)
-        m_textureManager.RegisterTextureWithoutOwnership(m_swapChain.GetBackBuffer(i));
-    m_textureManager.RegisterTextureWithoutOwnership(m_swapChain.GetDepthStencil());
+        mTextureManager.RegisterTextureWithoutOwnership(mSwapChain.GetBackBuffer(i));
+    mTextureManager.RegisterTextureWithoutOwnership(mSwapChain.GetDepthStencil());
 
     for (uint32 i = 0; i < StateDX::FrameCount; ++i)
     {
-        ThrowIfFailed(m_state.Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_state.CommandAllocators[i])));
-        NAME_D3D12_OBJECT(m_state.CommandAllocators[i]);
+        ThrowIfFailed(mState.Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&mState.CommandAllocators[i])));
+        NAME_D3D12_OBJECT(mState.CommandAllocators[i]);
     }
-    ThrowIfFailed(m_state.Device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_state.CommandAllocators[0].Get(), nullptr, IID_PPV_ARGS(&m_state.CommandList))); // [a_vorontcov] Maybe not 0 as mask?
-    NAME_D3D12_OBJECT(m_state.CommandList);
-    m_state.CommandList->Close();
+    ThrowIfFailed(mState.Device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, mState.CommandAllocators[0].Get(), nullptr, IID_PPV_ARGS(&mState.CommandList))); // [a_vorontcov] Maybe not 0 as mask?
+    NAME_D3D12_OBJECT(mState.CommandList);
+    mState.CommandList->Close();
 
-    ThrowIfFailed(m_state.Device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_state.Fence)));
-    NAME_D3D12_OBJECT(m_state.Fence);
+    ThrowIfFailed(mState.Device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&mState.Fence)));
+    NAME_D3D12_OBJECT(mState.Fence);
 
-    m_state.CbvSrvUavDescriptorSize = m_state.Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-    m_state.RtvDescriptorSize = m_state.Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-    m_state.DsvDescriptorSize = m_state.Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
-    m_state.SamplerDescriptorSize = m_state.Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
+    mState.CbvSrvUavDescriptorSize = mState.Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+    mState.RtvDescriptorSize = mState.Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+    mState.DsvDescriptorSize = mState.Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+    mState.SamplerDescriptorSize = mState.Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
 
     LoadPipeline();
     Resize(width, height);
 
     InitImGui();
 
-    m_textureManager.InitRtvHeap(m_state);
-    m_textureManager.InitDsvHeap(m_state);
+    mTextureManager.InitRtvHeap(mState);
+    mTextureManager.InitDsvHeap(mState);
 
 #if defined(_DEBUG) && defined(LOG_ADAPTERS)
     LogAdapters();
@@ -142,14 +142,14 @@ void RendererDX12::LoadPipeline()
 
 void RendererDX12::ResourceTransition(StateDX& dxState, TextureHandle resourceHandle, eResourceState destState)
 {
-    TextureDX12* tex = m_textureManager.FindTexture(resourceHandle);
+    TextureDX12* tex = mTextureManager.FindTexture(resourceHandle);
     D3D12_RESOURCE_STATES dxSrcState = tex->GetCurrentState();
     D3D12_RESOURCE_STATES dxDstState = KiotoDx12Mapping::ResourceStates[destState];
     if (dxSrcState == dxDstState)
         return;
 
     auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(tex->Resource.Get(), dxSrcState, dxDstState);
-    m_state.CommandList->ResourceBarrier(1, &barrier);
+    mState.CommandList->ResourceBarrier(1, &barrier);
     tex->SetCurrentState(dxDstState);
 
 #if defined(_DEBUG) && defined(DUMP_RESOURCE_TRANSITIONS)
@@ -160,11 +160,11 @@ void RendererDX12::ResourceTransition(StateDX& dxState, TextureHandle resourceHa
 
 void RendererDX12::Shutdown()
 {
-    if (m_state.Device != nullptr)
+    if (mState.Device != nullptr)
         WaitForGPU();
 
-    if (!m_isTearingSupported)
-        ThrowIfFailed(m_swapChain.SetFullscreenState(false, nullptr));
+    if (!mIsTearingSupported)
+        ThrowIfFailed(mSwapChain.SetFullscreenState(false, nullptr));
 
     ShutdownImGui();
 #ifdef _DEBUG
@@ -186,25 +186,25 @@ void RendererDX12::InitImGui()
         desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
         desc.NumDescriptors = 1;
         desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-        m_state.Device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&m_imguiDescriptorHeap));
+        mState.Device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&mImguiDescriptorHeap));
     }
 
-    ImGui::ImplDX12Init(m_state.Device.Get(), StateDX::FrameCount, m_swapChain.GetBackBufferFormat(), m_imguiDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),
-        m_imguiDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+    ImGui::ImplDX12Init(mState.Device.Get(), StateDX::FrameCount, mSwapChain.GetBackBufferFormat(), mImguiDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),
+        mImguiDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
 }
 
 void RendererDX12::RenderImGui()
 {
-    m_profiler.BeginGpuEvent(m_state.CommandList.Get(), "ImGUI");
+    mProfiler.BeginGpuEvent(mState.CommandList.Get(), "ImGUI");
 
-    auto chainBackBufferCPUHandle = m_swapChain.GetCurrentBackBufferCPUHandle(m_state);
-    auto chainDepthStencilHandle = m_swapChain.GetDepthStencilCPUHandle();
-    m_state.CommandList->OMSetRenderTargets(1, &chainBackBufferCPUHandle, false, &chainDepthStencilHandle);
-    m_state.CommandList->SetDescriptorHeaps(1, &m_imguiDescriptorHeap);
+    auto chainBackBufferCPUHandle = mSwapChain.GetCurrentBackBufferCPUHandle(mState);
+    auto chainDepthStencilHandle = mSwapChain.GetDepthStencilCPUHandle();
+    mState.CommandList->OMSetRenderTargets(1, &chainBackBufferCPUHandle, false, &chainDepthStencilHandle);
+    mState.CommandList->SetDescriptorHeaps(1, &mImguiDescriptorHeap);
     ImGui::Render();
-    ImGui::ImplDX12RenderDrawData(ImGui::GetDrawData(), m_state.CommandList.Get());
+    ImGui::ImplDX12RenderDrawData(ImGui::GetDrawData(), mState.CommandList.Get());
 
-    m_profiler.EndGpuEvent(m_state.CommandList.Get());
+    mProfiler.EndGpuEvent(mState.CommandList.Get());
 }
 
 void RendererDX12::ShutdownImGui()
@@ -255,16 +255,16 @@ void RendererDX12::GetHardwareAdapter(IDXGIFactory4* factory, IDXGIAdapter1** ad
 
 void RendererDX12::WaitForGPU()
 {
-    ThrowIfFailed(m_state.CommandQueue->Signal(m_state.Fence.Get(), m_state.FenceValues[m_swapChain.GetCurrentFrameIndex()]));
+    ThrowIfFailed(mState.CommandQueue->Signal(mState.Fence.Get(), mState.FenceValues[mSwapChain.GetCurrentFrameIndex()]));
 
-    if (m_state.Fence->GetCompletedValue() < m_state.FenceValues[m_swapChain.GetCurrentFrameIndex()])
+    if (mState.Fence->GetCompletedValue() < mState.FenceValues[mSwapChain.GetCurrentFrameIndex()])
     {
         HANDLE fenceEventHandle = CreateEvent(nullptr, FALSE, FALSE, nullptr);
         if (fenceEventHandle == nullptr)
         {
             ThrowIfFailed(HRESULT_FROM_WIN32(GetLastError()));
         }
-        ThrowIfFailed(m_state.Fence->SetEventOnCompletion(m_state.FenceValues[m_swapChain.GetCurrentFrameIndex()], fenceEventHandle));
+        ThrowIfFailed(mState.Fence->SetEventOnCompletion(mState.FenceValues[mSwapChain.GetCurrentFrameIndex()], fenceEventHandle));
 
         WaitForSingleObjectEx(fenceEventHandle, INFINITE, false);
         CloseHandle(fenceEventHandle);
@@ -273,26 +273,26 @@ void RendererDX12::WaitForGPU()
 
 void RendererDX12::Resize(uint16 width, uint16 height)
 {
-    if (m_width == width && m_height == height)
+    if (mWidth == width && mHeight == height)
         return;
 
     ImGui::ImplDX12InvalidateDeviceObjects();
 
-    m_width = width;
-    m_height = height;
+    mWidth = width;
+    mHeight = height;
 
     WaitForGPU();
 
-    for (auto& fenceVal : m_state.FenceValues)
-        fenceVal = m_state.CurrentFence;
+    for (auto& fenceVal : mState.FenceValues)
+        fenceVal = mState.CurrentFence;
 
-    ThrowIfFailed(m_state.CommandList->Reset(m_state.CommandAllocators[m_swapChain.GetCurrentFrameIndex()].Get(), nullptr));
+    ThrowIfFailed(mState.CommandList->Reset(mState.CommandAllocators[mSwapChain.GetCurrentFrameIndex()].Get(), nullptr));
 
-    m_swapChain.Resize(m_state, width, height);
+    mSwapChain.Resize(mState, width, height);
 
-    ThrowIfFailed(m_state.CommandList->Close());
-    ID3D12CommandList* cmdLists[] = { m_state.CommandList.Get() };
-    m_state.CommandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
+    ThrowIfFailed(mState.CommandList->Close());
+    ID3D12CommandList* cmdLists[] = { mState.CommandList.Get() };
+    mState.CommandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
 
     ImGui::ImplDX12CreateDeviceObjects();
 
@@ -312,21 +312,21 @@ void RendererDX12::StartFrame()
 
 void RendererDX12::Present()
 {
-    m_state.CommandAllocators[m_swapChain.GetCurrentFrameIndex()]->Reset();
-    m_state.CommandList->Reset(m_state.CommandAllocators[m_swapChain.GetCurrentFrameIndex()].Get(), nullptr);
+    mState.CommandAllocators[mSwapChain.GetCurrentFrameIndex()]->Reset();
+    mState.CommandList->Reset(mState.CommandAllocators[mSwapChain.GetCurrentFrameIndex()].Get(), nullptr);
 
-    m_textureManager.ProcessRegistationQueue(m_state);
-    m_textureManager.ProcessTextureSetUpdates(m_state);
+    mTextureManager.ProcessRegistationQueue(mState);
+    mTextureManager.ProcessTextureSetUpdates(mState);
 
-    m_meshManager.ProcessRegistrationQueue(m_state);
+    mMeshManager.ProcessRegistrationQueue(mState);
 
-    m_constantBufferManager.ProcessRegistrationQueue(m_state);
-    m_constantBufferManager.ProcessBufferUpdates(m_swapChain.GetCurrentFrameIndex());
+    mConstantBufferManager.ProcessRegistrationQueue(mState);
+    mConstantBufferManager.ProcessBufferUpdates(mSwapChain.GetCurrentFrameIndex());
 
-    auto toRt = CD3DX12_RESOURCE_BARRIER::Transition(m_swapChain.GetCurrentBackBuffer()->Resource.Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-    m_state.CommandList->ResourceBarrier(1, &toRt);
+    auto toRt = CD3DX12_RESOURCE_BARRIER::Transition(mSwapChain.GetCurrentBackBuffer()->Resource.Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+    mState.CommandList->ResourceBarrier(1, &toRt);
 
-    for (auto& cmd : m_frameCommands)
+    for (auto& cmd : mFrameCommands)
     {
         assert(cmd.CommandType != eRenderCommandType::eInvalidCommand);
         if (cmd.CommandType == eRenderCommandType::eSetRenderTargets)
@@ -342,9 +342,9 @@ void RendererDX12::Present()
             if (currentRTHandle != InvalidHandle)
             {
                 if (currentRTHandle == DefaultBackBufferHandle)
-                    rtHandle = m_swapChain.GetCurrentBackBufferCPUHandle(m_state);
+                    rtHandle = mSwapChain.GetCurrentBackBufferCPUHandle(mState);
                 else
-                    rtHandle = m_textureManager.GetRtvHandle(currentRTHandle);
+                    rtHandle = mTextureManager.GetRtvHandle(currentRTHandle);
                 rtHandlePtr = &rtHandle;
             }
 
@@ -352,23 +352,23 @@ void RendererDX12::Present()
             if (currentDSHandle != InvalidHandle)
             {
                 if (currentDSHandle == DefaultDepthStencilHandle)
-                    dsHandle = m_swapChain.GetDepthStencilCPUHandle();
+                    dsHandle = mSwapChain.GetDepthStencilCPUHandle();
                 else
-                    dsHandle = m_textureManager.GetDsvHandle(currentDSHandle);
+                    dsHandle = mTextureManager.GetDsvHandle(currentDSHandle);
                 dsHandlePtr = &dsHandle;
             }
 
             auto scissorRect = DXRectFromKioto(srtCommand.Scissor);
-            m_state.CommandList->RSSetScissorRects(1, &scissorRect);
+            mState.CommandList->RSSetScissorRects(1, &scissorRect);
             auto viewport = DXViewportFromKioto(srtCommand.Viewport);
-            m_state.CommandList->RSSetViewports(1, &viewport);
+            mState.CommandList->RSSetViewports(1, &viewport);
 
             if (srtCommand.ClearColor && currentRTHandle != InvalidHandle)
-                m_state.CommandList->ClearRenderTargetView(rtHandle, srtCommand.ClearColorValue.data, 0, nullptr);
+                mState.CommandList->ClearRenderTargetView(rtHandle, srtCommand.ClearColorValue.data, 0, nullptr);
             if (srtCommand.ClearDepth && currentDSHandle != InvalidHandle)
-                m_state.CommandList->ClearDepthStencilView(dsHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+                mState.CommandList->ClearDepthStencilView(dsHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
-            m_state.CommandList->OMSetRenderTargets(renderTargetCount, rtHandlePtr, false, dsHandlePtr);
+            mState.CommandList->OMSetRenderTargets(renderTargetCount, rtHandlePtr, false, dsHandlePtr);
         }
         else if (cmd.CommandType == eRenderCommandType::eEndRenderPass)
         {
@@ -376,69 +376,69 @@ void RendererDX12::Present()
         else if (cmd.CommandType == eRenderCommandType::eResourceTransitonCommand)
         {
             const ResourceTransitonCommand& transitionCommand = std::get<ResourceTransitonCommand>(cmd.Command);
-            ResourceTransition(m_state, transitionCommand.ResourceHandle, transitionCommand.DestState);
+            ResourceTransition(mState, transitionCommand.ResourceHandle, transitionCommand.DestState);
         }
         else if (cmd.CommandType == eRenderCommandType::eSubmitRenderPacket)
         {
             const RenderPacket& packet = std::get<SubmitRenderPacketCommand>(cmd.Command).Packet;
 
-            ID3D12PipelineState* pipelineState = m_piplineStateManager.GetPipelineState(packet.Material.GetHandle(), packet.Pass);
-            m_state.CommandList->SetPipelineState(pipelineState);
+            ID3D12PipelineState* pipelineState = mPiplineStateManager.GetPipelineState(packet.Material.GetHandle(), packet.Pass);
+            mState.CommandList->SetPipelineState(pipelineState);
 
-            ID3D12RootSignature* rootSig = m_rootSignatureManager.GetRootSignature(packet.Shader);
-            m_state.CommandList->SetGraphicsRootSignature(rootSig);
+            ID3D12RootSignature* rootSig = mRootSignatureManager.GetRootSignature(packet.Shader);
+            mState.CommandList->SetGraphicsRootSignature(rootSig);
 
-            UINT currFrameInd = m_swapChain.GetCurrentFrameIndex();
+            UINT currFrameInd = mSwapChain.GetCurrentFrameIndex();
             UINT buffersCount = static_cast<UINT>(packet.ConstantBufferHandles.size());
             for (uint32 i = 0; i < buffersCount; ++i)
             {
-                UploadBufferDX12* buffer = m_constantBufferManager.FindBuffer(packet.ConstantBufferHandles[i]);
+                UploadBufferDX12* buffer = mConstantBufferManager.FindBuffer(packet.ConstantBufferHandles[i]);
                 if (!buffer->HasDescriptorHeap())
                 {
-                    m_state.CommandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(i), buffer->GetFrameDataGpuAddress(currFrameInd));
+                    mState.CommandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(i), buffer->GetFrameDataGpuAddress(currFrameInd));
                 }
                 else
                 {
                     ID3D12DescriptorHeap* heaps[] = { buffer->GetDescriptorHeap() };
-                    m_state.CommandList->SetDescriptorHeaps(_countof(heaps), heaps);
+                    mState.CommandList->SetDescriptorHeaps(_countof(heaps), heaps);
 
-                    m_state.CommandList->SetGraphicsRootDescriptorTable(i, buffer->GetGpuDescriptorHandleForFrame(currFrameInd));
+                    mState.CommandList->SetGraphicsRootDescriptorTable(i, buffer->GetGpuDescriptorHandleForFrame(currFrameInd));
                 }
             }
             UINT constantsCount = static_cast<UINT>(packet.UniformConstants.size());
             for (uint32 i = 0; i < constantsCount; ++i)
-                m_state.CommandList->SetGraphicsRoot32BitConstant(buffersCount + i, packet.UniformConstants[i], 0);
+                mState.CommandList->SetGraphicsRoot32BitConstant(buffersCount + i, packet.UniformConstants[i], 0);
 
-            ID3D12DescriptorHeap* currTexDescriptorHeap = m_textureManager.GetTextureHeap(packet.TextureSet);
+            ID3D12DescriptorHeap* currTexDescriptorHeap = mTextureManager.GetTextureHeap(packet.TextureSet);
             if (currTexDescriptorHeap != nullptr) // [a_vorontcov] TODO: No difference if one messed up with texset or if there is no textures for the draw. Not good at all. Rethink.
             {
                 ID3D12DescriptorHeap* descHeap[] = { currTexDescriptorHeap };
-                m_state.CommandList->SetDescriptorHeaps(_countof(descHeap), descHeap);
+                mState.CommandList->SetDescriptorHeaps(_countof(descHeap), descHeap);
 
-                m_state.CommandList->SetGraphicsRootDescriptorTable(buffersCount + constantsCount, currTexDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+                mState.CommandList->SetGraphicsRootDescriptorTable(buffersCount + constantsCount, currTexDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
             }
 
-            MeshDX12* currGeometry = m_meshManager.Find(packet.Mesh);
+            MeshDX12* currGeometry = mMeshManager.Find(packet.Mesh);
 
-            m_state.CommandList->IASetVertexBuffers(0, 1, &currGeometry->GetVertexBufferView());
-            m_state.CommandList->IASetIndexBuffer(&currGeometry->GetIndexBufferView());
-            m_state.CommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+            mState.CommandList->IASetVertexBuffers(0, 1, &currGeometry->GetVertexBufferView());
+            mState.CommandList->IASetIndexBuffer(&currGeometry->GetIndexBufferView());
+            mState.CommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-            m_state.CommandList->DrawIndexedInstanced(currGeometry->GetIndexCount(), 1, 0, 0, 0);
+            mState.CommandList->DrawIndexedInstanced(currGeometry->GetIndexCount(), 1, 0, 0, 0);
         }
         else if (cmd.CommandType == eRenderCommandType::eBeginGpuEvent)
         {
             const BeginGpuEventCommand& evCommand = std::get<BeginGpuEventCommand>(cmd.Command);
-            m_profiler.BeginGpuEvent(m_state.CommandList.Get(), evCommand.Name.c_str());
+            mProfiler.BeginGpuEvent(mState.CommandList.Get(), evCommand.Name.c_str());
         }
         else if (cmd.CommandType == eRenderCommandType::eEndGpuEvent)
         {
-            m_profiler.EndGpuEvent(m_state.CommandList.Get());
+            mProfiler.EndGpuEvent(mState.CommandList.Get());
         }
         else if (cmd.CommandType == eRenderCommandType::eSetGpuMarker)
         {
             const SetGpuMarkerCommand& smCommand = std::get<SetGpuMarkerCommand>(cmd.Command);
-            m_profiler.SetMarker(m_state.CommandList.Get(), smCommand.Name.c_str());
+            mProfiler.SetMarker(mState.CommandList.Get(), smCommand.Name.c_str());
         }
         else
         {
@@ -449,30 +449,30 @@ void RendererDX12::Present()
 
     RenderImGui();
 
-    auto toPresent = CD3DX12_RESOURCE_BARRIER::Transition(m_swapChain.GetCurrentBackBuffer()->Resource.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT); // [a_vorontcov] WRONG WRONG WRONG, but ok for now.
-    m_state.CommandList->ResourceBarrier(1, &toPresent);
+    auto toPresent = CD3DX12_RESOURCE_BARRIER::Transition(mSwapChain.GetCurrentBackBuffer()->Resource.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT); // [a_vorontcov] WRONG WRONG WRONG, but ok for now.
+    mState.CommandList->ResourceBarrier(1, &toPresent);
 
-    m_state.CommandList->Close();
-    ID3D12CommandList* cmdLists[] = { m_state.CommandList.Get() };
-    m_state.CommandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
-    m_swapChain.Present();
+    mState.CommandList->Close();
+    ID3D12CommandList* cmdLists[] = { mState.CommandList.Get() };
+    mState.CommandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
+    mSwapChain.Present();
 
-    m_state.FenceValues[m_swapChain.GetCurrentFrameIndex()] = ++m_state.CurrentFence;
-    m_state.CommandQueue->Signal(m_state.Fence.Get(), m_state.CurrentFence);
+    mState.FenceValues[mSwapChain.GetCurrentFrameIndex()] = ++mState.CurrentFence;
+    mState.CommandQueue->Signal(mState.Fence.Get(), mState.CurrentFence);
 
-    m_frameCommands.clear();
+    mFrameCommands.clear();
 
     // [a_vorontcov] Check if we can move to next frame.
-    m_swapChain.ProceedToNextFrame();
+    mSwapChain.ProceedToNextFrame();
 
-    if (m_state.FenceValues[m_swapChain.GetCurrentFrameIndex()] != 0 && m_state.Fence->GetCompletedValue() < m_state.FenceValues[m_swapChain.GetCurrentFrameIndex()])
+    if (mState.FenceValues[mSwapChain.GetCurrentFrameIndex()] != 0 && mState.Fence->GetCompletedValue() < mState.FenceValues[mSwapChain.GetCurrentFrameIndex()])
     {
         HANDLE fenceEventHandle = CreateEvent(nullptr, FALSE, FALSE, nullptr);
         if (fenceEventHandle == nullptr)
         {
             ThrowIfFailed(HRESULT_FROM_WIN32(GetLastError()));
         }
-        ThrowIfFailed(m_state.Fence->SetEventOnCompletion(m_state.FenceValues[m_swapChain.GetCurrentFrameIndex()], fenceEventHandle));
+        ThrowIfFailed(mState.Fence->SetEventOnCompletion(mState.FenceValues[mSwapChain.GetCurrentFrameIndex()], fenceEventHandle));
 
         WaitForSingleObjectEx(fenceEventHandle, INFINITE, false);
         CloseHandle(fenceEventHandle);
@@ -485,7 +485,7 @@ void RendererDX12::LogAdapters()
     UINT i = 0;
     IDXGIAdapter* adapter = nullptr;
     std::vector<IDXGIAdapter*> adapterList;
-    while (m_state.Factory->EnumAdapters(i, &adapter) != DXGI_ERROR_NOT_FOUND)
+    while (mState.Factory->EnumAdapters(i, &adapter) != DXGI_ERROR_NOT_FOUND)
     {
         DXGI_ADAPTER_DESC adapterDesc;
         adapter->GetDesc(&adapterDesc);
@@ -517,7 +517,7 @@ void RendererDX12::LogAdapterOutputs(IDXGIAdapter* adapter)
         text += desc.DeviceName;
         text += L"\n";
         OutputDebugString(text.c_str());
-        LogOutputDisplayModes(output, m_swapChain.GetBackBufferFormat());
+        LogOutputDisplayModes(output, mSwapChain.GetBackBufferFormat());
         ReleaseComPtr(output);
         ++i;
     }
@@ -548,29 +548,29 @@ void RendererDX12::LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format
 
 void RendererDX12::ChangeFullScreenMode(bool fullScreen)
 {
-    if (fullScreen == m_isFullScreen)
+    if (fullScreen == mIsFullScreen)
         return;
-    m_isFullScreen = fullScreen;
-    Resize(m_width, m_height);
+    mIsFullScreen = fullScreen;
+    Resize(mWidth, mHeight);
 }
 
 void RendererDX12::RegisterTexture(Texture* texture)
 {
-    m_textureManager.RegisterTexture(texture);
+    mTextureManager.RegisterTexture(texture);
 }
 
 void RendererDX12::RegisterShader(Shader* shader)
 {
-    m_shaderManager.RegisterShader(shader);
-    m_rootSignatureManager.CreateRootSignature(m_state, shader->GetShaderData(), shader->GetBufferLayoutTemplate(), shader->GetRenderObjectConstants(), shader->GetHandle());
-    m_vertexLayoutManager.GenerateVertexLayout(shader);
+    mShaderManager.RegisterShader(shader);
+    mRootSignatureManager.CreateRootSignature(mState, shader->GetShaderData(), shader->GetBufferLayoutTemplate(), shader->GetRenderObjectConstants(), shader->GetHandle());
+    mVertexLayoutManager.GenerateVertexLayout(shader);
 }
 
 void RendererDX12::BuildMaterialForPass(Material& mat, const RenderPass* pass)
 {
-    ID3D12PipelineState* ps = m_piplineStateManager.GetPipelineState(mat.GetHandle(), pass->GetHandle());
+    ID3D12PipelineState* ps = mPiplineStateManager.GetPipelineState(mat.GetHandle(), pass->GetHandle());
     if (ps == nullptr)
-        m_piplineStateManager.BuildPipelineState(m_state, &mat, pass, m_rootSignatureManager, &m_textureManager, &m_shaderManager, &m_vertexLayoutManager, m_swapChain.GetBackBufferFormat(), m_swapChain.GetDepthStencilFormat());
+        mPiplineStateManager.BuildPipelineState(mState, &mat, pass, mRootSignatureManager, &mTextureManager, &mShaderManager, &mVertexLayoutManager, mSwapChain.GetBackBufferFormat(), mSwapChain.GetDepthStencilFormat());
 }
 
 void RendererDX12::RegisterMaterial(Material* material)
@@ -590,27 +590,27 @@ void RendererDX12::RegisterTextureSet(TextureSet& set)
 
 void RendererDX12::QueueTextureSetForUpdate(const TextureSet& set)
 {
-    m_textureManager.QueueTextureSetForUpdate(set);
+    mTextureManager.QueueTextureSetForUpdate(set);
 }
 
 void RendererDX12::RegisterMesh(Mesh* mesh)
 {
-    m_meshManager.RegisterMesh(mesh);
+    mMeshManager.RegisterMesh(mesh);
 }
 
 void RendererDX12::SubmitRenderCommands(const std::vector<RenderCommand>& commandList) // [a_vorontcov] Not const and splice would be better. https://stackoverflow.com/questions/1449703/how-to-append-a-listt-object-to-another
 {
-    m_frameCommands.insert(m_frameCommands.end(), commandList.begin(), commandList.end());
+    mFrameCommands.insert(mFrameCommands.end(), commandList.begin(), commandList.end());
 }
 
 void RendererDX12::QueueConstantBufferForUpdate(ConstantBuffer& buffer)
 {
-    m_constantBufferManager.QueueConstantBufferForUpdate(buffer);
+    mConstantBufferManager.QueueConstantBufferForUpdate(buffer);
 }
 
 void RendererDX12::RegisterConstantBuffer(ConstantBuffer& buffer)
 {
-    m_constantBufferManager.RegisterConstantBuffer(&buffer);
+    mConstantBufferManager.RegisterConstantBuffer(&buffer);
 }
 
 void RendererDX12::SetTimeBuffer(ConstantBufferHandle handle)
@@ -619,7 +619,7 @@ void RendererDX12::SetTimeBuffer(ConstantBufferHandle handle)
 
 void RendererDX12::RegisterRenderObject(RenderObject& renderObject)
 {
-    m_constantBufferManager.RegisterRenderObject(renderObject);
+    mConstantBufferManager.RegisterRenderObject(renderObject);
 }
 
 }

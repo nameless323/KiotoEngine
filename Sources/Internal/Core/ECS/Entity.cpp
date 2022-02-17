@@ -8,7 +8,7 @@ namespace Kioto
 {
 Entity::Entity(const Entity& other)
 {
-    for (auto component : other.m_components)
+    for (auto component : other.mComponents)
         AddComponent(component->Clone());
 }
 
@@ -27,18 +27,18 @@ Entity& Entity::operator=(Entity other)
 
 Entity::~Entity()
 {
-    for (auto& component : m_components)
+    for (auto& component : mComponents)
         SafeDelete(component);
-    m_components.clear();
+    mComponents.clear();
 }
 
 void Entity::RemoveComponent(Component* component)
 {
-    auto it = std::find(m_components.begin(), m_components.end(), component);
-    if (it != m_components.end())
+    auto it = std::find(mComponents.begin(), mComponents.end(), component);
+    if (it != mComponents.end())
     {
         delete &(*it);
-        m_components.erase(it);
+        mComponents.erase(it);
     }
 }
 
@@ -47,15 +47,15 @@ void Entity::AddComponent(Component* component)
     if (component->GetEntity() != nullptr)
         return; // [a_vorontcov] TODO: Do something scary here.
     component->SetEntity(this);
-    m_components.push_back(component);
+    mComponents.push_back(component);
     if (component->GetType() == TransformComponent::GetTypeS())
-        m_transform = static_cast<TransformComponent*>(component);
+        mTransform = static_cast<TransformComponent*>(component);
 }
 
 Component* Entity::GetComponent(uint64 componentTypeIndex) const
 {
-    auto it = std::find_if(m_components.begin(), m_components.end(), [componentTypeIndex](Component* c) { return c->GetType() == componentTypeIndex; });
-    if (it != m_components.end())
+    auto it = std::find_if(mComponents.begin(), mComponents.end(), [componentTypeIndex](Component* c) { return c->GetType() == componentTypeIndex; });
+    if (it != mComponents.end())
         return *it;
     return nullptr;
 }
@@ -65,11 +65,11 @@ void Entity::Serialize(YAML::Emitter& out) const
     out << YAML::Key << "Entity";
     out << YAML::Value << YAML::BeginMap;
     out << YAML::Key << "Name";
-    out << YAML::Value << m_name;
+    out << YAML::Value << mName;
     out << YAML::Key << "Components";
     out << YAML::Value << YAML::BeginMap;
 
-    for (auto component : m_components)
+    for (auto component : mComponents)
     {
         out << YAML::Key << "Component";
         out << YAML::Value << YAML::BeginMap;

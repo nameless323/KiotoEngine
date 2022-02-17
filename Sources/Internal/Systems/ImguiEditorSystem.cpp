@@ -18,31 +18,31 @@ namespace Kioto
 {
 ImguiEditorSystem::ImguiEditorSystem()
 {
-    m_entities.reserve(512);
+    mEntities.reserve(512);
 }
 
 ImguiEditorSystem::~ImguiEditorSystem()
 {
-    m_entities.clear();
+    mEntities.clear();
 }
 
 void ImguiEditorSystem::OnEntityAdd(Entity* entity)
 {
-    auto it = std::find(m_entities.begin(), m_entities.end(), entity);
-    assert(it == m_entities.end());
+    auto it = std::find(mEntities.begin(), mEntities.end(), entity);
+    assert(it == mEntities.end());
 
-    m_entities.push_back(entity);
-    m_entitiesNames.push_back(entity->GetName().c_str());
+    mEntities.push_back(entity);
+    mEntitiesNames.push_back(entity->GetName().c_str());
 }
 
 void ImguiEditorSystem::OnEntityRemove(Entity* entity)
 {
-    auto it = std::find(m_entities.begin(), m_entities.end(), entity);
-    assert(it != m_entities.end());
+    auto it = std::find(mEntities.begin(), mEntities.end(), entity);
+    assert(it != mEntities.end());
 
     const char* name = entity->GetName().c_str();
-    m_entitiesNames.erase(std::find(m_entitiesNames.begin(), m_entitiesNames.end(), name));
-    m_entities.erase(it);
+    mEntitiesNames.erase(std::find(mEntitiesNames.begin(), mEntitiesNames.end(), name));
+    mEntities.erase(it);
 }
 
 void ImguiEditorSystem::Update(float32 dt)
@@ -52,9 +52,9 @@ void ImguiEditorSystem::Update(float32 dt)
     //ImGui::ShowDemoWindow();
 
     ImGui::Begin("Scene", NULL, ImGuiWindowFlags_NoFocusOnAppearing);
-    ImGui::ListBox("", &selectedEntityIndex, m_entitiesNames.data(), int(m_entitiesNames.size()), 15);
+    ImGui::ListBox("", &selectedEntityIndex, mEntitiesNames.data(), int(mEntitiesNames.size()), 15);
 
-    const Entity* selectedEntity = m_entities[selectedEntityIndex];
+    const Entity* selectedEntity = mEntities[selectedEntityIndex];
 
     CameraComponent* camera = selectedEntity->GetComponent<CameraComponent>();
     DrawComponentEditor(camera);

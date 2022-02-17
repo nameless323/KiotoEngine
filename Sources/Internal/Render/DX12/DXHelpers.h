@@ -4,8 +4,8 @@
 #include <d3d12.h>
 #include <exception>
 #include <string>
-#include <windows.h>
 
+#include "Core/WindowsCore.h"
 #include "Render/Geometry/Mesh.h"
 #include "Dx12Helpers/d3dx12.h"
 
@@ -15,18 +15,18 @@ class ComException : public std::exception // [a_vorontcov] https://github.com/M
 {
 public:
     ComException(HRESULT hr)
-        : m_result(hr)
+        : mResult(hr)
     {}
 
     virtual const char* what() const override
     {
         static char str[64] = { 0 };
-        sprintf_s(str, "Failure with HRESULT of %08X", m_result);
+        sprintf_s(str, "Failure with HRESULT of %08X", mResult);
         return str;
     }
 
 private:
-    HRESULT m_result = -1;
+    HRESULT mResult = -1;
 };
 
 inline void ThrowIfFailed(HRESULT hr)

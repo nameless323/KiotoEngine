@@ -16,11 +16,11 @@ std::array<bool, Input::MAX_MOUSE_ARRAY_SIZE> Input::m_thisFrameMouse = {};
 std::array<bool, Input::MAX_MOUSE_ARRAY_SIZE> Input::m_prevFrameMouse = {};
 std::array<bool, Input::MAX_MOUSE_ARRAY_SIZE> Input::m_prevPrevFrameMouse = {};
 
-Vector2i Input::m_thisFrameMousePosRelative = Vector2i(0, 0);
-Vector2i Input::m_mouseRelative = Vector2i(0, 0);
+Vector2i Input::mThisFrameMousePosRelative = Vector2i(0, 0);
+Vector2i Input::mMouseRelative = Vector2i(0, 0);
 
-int32 Input::m_thisFrameMouseWheel = 0;
-int32 Input::m_mouseWheel = 0;
+int32 Input::mThisFrameMouseWheel = 0;
+int32 Input::mMouseWheel = 0;
 
 bool Input::GetButtonUp(eKeyCode keyCode)
 {
@@ -58,12 +58,12 @@ bool Input::GetMouseHeldDown(eMouseCodes keyCode)
 
 eMouseWheelScroll Input::GetMouseWheel()
 {
-    return static_cast<eMouseWheelScroll>(m_mouseWheel);
+    return static_cast<eMouseWheelScroll>(mMouseWheel);
 }
 
 Vector2i Input::GetMouseRelativePosition()
 {
-    return m_mouseRelative;
+    return mMouseRelative;
 }
 
 void Input::SetButtonUp(uint32 keyCode)
@@ -78,12 +78,12 @@ void Input::SetButtonDown(uint32 keyCode)
 
 void Input::SetMouseMoveRelated(int32 x, int32 y)
 {
-    m_thisFrameMousePosRelative = Vector2i(x, y);
+    mThisFrameMousePosRelative = Vector2i(x, y);
 }
 
 void Input::SetMouseWheel(int32 v)
 {
-    m_thisFrameMouseWheel = v;
+    mThisFrameMouseWheel = v;
 }
 
 void Input::SetMouseFlags(uint32 flags)
@@ -112,9 +112,9 @@ void Input::Update()
     memcpy(m_prevPrevFrameMouse.data(), m_prevFrameMouse.data(), sizeInBytesMouse);
     memcpy(m_prevFrameMouse.data(), m_thisFrameMouse.data(), sizeInBytesMouse);
 
-    m_mouseRelative = m_thisFrameMousePosRelative;
-    m_thisFrameMousePosRelative = Vector2i::Zero;
-    m_mouseWheel = m_thisFrameMouseWheel;
-    m_thisFrameMouseWheel = 0;
+    mMouseRelative = mThisFrameMousePosRelative;
+    mThisFrameMousePosRelative = Vector2i::Zero;
+    mMouseWheel = mThisFrameMouseWheel;
+    mThisFrameMouseWheel = 0;
 }
 }

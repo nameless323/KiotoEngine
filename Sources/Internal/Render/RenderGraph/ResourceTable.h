@@ -34,23 +34,23 @@ public:
     TransientSharedData& GetPassesSharedData();
 
 private:
-    std::vector<PassBlackboard> m_blackboardsPool;
-    uint32 m_currIndex = 0;
+    std::vector<PassBlackboard> mBlackboardsPool;
+    uint32 mCurrIndex = 0;
 
-    std::map<std::string, Texture*> m_resources;
+    std::map<std::string, Texture*> mResources;
 
-    TransientSharedData m_passesSharedData{};
+    TransientSharedData mPassesSharedData{};
 };
 
 inline Texture* ResourceTable::GetResource(const std::string& name)
 {
-    assert(m_resources.count(name) && "Resource wasn't added");
-    return m_resources[name];
+    assert(mResources.count(name) && "Resource wasn't added");
+    return mResources[name];
 }
 
 inline TransientSharedData& ResourceTable::GetPassesSharedData()
 {
-    return m_passesSharedData;
+    return mPassesSharedData;
 }
 
 }

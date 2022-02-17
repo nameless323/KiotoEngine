@@ -40,19 +40,19 @@ private:
     void CreateFromFile(ID3D12Device* device, ID3D12GraphicsCommandList* commandList);
     void CreateFromDescriptor(ID3D12Device* device, ID3D12GraphicsCommandList* commandList);
 
-    TextureHandle m_handle;
-    D3D12_CPU_DESCRIPTOR_HANDLE m_CPUdescriptorHandle;
-    D3D12_GPU_DESCRIPTOR_HANDLE m_GPUdescriptorHandle;
-    TextureDescriptor m_descriptor;
+    TextureHandle mHandle;
+    D3D12_CPU_DESCRIPTOR_HANDLE mCPUdescriptorHandle;
+    D3D12_GPU_DESCRIPTOR_HANDLE mGPUdescriptorHandle;
+    TextureDescriptor mDescriptor;
 
-    D3D12_RESOURCE_STATES m_currentState;
+    D3D12_RESOURCE_STATES mCurrentState;
 
-    D3D12_RESOURCE_FLAGS m_textureFlags = D3D12_RESOURCE_FLAGS(0);
+    D3D12_RESOURCE_FLAGS mTextureFlags = D3D12_RESOURCE_FLAGS(0);
 
-    bool m_fromMemoryAsset = false;
+    bool mFromMemoryAsset = false;
 
 #ifdef _DEBUG
-    bool m_isDescriptorInitialized = false;
+    bool mIsDescriptorInitialized = false;
 #endif
 };
 
@@ -63,12 +63,12 @@ inline DXGI_FORMAT TextureDX12::ToDXGIFormat(eResourceFormat format)
 
 inline void TextureDX12::SetHandle(TextureHandle handle)
 {
-    m_handle = handle;
+    mHandle = handle;
 }
 
 inline TextureHandle TextureDX12::GetHandle() const
 {
-    return m_handle;
+    return mHandle;
 }
 
 inline DXGI_FORMAT TextureDX12::GetFormat() const
@@ -79,49 +79,49 @@ inline DXGI_FORMAT TextureDX12::GetFormat() const
 inline void TextureDX12::SetDescriptor(TextureDescriptor descriptor)
 {
 #ifdef _DEBUG
-    m_isDescriptorInitialized = true;
+    mIsDescriptorInitialized = true;
 #endif
-    std::swap(m_descriptor, descriptor);
+    std::swap(mDescriptor, descriptor);
 }
 
 inline bool TextureDX12::GetIsFromMemoryAsset() const
 {
-    return m_fromMemoryAsset;
+    return mFromMemoryAsset;
 }
 
 inline void TextureDX12::SetIsFromMemoryAsset(bool isFromMemoryAsset)
 {
-    m_fromMemoryAsset = isFromMemoryAsset;
+    mFromMemoryAsset = isFromMemoryAsset;
 }
 
 inline const TextureDescriptor& TextureDX12::GetDescriptor() const
 {
-    assert(m_fromMemoryAsset);
-    return m_descriptor;
+    assert(mFromMemoryAsset);
+    return mDescriptor;
 }
 
 inline D3D12_RESOURCE_FLAGS TextureDX12::GetDx12TextureFlags() const
 {
-    return m_textureFlags;
+    return mTextureFlags;
 }
 
 inline D3D12_RESOURCE_STATES TextureDX12::GetCurrentState() const
 {
-    return m_currentState;
+    return mCurrentState;
 }
 
 inline void TextureDX12::SetCurrentState(D3D12_RESOURCE_STATES state)
 {
-    m_currentState = state;
+    mCurrentState = state;
 }
 
 inline const std::string& TextureDX12::GetDebugName() const
 {
 #ifdef _DEBUG
-    if (!m_isDescriptorInitialized)
+    if (!mIsDescriptorInitialized)
         assert("Initialize texture descriptor before query the texture for the name" && false);
 #endif
-    return m_descriptor.Name;
+    return mDescriptor.Name;
 }
 
 }

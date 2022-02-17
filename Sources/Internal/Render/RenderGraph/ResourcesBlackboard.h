@@ -36,17 +36,17 @@ public:
     void Clear();
 
 private:
-    std::vector<ResourceCreationRequest> m_creationRequests;
-    std::vector<ResourceTransitionRequest> m_transitionRequests;
+    std::vector<ResourceCreationRequest> mCreationRequests;
+    std::vector<ResourceTransitionRequest> mTransitionRequests;
 };
 
 inline const std::vector<ResourceTransitionRequest>& ResourcesBlackboard::GetTransitionRequests() const
 {
-    return m_transitionRequests;
+    return mTransitionRequests;
 }
 
 inline const std::vector<ResourceCreationRequest>& ResourcesBlackboard::GetCreationRequest() const
 {
-    return m_creationRequests;
+    return mCreationRequests;
 }
 }

@@ -29,47 +29,47 @@ public:
     void SetMarker(T* commandList, const std::string& formatString, ArgsT... args);
 
 private:
-    ConcreteProfiler m_profiler;
+    ConcreteProfiler mProfiler;
 };
 
 template <typename ConcreteProfiler>
 template<class... ArgsT>
 inline void GpuProfiler<ConcreteProfiler>::BeginGpuEvent(const std::string& formatString, ArgsT... args)
 {
-    m_profiler.BeginGpuEvent(formatString, std::forward<ArgsT>(args)...);
+    mProfiler.BeginGpuEvent(formatString, std::forward<ArgsT>(args)...);
 }
 
 template <typename ConcreteProfiler>
 inline void GpuProfiler<ConcreteProfiler>::EndGpuEvent()
 {
-    m_profiler.EndGpuEvent();
+    mProfiler.EndGpuEvent();
 }
 
 template <typename ConcreteProfiler>
 template<class... ArgsT>
 inline void GpuProfiler<ConcreteProfiler>::SetMarker(const std::string& formatString, ArgsT... args)
 {
-    m_profiler.SetMarker(formatString, std::forward<ArgsT>(args)...);
+    mProfiler.SetMarker(formatString, std::forward<ArgsT>(args)...);
 }
 
 template <typename ConcreteProfiler>
 template<typename T, class... ArgsT>
 inline void GpuProfiler<ConcreteProfiler>::BeginGpuEvent(T* commandList, const std::string& formatString, ArgsT... args)
 {
-    m_profiler.BeginGpuEvent(commandList, formatString, std::forward<ArgsT>(args)...);
+    mProfiler.BeginGpuEvent(commandList, formatString, std::forward<ArgsT>(args)...);
 }
 
 template <typename ConcreteProfiler>
 template<typename T>
 inline void GpuProfiler<ConcreteProfiler>::EndGpuEvent(T* commandList)
 {
-    m_profiler.EndGpuEvent(commandList);
+    mProfiler.EndGpuEvent(commandList);
 }
 
 template <typename ConcreteProfiler>
 template<typename T, class... ArgsT>
 inline void GpuProfiler<ConcreteProfiler>::SetMarker(T* commandList, const std::string& formatString, ArgsT... args)
 {
-    m_profiler.SetMarker(commandList, formatString, std::forward<ArgsT>(args)...);
+    mProfiler.SetMarker(commandList, formatString, std::forward<ArgsT>(args)...);
 }
 }

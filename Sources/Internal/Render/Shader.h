@@ -31,65 +31,65 @@ public:
     RenderObjectBufferLayout CreateLayoutTemplateShalowCopy() const;
 
 private:
-    ShaderProgramHandle m_vsHandle;
-    ShaderProgramHandle m_psHandle;
-    VertexLayoutHandle m_vertexLayout;
-    ShaderData m_data;
-    RenderObjectBufferLayout m_bufferLayoutTemplate;
-    RenderObjectConstants m_rootConstants;
+    ShaderProgramHandle mVsHandle;
+    ShaderProgramHandle mPsHandle;
+    VertexLayoutHandle mVertexLayout;
+    ShaderData mData;
+    RenderObjectBufferLayout mBufferLayoutTemplate;
+    RenderObjectConstants mRootConstants;
 
-    ShaderHandle m_handle; // [a_vorontcov] Separate handles for each define set?
+    ShaderHandle mHandle; // [a_vorontcov] Separate handles for each define set?
 
     friend class Material;
 };
 
 inline void Shader::SetHandle(ShaderHandle handle)
 {
-    m_handle = handle;
+    mHandle = handle;
 }
 
 inline ShaderHandle Shader::GetHandle() const
 {
-    return m_handle;
+    return mHandle;
 }
 
 inline void Shader::SetShaderData(const ShaderData& data)
 {
-    m_data = data;
+    mData = data;
 }
 
 inline const ShaderData& Shader::GetShaderData() const
 {
-    return m_data;
+    return mData;
 }
 
 inline const RenderObjectBufferLayout& Shader::GetBufferLayoutTemplate() const
 {
-    return m_bufferLayoutTemplate;
+    return mBufferLayoutTemplate;
 }
 
 inline void Shader::SetBufferLayoutTemplate(const RenderObjectBufferLayout& layoutTemplate)
 {
-    m_bufferLayoutTemplate = layoutTemplate;
+    mBufferLayoutTemplate = layoutTemplate;
 }
 
 inline RenderObjectBufferLayout Shader::CreateLayoutTemplateShalowCopy() const
 {
     RenderObjectBufferLayout res;
-    res.resize(m_bufferLayoutTemplate.size());
-    for (size_t i = 0; i < m_bufferLayoutTemplate.size(); ++i)
-        m_bufferLayoutTemplate[i].MakeShallowCopy(res[i]);
+    res.resize(mBufferLayoutTemplate.size());
+    for (size_t i = 0; i < mBufferLayoutTemplate.size(); ++i)
+        mBufferLayoutTemplate[i].MakeShallowCopy(res[i]);
     return res;
 }
 
 inline const RenderObjectConstants& Shader::GetRenderObjectConstants() const
 {
-    return m_rootConstants;
+    return mRootConstants;
 }
 
 inline void Shader::SetRenderObjectConstants(const RenderObjectConstants& roConstants)
 {
-    m_rootConstants = roConstants;
+    mRootConstants = roConstants;
 }
 
 }

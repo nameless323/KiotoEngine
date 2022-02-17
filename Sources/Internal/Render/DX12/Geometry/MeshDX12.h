@@ -27,27 +27,27 @@ public:
     uint32 GetIndexCount() const;
 
 private:
-    VertexBufferDX12* m_vertexBuffer = nullptr;
-    IndexBufferDX12* m_indexBuffer = nullptr;
-    uint32 m_vertexCount = 0;
-    uint32 m_vertexStride = 0;
-    uint32 m_indexCount = 0;
+    VertexBufferDX12* mVertexBuffer = nullptr;
+    IndexBufferDX12* mIndexBuffer = nullptr;
+    uint32 mVertexCount = 0;
+    uint32 mVertexStride = 0;
+    uint32 mIndexCount = 0;
 
-    MeshHandle m_handle;
+    MeshHandle mHandle;
 };
 
 inline MeshHandle MeshDX12::GetHandle() const
 {
-    return m_handle;
+    return mHandle;
 }
 
 inline void MeshDX12::SetHandle(MeshHandle handle)
 {
-    m_handle = handle;
+    mHandle = handle;
 }
 
 inline uint32 MeshDX12::GetIndexCount() const
 {
-    return m_indexCount;
+    return mIndexCount;
 }
 }

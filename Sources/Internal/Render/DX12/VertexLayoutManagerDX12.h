@@ -14,6 +14,6 @@ public:
     const std::vector<D3D12_INPUT_ELEMENT_DESC>* FindVertexLayout(ShaderHandle handle) const;
 
 private:
-    std::map<ShaderHandle, VertexLayoutDX12> m_inputLayouts;
+    std::map<ShaderHandle, VertexLayoutDX12> mInputLayouts;
 };
 }

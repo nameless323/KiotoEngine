@@ -21,8 +21,8 @@ private:
     void CreateMaterial();
     void CreateQuadMesh();
 
-    Material* m_material = nullptr;
-    Mesh* m_quad = nullptr;
-    RenderObject* m_renderObject = nullptr;
+    Material* mMaterial = nullptr;
+    Mesh* mQuad = nullptr;
+    RenderObject* mRenderObject = nullptr;
 };
 }

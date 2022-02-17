@@ -14,3 +14,4 @@ std::vector<std::string> m_types;
 
 #define REGISTER_TYPE(type) \
 }
+}

@@ -10,15 +10,15 @@ namespace Kioto::Renderer
 
 RenderGraph::RenderGraph()
 {
-    m_registredPasses.reserve(RenderSettings::MaxRenderPassesCount);
-    m_activePasses.reserve(RenderSettings::MaxRenderPassesCount);
+    mRegistredPasses.reserve(RenderSettings::MaxRenderPassesCount);
+    mActivePasses.reserve(RenderSettings::MaxRenderPassesCount);
 
-    m_commandListPool.resize(RenderSettings::MaxRenderCommandsCount);
+    mCommandListPool.resize(RenderSettings::MaxRenderCommandsCount);
 }
 
 void RenderGraph::AddPass(RenderPass* renderPass)
 {
-    m_registredPasses.push_back(renderPass);
+    mRegistredPasses.push_back(renderPass);
 }
 
 RenderGraph::~RenderGraph()
@@ -28,45 +28,45 @@ RenderGraph::~RenderGraph()
 
 void RenderGraph::SheduleGraph()
 {
-    for (auto pass : m_registredPasses)
+    for (auto pass : mRegistredPasses)
     {
-        PassBlackboard* passBlackboard = m_resourceTable.GetNextBlackboard();
+        PassBlackboard* passBlackboard = mResourceTable.GetNextBlackboard();
         passBlackboard->first = pass;
         if (pass->ConfigureInputsAndOutputs(passBlackboard->second))
-            m_activePasses.push_back({ pass, &m_commandListPool[m_currentCommandListIndex++] });
+            mActivePasses.push_back({ pass, &mCommandListPool[mCurrentCommandListIndex++] });
     }
 }
 
 void RenderGraph::Execute(DrawData& drawData)
 {
-    for (auto& submInfo : m_activePasses)
+    for (auto& submInfo : mActivePasses)
     {
         submInfo.Pass->SetDrawData(&drawData);
         submInfo.Pass->Setup();
     }
 
-    for (auto& submInfo : m_activePasses)
+    for (auto& submInfo : mActivePasses)
     {
         submInfo.CmdList->PushCommand(RenderCommandHelpers::CreateBeginGpuEventCommand(submInfo.Pass->GetName()));
-        ResourcesBlackboard* blackboard = m_resourceTable.GetBalackboardForPass(submInfo.Pass);
+        ResourcesBlackboard* blackboard = mResourceTable.GetBalackboardForPass(submInfo.Pass);
 
-        m_resourceTable.CreateResourcesForPass(submInfo.Pass);
+        mResourceTable.CreateResourcesForPass(submInfo.Pass);
         for (const auto& transitions : blackboard->GetTransitionRequests())
         {
-            Texture* tex = m_resourceTable.GetResource(transitions.ResourceName);
+            Texture* tex = mResourceTable.GetResource(transitions.ResourceName);
             submInfo.CmdList->PushCommand(RenderCommandHelpers::CreateResourceTransitonCommand(tex->GetHandle(), transitions.TransitionTo, submInfo.Pass));
         }
 
-        submInfo.Pass->BuildRenderPackets(submInfo.CmdList, m_resourceTable);
+        submInfo.Pass->BuildRenderPackets(submInfo.CmdList, mResourceTable);
         submInfo.Pass->Cleanup();
         submInfo.CmdList->PushCommand(RenderCommandHelpers::CreateEndGpuEventCommand());
     }
-    m_resourceTable.ClearBlackboards();
+    mResourceTable.ClearBlackboards();
 }
 
 void RenderGraph::Submit()
 {
-    for (auto& submInfo : m_activePasses)
+    for (auto& submInfo : mActivePasses)
     {
         Renderer::SubmitRenderCommands(submInfo.CmdList->GetCommands());
         submInfo.Pass->Cleanup();
@@ -76,11 +76,11 @@ void RenderGraph::Submit()
 
 void RenderGraph::Clear()
 {
-    m_registredPasses.clear();
-    m_activePasses.clear();
-    for (uint32 i = 0; i < m_currentCommandListIndex; ++i)
-        m_commandListPool[i].ClearCommands();
-    m_currentCommandListIndex = 0;
+    mRegistredPasses.clear();
+    mActivePasses.clear();
+    for (uint32 i = 0; i < mCurrentCommandListIndex; ++i)
+        mCommandListPool[i].ClearCommands();
+    mCurrentCommandListIndex = 0;
 }
 
 }

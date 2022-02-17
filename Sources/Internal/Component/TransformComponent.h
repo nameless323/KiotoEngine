@@ -49,16 +49,16 @@ private:
     void RemoveDirty();
     void SetChildrenDirty();
 
-    Matrix4 m_toWorld = Matrix4::Identity;
-    Matrix4 m_toParent = Matrix4::Identity;
-    Matrix4 m_toModel = Matrix4::Identity;
-    bool m_isDirty = false;
+    Matrix4 mToWorld = Matrix4::Identity;
+    Matrix4 mToParent = Matrix4::Identity;
+    Matrix4 mToModel = Matrix4::Identity;
+    bool mIsDirty = false;
 
-    Vector3 m_worldPosition{};
-    Quaternion m_worldRotation{}; // [a_vorontcov] TODO: quaternion.
+    Vector3 mWorldPosition{};
+    Quaternion mWorldRotation{};
 
-    TransformComponent* m_parent = nullptr;
-    std::vector<TransformComponent*> m_children;
+    TransformComponent* mParent = nullptr;
+    std::vector<TransformComponent*> mChildren;
 
     friend class TransformSystem;
 };
@@ -66,117 +66,117 @@ REGISTER_COMPONENT(TransformComponent);
 
 inline bool TransformComponent::GetDirty() const
 {
-    return m_isDirty;
+    return mIsDirty;
 }
 
 inline const Matrix4& TransformComponent::GetToWorld() const
 {
-    return m_toWorld;
+    return mToWorld;
 }
 
 inline const Matrix4& TransformComponent::GetToParent() const
 {
-    return m_toParent;
+    return mToParent;
 }
 
 inline const Matrix4& TransformComponent::GetToModel() const
 {
-    return m_toModel;
+    return mToModel;
 }
 
 inline const Vector3& TransformComponent::GetWorldPosition() const
 {
-    return m_worldPosition;
+    return mWorldPosition;
 }
 
 inline const Quaternion& TransformComponent::GetWorldRotation() const
 {
-    return m_worldRotation;
+    return mWorldRotation;
 }
 
 inline void TransformComponent::SetToWorld(const Matrix4& m)
 {
-    m_toWorld = m;
-    if (!m_isDirty)
+    mToWorld = m;
+    if (!mIsDirty)
         SetChildrenDirty();
 }
 
 inline void TransformComponent::SetToParent(const Matrix4& m)
 {
-    m_toParent = m;
-    if (!m_isDirty)
+    mToParent = m;
+    if (!mIsDirty)
         SetChildrenDirty();
-    m_isDirty = true;
+    mIsDirty = true;
 }
 
 inline void TransformComponent::SetToModel(const Matrix4& m)
 {
-    m_toModel = m;
-    if (!m_isDirty)
+    mToModel = m;
+    if (!mIsDirty)
         SetChildrenDirty();
-    m_isDirty = true;
+    mIsDirty = true;
 }
 
 inline void TransformComponent::SetParent(TransformComponent* parent)
 {
-    m_parent = parent;
-    if (!m_isDirty)
+    mParent = parent;
+    if (!mIsDirty)
         SetChildrenDirty();
-    m_isDirty = true;
+    mIsDirty = true;
 }
 
 inline void TransformComponent::SetWorldPosition(const Vector3& pos)
 {
-    m_worldPosition = pos;
-    m_isDirty = true;
+    mWorldPosition = pos;
+    mIsDirty = true;
 }
 
 inline void TransformComponent::SetWorldRotation(const Quaternion& rot)
 {
-    m_worldRotation = rot;
-    m_isDirty = true;
+    mWorldRotation = rot;
+    mIsDirty = true;
 }
 
 inline void TransformComponent::SetDirty()
 {
-    m_isDirty = true;
+    mIsDirty = true;
 }
 
 inline void TransformComponent::RemoveDirty()
 {
-    m_isDirty = false;
+    mIsDirty = false;
 }
 
 inline void TransformComponent::SetChildrenDirty()
 {
-    for (auto c : m_children)
+    for (auto c : mChildren)
         c->SetDirty();
 }
 
 inline Vector3 TransformComponent::TransformPointToWorld(const Vector3& localPoint) const
 {
-    Vector4 worldPoint = Vector4(localPoint, 1.0f) * m_toWorld;
+    Vector4 worldPoint = Vector4(localPoint, 1.0f) * mToWorld;
     return { worldPoint.x, worldPoint.y, worldPoint.z };
 }
 
 inline Vector3 TransformComponent::TransformPointToModel(const Vector3& worldPoint) const
 {
-    Vector4 localPoint = Vector4(worldPoint, 1.0f) * m_toModel;
+    Vector4 localPoint = Vector4(worldPoint, 1.0f) * mToModel;
     return { localPoint.x, localPoint.y, localPoint.z };
 }
 
 inline Vector3 TransformComponent::Up() const
 {
-    return { m_toWorld._10, m_toWorld._11, m_toWorld._12 };
+    return { mToWorld._10, mToWorld._11, mToWorld._12 };
 }
 
 inline Vector3 TransformComponent::Right() const
 {
-    return { m_toWorld._00, m_toWorld._01, m_toWorld._02 };
+    return { mToWorld._00, mToWorld._01, mToWorld._02 };
 }
 
 inline Vector3 TransformComponent::Fwd() const
 {
-    return { m_toWorld._20, m_toWorld._21, m_toWorld._22 };
+    return { mToWorld._20, mToWorld._21, mToWorld._22 };
 }
 }

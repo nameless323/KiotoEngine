@@ -18,14 +18,14 @@ constexpr uint16 MaxDepthStencilViews = 32;
 
 TextureManagerDX12::TextureManagerDX12()
 {
-    m_textureQueue.reserve(64);
-    m_textureSetUpdateQueue.reserve(256);
+    mTextureQueue.reserve(64);
+    mTextureSetUpdateQueue.reserve(256);
 }
 
 void TextureManagerDX12::RegisterTexture(Texture* texture)
 {
-    auto it = m_textures.find(texture->GetHandle());
-    if (it != m_textures.end())
+    auto it = mTextures.find(texture->GetHandle());
+    if (it != mTextures.end())
     {
         throw "Texture Already Registered";
         return;
@@ -36,17 +36,17 @@ void TextureManagerDX12::RegisterTexture(Texture* texture)
     tex->SetHandle(GetNewHandle());
     tex->SetDescriptor(texture->GetDescriptor());
     tex->SetIsFromMemoryAsset(texture->IsMemoryAsset());
-    m_textureQueue.push_back(tex);
+    mTextureQueue.push_back(tex);
     texture->SetHandle(tex->GetHandle());
 
-    m_textures[tex->GetHandle()] = tex;
+    mTextures[tex->GetHandle()] = tex;
 }
 
 TextureManagerDX12::~TextureManagerDX12()
 {
-    for (auto& tex : m_textures)
+    for (auto& tex : mTextures)
         delete tex.second;
-    m_textures.clear();
+    mTextures.clear();
 }
 
 void TextureManagerDX12::InitRtvHeap(const StateDX& state)
@@ -55,7 +55,7 @@ void TextureManagerDX12::InitRtvHeap(const StateDX& state)
     heapDescr.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
     heapDescr.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
     heapDescr.NumDescriptors = MaxRenderTargetViews;
-    ThrowIfFailed(state.Device->CreateDescriptorHeap(&heapDescr, IID_PPV_ARGS(&m_rtvHeap)));
+    ThrowIfFailed(state.Device->CreateDescriptorHeap(&heapDescr, IID_PPV_ARGS(&mRtvHeap)));
 }
 
 void TextureManagerDX12::InitDsvHeap(const StateDX& state)
@@ -64,13 +64,13 @@ void TextureManagerDX12::InitDsvHeap(const StateDX& state)
     heapDescr.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
     heapDescr.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
     heapDescr.NumDescriptors = MaxDepthStencilViews;
-    ThrowIfFailed(state.Device->CreateDescriptorHeap(&heapDescr, IID_PPV_ARGS(&m_dsvHeap)));
+    ThrowIfFailed(state.Device->CreateDescriptorHeap(&heapDescr, IID_PPV_ARGS(&mDsvHeap)));
 }
 
 void TextureManagerDX12::UpdateTextureSetHeap(const StateDX& state, const TextureSet& texSet)
 {
-    if (m_textureHeaps.find(texSet.GetHandle()) != m_textureHeaps.end())
-        m_textureHeaps[texSet.GetHandle()].Reset();
+    if (mTextureHeaps.find(texSet.GetHandle()) != mTextureHeaps.end())
+        mTextureHeaps[texSet.GetHandle()].Reset();
 
     D3D12_DESCRIPTOR_HEAP_DESC heapDescr = {};
     heapDescr.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
@@ -78,15 +78,15 @@ void TextureManagerDX12::UpdateTextureSetHeap(const StateDX& state, const Textur
     heapDescr.NumDescriptors = texSet.GetTexturesCount();
 
     // [a_vorontcov] TODO: maybe reuse the same heap and overwrite descriptors?
-    ThrowIfFailed(state.Device->CreateDescriptorHeap(&heapDescr, IID_PPV_ARGS(&m_textureHeaps[texSet.GetHandle()])));
+    ThrowIfFailed(state.Device->CreateDescriptorHeap(&heapDescr, IID_PPV_ARGS(&mTextureHeaps[texSet.GetHandle()])));
 
 
-    CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_textureHeaps[texSet.GetHandle()]->GetCPUDescriptorHandleForHeapStart());
+    CD3DX12_CPU_DESCRIPTOR_HANDLE handle(mTextureHeaps[texSet.GetHandle()]->GetCPUDescriptorHandleForHeapStart());
     for (uint32 i = 0; i < texSet.GetTexturesCount(); ++i)
     {
         const Texture* kiotoTex = texSet.GetTexture(i);
-        auto it = m_textures.find(kiotoTex->GetHandle());
-        if (it == m_textures.end())
+        auto it = mTextures.find(kiotoTex->GetHandle());
+        if (it == mTextures.end())
             throw "ololo";
         TextureDX12* dxTex = (*it).second;
 
@@ -106,50 +106,50 @@ void TextureManagerDX12::UpdateTextureSetHeap(const StateDX& state, const Textur
 
 ID3D12DescriptorHeap* TextureManagerDX12::GetTextureHeap(TextureSetHandle handle) const
 {
-    auto it = m_textureHeaps.find(handle);
-    if (it != m_textureHeaps.cend())
+    auto it = mTextureHeaps.find(handle);
+    if (it != mTextureHeaps.cend())
         return it->second.Get();
     return nullptr;
 }
 
 TextureDX12* TextureManagerDX12::FindTexture(TextureHandle handle)
 {
-    auto it = m_textures.find(handle);
-    if (it != m_textures.cend())
+    auto it = mTextures.find(handle);
+    if (it != mTextures.cend())
         return it->second;
-    it = m_notOwningTextures.find(handle);
-    if (it != m_notOwningTextures.cend())
+    it = mNotOwningTextures.find(handle);
+    if (it != mNotOwningTextures.cend())
         return it->second;
     return nullptr;
 }
 
 void TextureManagerDX12::RegisterTextureWithoutOwnership(TextureDX12* texture)
 {
-    auto it = m_notOwningTextures.find(texture->GetHandle());
-    if (it != m_notOwningTextures.end())
+    auto it = mNotOwningTextures.find(texture->GetHandle());
+    if (it != mNotOwningTextures.end())
     {
         throw "Texture Already Registered";
         return;
     }
-    m_notOwningTextures[texture->GetHandle()] = texture;
+    mNotOwningTextures[texture->GetHandle()] = texture;
 }
 
 void TextureManagerDX12::ProcessRegistationQueue(const StateDX& state)
 {
-    for (auto& tex : m_textureQueue)
+    for (auto& tex : mTextureQueue)
     {
         tex->Create(state.Device.Get(), state.CommandList.Get());
         if (tex->GetIsFromMemoryAsset())
         {
             if ((tex->GetDx12TextureFlags() & D3D12_RESOURCE_FLAGS::D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET) != 0)
             {
-                assert(m_rtvHeapOffsets.count(tex->GetHandle()) == 0);
-                m_rtvHeapOffsets[tex->GetHandle()] = m_currentRtvOffset;
+                assert(mRtvHeapOffsets.count(tex->GetHandle()) == 0);
+                mRtvHeapOffsets[tex->GetHandle()] = mCurrentRtvOffset;
 
-                CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
-                handle.Offset(m_currentRtvOffset);
+                CD3DX12_CPU_DESCRIPTOR_HANDLE handle(mRtvHeap->GetCPUDescriptorHandleForHeapStart());
+                handle.Offset(mCurrentRtvOffset);
 
-                m_currentRtvOffset += state.RtvDescriptorSize;
+                mCurrentRtvOffset += state.RtvDescriptorSize;
 
                 D3D12_RENDER_TARGET_VIEW_DESC texDescr = {};
                 texDescr.Format = tex->Resource->GetDesc().Format;
@@ -160,13 +160,13 @@ void TextureManagerDX12::ProcessRegistationQueue(const StateDX& state)
             }
             else if ((tex->GetDx12TextureFlags() & D3D12_RESOURCE_FLAGS::D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL) != 0)
             {
-                assert(m_dsvHeapOffsets.count(tex->GetHandle()) == 0);
-                m_dsvHeapOffsets[tex->GetHandle()] = m_currentDsvOffset;
+                assert(mDsvHeapOffsets.count(tex->GetHandle()) == 0);
+                mDsvHeapOffsets[tex->GetHandle()] = mCurrentDsvOffset;
 
-                CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
-                handle.Offset(m_currentDsvOffset);
+                CD3DX12_CPU_DESCRIPTOR_HANDLE handle(mDsvHeap->GetCPUDescriptorHandleForHeapStart());
+                handle.Offset(mCurrentDsvOffset);
 
-                m_currentDsvOffset += state.DsvDescriptorSize;
+                mCurrentDsvOffset += state.DsvDescriptorSize;
 
                 D3D12_DEPTH_STENCIL_VIEW_DESC texDescr = {};
                 texDescr.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; //tex->Resource->GetDesc().Format; todo: [a_vorontcov] fix it
@@ -177,7 +177,7 @@ void TextureManagerDX12::ProcessRegistationQueue(const StateDX& state)
             }
         }
     }
-    m_textureQueue.clear();
+    mTextureQueue.clear();
 }
 
 void TextureManagerDX12::QueueTextureSetForUpdate(const TextureSet& texSet)
@@ -185,33 +185,33 @@ void TextureManagerDX12::QueueTextureSetForUpdate(const TextureSet& texSet)
     if (texSet.GetHandle() == InvalidHandle)
         throw "Invalid handle";
 
-    auto it = std::find(m_textureSetUpdateQueue.cbegin(), m_textureSetUpdateQueue.cend(), &texSet);
-    if (it != m_textureSetUpdateQueue.cend())
+    auto it = std::find(mTextureSetUpdateQueue.cbegin(), mTextureSetUpdateQueue.cend(), &texSet);
+    if (it != mTextureSetUpdateQueue.cend())
         return;
 
-    m_textureSetUpdateQueue.push_back(&texSet);
+    mTextureSetUpdateQueue.push_back(&texSet);
 }
 
 void TextureManagerDX12::ProcessTextureSetUpdates(const StateDX& state)
 {
-    for (auto& texSet : m_textureSetUpdateQueue)
+    for (auto& texSet : mTextureSetUpdateQueue)
         UpdateTextureSetHeap(state, *texSet);
-    m_textureSetUpdateQueue.clear();
+    mTextureSetUpdateQueue.clear();
 }
 
 D3D12_CPU_DESCRIPTOR_HANDLE TextureManagerDX12::GetRtvHandle(TextureHandle handle) const
 {
-    assert(m_rtvHeapOffsets.count(handle) == 1 && "The texture is not registered as a rtv");
-    CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
-    rtvHandle.Offset(m_rtvHeapOffsets.at(handle));
+    assert(mRtvHeapOffsets.count(handle) == 1 && "The texture is not registered as a rtv");
+    CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(mRtvHeap->GetCPUDescriptorHandleForHeapStart());
+    rtvHandle.Offset(mRtvHeapOffsets.at(handle));
     return rtvHandle;
 }
 
 D3D12_CPU_DESCRIPTOR_HANDLE TextureManagerDX12::GetDsvHandle(TextureHandle handle) const
 {
-    assert(m_dsvHeapOffsets.count(handle) == 1 && "The texture is not registred as a dsv");
-    CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
-    dsvHandle.Offset(m_dsvHeapOffsets.at(handle));
+    assert(mDsvHeapOffsets.count(handle) == 1 && "The texture is not registred as a dsv");
+    CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(mDsvHeap->GetCPUDescriptorHandleForHeapStart());
+    dsvHandle.Offset(mDsvHeapOffsets.at(handle));
     return dsvHandle;
 }
 

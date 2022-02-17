@@ -23,10 +23,10 @@ private:
     void CreateMaterial();
     void CreateQuadMesh();
 
-    Material* m_material = nullptr;
-    Mesh* m_quad = nullptr;
-    std::vector<RenderObject*> m_renderObjects;
+    Material* mMaterial = nullptr;
+    Mesh* mQuad = nullptr;
+    std::vector<RenderObject*> mRenderObjects;
 
-    bool m_thisFrameFwdPassEnabled = true;
+    bool mThisFrameFwdPassEnabled = true;
 };
 }

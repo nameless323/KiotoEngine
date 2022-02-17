@@ -21,13 +21,13 @@ public:
 
     Component* CreateComponent(uint64 id)
     {
-        if (m_componentsMap.find(id) == m_componentsMap.end())
+        if (!mComponentsMap.contains(id))
             return nullptr;
-        return m_componentsMap[id]();
+        return mComponentsMap[id]();
     }
 
 private:
-    std::map<uint64, std::function<Component*()>> m_componentsMap;
+    std::map<uint64, std::function<Component*()>> mComponentsMap;
 
     template<typename T>
     friend class ComponentRegistrator;
@@ -40,7 +40,7 @@ public:
     ComponentRegistrator()
     {
         uint64 i = T::GetTypeS();
-        ComponentFactory::Instance().m_componentsMap.insert(std::make_pair(T::GetTypeS(), &Create));
+        ComponentFactory::Instance().mComponentsMap.insert(std::make_pair(T::GetTypeS(), &Create));
     }
 
 private:

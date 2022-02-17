@@ -43,41 +43,41 @@ public:
     void Deserialize(const YAML::Node& in) override;
 
 private:
-    std::string m_materialPath = "";
-    std::string m_meshPath = "";
+    std::string mMaterialPath = "";
+    std::string mMeshPath = "";
 
-    Renderer::RenderObject* m_renderObject = nullptr;
+    Renderer::RenderObject* mRenderObject = nullptr;
 };
 REGISTER_COMPONENT(RenderComponent);
 
 inline void RenderComponent::SetMaterial(const std::string& path)
 {
-    m_materialPath = path;
+    mMaterialPath = path;
 }
 
 inline void RenderComponent::SetMesh(const std::string& path)
 {
-    m_meshPath = path;
+    mMeshPath = path;
 }
 
 inline const std::string& RenderComponent::GetMaterial() const
 {
-    return m_materialPath;
+    return mMaterialPath;
 }
 
 inline const std::string& RenderComponent::GetMesh() const
 {
-    return m_meshPath;
+    return mMeshPath;
 }
 
 inline void RenderComponent::SetRenderObject(Renderer::RenderObject* renderObject)
 {
-    m_renderObject = renderObject;
+    mRenderObject = renderObject;
 }
 
 inline Renderer::RenderObject* RenderComponent::GetRenderObject() const
 {
-    return m_renderObject;
+    return mRenderObject;
 }
 
 }

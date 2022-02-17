@@ -1,7 +1,6 @@
 #pragma once
 
 #include <d3d12.h>
-#include <wrl.h>
 
 #include "Core/CoreTypes.h"
 
@@ -23,17 +22,17 @@ public:
     const D3D12_VERTEX_BUFFER_VIEW& GetVertexBufferView() const;
 
 private:
-    DefaultHeapBuffer* m_buffer = nullptr;
-    D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView{};
+    DefaultHeapBuffer* mBuffer = nullptr;
+    D3D12_VERTEX_BUFFER_VIEW mVertexBufferView{};
 };
 
 inline const D3D12_VERTEX_BUFFER_VIEW& VertexBufferDX12::GetVertexBufferView() const
 {
-    return m_vertexBufferView;
+    return mVertexBufferView;
 }
 
 inline ID3D12Resource* VertexBufferDX12::GetVertexBuffer() const
 {
-    return m_buffer->GetBuffer();
+    return mBuffer->GetBuffer();
 }
 }

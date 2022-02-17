@@ -2,11 +2,7 @@
 
 #include <sstream>
 
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers.
-#endif
-
-#include <Windows.h> // [a_vorontcov] Must be included before <debugapi.h> to escape super annoying "No target architecture" error.
+#include "Core/WindowsCore.h" // [a_vorontcov] Must be included before <debugapi.h> to escape super annoying "No target architecture" error.
 #include <debugapi.h>
 
 namespace Kioto::Logger

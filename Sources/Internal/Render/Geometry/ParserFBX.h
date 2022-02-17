@@ -25,7 +25,7 @@ public:
 private:
     bool LoadScene(FbxManager* manager, FbxScene* scene, const char* filename);
 
-    FbxManager* m_fbxManager = nullptr;
+    FbxManager* mFbxManager = nullptr;
 
     void TraverseHiererchy(FbxScene* scene, Renderer::Mesh* dst);
     void TraverseHiererchy(FbxNode* node, int32 depth, Renderer::Mesh* dst);

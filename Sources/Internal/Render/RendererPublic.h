@@ -33,24 +33,24 @@ struct SafeHandle
 {
 public:
     SafeHandle() = default;
-    SafeHandle(uint32 handle) : m_handle(handle)
+    SafeHandle(uint32 handle) : mHandle(handle)
     {
     }
 
     SafeHandle(const SafeHandle& other)
     {
-        this->m_handle = other.m_handle;
+        this->mHandle = other.mHandle;
     }
 
     SafeHandle& operator=(const SafeHandle& other)
     {
-        this->m_handle = other.m_handle;
+        this->mHandle = other.mHandle;
         return *this;
     }
 
     bool operator== (const SafeHandle& other) const
     {
-        return m_handle == other.m_handle;
+        return mHandle == other.mHandle;
     }
 
     bool operator!= (const SafeHandle& other) const
@@ -60,36 +60,36 @@ public:
 
     bool operator> (const SafeHandle& other) const
     {
-        return m_handle > other.m_handle;
+        return mHandle > other.mHandle;
     }
 
     bool operator< (const SafeHandle& other) const
     {
-        return m_handle < other.m_handle;
+        return mHandle < other.mHandle;
     }
 
     bool operator<= (const SafeHandle& other) const
     {
-        return !(m_handle > other.m_handle);
+        return !(mHandle > other.mHandle);
     }
 
     bool operator>= (const SafeHandle& other) const
     {
-        return !(m_handle < other.m_handle);
+        return !(mHandle < other.mHandle);
     }
 
     uint32 GetHandle() const
     {
-        return m_handle;
+        return mHandle;
     }
 
     void SetHandle(uint32 handle)
     {
-        m_handle = handle;
+        mHandle = handle;
     }
 
 private:
-    uint32 m_handle = InvalidHandle;
+    uint32 mHandle = InvalidHandle;
 };
 
 inline uint32 GetNewHandle()

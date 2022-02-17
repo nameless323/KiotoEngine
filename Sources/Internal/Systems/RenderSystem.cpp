@@ -21,18 +21,18 @@ static constexpr uint32 MAX_LIGHTS_COUNT = 256;
 
 RenderSystem::RenderSystem()
 {
-    m_renderPasses.reserve(Kioto::RenderSettings::MaxRenderPassesCount);
-    m_drawData.RenderObjects.reserve(2048);
-    m_drawData.Lights.reserve(MAX_LIGHTS_COUNT);
-    m_components.reserve(2048);
-    m_lights.reserve(256);
+    mRenderPasses.reserve(Kioto::RenderSettings::MaxRenderPassesCount);
+    mDrawData.RenderObjects.reserve(2048);
+    mDrawData.Lights.reserve(MAX_LIGHTS_COUNT);
+    mComponents.reserve(2048);
+    mLights.reserve(256);
 }
 
 void RenderSystem::Init()
 {
     AddRenderPass(new Renderer::ShadowMapRenderPass);
-    m_forwardRenderPass = new Renderer::ForwardRenderPass();
-    AddRenderPass(m_forwardRenderPass);
+    mForwardRenderPass = new Renderer::ForwardRenderPass();
+    AddRenderPass(mForwardRenderPass);
     AddRenderPass(new Renderer::EditorGizmosPass());
     AddRenderPass(new Renderer::GrayscaleRenderPass());
     AddRenderPass(new Renderer::WireframeRenderPass());
@@ -52,7 +52,7 @@ void RenderSystem::OnEntityRemove(Entity* entity)
 
 void RenderSystem::Update(float32 dt)
 {
-    for (auto rc : m_components)
+    for (auto rc : mComponents)
     {
         if (!rc->GetIsEnabled())
             continue;
@@ -60,45 +60,45 @@ void RenderSystem::Update(float32 dt)
         TransformComponent* tc = rc->GetEntity()->GetTransform();
         ro->SetToWorld(tc->GetToWorld());
         ro->SetToModel(tc->GetToModel());
-        m_drawData.RenderObjects.push_back(ro); // [a_vorontcov] TODO: Don't like copying this around.
+        mDrawData.RenderObjects.push_back(ro); // [a_vorontcov] TODO: Don't like copying this around.
     }
-    for (auto l : m_lights)
+    for (auto l : mLights)
     {
         if (!l->GetIsEnabled())
             continue;
         l->GetLight()->Position = l->GetEntity()->GetTransform()->GetWorldPosition();
-        m_drawData.Lights.push_back(l->GetLight());
+        mDrawData.Lights.push_back(l->GetLight());
     }
-    for (auto pass : m_renderPasses)
-        m_renderGraph.AddPass(pass);
+    for (auto pass : mRenderPasses)
+        mRenderGraph.AddPass(pass);
 
-    m_renderGraph.SheduleGraph();
-    m_renderGraph.Execute(m_drawData);
-    m_drawData.RenderObjects.clear();
-    m_drawData.Lights.clear();
+    mRenderGraph.SheduleGraph();
+    mRenderGraph.Execute(mDrawData);
+    mDrawData.RenderObjects.clear();
+    mDrawData.Lights.clear();
 }
 
 void RenderSystem::Draw()
 {
-    m_renderGraph.Submit();
+    mRenderGraph.Submit();
 }
 
 void RenderSystem::Shutdown()
 {
-    for (auto it : m_renderPasses)
+    for (auto it : mRenderPasses)
         SafeDelete(it);
-    m_renderPasses.clear();
-    m_lights.clear();
+    mRenderPasses.clear();
+    mLights.clear();
 }
 
 void RenderSystem::AddRenderPass(Renderer::RenderPass* pass)
 {
-    m_renderPasses.push_back(pass);
+    mRenderPasses.push_back(pass);
 }
 
 void RenderSystem::RemoveRenderPass(Renderer::RenderPass* pass)
 {
-    m_renderPasses.erase(std::remove(m_renderPasses.begin(), m_renderPasses.end(), pass), m_renderPasses.end());
+    mRenderPasses.erase(std::remove(mRenderPasses.begin(), mRenderPasses.end(), pass), mRenderPasses.end());
     SafeDelete(pass);
 }
 
@@ -107,7 +107,7 @@ void RenderSystem::ParseLights(Entity* entity)
     LightComponent* light = entity->GetComponent<LightComponent>();
     if (light == nullptr)
         return;
-    m_lights.push_back(light);
+    mLights.push_back(light);
 }
 
 void RenderSystem::ParseRenderComponents(Entity* entity)
@@ -129,7 +129,7 @@ void RenderSystem::ParseRenderComponents(Entity* entity)
 
     renderComponent->SetRenderObject(ro);
 
-    m_components.push_back(renderComponent);
+    mComponents.push_back(renderComponent);
 }
 
 void RenderSystem::TryRemoveLight(Entity* entity)
@@ -137,9 +137,9 @@ void RenderSystem::TryRemoveLight(Entity* entity)
     LightComponent* light = entity->GetComponent<LightComponent>();
     if (light == nullptr)
         return;
-    auto it = std::find(m_lights.begin(), m_lights.end(), light);
-    if (it != m_lights.end())
-        m_lights.erase(it);
+    auto it = std::find(mLights.begin(), mLights.end(), light);
+    if (it != mLights.end())
+        mLights.erase(it);
 }
 
 void RenderSystem::TryRemoveRenderComponent(Entity* entity)
@@ -147,13 +147,13 @@ void RenderSystem::TryRemoveRenderComponent(Entity* entity)
     RenderComponent* t = entity->GetComponent<RenderComponent>();
     if (t == nullptr)
         return;
-    auto it = std::find(m_components.begin(), m_components.end(), t);
-    if (it != m_components.end())
+    auto it = std::find(mComponents.begin(), mComponents.end(), t);
+    if (it != mComponents.end())
     {
         Renderer::RenderObject* ro = t->GetRenderObject();
         SafeDelete(ro);
         t->SetRenderObject(nullptr);
-        m_components.erase(it);
+        mComponents.erase(it);
     }
 }
 

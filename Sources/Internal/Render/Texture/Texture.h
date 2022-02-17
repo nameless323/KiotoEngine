@@ -198,36 +198,36 @@ public:
     eResourceState GetCurrentState() const;
 
 private:
-    TextureHandle m_handle;
+    TextureHandle mHandle;
 
-    TextureDescriptor m_descriptor;
-    eResourceState m_currentState = eResourceState::Common;
+    TextureDescriptor mDescriptor;
+    eResourceState mCurrentState = eResourceState::Common;
 };
 
 inline Texture::Texture(TextureDescriptor descriptor)
 {
-    std::swap(m_descriptor, descriptor);
-    m_currentState = m_descriptor.InitialState;
+    std::swap(mDescriptor, descriptor);
+    mCurrentState = mDescriptor.InitialState;
 }
 
 inline TextureHandle Texture::GetHandle() const
 {
-    return m_handle;
+    return mHandle;
 }
 
 inline void Texture::SetHandle(TextureHandle handle)
 {
-    m_handle = handle;
+    mHandle = handle;
 }
 
 inline const TextureDescriptor& Texture::GetDescriptor() const
 {
-    return m_descriptor;
+    return mDescriptor;
 }
 
 inline eResourceState Texture::GetCurrentState() const
 {
-    return m_currentState;
+    return mCurrentState;
 }
 
 }

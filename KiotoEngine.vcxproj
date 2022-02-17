@@ -193,6 +193,7 @@ RD /S /Q $(TargetDir)Assets
     <ClInclude Include="Sources\Internal\Core\ECS\SceneSystem.h" />
     <ClInclude Include="Sources\Internal\Core\ECS\System.h" />
     <ClInclude Include="Sources\Internal\Core\Reflection\Reflection.h" />
+    <ClInclude Include="Sources\Internal\Core\WindowsCore.h" />
     <ClInclude Include="Sources\Internal\Math\Quaternion.h" />
     <ClInclude Include="Sources\Internal\Math\TransformHelpers.h" />
     <ClInclude Include="Sources\Internal\Render\Color.h" />
