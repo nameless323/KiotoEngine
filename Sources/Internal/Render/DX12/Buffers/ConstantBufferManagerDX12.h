@@ -2,8 +2,8 @@
 
 #include <map>
 #include <vector>
-#include <windows.h>
 
+#include "Core/WindowsCore.h"
 #include "Render/RendererPublic.h"
 #include "Render/DX12/Buffers/UploadBufferDX12.h"
 

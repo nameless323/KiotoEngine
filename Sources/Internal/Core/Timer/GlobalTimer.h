@@ -1,8 +1,8 @@
 #pragma once
 
 #include <chrono>
-#include <Windows.h>
 
+#include "Core/WindowsCore.h"
 #include "Core/CoreTypes.h"
 
 namespace Kioto::GlobalTimer

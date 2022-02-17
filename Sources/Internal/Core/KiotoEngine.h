@@ -5,11 +5,10 @@
 
 #pragma once
 
-#define WIN32_LEAN_AND_MEAN
+#include "Core/WindowsCore.h"
 
 #include <string>
 #include <functional>
-#include <Windows.h>
 
 #include "Core/Core.h"
 #include "Core/CoreTypes.h"

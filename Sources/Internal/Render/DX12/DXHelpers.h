@@ -4,8 +4,8 @@
 #include <d3d12.h>
 #include <exception>
 #include <string>
-#include <windows.h>
 
+#include "Core/WindowsCore.h"
 #include "Render/Geometry/Mesh.h"
 #include "Dx12Helpers/d3dx12.h"
 

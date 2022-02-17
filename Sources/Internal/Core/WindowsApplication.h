@@ -1,8 +1,8 @@
 #pragma once
 
 #include <string>
-#include <windows.h>
 
+#include "Core/WindowsCore.h"
 #include "Core/CoreTypes.h"
 
 namespace Kioto::WindowsApplication
